@@ -1,0 +1,27 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "echo",
+    packages = [
+        "//Molten/test/resource/system/graph/module/echo/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "echo.arena.json",
+        "echo.forge.artifact.json",
+        "echo.forge.relation.artifact.json",
+        "echo.matrix.json",
+        "//Molten/test/resource/system/graph/module/echo/symbolic:data",
+    ],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+)

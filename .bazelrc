@@ -1,0 +1,68 @@
+#################################################################################################################################################################
+############## Platform                                                                                                                              [ Platform ]
+build --show_timestamps --enable_runfiles --color=yes --curses=yes
+build --sandbox_default_allow_network=false
+build --lockfile_mode=update 
+common --enable_platform_specific_config
+common --enable_bzlmod
+common --noenable_workspace
+common --bes_upload_mode=fully_async
+common --incompatible_python_disallow_native_rules
+
+######### Windows                                                                                                                           [ Platform, Windows ]
+##### Compatibility                                                                                                          [ Platform, Windows, Compatibility ]
+startup --windows_enable_symlinks
+
+#################################################################################################################################################################
+##### Interface                                                                                                                                     [ Interface ]
+build --verbose_failures --verbose_explanations --explain=build/bazel/trace/build.data
+
+#################################################################################################################################################################
+########## Build                                                                                                                                        [ Build ]
+build --symlink_prefix=build/bazel/result/
+
+##### Java                                                                                                                                        [ Build, Java ]
+build --java_runtime_version=remotejdk_21
+build --java_language_version=21
+build --tool_java_runtime_version=remotejdk_21
+build --tool_java_language_version=21
+
+##### Rust                                                                                                                                        [ Build, Rust ]
+build:rust:format --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
+build:rust:format --output_groups=+rustfmt_checks
+
+build:rust:clippy --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
+build:rust:clippy --output_groups=+clippy_checks
+
+##### Python                                                                                                                                    [ Build, Python ]
+build --incompatible_default_to_explicit_init_py
+
+#################################################################################################################################################################
+########## Execution                                                                                                                                  [ Execute ]
+##### Rust                                                                                                                                      [ Execute, Rust ]
+run:rust:analysis --output_groups=+rust_lib_rustc_output,+rust_metadata_rustc_output @rules_rust//tools/rust_analyzer:gen_rust_project
+
+#################################################################################################################################################################
+################# Validation                                                                                                                       [ Validation ]
+run:validate --config=validate:bazel
+
+########### Bazel                                                                                                                           [ Validation, Bazel ]
+##### Buildifier                                                                                                                [ Validation, Bazel, Buildifier ]
+run:validate:bazel //:validate.bazel.buildifier
+
+#################################################################################################################################################################
+##### Test                                                                                                                                               [ Test ]
+test --incompatible_exclusive_test_sandboxed
+test --test_verbose_timeout_warnings
+
+#################################################################################################################################################################
+##### Strategy                                                                                                                                       [ Strategy ]
+build --compilation_mode=dbg --strip=never --sandbox_debug
+
+build:minimal --compilation_mode=fastbuild --strip=always
+build:release --compilation_mode=opt --linkopt=-s --strip=always
+
+#################################################################################################################################################################
+##### Import
+try-import %workspace%/user.bazelrc
+try-import %workspace%/environment.bazelrc

@@ -1,0 +1,20 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "nesteds",
+    packages = [
+        "//Molten/test/resource/system/graph/module/nested/...",
+    ],
+)
+
+filegroup(
+    name = "data",
+    srcs = [
+        "nested.forge.artifact.json",
+        "//Molten/test/resource/system/graph/module/nested/symbolic:data",
+    ],
+    visibility = ["//Molten/test:tests"],
+)

@@ -1,0 +1,60 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "traits",
+    packages = [
+        "//Molten/component/graph/trait/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+
+rust_library(
+    name = "arenas",
+    srcs = [
+        "arenas.rs",
+    ],
+    visibility = [
+        "//Molten/component/graph:graphs",
+        "//Molten/system/graph:graphs",
+        "//Molten/test:tests",
+    ],
+)
+
+rust_library(
+    name = "attributes",
+    srcs = [
+        "attributes.rs",
+    ],
+    visibility = [
+        "//Molten/component/graph:graphs",
+        "//Molten/system/graph:graphs",
+        "//Molten/test:tests",
+    ],
+)
+
+rust_library(
+    name = "relations",
+    srcs = ["relations.rs"],
+    visibility = [
+        "//Molten/component/graph:graphs",
+        "//Molten/system/graph:graphs",
+        "//Molten/test:tests",
+    ],
+)
+
+rust_library(
+    name = "states",
+    srcs = ["states.rs"],
+    visibility = [
+        "//Molten/component/graph:graphs",
+        "//Molten/system/graph:graphs",
+        "//Molten/test:tests",
+    ],
+)
+

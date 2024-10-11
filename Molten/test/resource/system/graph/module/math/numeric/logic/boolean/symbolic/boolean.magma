@@ -1,0 +1,16 @@
+[Numeric.Logic.Boolean] (
+    [False] (Boolean),
+    [True] (Boolean),
+    [Not] (
+        [True] (False),
+        [False] (True),
+    ),
+    [And] (
+        [True.True] (True),
+        [False.Boolean] (False),
+    ),
+    [Or] (
+        [True.Boolean] (True),
+        [False.False] (False),
+    ),
+),

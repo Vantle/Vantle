@@ -1,0 +1,23 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "booleans",
+    packages = [
+        "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "boolean.arena.json",
+        "boolean.forge.artifact.json",
+        "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean/symbolic:data",
+    ],
+    visibility = ["//Molten/test:tests"],
+)

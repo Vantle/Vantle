@@ -1,0 +1,26 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "modules",
+    packages = [
+        "//Molten/test/resource/system/graph/modules/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "//Molten/test/resource/system/graph/module/breadth:data",
+        "//Molten/test/resource/system/graph/module/echo:data",
+        "//Molten/test/resource/system/graph/module/math:data",
+        "//Molten/test/resource/system/graph/module/nested:data",
+    ],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+)

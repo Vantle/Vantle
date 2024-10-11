@@ -1,0 +1,42 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_test")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "symbolic",
+    packages = [
+        "//Molten/test/system/graph/symbolic/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_test(
+    name = "constructor",
+    size = "small",
+    srcs = ["constructor.rs"],
+    data = [
+        "//Molten/test/resource/component/graph:data",
+        "//Molten/test/resource/system/graph:data",
+    ],
+    deps = [
+        "//Molten/component/graph:attribute",
+        "//Molten/system/graph/symbolic:constructor",
+        "//Molten/test/utility:file",
+        "//Molten/test/utility:resource",
+    ],
+)
+
+rust_test(
+    name = "translator",
+    size = "small",
+    srcs = ["translator.rs"],
+    deps = [
+        "//Molten/system/graph/symbolic:translator",
+        "//Molten/test/utility:logging",
+        "//Molten/test/utility:serialization",
+        "//Molten/test/utility:standard",
+    ],
+)

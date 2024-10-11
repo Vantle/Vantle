@@ -1,0 +1,33 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "graphs",
+    packages = [
+        "//Molten/system/graph/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "constructor",
+    srcs = ["constructor.rs"],
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test/system/graph:graphs",
+    ],
+    deps = [
+        "//Molten/component/graph:arena",
+        "//Molten/component/graph:attribute",
+        "//Molten/component/graph:matrix",
+        "//Molten/component/graph:state",
+        "//Molten/component/graph/trait:arenas",
+        "//Molten/component/graph/trait:attributes",
+        "@crates//:itertools",
+        "@crates//:log",
+    ],
+)

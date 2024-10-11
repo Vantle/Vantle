@@ -1,0 +1,39 @@
+Exhaustive.Test,
+Compounded.Test,
+[Exhaustive.Test] (Numeric.Logic.Boolean),
+[Numeric.Logic.Boolean] (
+    And,
+    Or,
+    Not,
+    And,
+    Or
+)
+[And] (
+    True True,
+    True False,
+    Or,
+)
+[Or] (
+    False False,
+    True True, 
+    True False,
+    (Not True) True
+),
+[Not] (
+    True,
+    False,
+),
+
+    Alias (
+        And (True True, True False),
+        Or (False False, True True, True False),
+        Not (True, False),
+    ),
+),
+[Compounded.Test] (
+    Alias
+    (
+        And ( Alias Or ( True True ) True ),
+        Or (( Alias Not False ) True ),
+    )
+),  

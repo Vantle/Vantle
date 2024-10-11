@@ -1,0 +1,23 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "symbolics",
+    packages = [
+        "//Molten/test/resource/system/graph/module/math/numeric/symbolic/...",
+    ],
+)
+
+##### Modules                                                                                                                                          [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "decimal.lava",
+    ],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+)

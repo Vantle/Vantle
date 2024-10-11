@@ -1,0 +1,86 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "utilities",
+    packages = [
+        "//Molten/test/utility/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "file",
+    srcs = ["file.rs"],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+    deps = [
+        ":logging",
+        ":resource",
+        ":serialization",
+        ":standard",
+        "@crates//:serde",
+    ],
+)
+
+rust_library(
+    name = "standard",
+    srcs = ["standard.rs"],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+    deps = [
+        ":logging",
+        ":resource",
+        ":serialization",
+        "//Molten/component/graph:attribute",
+        "//Molten/system/graph/symbolic:constructor",
+        "@crates//:pretty_assertions",
+    ],
+)
+
+rust_library(
+    name = "logging",
+    srcs = ["logging.rs"],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+    deps = [
+        "@crates//:ctor",
+        "@crates//:log",
+        "@crates//:simple_logger",
+        "@crates//:windows",
+        "@crates//:windows-targets",
+    ],
+)
+
+rust_library(
+    name = "resource",
+    srcs = ["resource.rs"],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+    deps = [
+        "//Molten/component/graph:attribute",
+        "//Molten/system/graph/symbolic:constructor",
+    ],
+)
+
+rust_library(
+    name = "serialization",
+    srcs = ["serialization.rs"],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+    deps = [
+        ":logging",
+        ":resource",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)

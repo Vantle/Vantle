@@ -1,0 +1,260 @@
+{
+  "category": "Context",
+  "context": [
+    {
+      "category": "Context",
+      "context": [
+        {
+          "category": "Attribute",
+          "value": "False"
+        }
+      ]
+    },
+    {
+      "category": "Group",
+      "context": [
+        {
+          "category": "Attribute",
+          "value": "Boolean"
+        }
+      ]
+    },
+    {
+      "category": "Partition"
+    },
+    {
+      "category": "Context",
+      "context": [
+        {
+          "category": "Attribute",
+          "value": "True"
+        }
+      ]
+    },
+    {
+      "category": "Group",
+      "context": [
+        {
+          "category": "Attribute",
+          "value": "Boolean"
+        }
+      ]
+    },
+    {
+      "category": "Partition"
+    },
+    {
+      "category": "Context",
+      "context": [
+        {
+          "category": "Attribute",
+          "value": "Not"
+        },
+        {
+          "category": "Attribute",
+          "value": "Boolean"
+        }
+      ]
+    },
+    {
+      "category": "Group",
+      "context": [
+        {
+          "category": "Context",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "True"
+            }
+          ]
+        },
+        {
+          "category": "Group",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "False"
+            }
+          ]
+        },
+        {
+          "category": "Partition"
+        },
+        {
+          "category": "Context",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "False"
+            }
+          ]
+        },
+        {
+          "category": "Group",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "True"
+            }
+          ]
+        },
+        {
+          "category": "Partition"
+        }
+      ]
+    },
+    {
+      "category": "Partition"
+    },
+    {
+      "category": "Context",
+      "context": [
+        {
+          "category": "Attribute",
+          "value": "And"
+        },
+        {
+          "category": "Attribute",
+          "value": "Boolean"
+        },
+        {
+          "category": "Attribute",
+          "value": "Boolean"
+        }
+      ]
+    },
+    {
+      "category": "Group",
+      "context": [
+        {
+          "category": "Context",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "True"
+            },
+            {
+              "category": "Attribute",
+              "value": "True"
+            }
+          ]
+        },
+        {
+          "category": "Group",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "True"
+            }
+          ]
+        },
+        {
+          "category": "Partition"
+        },
+        {
+          "category": "Context",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "False"
+            },
+            {
+              "category": "Attribute",
+              "value": "Boolean"
+            }
+          ]
+        },
+        {
+          "category": "Group",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "False"
+            }
+          ]
+        },
+        {
+          "category": "Partition"
+        }
+      ]
+    },
+    {
+      "category": "Partition"
+    },
+    {
+      "category": "Context",
+      "context": [
+        {
+          "category": "Attribute",
+          "value": "Or"
+        },
+        {
+          "category": "Attribute",
+          "value": "Boolean"
+        },
+        {
+          "category": "Attribute",
+          "value": "Boolean"
+        }
+      ]
+    },
+    {
+      "category": "Group",
+      "context": [
+        {
+          "category": "Context",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "True"
+            },
+            {
+              "category": "Attribute",
+              "value": "Boolean"
+            }
+          ]
+        },
+        {
+          "category": "Group",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "True"
+            }
+          ]
+        },
+        {
+          "category": "Partition"
+        },
+        {
+          "category": "Context",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "False"
+            },
+            {
+              "category": "Attribute",
+              "value": "False"
+            }
+          ]
+        },
+        {
+          "category": "Group",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "False"
+            }
+          ]
+        },
+        {
+          "category": "Partition"
+        }
+      ]
+    },
+    {
+      "category": "Partition"
+    }
+  ]
+}

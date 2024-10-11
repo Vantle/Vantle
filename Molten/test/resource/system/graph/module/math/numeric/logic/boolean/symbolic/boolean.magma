@@ -1,0 +1,14 @@
+[False] (Boolean),
+[True] (Boolean),
+[Not.Boolean] (
+    [True] (False),
+    [False] (True),
+),
+[And.Boolean.Boolean] (
+    [True.True] (True),
+    [False.Boolean] (False),
+),
+[Or.Boolean.Boolean] (
+    [True.Boolean] (True),
+    [False.False] (False),
+),

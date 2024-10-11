@@ -1,0 +1,12 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility
+package_group(
+    name = "forges",
+    packages = [
+        "//Molten/forge/...",
+    ],
+)

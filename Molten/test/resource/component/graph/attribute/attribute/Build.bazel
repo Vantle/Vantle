@@ -1,0 +1,20 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "attributes",
+    packages = [
+        "//Molten/test/resource/component/graph/attribute/...",
+    ],
+)
+
+filegroup(
+    name = "data",
+    srcs = [
+        "attribute.forge.artifact.json",
+        "attribute.lava",
+    ],
+    visibility = ["//Molten/test:tests"],
+)

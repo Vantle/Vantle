@@ -1,0 +1,40 @@
+{
+  "category": "Attribute",
+  "value": "",
+  "context": [
+    {
+      "category": "Group",
+      "context": [
+        {
+          "category": "Attribute",
+          "value": "Molten"
+        },
+        {
+          "category": "Partition"
+        },
+        {
+          "category": "Attribute",
+          "value": "Meta"
+        },
+        {
+          "category": "Partition"
+        },
+        {
+          "category": "Attribute",
+          "value": "Program"
+        },
+        {
+          "category": "Partition"
+        },
+        {
+          "category": "Attribute",
+          "value": "Alpha"
+        },
+        {
+          "category": "Attribute",
+          "value": "Alpha"
+        }
+      ]
+    }
+  ]
+}

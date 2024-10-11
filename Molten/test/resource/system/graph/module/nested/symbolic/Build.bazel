@@ -1,0 +1,19 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "symbolics",
+    packages = [
+        "//Molten/test/resource/system/graph/module/nested/symbolic/...",
+    ],
+)
+
+filegroup(
+    name = "data",
+    srcs = [
+        "nested.lava",
+    ],
+    visibility = ["//Molten/test:tests"],
+)

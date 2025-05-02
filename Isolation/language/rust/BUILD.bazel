@@ -1,0 +1,28 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_test")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "rusts",
+    packages = [
+        "//Isolation/language/rust/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_test(
+    name = "environment",
+    size = "small",
+    srcs = ["environment.rs"],
+    proc_macro_deps = [
+        "@crates//:ctor",
+    ],
+    deps = [
+        "@crates//:serde",
+        "@crates//:serde_json",
+        "@crates//:simple_logger",
+    ],
+)

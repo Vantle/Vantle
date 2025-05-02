@@ -1,0 +1,29 @@
+{
+  "category": "Context",
+  "context": [
+    {
+      "category": "Attribute",
+      "value": "Molten"
+    },
+    {
+      "category": "Partition"
+    },
+    {
+      "category": "Attribute",
+      "value": "Meta"
+    },
+    {
+      "category": "Partition"
+    },
+    {
+      "category": "Attribute",
+      "value": "Program"
+    },
+    {
+      "category": "Partition"
+    },
+    {
+      "category": "Partition"
+    }
+  ]
+}

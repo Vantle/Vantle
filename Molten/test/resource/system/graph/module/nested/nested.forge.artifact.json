@@ -1,0 +1,80 @@
+{
+  "category": "Context",
+  "context": [
+    {
+      "category": "Attribute",
+      "value": "Alpha",
+      "context": [
+        {
+          "category": "Context",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "Beta"
+            },
+            {
+              "category": "Attribute",
+              "value": "Gamma",
+              "context": [
+                {
+                  "category": "Context",
+                  "context": [
+                    {
+                      "category": "Attribute",
+                      "value": "Epsilon",
+                      "context": [
+                        {
+                          "category": "Group",
+                          "context": [
+                            {
+                              "category": "Attribute",
+                              "value": "Delta"
+                            },
+                            {
+                              "category": "Partition"
+                            },
+                            {
+                              "category": "Attribute",
+                              "value": "Phi"
+                            },
+                            {
+                              "category": "Partition"
+                            },
+                            {
+                              "category": "Attribute",
+                              "value": "Upsilon"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "category": "Group",
+          "context": [
+            {
+              "category": "Attribute",
+              "value": "Pi"
+            },
+            {
+              "category": "Partition"
+            },
+            {
+              "category": "Attribute",
+              "value": "Eta"
+            },
+            {
+              "category": "Attribute",
+              "value": "Zeta"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

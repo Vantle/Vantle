@@ -1,0 +1,90 @@
+{
+  "category": "Context",
+  "context": [
+    {
+      "category": "Context",
+      "context": [
+        {
+          "category": "Attribute",
+          "value": "Echo",
+          "context": [
+            {
+              "category": "Group",
+              "context": [
+                {
+                  "category": "Attribute",
+                  "value": "Data"
+                },
+                {
+                  "category": "Attribute",
+                  "value": "Format"
+                },
+                {
+                  "category": "Attribute",
+                  "value": "Unicode"
+                },
+                {
+                  "category": "Partition"
+                },
+                {
+                  "category": "Attribute",
+                  "value": "Binary"
+                },
+                {
+                  "category": "Attribute",
+                  "value": "Width",
+                  "context": [
+                    {
+                      "category": "Group",
+                      "context": [
+                        {
+                          "category": "Attribute",
+                          "value": "8"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "category": "Partition"
+                },
+                {
+                  "category": "Attribute",
+                  "value": "value"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Group",
+      "context": [
+        {
+          "category": "Attribute",
+          "value": "Stream"
+        },
+        {
+          "category": "Attribute",
+          "value": "Sink"
+        },
+        {
+          "category": "Attribute",
+          "value": "Console",
+          "context": [
+            {
+              "category": "Group",
+              "context": [
+                {
+                  "category": "Attribute",
+                  "value": "value"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

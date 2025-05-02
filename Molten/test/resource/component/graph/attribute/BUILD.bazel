@@ -1,0 +1,22 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "attributes",
+    packages = [
+        "//Molten/test/resource/component/graph/attribute/...",
+    ],
+)
+
+filegroup(
+    name = "data",
+    srcs = [
+        "//Molten/test/resource/component/graph/attribute/attribute:data",
+        "//Molten/test/resource/component/graph/attribute/context:data",
+        "//Molten/test/resource/component/graph/attribute/group:data",
+        "//Molten/test/resource/component/graph/attribute/partition:data",
+    ],
+    visibility = ["//Molten/test:tests"],
+)

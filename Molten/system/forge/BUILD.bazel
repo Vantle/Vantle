@@ -1,0 +1,25 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "forges",
+    packages = [
+        "//Molten/forge/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["forge.rs"],
+    crate_name = "forge",
+    visibility = [
+        "//Molten:molten",
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+)

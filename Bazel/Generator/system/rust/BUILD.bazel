@@ -1,0 +1,48 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# Helper crates
+rust_library(
+    name = "imports",
+    srcs = ["imports.rs"],
+    deps = [
+        "@crates//:prettyplease",
+        "@crates//:proc-macro2",
+        "@crates//:quote",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "literals",
+    srcs = ["literals.rs"],
+    deps = [
+        "@crates//:serde_json",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "module",
+    srcs = ["rust.rs"],
+    crate_name = "rust",
+    deps = [
+        ":imports",
+        ":test",
+        "//Bazel/Generator/component:module",
+        "@crates//:prettyplease",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "test",
+    srcs = ["test.rs"],
+    deps = [
+        ":literals",
+        "//Bazel/Generator/component:module",
+        "@crates//:serde_json",
+        "@crates//:syn",
+    ],
+)

@@ -1,0 +1,20 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "partitions",
+    packages = [
+        "//Molten/test/resource/component/graph/partition/...",
+    ],
+)
+
+filegroup(
+    name = "data",
+    srcs = [
+        "partition.forge.artifact.json",
+        "partition.lava",
+    ],
+    visibility = ["//Molten/test:tests"],
+)

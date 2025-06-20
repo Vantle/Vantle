@@ -1,0 +1,21 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "maths",
+    packages = [
+        "//Molten/test/resource/system/graph/module/math/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "//Molten/test/resource/system/graph/module/math/numeric:data",
+    ],
+    visibility = ["//Molten/test:tests"],
+)

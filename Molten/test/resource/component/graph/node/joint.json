@@ -1,0 +1,100 @@
+[
+    {
+        "description": "joint sets with common elements",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {
+                "b": 3,
+                "c": 1
+            },
+            "expected": {
+                "a": 1,
+                "b": 2
+            }
+        }
+    },
+    {
+        "description": "joint sets with multiple common elements",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2,
+                "c": 3
+            },
+            "basis": {
+                "a": 5,
+                "b": 1,
+                "d": 2
+            },
+            "expected": {
+                "a": 1,
+                "b": 2,
+                "c": 3
+            }
+        }
+    },
+    {
+        "description": "joint sets with all elements in common",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {
+                "a": 3,
+                "b": 4
+            },
+            "expected": {
+                "a": 1,
+                "b": 2
+            }
+        }
+    },
+    {
+        "description": "disjoint sets return none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {
+                "c": 1,
+                "d": 2
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "empty candidate with non-empty basis returns none",
+        "arguments": {
+            "candidate": {},
+            "basis": {
+                "a": 1,
+                "b": 2
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "non-empty candidate with empty basis returns none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {},
+            "expected": null
+        }
+    },
+    {
+        "description": "both empty returns none",
+        "arguments": {
+            "candidate": {},
+            "basis": {},
+            "expected": null
+        }
+    }
+]

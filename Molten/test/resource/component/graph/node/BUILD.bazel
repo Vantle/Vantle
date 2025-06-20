@@ -1,0 +1,21 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "disjoint.json",
+        "isomorphic.json",
+        "joint.json",
+        "subset.json",
+        "superset.json",
+    ],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+)

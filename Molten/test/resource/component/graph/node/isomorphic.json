@@ -1,0 +1,128 @@
+[
+    {
+        "description": "identical sets are isomorphic",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {
+                "a": 1,
+                "b": 2
+            },
+            "expected": {
+                "a": 1,
+                "b": 2
+            }
+        }
+    },
+    {
+        "description": "sets with different counts return none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {
+                "a": 2,
+                "b": 1
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "sets with different elements return none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {
+                "a": 1,
+                "c": 2
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "subset vs superset return none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {
+                "a": 1,
+                "b": 2,
+                "c": 1
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "superset vs subset return none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2,
+                "c": 1
+            },
+            "basis": {
+                "a": 1,
+                "b": 2
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "both empty are isomorphic",
+        "arguments": {
+            "candidate": {},
+            "basis": {},
+            "expected": {}
+        }
+    },
+    {
+        "description": "empty vs non-empty return none",
+        "arguments": {
+            "candidate": {},
+            "basis": {
+                "a": 1
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "non-empty vs empty return none",
+        "arguments": {
+            "candidate": {
+                "a": 1
+            },
+            "basis": {},
+            "expected": null
+        }
+    },
+    {
+        "description": "complex identical sets are isomorphic",
+        "arguments": {
+            "candidate": {
+                "apple": 3,
+                "banana": 1,
+                "cherry": 2,
+                "date": 5
+            },
+            "basis": {
+                "apple": 3,
+                "banana": 1,
+                "cherry": 2,
+                "date": 5
+            },
+            "expected": {
+                "apple": 3,
+                "banana": 1,
+                "cherry": 2,
+                "date": 5
+            }
+        }
+    }
+]

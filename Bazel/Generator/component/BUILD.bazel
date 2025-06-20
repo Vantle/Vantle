@@ -1,0 +1,69 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "@crates//:serde_json",
+        "@crates//:syn",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
+    name = "types",
+    srcs = ["types.rs"],
+    deps = [
+        "@crates//:serde",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "schema",
+    srcs = ["schema.rs"],
+    deps = [
+        ":types",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
+
+rust_library(
+    name = "case",
+    srcs = ["case.rs"],
+    deps = [
+        ":error",
+        ":schema",
+        ":types",
+    ],
+)
+
+rust_library(
+    name = "module",
+    srcs = ["component.rs"],
+    crate_name = "component",
+    deps = [
+        ":case",
+        ":error",
+        ":schema",
+        ":types",
+    ],
+)
+
+bzl_library(
+    name = "rules",
+    srcs = ["rule.bzl"],
+)
+
+##### Documentation                                                                                                                                 [ Documentation ]

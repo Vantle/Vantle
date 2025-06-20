@@ -1,0 +1,46 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "vantle",
+    packages = [
+        "//...",
+    ],
+)
+
+##### License                                                                                                                                         [ License ]
+filegroup(
+    name = "license",
+    srcs = [
+        "License.md",
+        "Notice.md",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+##### Analysis                                                                                                                                       [ Analysis ]
+alias(
+    name = "analysis",
+    actual = "@rules_rust//tools/rust_analyzer:gen_rust_project",
+    visibility = ["//visibility:public"],
+)
+
+##### Validation                                                                                                                                     [ Validation ]
+alias(
+    name = "validation",
+    actual = "//:validate.bazel.buildifier",
+    visibility = ["//visibility:public"],
+)
+
+################ Validation                                                                                                                        [ Validation ]
+########## Build                                                                                                                            [ Validation, Build ]
+##### Buildifier                                                                                                                [ Validation, Build, Buildifier ]
+buildifier(
+    name = "validate.bazel.buildifier",
+    lint_mode = "warn",
+    mode = "fix",
+)

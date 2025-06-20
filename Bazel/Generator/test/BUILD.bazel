@@ -1,0 +1,23 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Bazel/Generator/test:__pkg__",
+    "//Bazel/Generator/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "//Bazel/Generator/test/component:data",
+        "//Bazel/Generator/test/resource:data",
+    ],
+)
+
+##### Test                                                                                                                                             [ Test ]
+
+##### Documentation                                                                                                                                 [ Documentation ]

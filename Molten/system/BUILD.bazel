@@ -1,0 +1,31 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "systems",
+    packages = [
+        "//Molten/system/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["system.rs"],
+    crate_name = "system",
+    visibility = [
+        "//Molten:molten",
+        "//Molten/test:tests",
+    ],
+    deps = [
+        "//Molten/system/evaluate:module",
+        "//Molten/system/forge:module",
+        "//Molten/system/graph:module",
+        "//Molten/system/optimize:module",
+        "//Molten/system/spatialize:module",
+    ],
+)

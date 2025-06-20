@@ -1,0 +1,58 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "symbolics",
+    packages = [
+        "//Molten/system/graph/symbolic/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["symbolic.rs"],
+    crate_name = "symbolic",
+    visibility = [
+        "//Molten/system/graph:graphs",
+        "//Molten/test:tests",
+    ],
+    deps = [
+        ":constructor",
+        ":translator",
+    ],
+)
+
+rust_library(
+    name = "constructor",
+    srcs = ["constructor.rs"],
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test/system/graph:graphs",
+        "//Molten/test/system/graph/symbolic",
+        "//Molten/test/utility:utilities",
+    ],
+    deps = [
+        ":translator",
+        "//Molten/component:module",
+        "@crates//:log",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
+    name = "translator",
+    srcs = ["translator.rs"],
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test/system/graph:graphs",
+        "//Molten/test/system/graph/symbolic",
+    ],
+    deps = [
+        "@crates//:log",
+    ],
+)

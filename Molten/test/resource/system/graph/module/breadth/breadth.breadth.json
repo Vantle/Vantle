@@ -1,0 +1,76 @@
+[
+  {
+    "category": "Context",
+    "context": [
+      {
+        "category": {
+          "Attribute": "Alpha"
+        }
+      },
+      {
+        "category": {
+          "Attribute": "Beta"
+        },
+        "context": [
+          {
+            "category": "Group",
+            "context": [
+              {
+                "category": {
+                  "Attribute": "Delta"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": {
+          "Attribute": "Gamma"
+        }
+      }
+    ]
+  },
+  {
+    "category": {
+      "Attribute": "Alpha"
+    }
+  },
+  {
+    "category": {
+      "Attribute": "Beta"
+    },
+    "context": [
+      {
+        "category": "Group",
+        "context": [
+          {
+            "category": {
+              "Attribute": "Delta"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "category": {
+      "Attribute": "Gamma"
+    }
+  },
+  {
+    "category": "Group",
+    "context": [
+      {
+        "category": {
+          "Attribute": "Delta"
+        }
+      }
+    ]
+  },
+  {
+    "category": {
+      "Attribute": "Delta"
+    }
+  }
+]

@@ -1,0 +1,38 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_test")
+
+##### Visibility                                                                                                                                    [ Module ]
+package(default_visibility = [
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_test(
+    name = "trie",
+    size = "small",
+    srcs = ["trie.rs"],
+    deps = [
+        "//component:module",
+        "//system:module",
+        "//test/resource:module",
+        "//test/utilities:standard",
+    ],
+)
+
+rust_test(
+    name = "traverse",
+    size = "small",
+    srcs = ["traverse.rs"],
+    deps = [
+        "//component:module",
+        "//system:module",
+        "//test/resource:module",
+        "//test/utilities:standard",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

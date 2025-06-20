@@ -1,0 +1,52 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+load("//Bazel/Generator/component:rule.bzl", "rust_autotest")
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Bazel/Generator/test:__pkg__",
+    "//Bazel/Generator/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [],
+    visibility = [
+        "//Bazel/Generator/test:__pkg__",
+        "//Bazel/Generator/test:__subpackages__",
+    ],
+)
+
+rust_autotest(
+    name = "simple",
+    size = "small",
+    data = "//Bazel/Generator/test/resource/system/simple:cases",
+    template = "//Bazel/Generator/test/resource/system/simple:template",
+)
+
+rust_autotest(
+    name = "complex",
+    size = "small",
+    data = "//Bazel/Generator/test/resource/system/complex:cases",
+    template = "//Bazel/Generator/test/resource/system/complex:template",
+)
+
+rust_autotest(
+    name = "library",
+    size = "small",
+    data = "//Bazel/Generator/test/resource/system/library:cases",
+    template = "//Bazel/Generator/test/resource/system/library:template",
+    deps = ["//Bazel/Generator/test/resource/system/library:module"],
+)
+
+rust_autotest(
+    name = "returns",
+    size = "small",
+    data = "//Bazel/Generator/test/resource/system/returns:cases",
+    template = "//Bazel/Generator/test/resource/system/returns:template",
+)
+
+##### Documentation                                                                                                                                 [ Documentation ]

@@ -1,0 +1,1 @@
+Vantle.Bazel (c) 2025 

@@ -1,0 +1,97 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "graphs",
+    packages = [
+        "//Molten/component/graph/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+
+rust_library(
+    name = "arena",
+    srcs = ["arena.rs"],
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+    deps = [
+        "//Molten/component/graph/traits:module",
+        "@crates//:itertools",
+        "@crates//:log",
+        "@crates//:serde",
+        "@crates//:serde_with",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
+    name = "attribute",
+    srcs = [
+        "attribute.rs",
+    ],
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+    deps = [
+        "//Molten/component/graph/traits:module",
+        "@crates//:serde",
+    ],
+)
+
+rust_library(
+    name = "node",
+    srcs = [
+        "node.rs",
+    ],
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+    deps = [
+        "//Molten/component/graph/traits:module",
+        "@crates//:itertools",
+        "@crates//:serde",
+        "@crates//:serde_with",
+    ],
+)
+
+rust_library(
+    name = "matrix",
+    srcs = ["matrix.rs"],
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+    deps = [
+        "//Molten/component/graph/traits:link",
+        "//Molten/component/graph/traits:node",
+        "@crates//:serde",
+        "@crates//:serde_with",
+    ],
+)
+
+rust_library(
+    name = "module",
+    srcs = ["graph.rs"],
+    crate_name = "graph",
+    visibility = [
+        "//Molten/component:components",
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+    deps = [
+        ":arena",
+        ":attribute",
+        ":matrix",
+        ":node",
+        "//Molten/component/graph/traits:module",
+    ],
+)

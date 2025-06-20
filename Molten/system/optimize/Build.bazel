@@ -1,0 +1,24 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "optimizers",
+    packages = [
+        "//Molten/system/optimize/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["optimize.rs"],
+    crate_name = "optimize",
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+)

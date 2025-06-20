@@ -1,0 +1,23 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "logics",
+    packages = [
+        "//Molten/test/resource/system/graph/module/math/numeric/logic/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean:data",
+    ],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+)

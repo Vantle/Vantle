@@ -1,0 +1,24 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "spatials",
+    packages = [
+        "//Molten/system/graph/spatial/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["spatial.rs"],
+    crate_name = "spatial",
+    visibility = [
+        "//Molten/system/graph:graphs",
+        "//Molten/test:tests",
+    ],
+)

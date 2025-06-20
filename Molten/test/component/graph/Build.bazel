@@ -1,0 +1,58 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_test")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "graphs",
+    packages = [
+        "//Molten/test/component/graph/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_test(
+    name = "arena",
+    size = "small",
+    srcs = ["arena.rs"],
+    data = [
+        "//Molten/test/resource/component/graph:data",
+        "//Molten/test/resource/system/graph:data",
+    ],
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:file",
+        "//Molten/test/utility:logging",
+        "//Molten/test/utility:resource",
+    ],
+)
+
+rust_test(
+    name = "attribute",
+    size = "small",
+    srcs = ["attribute.rs"],
+    data = [
+        "//Molten/test/resource/component/graph:data",
+        "//Molten/test/resource/system/graph:data",
+    ],
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:file",
+        "//Molten/test/utility:logging",
+        "//Molten/test/utility:resource",
+        "//Molten/test/utility:serialization",
+        "//Molten/test/utility:standard",
+        "@crates//:log",
+    ],
+)
+
+rust_test(
+    name = "node",
+    size = "small",
+    srcs = ["node.rs"],
+    deps = [
+        "//Molten/component:module",
+    ],
+)

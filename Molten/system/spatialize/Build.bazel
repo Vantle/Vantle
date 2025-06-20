@@ -1,0 +1,24 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "spatializers",
+    packages = [
+        "//Molten/system/spatialize/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["spatialize.rs"],
+    crate_name = "spatialize",
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+)

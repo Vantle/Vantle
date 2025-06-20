@@ -1,0 +1,41 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "evaluators",
+    packages = [
+        "//Molten/system/evaluate/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["evaluate.rs"],
+    crate_name = "evaluate",
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+    deps = [
+        ":lava",
+    ],
+)
+
+rust_library(
+    name = "lava",
+    srcs = ["lava.rs"],
+    visibility = [
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+    deps = [
+        "//Molten/component:module",
+        "@crates//:itertools",
+        "@crates//:serde",
+    ],
+)

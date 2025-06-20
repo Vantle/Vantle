@@ -1,0 +1,20 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "contexts",
+    packages = [
+        "//Molten/test/resource/component/graph/context/...",
+    ],
+)
+
+filegroup(
+    name = "data",
+    srcs = [
+        "context.forge.artifact.json",
+        "context.lava",
+    ],
+    visibility = ["//Molten/test:tests"],
+)

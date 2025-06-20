@@ -1,0 +1,32 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "vantle",
+    packages = [
+        "//Molten/...",
+    ],
+)
+
+##### License                                                                                                                                         [ License ]
+filegroup(
+    name = "license",
+    srcs = [
+        "License.md",
+        "Notice.md",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+################ Validation                                                                                                                        [ Validation ]
+########## Build                                                                                                                            [ Validation, Build ]
+##### Buildifier                                                                                                                [ Validation, Build, Buildifier ]
+buildifier(
+    name = "validate.bazel.buildifier",
+    lint_mode = "warn",
+    mode = "fix",
+)

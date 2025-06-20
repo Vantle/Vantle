@@ -1,0 +1,25 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "breadth",
+    packages = [
+        "//Molten/test/resource/system/graph/module/breadth/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "breadth.breadth.json",
+        "breadth.forge.artifact.json",
+        "//Molten/test/resource/system/graph/module/breadth/symbolic:data",
+    ],
+    visibility = [
+        "//Molten/test:tests",
+    ],
+)

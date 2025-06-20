@@ -1,0 +1,11 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "component",
+    packages = [
+        "//Molten/test/resource/component/...",
+    ],
+)

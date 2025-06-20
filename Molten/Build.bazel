@@ -1,0 +1,40 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "molten",
+    packages = [
+        "//Molten/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["molten.rs"],
+    crate_name = "molten",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//Molten/component:module",
+        "//Molten/forge:module", 
+        "//Molten/system:module",
+    ],
+)
+
+##### License                                                                                                                                         [ License ]
+filegroup(
+    name = "license",
+    srcs = [
+        "License.md",
+        "Notice.md",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+##### Documentation                                                                                                                                 [ Documentation ]
+
+

@@ -1,0 +1,70 @@
+{
+  "category": "Context",
+  "context": [
+    {
+      "category": {"Attribute": "Alpha"},
+      "context": [
+        {
+          "category": "Context",
+          "context": [
+            {
+              "category": {"Attribute": "Beta"}
+            },
+            {
+              "category": {"Attribute": "Gamma"},
+              "context": [
+                {
+                  "category": "Context",
+                  "context": [
+                    {
+                      "category": {"Attribute": "Epsilon"},
+                      "context": [
+                        {
+                          "category": "Group",
+                          "context": [
+                            {
+                              "category": {"Attribute": "Delta"}
+                            },
+                            {
+                              "category": "Partition"
+                            },
+                            {
+                              "category": {"Attribute": "Phi"}
+                            },
+                            {
+                              "category": "Partition"
+                            },
+                            {
+                              "category": {"Attribute": "Upsilon"}
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "category": "Group",
+          "context": [
+            {
+              "category": {"Attribute": "Pi"}
+            },
+            {
+              "category": "Partition"
+            },
+            {
+              "category": {"Attribute": "Eta"}
+            },
+            {
+              "category": {"Attribute": "Zeta"}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

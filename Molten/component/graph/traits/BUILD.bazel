@@ -1,0 +1,67 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package_group(
+    name = "traits",
+    packages = [
+        "//Molten/component/graph/traits/...",
+    ],
+)
+
+##### Module                                                                                                                                           [ Module ]
+
+rust_library(
+    name = "attribute",
+    srcs = [
+        "attribute.rs",
+    ],
+    visibility = [
+        "//Molten/component/graph:graphs",
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+)
+
+rust_library(
+    name = "node",
+    srcs = [
+        "node.rs",
+    ],
+    visibility = [
+        "//Molten/component/graph:graphs",
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+)
+
+rust_library(
+    name = "link",
+    srcs = [
+        "link.rs",
+    ],
+    visibility = [
+        "//Molten/component/graph:graphs",
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+)
+
+rust_library(
+    name = "module",
+    srcs = ["traits.rs"],
+    crate_name = "traits",
+    visibility = [
+        "//Molten/component/graph:graphs",
+        "//Molten/system:systems",
+        "//Molten/test:tests",
+    ],
+    deps = [
+        ":attribute",
+        ":link",
+        ":node",
+    ],
+)

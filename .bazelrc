@@ -1,0 +1,73 @@
+#################################################################################################################################################################
+############## Platform                                                                                                                              [ Platform ]
+common --enable_platform_specific_config
+common --enable_bzlmod
+common --noenable_workspace
+common --noslim_profile
+common --experimental_profile_include_target_label
+common --experimental_profile_include_primary_output
+common --bes_upload_mode=fully_async
+
+######### Windows                                                                                                                           [ Platform, Windows ]
+##### Compatibility                                                                                                          [ Platform, Windows, Compatibility ]
+
+#################################################################################################################################################################
+##### Interface                                                                                                                                     [ Interface ]
+build --verbose_failures --verbose_explanations --explain=build/bazel/result/trace.log
+
+#################################################################################################################################################################
+########## Build                                                                                                                                        [ Build ]
+build --symlink_prefix=build/bazel/result/
+build --show_timestamps --enable_runfiles --color=yes --curses=yes
+build --sandbox_default_allow_network=false
+build --lockfile_mode=update
+
+########## Remote                                                                                                                                      [ Remote ]
+build --bes_results_url=https://vantle.buildbuddy.io/invocation/
+build --bes_backend=grpcs://vantle.buildbuddy.io
+build --remote_cache=grpcs://vantle.buildbuddy.io
+build --noremote_upload_local_results
+build --remote_timeout=10m
+build --remote_cache_compression
+build --experimental_remote_cache_compression_threshold=100
+
+##### Java                                                                                                                                        [ Build, Java ]
+build --java_runtime_version=remotejdk_24
+build --java_language_version=24
+build --tool_java_runtime_version=remotejdk_24
+build --tool_java_language_version=24
+
+##### Rust                                                                                                                                        [ Build, Rust ]
+build --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
+build --output_groups=+clippy_checks
+build --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
+build --output_groups=+rustfmt_checks
+
+#################################################################################################################################################################
+########## Execution                                                                                                                                  [ Execute ]
+##### Rust                                                                                                                                      [ Execute, Rust ]
+build --@rules_rust//rust/settings:rustc_output_diagnostics=true --output_groups=+rust_lib_rustc_output,+rust_metadata_rustc_output
+run:analysis --output_groups=+rust_lib_rustc_output,+rust_metadata_rustc_output @rules_rust//tools/rust_analyzer:gen_rust_project
+
+#################################################################################################################################################################
+################# Validation                                                                                                                       [ Validation ]
+########### Bazel                                                                                                                           [ Validation, Bazel ]
+##### Buildifier                                                                                                                [ Validation, Bazel, Buildifier ]
+run:validation //:validate.bazel.buildifier
+
+#################################################################################################################################################################
+##### Test                                                                                                                                               [ Test ]
+test --incompatible_exclusive_test_sandboxed
+test --test_verbose_timeout_warnings
+
+#################################################################################################################################################################
+##### Strategy                                                                                                                                       [ Strategy ]
+build --compilation_mode=dbg --strip=never
+
+build:minimal --compilation_mode=fastbuild --strip=always
+build:release --compilation_mode=opt --linkopt=-s --strip=always
+
+#################################################################################################################################################################
+##### Import
+try-import %workspace%/user.bazelrc
+try-import %workspace%/environment.bazelrc

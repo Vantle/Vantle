@@ -1,0 +1,68 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//component/generation:__pkg__"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "@crates//:serde_json",
+        "@crates//:syn",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
+    name = "types",
+    srcs = ["types.rs"],
+    deps = [
+        "@crates//:serde",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "schema",
+    srcs = ["schema.rs"],
+    deps = [
+        ":types",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
+
+rust_library(
+    name = "case",
+    srcs = ["case.rs"],
+    deps = [
+        ":error",
+        ":schema",
+        ":types",
+    ],
+)
+
+rust_library(
+    name = "component",
+    srcs = ["component.rs"],
+    crate_name = "component",
+    visibility = [
+        "//component/generation:__pkg__",
+        "//system/generation:__subpackages__",
+        "//test/system/generation:__pkg__",
+        "//test/system/generation:__subpackages__",
+    ],
+    deps = [
+        ":case",
+        ":error",
+        ":schema",
+        ":types",
+    ],
+)
+
+##### Documentation                                                                                                                                 [ Documentation ]

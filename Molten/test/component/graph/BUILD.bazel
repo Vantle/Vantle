@@ -1,0 +1,44 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_test")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_test(
+    name = "arena",
+    size = "small",
+    srcs = ["arena.rs"],
+    data = [
+        "//Molten/test/resource/component/graph/node:data",
+        "//Molten/test/resource/system/graph/module:data",
+    ],
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:module",
+        "@crates//:test-case",
+    ],
+)
+
+rust_test(
+    name = "attribute",
+    size = "small",
+    srcs = ["attribute.rs"],
+    data = [
+        "//Molten/test/resource/component/graph/attribute:data",
+        "//Molten/test/resource/system/graph/module/breadth:data",
+    ],
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:module",
+        "@crates//:test-case",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

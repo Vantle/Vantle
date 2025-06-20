@@ -1,0 +1,21 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "standard",
+    srcs = ["standard.rs"],
+    crate_name = "standard",
+    deps = [
+        "@crates//:pretty_assertions",
+        "@crates//:test-case",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

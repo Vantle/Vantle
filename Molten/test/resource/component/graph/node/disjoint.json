@@ -1,0 +1,96 @@
+[
+    {
+        "description": "disjoint sets with no common elements",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {
+                "c": 1,
+                "d": 2
+            },
+            "expected": {
+                "a": 1,
+                "b": 2
+            }
+        }
+    },
+    {
+        "description": "sets with common elements return none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {
+                "b": 3,
+                "c": 1
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "sets with multiple common elements return none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2,
+                "c": 3
+            },
+            "basis": {
+                "a": 5,
+                "b": 1,
+                "d": 2
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "identical sets return none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {
+                "a": 1,
+                "b": 2
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "empty candidate with non-empty basis is disjoint",
+        "arguments": {
+            "candidate": {},
+            "basis": {
+                "a": 1,
+                "b": 2
+            },
+            "expected": {}
+        }
+    },
+    {
+        "description": "non-empty candidate with empty basis is disjoint",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "basis": {},
+            "expected": {
+                "a": 1,
+                "b": 2
+            }
+        }
+    },
+    {
+        "description": "both empty are disjoint",
+        "arguments": {
+            "candidate": {},
+            "basis": {},
+            "expected": {}
+        }
+    }
+]

@@ -1,0 +1,48 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### License                                                                                                                                         [ License ]
+filegroup(
+    name = "license",
+    srcs = [
+        "License.md",
+        "Notice.md",
+    ],
+)
+
+##### Analysis                                                                                                                                       [ Analysis ]
+alias(
+    name = "analysis.rust",
+    actual = "@rules_rust//tools/rust_analyzer:gen_rust_project",
+)
+
+########## Validation                                                                                                                              [ Validation ]
+alias(
+    name = "validate.bazel",
+    actual = "//:validate.bazel.buildifier",
+)
+
+########## Build                                                                                                                            [ Validation, Build ]
+##### Buildifier                                                                                                                [ Validation, Build, Buildifier ]
+buildifier(
+    name = "validate.bazel.buildifier",
+    lint_mode = "warn",
+    mode = "fix",
+)
+
+##### Documentation                                                                                                                              [ Documentation ]
+filegroup(
+    name = "documents",
+    srcs = [
+        "Info.md",
+        "License.md",
+        "Notice.md",
+        "README.md",
+    ],
+)

@@ -1,0 +1,91 @@
+[
+    {
+        "description": "proper subset returns intersection",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 1
+            },
+            "superset": {
+                "a": 1,
+                "b": 1,
+                "c": 1
+            },
+            "expected": {
+                "a": 1,
+                "b": 1
+            }
+        }
+    },
+    {
+        "description": "superset returns none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 1,
+                "c": 1
+            },
+            "superset": {
+                "a": 1,
+                "b": 1
+            },
+            "expected": null
+        },
+        "modifiers": {
+            "unstable": "Testing unstable format"
+        }
+    },
+    {
+        "description": "empty subset returns empty",
+        "arguments": {
+            "candidate": {},
+            "superset": {
+                "a": 1,
+                "b": 1
+            },
+            "expected": {}
+        }
+    },
+    {
+        "description": "subset of empty returns none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 1
+            },
+            "superset": {},
+            "expected": null
+        }
+    },
+    {
+        "description": "equal sets return self",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 1
+            },
+            "superset": {
+                "a": 1,
+                "b": 1
+            },
+            "expected": {
+                "a": 1,
+                "b": 1
+            }
+        }
+    },
+    {
+        "description": "disjoint sets return none",
+        "arguments": {
+            "candidate": {
+                "x": 1,
+                "y": 1
+            },
+            "superset": {
+                "a": 1,
+                "b": 1
+            },
+            "expected": null
+        }
+    }
+]

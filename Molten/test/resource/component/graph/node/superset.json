@@ -1,0 +1,99 @@
+[
+    {
+        "description": "superset contains all elements with higher counts",
+        "arguments": {
+            "candidate": {
+                "a": 2,
+                "b": 3,
+                "c": 1
+            },
+            "subset": {
+                "a": 1,
+                "b": 2
+            },
+            "expected": {
+                "a": 2,
+                "b": 3,
+                "c": 1
+            }
+        }
+    },
+    {
+        "description": "superset contains all elements with equal counts",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "subset": {
+                "a": 1,
+                "b": 2
+            },
+            "expected": {
+                "a": 1,
+                "b": 2
+            }
+        }
+    },
+    {
+        "description": "superset missing an element returns none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "subset": {
+                "a": 1,
+                "b": 2,
+                "c": 1
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "superset has lower count returns none",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "subset": {
+                "a": 2,
+                "b": 1
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "empty subset is superset of anything",
+        "arguments": {
+            "candidate": {
+                "a": 1,
+                "b": 2
+            },
+            "subset": {},
+            "expected": {
+                "a": 1,
+                "b": 2
+            }
+        }
+    },
+    {
+        "description": "empty superset of non-empty returns none",
+        "arguments": {
+            "candidate": {},
+            "subset": {
+                "a": 1
+            },
+            "expected": null
+        }
+    },
+    {
+        "description": "empty superset of empty",
+        "arguments": {
+            "candidate": {},
+            "subset": {},
+            "expected": {}
+        }
+    }
+]

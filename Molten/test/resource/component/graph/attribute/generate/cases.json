@@ -1,0 +1,66 @@
+{
+  "functions": [
+    {
+      "function": "attribute",
+      "cases": [
+        {
+          "parameters": {
+            "resource": "Molten/test/resource/component/graph/attribute/attribute.lava"
+          },
+          "returns": {
+            "()": { "category": {"Attribute": "Meta"}, "context": [] }
+          }
+        },
+        {
+          "parameters": {
+            "resource": "Molten/test/resource/component/graph/attribute/group/group.lava"
+          },
+          "returns": {
+            "()": {
+              "category": {"Attribute": ""},
+              "context": [
+                {
+                  "category": "Group",
+                  "context": [
+                    { "category": {"Attribute": "Molten"},  "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": {"Attribute": "Meta"},    "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": {"Attribute": "Program"}, "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": {"Attribute": "Alpha"},   "context": [] },
+                    { "category": {"Attribute": "Alpha"},   "context": [] }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "parameters": {
+            "resource": "Molten/test/resource/component/graph/attribute/context/context.lava"
+          },
+          "returns": {
+            "()": {
+              "category": {"Attribute": ""},
+              "context": [
+                {
+                  "category": "Context",
+                  "context": [
+                    { "category": {"Attribute": "Molten"},  "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": {"Attribute": "Meta"},    "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": {"Attribute": "Program"}, "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": "Partition",              "context": [] }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

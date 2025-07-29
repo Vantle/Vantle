@@ -1,0 +1,31 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_test")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_test(
+    name = "lava",
+    size = "small",
+    srcs = ["lava.rs"],
+    data = [
+        "//Molten/test/resource/component/graph/attribute:data",
+        "//Molten/test/resource/system/graph/module:data",
+    ],
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system:module",
+        "//Molten/test/utility:module",
+        "@crates//:log",
+        "@crates//:test-case",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

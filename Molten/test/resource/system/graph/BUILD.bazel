@@ -1,0 +1,26 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "//Molten/test/resource/system/graph/arena:data",
+        "//Molten/test/resource/system/graph/breadth:data",
+        "//Molten/test/resource/system/graph/constructor:data",
+        "//Molten/test/resource/system/graph/generate:data",
+        "//Molten/test/resource/system/graph/index:data",
+        "//Molten/test/resource/system/graph/module:data",
+        "//Molten/test/resource/system/graph/symbolic:data",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

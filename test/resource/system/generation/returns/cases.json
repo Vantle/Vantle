@@ -1,0 +1,20 @@
+{
+    "functions": [
+        {
+            "function": "increment",
+            "tags": ["mut", "inplace"],
+            "cases": [
+                { "parameters": {"x":  1}, "returns": {"()":  1, "x":  2} },
+                { "parameters": {"x": -3}, "returns": {"()": -3, "x": -2} }
+            ]
+        },
+        {
+            "function": "double_in_place",
+            "tags": ["mut", "return"],
+            "cases": [
+                { "parameters": {"x":  4}, "returns": {"()":  4, "x":   8} },
+                { "parameters": {"x": -5}, "returns": {"()": -5, "x": -10} }
+            ]
+        }
+    ]
+}

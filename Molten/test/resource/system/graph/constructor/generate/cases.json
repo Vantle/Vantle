@@ -1,0 +1,67 @@
+{
+    "functions": [
+        {
+            "function": "graph",
+            "tags": ["constructor"],
+            "cases": [
+                {
+                    "tags": ["basic"],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Context",
+                            "context": [
+                                {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {"Attribute": "inner"},
+                                            "context": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "inner"
+                                                    },
+                                                    "context": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {
+                        "()": {
+                            "adjacency": [
+                                [
+                                    [
+                                        [
+                                            [ [3, 1] ],
+                                            1
+                                        ]
+                                    ],
+                                    [
+                                        [
+                                            [
+                                                [ [1, 1] ],
+                                                1
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,121 @@
+{
+    "functions": [
+        {
+            "function": "breadth",
+            "cases": [
+                {
+                    "parameters": {
+                        "resource": "Molten/test/resource/component/graph/attribute/group/group.lava"
+                    },
+                    "returns": {
+                        "()": [
+                            {
+                                "category": {"Attribute": ""},
+                                "context": [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Molten"
+                                                },
+                                                "context": []
+                                            },
+                                            {
+                                                "category": "Partition",
+                                                "context": []
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Meta"
+                                                },
+                                                "context": []
+                                            },
+                                            {
+                                                "category": "Partition",
+                                                "context": []
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Program"
+                                                },
+                                                "context": []
+                                            },
+                                            {
+                                                "category": "Partition",
+                                                "context": []
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Alpha"
+                                                },
+                                                "context": []
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Alpha"
+                                                },
+                                                "context": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "category": "Group",
+                                "context": [
+                                    {
+                                        "category": {"Attribute": "Molten"},
+                                        "context": []
+                                    },
+                                    {"category": "Partition", "context": []},
+                                    {
+                                        "category": {"Attribute": "Meta"},
+                                        "context": []
+                                    },
+                                    {"category": "Partition", "context": []},
+                                    {
+                                        "category": {"Attribute": "Program"},
+                                        "context": []
+                                    },
+                                    {"category": "Partition", "context": []},
+                                    {
+                                        "category": {"Attribute": "Alpha"},
+                                        "context": []
+                                    },
+                                    {
+                                        "category": {"Attribute": "Alpha"},
+                                        "context": []
+                                    }
+                                ]
+                            },
+                            {
+                                "category": {"Attribute": "Molten"},
+                                "context": []
+                            },
+                            {"category": "Partition", "context": []},
+                            {
+                                "category": {"Attribute": "Meta"},
+                                "context": []
+                            },
+                            {"category": "Partition", "context": []},
+                            {
+                                "category": {"Attribute": "Program"},
+                                "context": []
+                            },
+                            {"category": "Partition", "context": []},
+                            {
+                                "category": {"Attribute": "Alpha"},
+                                "context": []
+                            },
+                            {
+                                "category": {"Attribute": "Alpha"},
+                                "context": []
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

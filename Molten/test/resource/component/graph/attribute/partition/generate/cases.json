@@ -1,0 +1,15 @@
+{
+    "functions": [
+        {
+            "function": "partition",
+            "cases": [
+                {
+                    "parameters": {
+                        "resource": "Molten/test/resource/component/graph/attribute/partition/partition.lava"
+                    },
+                    "returns": { "()": {"category": "Partition"} }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,65 @@
+{
+    "functions": [
+        {
+            "function": "propegate",
+            "tags": ["evaluate"],
+            "cases": [
+                {
+                    "tags": ["simple"],
+                    "parameters": {
+                        "signal": [
+                            [
+                                [ [1, 1] ],
+                                1
+                            ]
+                        ],
+                        "context": {
+                            "adjacency": [
+                                [
+                                    [
+                                        [
+                                            [ [1, 1] ],
+                                            1
+                                        ]
+                                    ],
+                                    [
+                                        [
+                                            [
+                                                [ [2, 1] ],
+                                                1
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        },
+                        "limit": 100
+                    },
+                    "returns": {
+                        "()": {
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [2, 1] ]
+                                ]
+                            ],
+                            "adjacency": [
+                                [ 0, [1] ],
+                                [ 1, [ ] ]
+                            ],
+                            "reachability": [
+                                [ 0, [1] ],
+                                [ 1, [ ] ]
+                            ],
+                            "counter": 2
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

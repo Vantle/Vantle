@@ -1,0 +1,334 @@
+{
+  "functions": [
+    {
+      "function": "disjoint",
+      "cases": [
+        {
+          "tags": ["complete"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["c", 1], ["d", 2] ]
+          },
+          "returns": {
+            "()": [ ["a", 1], ["b", 2] ]
+          }
+        },
+        {
+          "tags": ["partial"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["b", 3], ["c", 1] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["partial"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2], ["c", 3] ],
+            "basis"    : [ ["a", 5], ["b", 1], ["d", 2] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["identical"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["a", 1], ["b", 2] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "candidate": [                    ],
+            "basis"    : [ ["a", 1], ["b", 2] ]
+          },
+          "returns": {"()": []}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [                    ]
+          },
+          "returns": {
+            "()": [ ["a", 1], ["b", 2] ]
+          }
+        },
+        {
+          "tags": ["null"],
+          "parameters": {"candidate": [], "basis": []},
+          "returns": {"()": []}
+        }
+      ]
+    },
+    {
+      "function": "isomorphic",
+      "cases": [
+        {
+          "tags": ["small"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["a", 1], ["b", 2] ]
+          },
+          "returns": {
+            "()": [ ["a", 1], ["b", 2] ]
+          }
+        },
+        {
+          "tags": ["near"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["a", 2], ["b", 1] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["orthogonal"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["a", 1], ["c", 2] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["superset"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2]           ],
+            "basis"    : [ ["a", 1], ["b", 2], ["c", 1] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["superset"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2], ["c", 1] ],
+            "basis"    : [ ["a", 1], ["b", 2]           ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {"candidate": [], "basis": []},
+          "returns": {"()": []}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "candidate": [          ],
+            "basis"    : [ ["a", 1] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "candidate": [ ["a", 1] ],
+            "basis"    : [          ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["identical"],
+          "parameters": {
+            "candidate": [
+              ["apple",  3],
+              ["banana", 1],
+              ["cherry", 2],
+              ["date",   5]
+            ],
+            "basis": [ ["apple", 3], ["banana", 1], ["cherry", 2], ["date", 5] ]
+          },
+          "returns": {
+            "()": [ ["apple", 3], ["banana", 1], ["cherry", 2], ["date", 5] ]
+          }
+        }
+      ]
+    },
+    {
+      "function": "joint",
+      "cases": [
+        {
+          "tags": ["joint"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["b", 3], ["c", 1] ]
+          },
+          "returns": {
+            "()": [ ["a", 1], ["b", 2] ]
+          }
+        },
+        {
+          "tags": ["multiple"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2], ["c", 3] ],
+            "basis"    : [ ["a", 5], ["b", 1], ["d", 2] ]
+          },
+          "returns": {
+            "()": [ ["a", 1], ["b", 2], ["c", 3] ]
+          }
+        },
+        {
+          "tags": ["subset"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["a", 3], ["b", 4] ]
+          },
+          "returns": {
+            "()": [ ["a", 1], ["b", 2] ]
+          }
+        },
+        {
+          "tags": ["disjoint"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["c", 1], ["d", 2] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["null"],
+          "parameters": {
+            "candidate": [                    ],
+            "basis"    : [ ["a", 1], ["b", 2] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["null"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [                    ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["null"],
+          "parameters": {"candidate": [], "basis": []},
+          "returns": {"()": null}
+        }
+      ]
+    },
+    {
+      "function": "subset",
+      "cases": [
+        {
+          "tags": [],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 1]           ],
+            "basis"    : [ ["a", 1], ["b", 1], ["c", 1] ]
+          },
+          "returns": {
+            "()": [ ["a", 1], ["b", 1] ]
+          }
+        },
+        {
+          "tags": ["superset"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 1], ["c", 1] ],
+            "basis"    : [ ["a", 1], ["b", 1]           ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "candidate": [                    ],
+            "basis"    : [ ["a", 1], ["b", 1] ]
+          },
+          "returns": {"()": []}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 1] ],
+            "basis"    : [                    ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["equal"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 1] ],
+            "basis"    : [ ["a", 1], ["b", 1] ]
+          },
+          "returns": {
+            "()": [ ["a", 1], ["b", 1] ]
+          }
+        },
+        {
+          "tags": ["disjoint"],
+          "parameters": {
+            "candidate": [ ["x", 1], ["y", 1] ],
+            "basis"    : [ ["a", 1], ["b", 1] ]
+          },
+          "returns": {"()": null}
+        }
+      ]
+    },
+    {
+      "function": "superset",
+      "cases": [
+        {
+          "tags": ["superset"],
+          "parameters": {
+            "candidate": [ ["a", 2], ["b", 3], ["c", 1] ],
+            "basis"    : [ ["a", 1], ["b", 2]           ]
+          },
+          "returns": {
+            "()": [ ["a", 2], ["b", 3], ["c", 1] ]
+          }
+        },
+        {
+          "tags": ["equal"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["a", 1], ["b", 2] ]
+          },
+          "returns": {
+            "()": [ ["a", 1], ["b", 2] ]
+          }
+        },
+        {
+          "tags": ["missing"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2]           ],
+            "basis"    : [ ["a", 1], ["b", 2], ["c", 1] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["lower"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [ ["a", 2], ["b", 1] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "candidate": [ ["a", 1], ["b", 2] ],
+            "basis"    : [                    ]
+          },
+          "returns": {
+            "()": [ ["a", 1], ["b", 2] ]
+          }
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "candidate": [          ],
+            "basis"    : [ ["a", 1] ]
+          },
+          "returns": {"()": null}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {"candidate": [], "basis": []},
+          "returns": {"()": []}
+        }
+      ]
+    }
+  ]
+}

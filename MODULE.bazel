@@ -1,0 +1,152 @@
+#################################################################################################################################################################
+"""
+    Vantle (c) 2025
+    projects.vantle.org
+    connect@vantle.org
+"""
+
+module(
+    name = "vantle",
+    version = "1.0.0",
+    bazel_compatibility = [">=8.0.0"],
+)
+
+#################################################################################################################################################################
+##################### Dependencies                                                                                                               [ Dependencies ]
+############### Toolchain                                                                                                                           [ Toolchain ]
+########## Bazel                                                                                                                             [ Toolchain, Bazel ]
+bazel_dep(name = "stardoc", version = "0.8.0")
+bazel_dep(name = "bazel_skylib", version = "1.8.2")
+
+bazel_dep(name = "buildozer", version = "8.2.1", dev_dependency = True)
+
+buildozer_binary = use_extension("@buildozer//:buildozer_binary.bzl", "buildozer_binary")
+use_repo(buildozer_binary, "buildozer_binary")
+
+########## Toolchain                                                                                                                                [ Toolchain ]
+##### Compilation                                                                                                                      [ Toolchain, Compilation ]
+########## Python                                                                                                                           [ Toolchain, Python ]
+bazel_dep(name = "rules_python", version = "1.6.3")
+
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(
+    python_version = "3.13",
+)
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "pypi",
+    python_version = "3.13",
+    requirements_lock = "//:requirements.txt",
+)
+use_repo(pip, "pypi")
+
+########## Rust                                                                                                                               [ Toolchain, Rust ]
+bazel_dep(name = "rules_rust", version = "0.65.0")
+
+rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+rust.toolchain(
+    edition = "2021",
+    versions = ["1.87.0"],
+)
+use_repo(rust, "rust_toolchains")
+
+register_toolchains(
+    "@rust_toolchains//:all",
+)
+
+##### Crates                                                                                                                          [ Toolchain, Rust, Crates ]
+crate = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
+crate.spec(
+    features = ["derive"],
+    package = "clap",
+    version = "4.5.48",
+)
+crate.spec(
+    package = "ctor",
+    version = "0.6.0",
+)
+crate.spec(
+    package = "difference",
+    version = "2.0.0",
+)
+crate.spec(
+    package = "itertools",
+    version = "0.14.0",
+)
+crate.spec(
+    package = "log",
+    version = "0.4.28",
+)
+crate.spec(
+    features = ["fancy"],
+    package = "miette",
+    version = "7.6.0",
+)
+crate.spec(
+    package = "prettyplease",
+    version = "0.2.37",
+)
+crate.spec(
+    package = "proc-macro2",
+    version = "1.0.101",
+)
+crate.spec(
+    package = "quote",
+    version = "1.0.41",
+)
+crate.spec(
+    features = [
+        "derive",
+        "rc",
+        "std",
+    ],
+    package = "serde",
+    version = "1.0.228",
+)
+crate.spec(
+    package = "serde_json",
+    version = "1.0.145",
+)
+crate.spec(
+    package = "serde_with",
+    version = "3.15.0",
+)
+crate.spec(
+    package = "env_logger",
+    version = "0.11.8",
+)
+crate.spec(
+    features = [
+        "full",
+        "extra-traits",
+    ],
+    package = "syn",
+    version = "2.0.106",
+)
+crate.spec(
+    package = "winit",
+    version = "0.30.12",
+)
+crate.spec(
+    package = "wgpu",
+    version = "27.0.1",
+)
+crate.spec(
+    package = "pretty_assertions",
+    version = "1.4.1",
+)
+crate.spec(
+    package = "test-case",
+    version = "3.3.1",
+)
+crate.spec(
+    package = "thiserror",
+    version = "2.0.17",
+)
+crate.from_specs()
+use_repo(crate, "crates")
+
+########## Validation
+##### Bazel                                                                                                                                 [ Validation, Bazel ]
+bazel_dep(name = "buildifier_prebuilt", version = "8.2.0.2", dev_dependency = True)

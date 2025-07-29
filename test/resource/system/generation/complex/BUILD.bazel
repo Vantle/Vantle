@@ -1,0 +1,31 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "cases",
+    srcs = ["cases.json"],
+)
+
+filegroup(
+    name = "template",
+    srcs = ["test.template.rs"],
+)
+
+filegroup(
+    name = "data",
+    srcs = [
+        "cases.json",
+        "test.template.rs",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

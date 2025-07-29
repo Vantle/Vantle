@@ -1,0 +1,1 @@
+forge --context=context.lava echo.lava

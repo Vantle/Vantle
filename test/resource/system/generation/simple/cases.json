@@ -1,0 +1,54 @@
+{
+  "functions": [
+    {
+      "function": "add",
+      "tags": ["basic", "arithmetic"],
+      "cases": [
+        { "parameters": {"a": 2, "b": 3}, "returns": {"()": 5} },
+        { "parameters": {"a": 10, "b": 15}, "returns": {"()": 25} },
+        {
+          "tags": ["negative", "boundary"],
+          "parameters": {"a": -1, "b": 1},
+          "returns": {"()": 0}
+        },
+        {
+          "tags": ["negative", "boundary"],
+          "parameters": {"a": -5, "b": -3},
+          "returns": {"()": -8}
+        },
+        {
+          "tags": ["large"],
+          "parameters": {"a": 100, "b": 200},
+          "returns": {"()": 300}
+        }
+      ]
+    },
+    {
+      "function": "math.operators.multiply",
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {"x": 3, "y": 4},
+          "returns": {"()": 12}
+        },
+        {
+          "tags": ["negative"],
+          "parameters": {"x": -2, "y": 5},
+          "returns": {"()": -10}
+        }
+      ]
+    },
+    {
+      "function": "math.operators.power",
+      "tags": ["exponential"],
+      "cases": [
+        { "parameters": {"base": 2, "exp": 3}, "returns": {"()": 8} },
+        {
+          "tags": ["square"],
+          "parameters": {"base": 5, "exp": 2},
+          "returns": {"()": 25}
+        }
+      ]
+    }
+  ]
+}

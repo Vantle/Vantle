@@ -1,0 +1,72 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["utility.rs"],
+    crate_name = "utility",
+    deps = [
+        ":file",
+        ":resource",
+        ":serialization",
+        ":standard",
+        "//system/logging:autolog",
+    ],
+)
+
+rust_library(
+    name = "file",
+    srcs = ["file.rs"],
+    deps = [
+        ":resource",
+        ":serialization",
+        ":standard",
+        "//system/logging:autolog",
+        "@crates//:serde",
+    ],
+)
+
+rust_library(
+    name = "resource",
+    srcs = ["resource.rs"],
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system/graph/symbolic/constructor:module",
+    ],
+)
+
+rust_library(
+    name = "serialization",
+    srcs = ["serialization.rs"],
+    deps = [
+        ":resource",
+        "//system/logging:autolog",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
+
+rust_library(
+    name = "standard",
+    srcs = ["standard.rs"],
+    deps = [
+        ":resource",
+        ":serialization",
+        "//Molten/component:module",
+        "//Molten/system/graph/symbolic/constructor:module",
+        "//system/logging:autolog",
+        "@crates//:pretty_assertions",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

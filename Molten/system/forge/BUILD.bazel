@@ -1,0 +1,28 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_binary")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+
+rust_binary(
+    name = "forge",
+    srcs = ["forge.rs"],
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system/evaluate:module",
+        "//Molten/system/graph:module",
+        "//Molten/system/graph/symbolic/constructor:module",
+        "//system/logging:module",
+        "@crates//:clap",
+        "@crates//:log",
+        "@crates//:miette",
+        "@crates//:serde_json",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

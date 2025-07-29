@@ -1,0 +1,24 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//:__pkg__",
+    "//system:__pkg__",
+    "//system:__subpackages__",
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["component.rs"],
+    crate_name = "component",
+    deps = ["//component/generation:module"],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

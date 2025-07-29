@@ -1,0 +1,11 @@
+#################################################################################################################################################################
+.build/bazel/result
+.build/bazel/trace
+.build/integration
+
+rust-project.json
+
+MODULE.bazel.lock
+
+user.bazelrc
+workspace.bazelrc

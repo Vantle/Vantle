@@ -1,0 +1,23 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:private"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = [
+        "system.rs",
+    ],
+    crate_name = "system",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//system/generation:module",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

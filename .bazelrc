@@ -1,0 +1,70 @@
+#################################################################################################################################################################
+############## Platform                                                                                                                              [ Platform ]
+common --enable_platform_specific_config
+common --enable_bzlmod
+common --noenable_workspace
+common --noslim_profile
+common --experimental_profile_include_target_label
+common --experimental_profile_include_primary_output
+common --bes_upload_mode=fully_async
+
+######### Windows                                                                                                                           [ Platform, Windows ]
+##### Compatibility                                                                                                          [ Platform, Windows, Compatibility ]
+
+#################################################################################################################################################################
+##### Interface                                                                                                                                     [ Interface ]
+common --verbose_failures --verbose_explanations --explain=.build/bazel/result/trace.log
+
+#################################################################################################################################################################
+########## Build                                                                                                                                        [ Build ]
+common --symlink_prefix=.build/bazel/result/ --//:symlink_prefix=.build/bazel/result/
+common --show_timestamps --enable_runfiles --color=yes --curses=yes
+common --sandbox_default_allow_network=false
+common --lockfile_mode=update
+
+########## Remote                                                                                                                                      [ Remote ]
+common --bes_results_url=https://vantle.buildbuddy.io/invocation/
+common --bes_backend=grpcs://vantle.buildbuddy.io
+common --remote_cache=grpcs://vantle.buildbuddy.io
+common --remote_timeout=10m
+common --remote_cache_compression
+common --experimental_remote_cache_compression_threshold=100
+common --build_metadata=REPO_URL=https://github.com/Vantle/Vantle.git
+common --build_metadata=module=vantle
+
+##### Java                                                                                                                                        [ Build, Java ]
+common --java_runtime_version=remotejdk_24
+common --java_language_version=24
+common --tool_java_runtime_version=remotejdk_24
+common --tool_java_language_version=24
+
+##### Rust                                                                                                                                        [ Build, Rust ]
+common --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
+common --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
+common --output_groups=+clippy_checks,+rustfmt_checks
+
+#################################################################################################################################################################
+########## Execution                                                                                                                                  [ Execute ]
+##### Rust                                                                                                                                      [ Execute, Rust ]
+common --@rules_rust//rust/settings:rustc_output_diagnostics=true --output_groups=+rust_lib_rustc_output,+rust_metadata_rustc_output
+common --@rules_rust//:extra_rustc_flags=--verbose
+common:sync --action_env=REPIN=1
+
+#################################################################################################################################################################
+##### Test                                                                                                                                               [ Test ]
+common --incompatible_exclusive_test_sandboxed
+test --test_verbose_timeout_warnings
+test --test_output=all
+
+#################################################################################################################################################################
+##### Strategy                                                                                                                                       [ Strategy ]
+common --compilation_mode=dbg --strip=never
+
+common:remote --build_metadata=ROLE=CI
+common:minimal --compilation_mode=fastbuild --strip=always
+common:release --compilation_mode=opt --linkopt=-s --strip=always
+
+#################################################################################################################################################################
+##### Import
+try-import %workspace%/user.bazelrc
+try-import %workspace%/environment.bazelrc

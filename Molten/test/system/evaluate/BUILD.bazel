@@ -1,0 +1,29 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+load("//component/generation/starlark:defs.bzl", "rust_autotest")
+
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "lava",
+    cases = "//Molten/test/resource/system/evaluate/generate:cases",
+    data = [
+        "//Molten/test/resource/system/evaluate:data",
+    ],
+    template = "//Molten/test/resource/system/evaluate/generate:lava.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system:module",
+        "//Molten/test/utility:module",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

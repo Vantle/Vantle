@@ -1,0 +1,96 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "module",
+    cases = "//Molten/test/resource/component/graph/attribute/module/generate:cases",
+    data = [
+        "//Molten/test/resource/component/graph/attribute:data",
+        "//Molten/test/resource/system/graph/module/breadth:data",
+        "//Molten/test/resource/system/graph/module/echo:data",
+    ],
+    template = "//Molten/test/resource/component/graph/attribute/module/generate:module.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:module",
+    ],
+)
+
+rust_autotest(
+    name = "arena",
+    cases = "//Molten/test/resource/component/graph/arena/generate:cases",
+    data = [
+        "//Molten/test/resource/system/graph/module:data",
+    ],
+    template = "//Molten/test/resource/system/graph/arena/generate:arena.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:module",
+    ],
+)
+
+rust_autotest(
+    name = "attribute",
+    cases = "//Molten/test/resource/component/graph/attribute/generate:cases",
+    data = ["//Molten/test/resource/component/graph/attribute:data"],
+    template = "//Molten/test/resource/component/graph/attribute/generate:attribute.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:module",
+    ],
+)
+
+rust_autotest(
+    name = "context",
+    cases = "//Molten/test/resource/component/graph/attribute/context/generate:cases",
+    data = ["//Molten/test/resource/component/graph/attribute:data"],
+    template = "//Molten/test/resource/component/graph/attribute/context/generate:context.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:module",
+    ],
+)
+
+rust_autotest(
+    name = "group",
+    cases = "//Molten/test/resource/component/graph/attribute/group/generate:cases",
+    data = ["//Molten/test/resource/component/graph/attribute:data"],
+    template = "//Molten/test/resource/component/graph/attribute/group/generate:group.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:module",
+    ],
+)
+
+rust_autotest(
+    name = "partition",
+    cases = "//Molten/test/resource/component/graph/attribute/partition/generate:cases",
+    data = ["//Molten/test/resource/component/graph/attribute:data"],
+    template = "//Molten/test/resource/component/graph/attribute/partition/generate:partition.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:module",
+    ],
+)
+
+rust_autotest(
+    name = "translator",
+    cases = "//Molten/test/resource/system/graph/symbolic/translator/generate:cases",
+    template = "//Molten/test/resource/system/graph/symbolic/translator:translator.template.rs",
+    deps = [
+        "//Molten/system/graph/symbolic:module",
+        "//Molten/test/utility:module",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

@@ -1,0 +1,44 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["evaluate.rs"],
+    crate_name = "evaluate",
+    deps = [
+        ":lava",
+        ":obsidian",
+        "//Molten/component:module",
+    ],
+)
+
+rust_library(
+    name = "lava",
+    srcs = ["lava.rs"],
+    deps = [
+        "//Molten/component:module",
+        "//system/logging:module",
+        "@crates//:itertools",
+        "@crates//:miette",
+        "@crates//:serde",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
+    name = "obsidian",
+    srcs = ["obsidian.rs"],
+    deps = [
+        ":lava",
+        "//Molten/component:module",
+        "//system/logging:module",
+    ],
+)
+##### Documentation                                                                                                                             [ Documentation ]

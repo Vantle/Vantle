@@ -1,0 +1,29 @@
+{
+    "functions": [
+        {
+            "function": "group",
+            "cases": [
+                {
+                    "parameters": {
+                        "resource": "Molten/test/resource/component/graph/attribute/group/group.lava"
+                    },
+                    "returns": {
+                        "()": {
+                            "category": "Group",
+                            "context": [
+                                { "category": {"Attribute": "Molten"}  },
+                                { "category": "Partition"              },
+                                { "category": {"Attribute": "Meta"}    },
+                                { "category": "Partition"              },
+                                { "category": {"Attribute": "Program"} },
+                                { "category": "Partition"              },
+                                { "category": {"Attribute": "Alpha"}   },
+                                { "category": {"Attribute": "Alpha"}   }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

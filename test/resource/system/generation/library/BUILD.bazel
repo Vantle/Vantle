@@ -1,0 +1,39 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["library.rs"],
+    crate_name = "library",
+)
+
+filegroup(
+    name = "cases",
+    srcs = ["cases.json"],
+)
+
+filegroup(
+    name = "template",
+    srcs = ["composition.rs"],
+)
+
+filegroup(
+    name = "data",
+    srcs = [
+        "cases.json",
+        "composition.rs",
+        "library.rs",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

@@ -1,0 +1,1 @@
+[Echo(Data.Format.Unicode, Binary.Width(8), value)] (Stream.Sink.Console(value))

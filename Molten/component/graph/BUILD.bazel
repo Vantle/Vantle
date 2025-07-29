@@ -1,0 +1,63 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = [
+        "graph.rs",
+    ],
+    crate_name = "graph",
+    deps = [
+        ":attribute",
+        ":inspect",
+        ":state",
+        "//Molten/component/graph/arena:module",
+        "//Molten/component/graph/matrix:module",
+        "//Molten/component/graph/traits:module",
+        "@crates//:serde",
+        "@crates//:serde_with",
+    ],
+)
+
+rust_library(
+    name = "attribute",
+    srcs = ["attribute.rs"],
+    deps = [
+        "//Molten/component/graph/traits:module",
+        "@crates//:serde",
+    ],
+)
+
+rust_library(
+    name = "inspect",
+    srcs = ["inspect.rs"],
+    deps = [
+        ":attribute",
+        ":state",
+        "//Molten/component/graph/arena:module",
+        "//Molten/component/graph/matrix:module",
+        "//Molten/component/graph/traits:module",
+        "@crates//:serde",
+    ],
+)
+
+rust_library(
+    name = "state",
+    srcs = ["state.rs"],
+    deps = [
+        "//Molten/component/graph/traits:module",
+        "//Molten/system/graph/algorithm:module",
+        "@crates//:itertools",
+        "@crates//:serde",
+        "@crates//:serde_with",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

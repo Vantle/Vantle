@@ -1,0 +1,28 @@
+{
+    "functions": [
+        {
+            "function": "add_three",
+            "tags": ["composition", "arithmetic"],
+            "cases": [
+                {
+                    "parameters": {"a": 1, "b": 2, "c": 3         },
+                    "returns"   : {                        "()": 6}
+                },
+                {
+                    "parameters": {"a": 5, "b": 10, "c": 15          },
+                    "returns"   : {                          "()": 30}
+                },
+                {
+                    "tags": ["negative"],
+                    "parameters": {"a": -1, "b": 2, "c": -3},
+                    "returns": {"()": -2}
+                },
+                {
+                    "tags": ["zero"],
+                    "parameters": {"a": 0, "b": 0, "c": 0},
+                    "returns": {"()": 0}
+                }
+            ]
+        }
+    ]
+}

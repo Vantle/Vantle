@@ -1,0 +1,30 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "syntax",
+    srcs = ["syntax.rs"],
+    deps = [],
+)
+
+rust_library(
+    name = "module",
+    srcs = ["constructor.rs"],
+    crate_name = "constructor",
+    deps = [
+        ":syntax",
+        "//Molten/component:module",
+        "//Molten/system/graph/symbolic/translator:module",
+        "@crates//:log",
+        "@crates//:thiserror",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

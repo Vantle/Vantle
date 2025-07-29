@@ -1,0 +1,292 @@
+{
+    "functions": [
+        {
+            "function": "distance",
+            "cases": [
+                {
+                    "tags": ["basic"],
+                    "parameters": { "point": {"x": 5, "y": 12} },
+                    "returns": {"()": 13}
+                },
+                {
+                    "tags": ["origin"],
+                    "parameters": { "point": {"x": 0, "y": 0} },
+                    "returns": {"()": 0.0}
+                }
+            ]
+        },
+        {
+            "function": "average",
+            "tags": ["person"],
+            "cases": [
+                {
+                    "tags": ["scores"],
+                    "parameters": {
+                        "person": {
+                            "name": "Alice",
+                            "age": 25,
+                            "scores": [85, 90, 92, 88]
+                        }
+                    },
+                    "returns": {"()": 88.75}
+                },
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "person": {"name": "Bob", "age": 30, "scores": []}
+                    },
+                    "returns": {"()": 0.0}
+                }
+            ]
+        },
+        {
+            "function": "team_average",
+            "tags": ["team"],
+            "cases": [
+                {
+                    "tags": ["nested", "collection"],
+                    "parameters": {
+                        "team": {
+                            "name": "Engineering",
+                            "budget": 100000,
+                            "members": [
+                                {
+                                    "name": "Alice",
+                                    "age": 25,
+                                    "scores": [85, 90, 92]
+                                },
+                                {
+                                    "name": "Bob",
+                                    "age": 30,
+                                    "scores": [78, 82, 88, 95]
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {"()": 87.14285714285714}
+                },
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "team": {
+                            "name": "Marketing",
+                            "budget": 75000,
+                            "members": []
+                        }
+                    },
+                    "returns": {"()": 0.0}
+                },
+                {
+                    "tags": ["nested", "empty"],
+                    "parameters": {
+                        "team": {
+                            "name": "Sales",
+                            "budget": 80000,
+                            "members": [
+                                {"name": "Charlie", "age": 28, "scores": []},
+                                {"name": "Diana",   "age": 32, "scores": []}
+                            ]
+                        }
+                    },
+                    "returns": {"()": 0.0}
+                }
+            ]
+        },
+        {
+            "function": "process_data",
+            "tags": ["hashmap"],
+            "cases": [
+                {
+                    "tags": ["sum"],
+                    "parameters": { "data": {"a": 10, "b": 20, "c": 30} },
+                    "returns": {"()": 60}
+                }
+            ]
+        },
+        {
+            "function": "sum_vector",
+            "tags": ["vector"],
+            "cases": [
+                {
+                    "tags": ["sum"],
+                    "parameters": { "numbers": [1, 2, 3, 4, 5] },
+                    "returns": {"()": 15}
+                },
+                {
+                    "tags": ["empty"],
+                    "parameters": {"numbers": []},
+                    "returns": {"()": 0}
+                }
+            ]
+        },
+        {
+            "function": "geometry.rectangle_area",
+            "cases": [
+                {
+                    "tags": ["rectangle"],
+                    "parameters": {
+                        "top_left"    : {"x": 0, "y": 10},
+                        "bottom_right": {"x": 5, "y":  0}
+                    },
+                    "returns": {"()": 50}
+                },
+                {
+                    "tags": ["negative"],
+                    "parameters": {
+                        "top_left"    : {"x": -2, "y":  3},
+                        "bottom_right": {"x":  4, "y": -1}
+                    },
+                    "returns": {"()": 24}
+                }
+            ]
+        },
+        {
+            "function": "nested_process",
+            "tags": ["nested", "generics", "complex"],
+            "cases": [
+                {
+                    "tags": ["hashmap", "vector"],
+                    "parameters": {
+                        "data": {
+                            "region_a": [
+                                { "store_1": [1, 2, 3], "store_2": [4, 5] },
+                                { "store_3": [6, 7, 8, 9] }
+                            ],
+                            "region_b": [
+                                { "store_4": [10, 11], "store_5": [12, 13, 14] }
+                            ],
+                            "region_c": []
+                        }
+                    },
+                    "returns": {"()": 105}
+                }
+            ]
+        },
+        {
+            "function": "two_level_process",
+            "tags": ["nested", "generics"],
+            "cases": [
+                {
+                    "tags": ["nested", "hashmap", "vector"],
+                    "parameters": {
+                        "data": [
+                            {"apples": 10, "oranges": 5, "bananas": 8},
+                            {"apples": 3, "grapes": 12, "berries": 7},
+                            {"oranges": 4, "mangoes": 6}
+                        ]
+                    },
+                    "returns": {"()": 55}
+                }
+            ]
+        },
+        {
+            "function": "optional_process",
+            "tags": ["option", "string"],
+            "cases": [
+                {
+                    "tags": ["some"],
+                    "parameters": {"name": "Alice"},
+                    "returns": {"()": "Hello, Alice!"}
+                },
+                {
+                    "tags": ["none"],
+                    "parameters": {"name": null},
+                    "returns": {"()": "Hello, stranger!"}
+                }
+            ]
+        },
+        {
+            "function": "count_some",
+            "tags": ["option", "nested", "generics"],
+            "cases": [
+                {
+                    "tags": ["hashmap", "custom"],
+                    "parameters": {
+                        "data": {
+                            "1": {"value": "hello"},
+                            "2": null,
+                            "3": {"value": "world"}
+                        }
+                    },
+                    "returns": {"()": 2}
+                }
+            ]
+        },
+        {
+            "function": "matrix_sum",
+            "tags": ["matrix", "generics"],
+            "cases": [
+                {
+                    "tags": ["nested"],
+                    "parameters": {
+                        "matrix": {
+                            "rows": [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ],
+                            "metadata": {"offset": 10, "scale": 2}
+                        }
+                    },
+                    "returns": {"()": 57}
+                }
+            ]
+        },
+        {
+            "function": "process_status",
+            "tags": ["enum"],
+            "cases": [
+                {
+                    "tags": ["success"],
+                    "parameters": { "status": {"Success": 42} },
+                    "returns": {"()": "Success: 42"}
+                },
+                {
+                    "tags": ["warning"],
+                    "parameters": {
+                        "status": { "Warning": [100, "Low memory"] }
+                    },
+                    "returns": {"()": "Warning: 100 - Low memory"}
+                },
+                {
+                    "tags": ["error"],
+                    "parameters": { "status": {"Error": "Network failure"} },
+                    "returns": {"()": "Error: Network failure"}
+                }
+            ]
+        },
+        {
+            "function": "nested_optionals",
+            "tags": ["optional", "nested"],
+            "cases": [
+                {
+                    "tags": ["filtering"],
+                    "parameters": {
+                        "data": ["hello", null, "world", null, "rust"]
+                    },
+                    "returns": { "()": ["hello", "world", "rust"] }
+                }
+            ]
+        },
+        {
+            "function": "sum_refs",
+            "cases": [
+                { "parameters": {"x":  3, "y": 4}, "returns": {"()": 7} },
+                { "parameters": {"x": -2, "y": 5}, "returns": {"()": 3} }
+            ]
+        },
+        {
+            "function": "nested_sum",
+            "tags": ["merge", "default"],
+            "parameters": {
+                "data": { "a": {"b": 3} }
+            },
+            "returns": {"()": 3},
+            "cases": [
+                {
+                    "tags": ["override"],
+                    "parameters": {
+                        "data": { "a": {"c": 4} }
+                    },
+                    "returns": {"()": 7}
+                }
+            ]
+        }
+    ]
+}

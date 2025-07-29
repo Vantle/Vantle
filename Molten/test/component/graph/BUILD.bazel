@@ -1,0 +1,30 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "inspect",
+    cases = "//Molten/test/resource/component/graph/inspect/generate:cases",
+    data = [
+        "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean:data",
+    ],
+    template = "//Molten/test/resource/component/graph/inspect/generate:inspect.template.rs",
+    deps = [
+        "//:module",
+        "//Molten/component:module",
+        "//Molten/system/graph:module",
+        "//Molten/test/utility:module",
+        "//system:module",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

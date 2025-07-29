@@ -1,0 +1,35 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:private"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = [
+        "system.rs",
+    ],
+    crate_name = "system",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":logging",
+        "//system/generation:module",
+    ],
+)
+
+rust_library(
+    name = "logging",
+    srcs = ["logging.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@crates//:ctor",
+        "@crates//:env_logger",
+        "@crates//:log",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

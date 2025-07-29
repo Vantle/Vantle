@@ -1,0 +1,61 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//system:__pkg__",
+    "//system:__subpackages__",
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["rust.rs"],
+    crate_name = "rust",
+    deps = [
+        ":test",
+        "//component:module",
+        "@crates//:prettyplease",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "keyword",
+    srcs = ["keyword.rs"],
+    deps = [
+        "@crates//:proc-macro2",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "literal",
+    srcs = ["literal.rs"],
+    deps = [
+        "@crates//:quote",
+        "@crates//:serde_json",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "test",
+    srcs = ["test.rs"],
+    deps = [
+        ":keyword",
+        ":literal",
+        "//component:module",
+        "@crates//:proc-macro2",
+        "@crates//:quote",
+        "@crates//:serde_json",
+        "@crates//:syn",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

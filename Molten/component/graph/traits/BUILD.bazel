@@ -1,0 +1,37 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["traits.rs"],
+    crate_name = "traits",
+    deps = [
+        ":attribute",
+        ":link",
+        ":node",
+    ],
+)
+
+rust_library(
+    name = "attribute",
+    srcs = ["attribute.rs"],
+)
+
+rust_library(
+    name = "node",
+    srcs = ["node.rs"],
+)
+
+rust_library(
+    name = "link",
+    srcs = ["link.rs"],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

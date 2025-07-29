@@ -1,0 +1,45 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+load("//component/generation/starlark:defs.bzl", "rust_autotest")
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//test/system/generation:__pkg__",
+    "//test/system/generation:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "simple",
+    size = "small",
+    cases = "//test/resource/system/generation/simple:cases",
+    template = "//test/resource/system/generation/simple:template",
+)
+
+rust_autotest(
+    name = "complex",
+    size = "small",
+    cases = "//test/resource/system/generation/complex:cases",
+    template = "//test/resource/system/generation/complex:template",
+)
+
+rust_autotest(
+    name = "library",
+    size = "small",
+    cases = "//test/resource/system/generation/library:cases",
+    template = "//test/resource/system/generation/library:template",
+    deps = [
+        "//test/resource/system/generation/library:module",
+    ],
+)
+
+rust_autotest(
+    name = "returns",
+    size = "small",
+    cases = "//test/resource/system/generation/returns:cases",
+    template = "//test/resource/system/generation/returns:template",
+)
+
+##### Documentation                                                                                                                                 [ Documentation ]

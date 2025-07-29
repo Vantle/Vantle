@@ -1,0 +1,69 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Configuration                                                                                                                               [ Configuration ]
+string_flag(
+    name = "symlink_prefix",
+    build_setting_default = "bazel-bin",
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["vantle.rs"],
+    crate_name = "vantle",
+    deps = [
+        "//Molten:module",
+        "//component:module",
+        "//platform:module",
+        "//system:module",
+        "//test:module",
+    ],
+)
+
+##### License                                                                                                                                         [ License ]
+filegroup(
+    name = "license",
+    srcs = [
+        "License.md",
+        "Notice.md",
+    ],
+)
+
+##### Analysis                                                                                                                                       [ Analysis ]
+alias(
+    name = "analysis.rust",
+    actual = "@rules_rust//tools/rust_analyzer:gen_rust_project",
+)
+
+########## Validation                                                                                                                              [ Validation ]
+alias(
+    name = "validate.bazel",
+    actual = "//:validate.bazel.buildifier",
+)
+
+########## Build                                                                                                                            [ Validation, Build ]
+##### Buildifier                                                                                                                [ Validation, Build, Buildifier ]
+buildifier(
+    name = "validate.bazel.buildifier",
+    lint_mode = "warn",
+    mode = "fix",
+)
+
+##### Documentation                                                                                                                              [ Documentation ]
+filegroup(
+    name = "documents",
+    srcs = [
+        "Info.md",
+        "Readme.md",
+        ":license",
+    ],
+)

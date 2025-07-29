@@ -1,0 +1,32 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "module",
+    srcs = ["graph.rs"],
+    crate_name = "graph",
+    deps = [
+        ":constructor",
+        "//Molten/system/graph/algorithm:module",
+        "//Molten/system/graph/symbolic:module",
+    ],
+)
+
+rust_library(
+    name = "constructor",
+    srcs = ["constructor.rs"],
+    deps = [
+        "//Molten/component:module",
+        "@crates//:itertools",
+        "@crates//:log",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

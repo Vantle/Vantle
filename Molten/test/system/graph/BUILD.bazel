@@ -1,0 +1,51 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "index",
+    cases = "//Molten/test/resource/system/graph/index/generate:cases",
+    data = [
+        "//Molten/test/resource/system/graph/module:data",
+    ],
+    template = "//Molten/test/resource/system/graph/index/generate:index.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system:module",
+        "//Molten/test/utility:module",
+    ],
+)
+
+rust_autotest(
+    name = "breadth",
+    cases = "//Molten/test/resource/system/graph/breadth/generate:cases",
+    data = [
+        "//Molten/test/resource/component/graph/attribute:data",
+    ],
+    template = "//Molten/test/resource/system/graph/breadth/generate:breadth.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/test/utility:module",
+    ],
+)
+
+rust_autotest(
+    name = "constructor",
+    cases = "//Molten/test/resource/system/graph/constructor/generate:cases",
+    template = "//Molten/test/resource/system/graph/constructor/generate:constructor.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system:module",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

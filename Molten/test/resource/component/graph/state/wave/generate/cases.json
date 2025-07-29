@@ -1,0 +1,1296 @@
+{
+    "functions": [
+        {
+            "function": "subset",
+            "cases": [
+                {
+                    "tags": ["simple", "match"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["simple", "nomatch"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["bipartite", "match"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1], ["c", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["join", "unmatch"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["provenance", "match"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["joined", "unmatched"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["insufficient", "basis"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 1], ["c", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["c", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["complex", "match"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["x", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["y", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["z", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["x", 1], ["y", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["y", 1], ["z", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["x", 1], ["z", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["x", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["y", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["z", 1] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["empty", "candidate"],
+                    "parameters": {
+                        "candidate": [],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["empty", "basis"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": []
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["both", "empty"],
+                    "parameters": {"candidate": [], "basis": []},
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["multiple", "counts"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["duplicate", "requirement"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["duplicate", "nomatch"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["no", "compatible"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1], ["b", 1], ["c", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["d", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                }
+            ]
+        },
+        {
+            "function": "superset",
+            "cases": [
+                {
+                    "tags": ["composite", "covers", "single"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["simple", "match"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["simple", "nomatch"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["equal", "match"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["empty", "candidate"],
+                    "parameters": {
+                        "candidate": [],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["empty", "basis"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": []
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["both", "empty"],
+                    "parameters": {"candidate": [], "basis": []},
+                    "returns": {"()": []}
+                }
+            ]
+        },
+        {
+            "function": "isomorphic",
+            "cases": [
+                {
+                    "tags": ["identical", "match"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["different", "counts"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["different", "particles"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["b", 1] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["multiple", "match"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ],
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["different", "lengths"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["both", "empty"],
+                    "parameters": {"candidate": [], "basis": []},
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["complex", "match"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                2
+                            ],
+                            [
+                                [ ["c", 3] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["c", 3] ],
+                                1
+                            ],
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                2
+                            ],
+                            [
+                                [ ["c", 3] ],
+                                1
+                            ]
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "joint",
+            "cases": [
+                {
+                    "tags": ["composite", "single", "overlap"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["identical", "match"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["partial", "overlap"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["c", 3] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["no", "overlap"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["both", "empty"],
+                    "parameters": {"candidate": [], "basis": []},
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["empty", "candidate"],
+                    "parameters": {
+                        "candidate": [],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["empty", "basis"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": []
+                    },
+                    "returns": {"()": null}
+                }
+            ]
+        },
+        {
+            "function": "disjoint",
+            "cases": [
+                {
+                    "tags": ["composite", "single", "joint"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["no", "overlap"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["completely", "different"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["c", 3] ],
+                                1
+                            ],
+                            [
+                                [ ["d", 4] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["has", "overlap"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 2] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["c", 3] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["identical", "particles"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["both", "empty"],
+                    "parameters": {"candidate": [], "basis": []},
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["empty", "candidate"],
+                    "parameters": {
+                        "candidate": [],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["empty", "basis"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": []
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "intersect",
+            "cases": [
+                {
+                    "tags": ["deterministic", "simple"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ],
+                            [
+                                [ ["c", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["none"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["x", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["y", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                }
+            ]
+        },
+        {
+            "function": "join",
+            "cases": [
+                {
+                    "tags": ["empty", "candidate"],
+                    "parameters": {
+                        "candidate": [],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["deterministic", "sum"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                3
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                3
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                3
+                            ]
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "diverge",
+            "cases": [
+                {
+                    "tags": ["simple", "subtract"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                2
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["empty", "result"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": null}
+                }
+            ]
+        },
+        {
+            "function": "diverges",
+            "cases": [
+                {
+                    "tags": ["ambiguous", "composite"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["a", 1], ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [
+                                    [ ["a", 1] ],
+                                    1
+                                ]
+                            ],
+                            [
+                                [
+                                    [ ["a", 1], ["b", 1] ],
+                                    1
+                                ]
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["empty", "candidate"],
+                    "parameters": {
+                        "candidate": [],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["enumeration", "simple"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                [
+                                    [ ["b", 1] ],
+                                    1
+                                ]
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["enumeration", "multiple"],
+                    "parameters": {
+                        "candidate": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ],
+                        "basis": [
+                            [
+                                [ ["a", 1] ],
+                                1
+                            ],
+                            [
+                                [ ["b", 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": { "()": [[]] }
+                }
+            ]
+        }
+    ]
+}

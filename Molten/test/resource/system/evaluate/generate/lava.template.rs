@@ -8,7 +8,7 @@ fn propegate(
     limit: Option<usize>,
 ) -> Inference<usize> {
     let mut inference = Inference::new();
-    lava::propegate(&mut inference, &signal, &context, limit)
+    lava::propagate(&mut inference, &signal, &context, limit)
         .expect("Inference iteration limit exceeded");
     inference
 }

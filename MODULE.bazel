@@ -25,6 +25,9 @@ use_repo(buildozer_binary, "buildozer_binary")
 
 ########## Toolchain                                                                                                                                [ Toolchain ]
 ##### Compilation                                                                                                                      [ Toolchain, Compilation ]
+########## Java                                                                                                                               [ Toolchain, Java ]
+bazel_dep(name = "rules_java", version = "8.16.1")
+
 ########## Python                                                                                                                           [ Toolchain, Python ]
 bazel_dep(name = "rules_python", version = "1.6.3")
 

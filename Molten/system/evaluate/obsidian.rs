@@ -11,7 +11,7 @@ pub fn solidify(
     info!("Solidifying: checking if output is reachable from input");
 
     let mut inference = Inference::new();
-    if let Err(error) = lava::propegate(&mut inference, input, context, limit) {
+    if let Err(error) = lava::propagate(&mut inference, input, context, limit) {
         info!("Solidification failed: {}", error);
         return false;
     }

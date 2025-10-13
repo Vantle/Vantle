@@ -90,7 +90,7 @@ pub fn infer<'a>(
     changed.then_some(inference)
 }
 
-pub fn propegate(
+pub fn propagate(
     inference: &mut Inference<usize>,
     signal: &Wave<usize>,
     context: &Related<Wave<usize>>,

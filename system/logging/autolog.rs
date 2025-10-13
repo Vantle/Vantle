@@ -2,5 +2,11 @@ pub use logging::{debug, error, info, warn};
 
 #[ctor::ctor]
 fn initialize() {
-    logging::configure(log::LevelFilter::Debug);
+    #[cfg(debug_assertions)]
+    let level = log::LevelFilter::Debug;
+
+    #[cfg(not(debug_assertions))]
+    let level = log::LevelFilter::Error;
+
+    logging::configure(level);
 }

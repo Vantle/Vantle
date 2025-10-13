@@ -73,11 +73,9 @@ fn temporal() -> Result<()> {
 
         relations.merge(&subgraph);
 
-        match lava::propegate(&mut inference, &signal, &relations, None) {
-            Ok(()) => {
-                println!("{:#?}", inference);
-            }
-            Err(e) => eprintln!("{:?}", e),
-        }
+        lava::propagate(&mut inference, &signal, &relations, None)
+            .map_err(|e| eprintln!("{:?}", e))
+            .map(|()| println!("{:#?}", inference))
+            .ok();
     }
 }

@@ -1,0 +1,65 @@
+{
+    "functions": [
+        {
+            "function": "attribute",
+            "cases": [
+                {
+                    "tags": ["simple", "full"],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/breadth/symbolic/breadth.lava",
+                        "width": 1000
+                    },
+                    "returns": {"()": "(Alpha.Beta(Delta).Gamma)"}
+                },
+                {
+                    "tags": ["simple", "truncated"],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/breadth/symbolic/breadth.lava",
+                        "width": 15
+                    },
+                    "returns": {"()": "(Alpha.Beta(Delta).1)"}
+                },
+                {
+                    "tags": ["echo", "full"],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/echo/symbolic/echo.lava",
+                        "width": 1000
+                    },
+                    "returns": {
+                        "()": "([Echo(Data.Format.Unicode, Binary.Width(8), value)].(Stream.Sink.Console(value)))"
+                    }
+                },
+                {
+                    "tags": ["echo", "partial"],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/echo/symbolic/echo.lava",
+                        "width": 30
+                    },
+                    "returns": {
+                        "()": "([Echo(Data.Format.Unicode, Binary.11(13), 4)].(6.5.2(4)))"
+                    }
+                },
+                {
+                    "tags": ["nested", "full"],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/nested/symbolic/nested.lava",
+                        "width": 1000
+                    },
+                    "returns": {
+                        "()": "(Alpha([Beta.Gamma([Epsilon(Delta, Phi, Upsilon)])], (Pi, Eta.Zeta)))"
+                    }
+                },
+                {
+                    "tags": ["nested", "truncated"],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/nested/symbolic/nested.lava",
+                        "width": 10
+                    },
+                    "returns": {
+                        "()": "(Alpha([Beta.8([10(14, 13, 12)])], (6, 4.3)))"
+                    }
+                }
+            ]
+        }
+    ]
+}

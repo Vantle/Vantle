@@ -1,6 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_template")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -15,9 +16,9 @@ filegroup(
     srcs = ["cases.json"],
 )
 
-filegroup(
+rust_autotest_template(
     name = "template",
-    srcs = ["test.template.rs"],
+    src = "test.template.rs",
 )
 
 filegroup(

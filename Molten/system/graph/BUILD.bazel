@@ -14,7 +14,7 @@ rust_library(
     crate_name = "graph",
     deps = [
         ":constructor",
-        "//Molten/system/graph/algorithm:module",
+        ":mutator",
         "//Molten/system/graph/symbolic:module",
     ],
 )
@@ -26,6 +26,15 @@ rust_library(
         "//Molten/component:module",
         "@crates//:itertools",
         "@crates//:log",
+    ],
+)
+
+rust_library(
+    name = "mutator",
+    srcs = ["mutator.rs"],
+    deps = [
+        ":constructor",
+        "//Molten/component:module",
     ],
 )
 

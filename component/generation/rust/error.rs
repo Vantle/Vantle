@@ -78,6 +78,33 @@ pub enum Error {
         #[help]
         help: String,
     },
+
+    #[error("Type validation failed")]
+    #[diagnostic(code(generator::type_validation_failed))]
+    Type {
+        #[source_code]
+        code: NamedSource<String>,
+        #[label("Type mismatch")]
+        span: Option<SourceSpan>,
+        #[help]
+        help: String,
+    },
+
+    #[error("Deserialization")]
+    #[diagnostic(code(generator::deserialization))]
+    Deserialization {
+        #[source_code]
+        json: NamedSource<String>,
+
+        #[label("Invalid syntax here")]
+        location: SourceSpan,
+
+        #[help]
+        help: String,
+
+        #[source]
+        cause: serde_json::Error,
+    },
 }
 
 impl Error {
@@ -91,6 +118,8 @@ impl Error {
             Self::Cases { .. } => 65,
             Self::Parameter { .. } => 65,
             Self::Case { .. } => 65,
+            Self::Type { .. } => 65,
+            Self::Deserialization { .. } => 65,
         }
     }
 
@@ -101,7 +130,7 @@ impl Error {
         available: &[String],
     ) -> Self {
         Self::Template {
-            code: NamedSource::new(path, content),
+            code: NamedSource::new(path, content).with_language(language::rust()),
             span: Some(function),
             help: format!("Available: [{}]", available.join(", ")),
         }
@@ -109,7 +138,7 @@ impl Error {
 
     pub fn cases(path: &str, content: String, span: Option<(usize, usize)>, help: String) -> Self {
         Self::Cases {
-            code: NamedSource::new(path, content),
+            code: NamedSource::new(path, content).with_language(language::json()),
             span: span.map(|(start, len)| SourceSpan::new(start.into(), len)),
             help,
         }
@@ -135,7 +164,7 @@ impl Error {
         );
 
         Self::Parameter {
-            code: NamedSource::new(path, content),
+            code: NamedSource::new(path, content).with_language(language::json()),
             span: problem.map(|(start, len)| SourceSpan::new(start.into(), len)),
             help,
         }
@@ -161,7 +190,7 @@ impl Error {
         );
 
         Self::Parameter {
-            code: NamedSource::new(path, content),
+            code: NamedSource::new(path, content).with_language(language::json()),
             span: problem.map(|(start, len)| SourceSpan::new(start.into(), len)),
             help,
         }
@@ -177,11 +206,73 @@ impl Error {
         let help = format!("Test case issue: {}\n\nSuggestion: {}", issue, suggestion);
 
         Self::Case {
-            code: NamedSource::new(case, content),
+            code: NamedSource::new(case, content).with_language(language::json()),
             span: span.map(|(start, len)| SourceSpan::new(start.into(), len)),
             help,
         }
     }
-}
 
+    pub fn typing(
+        path: &str,
+        content: String,
+        span: Option<(usize, usize)>,
+        parameter: &str,
+        expected: &str,
+        actual: &str,
+        context: &str,
+    ) -> Self {
+        let help = format!(
+            "Parameter '{}' expects type '{}' but got {}.\n\nContext: {}\n\nTip: Check that the value matches the expected Rust type.",
+            parameter,
+            expected,
+            actual,
+            context
+        );
+
+        Self::Type {
+            code: NamedSource::new(path, content).with_language(language::json()),
+            span: span.map(|(start, len)| SourceSpan::new(start.into(), len)),
+            help,
+        }
+    }
+
+    pub fn deserialization(
+        target: &str,
+        source: impl AsRef<std::path::Path>,
+        json: impl Into<String>,
+        error: serde_json::Error,
+    ) -> Self {
+        let json = json.into();
+        let source_path = source.as_ref();
+
+        let offset = {
+            let line = error.line().saturating_sub(1);
+            let column = error.column().saturating_sub(1);
+
+            let mut offset = 0;
+            for (index, row) in json.lines().enumerate() {
+                if index == line {
+                    offset += column;
+                    break;
+                }
+                offset += row.len() + 1;
+            }
+            offset
+        };
+
+        let help = format!(
+            "In file: {}\nExpected type: {}\nCheck that your structure matches the expected target format.",
+            source_path.display(),
+            target
+        );
+
+        Self::Deserialization {
+            json: NamedSource::new(source_path.to_string_lossy(), json)
+                .with_language(language::json()),
+            location: SourceSpan::new(offset.into(), 1),
+            help,
+            cause: error,
+        }
+    }
+}
 pub type Result<T> = std::result::Result<T, Error>;

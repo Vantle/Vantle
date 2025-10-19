@@ -14,12 +14,6 @@ pub enum Missing {
 }
 
 impl Missing {
-    pub fn code(&self) -> i32 {
-        match self {
-            Self::Element { .. } => 64,
-        }
-    }
-
     pub fn element(element: impl std::fmt::Debug) -> Self {
         Self::Element {
             element: format!("{:#?}", element),
@@ -27,11 +21,13 @@ impl Missing {
     }
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Diagnostic)]
 pub enum Error {
     #[error(transparent)]
+    #[diagnostic(transparent)]
     Missing(#[from] Missing),
 
     #[error(transparent)]
+    #[diagnostic(transparent)]
     Allocation(#[from] allocation::Allocation),
 }

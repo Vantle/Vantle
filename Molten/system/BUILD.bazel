@@ -14,7 +14,7 @@ rust_library(
     crate_name = "system",
     deps = [
         "//Molten/component:module",
-        "//Molten/system/evaluate:module",
+        "//Molten/system/evaluation:module",
         "//Molten/system/graph:module",
         "//Molten/system/optimize:module",
         "//Molten/system/spatialize:module",

@@ -56,6 +56,11 @@ common --incompatible_exclusive_test_sandboxed
 test --test_verbose_timeout_warnings
 test --test_output=all
 
+##### Coverage                                                                                                                                       [ Coverage ]
+coverage --collect_code_coverage
+coverage --combined_report=lcov
+coverage --experimental_use_llvm_covmap
+
 #################################################################################################################################################################
 ##### Strategy                                                                                                                                       [ Strategy ]
 common --compilation_mode=dbg --strip=never

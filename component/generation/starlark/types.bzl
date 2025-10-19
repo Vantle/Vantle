@@ -1,8 +1,7 @@
 """
-Shared types, providers, and language configurations for the code generation library.
+Types and language configurations for code generation.
 
-This file contains data structures that need to be shared between rule definitions
-and their implementations.
+Shared providers and language configs used across rules and macros.
 """
 
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
@@ -12,12 +11,22 @@ load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 #############################################################################
 
 GeneratedInfo = provider(
-    doc = "Information about generated files",
+    doc = "Metadata about generated test files",
     fields = {
-        "generated": "Generated file",
-        "template": "Template",
-        "cases": "Cases",
-        "language": "Generated language",
+        "generated": "Generated test file",
+        "template": "Template source file",
+        "cases": "Test cases data file",
+        "language": "Language string",
+    },
+)
+
+TemplateInfo = provider(
+    doc = "Template metadata for code generation",
+    fields = {
+        "source": "Template source file",
+        "language": "Language string (e.g., 'rust')",
+        "test": "Test rule identifier",
+        "deps": "Template dependencies",
     },
 )
 
@@ -35,17 +44,17 @@ GeneratedInfo = provider(
 
 def Language(extension, test, library, deps = [], flags = []):
     """
-    Create a language configuration struct.
+    Create a language configuration.
 
     Args:
-        extension: File extension for generated files (e.g., 'rs' for Rust)
+        extension: File extension (e.g., 'rs')
         test: Test rule function (e.g., rust_test)
         library: Library rule function (e.g., rust_library)
-        deps: Standard dependencies for this language (default: [])
-        flags: Standard compiler flags for this language (default: [])
+        deps: Standard dependencies
+        flags: Standard compiler flags
 
     Returns:
-        A struct containing the language configuration
+        Language configuration struct
     """
     return struct(
         extension = extension,
@@ -61,6 +70,13 @@ LANGUAGES = {
         extension = "rs",
         test = rust_test,
         library = rust_library,
-        flags = ["-A", "dead_code"],
+        deps = [
+            "@crates//:miette",
+            "@crates//:serde",
+            "@crates//:serde_json",
+            "//:module",
+            "//system:diagnostic",
+            "//system/generation/runtime:runtime",
+        ],
     ),
 }

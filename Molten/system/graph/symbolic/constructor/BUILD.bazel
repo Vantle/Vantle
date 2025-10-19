@@ -22,7 +22,11 @@ rust_library(
         ":syntax",
         "//Molten/component:module",
         "//Molten/system/graph/symbolic/translator:module",
+        "//system:language",
+        "//system:module",
+        "//system:resource",
         "@crates//:log",
+        "@crates//:miette",
         "@crates//:thiserror",
     ],
 )

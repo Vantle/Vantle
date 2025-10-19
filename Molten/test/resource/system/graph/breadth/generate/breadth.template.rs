@@ -1,8 +1,9 @@
 use component::graph::attribute::Attribute;
 use std::path::PathBuf;
+use symbolic::constructor::{Constructor, Source};
 
 fn breadth(resource: PathBuf) -> Vec<Attribute<String>> {
-    utility::resource::attributes::attribute(resource)
+    utility::unwrap(utility::unwrap(Source::path(resource)).attribute())
         .breadth()
         .cloned()
         .collect()

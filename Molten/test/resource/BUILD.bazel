@@ -11,4 +11,11 @@ package(default_visibility = [
 
 ##### Module                                                                                                                                           [ Module ]
 
+filegroup(
+    name = "data",
+    srcs = [
+        "//Molten/test/resource/component:data",
+        "//Molten/test/resource/system:data",
+    ],
+)
 ##### Documentation                                                                                                                             [ Documentation ]

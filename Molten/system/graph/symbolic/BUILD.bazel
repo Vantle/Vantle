@@ -13,8 +13,34 @@ rust_library(
     srcs = ["symbolic.rs"],
     crate_name = "symbolic",
     deps = [
+        ":highlighter",
+        ":renderer",
         "//Molten/system/graph/symbolic/constructor:module",
         "//Molten/system/graph/symbolic/translator:module",
+    ],
+)
+
+rust_library(
+    name = "highlighter",
+    srcs = ["highlighter.rs"],
+    data = [
+        "//Molten/resource/system/graph:data",
+    ],
+    deps = [
+        "@crates//:cached",
+        "@crates//:miette",
+        "@crates//:syntect",
+    ],
+)
+
+rust_library(
+    name = "renderer",
+    srcs = ["renderer.rs"],
+    deps = [
+        "//Molten/component/graph:attribute",
+        "//Molten/component/graph:state",
+        "//Molten/component/graph/arena:module",
+        "//Molten/component/graph/traits:module",
     ],
 )
 

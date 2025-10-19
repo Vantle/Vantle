@@ -18,9 +18,17 @@ filegroup(
 )
 
 filegroup(
+    name = "invalid",
+    srcs = [
+        "invalid.lava",
+    ],
+)
+
+filegroup(
     name = "data",
     srcs = [
         ":attribute",
+        ":invalid",
         "//Molten/test/resource/component/graph/attribute/context:data",
         "//Molten/test/resource/component/graph/attribute/generate:data",
         "//Molten/test/resource/component/graph/attribute/group:data",

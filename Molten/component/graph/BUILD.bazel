@@ -53,7 +53,6 @@ rust_library(
     srcs = ["state.rs"],
     deps = [
         "//Molten/component/graph/traits:module",
-        "//Molten/system/graph/algorithm:module",
         "@crates//:itertools",
         "@crates//:serde",
         "@crates//:serde_with",

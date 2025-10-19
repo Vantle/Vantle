@@ -17,11 +17,11 @@ rust_autotest(
     data = [
         "//Molten/test/resource/system/graph/module:data",
     ],
-    template = "//Molten/test/resource/system/graph/index/generate:index.template.rs",
+    template = "//Molten/test/resource/system/graph/index/generate:template",
     deps = [
         "//Molten/component:module",
-        "//Molten/system:module",
-        "//Molten/test/utility:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 
@@ -31,17 +31,18 @@ rust_autotest(
     data = [
         "//Molten/test/resource/component/graph/attribute:data",
     ],
-    template = "//Molten/test/resource/system/graph/breadth/generate:breadth.template.rs",
+    template = "//Molten/test/resource/system/graph/breadth/generate:template",
     deps = [
         "//Molten/component:module",
-        "//Molten/test/utility:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 
 rust_autotest(
     name = "constructor",
     cases = "//Molten/test/resource/system/graph/constructor/generate:cases",
-    template = "//Molten/test/resource/system/graph/constructor/generate:constructor.template.rs",
+    template = "//Molten/test/resource/system/graph/constructor/generate:template",
     deps = [
         "//Molten/component:module",
         "//Molten/system:module",

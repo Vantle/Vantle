@@ -1,6 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_template")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -14,6 +15,16 @@ filegroup(
     name = "data",
     srcs = [
         "arena.template.rs",
+    ],
+)
+
+rust_autotest_template(
+    name = "template",
+    src = "arena.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 

@@ -1,6 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_template")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -10,7 +11,6 @@ package(default_visibility = [
 ])
 
 ##### Module                                                                                                                                           [ Module ]
-
 filegroup(
     name = "cases",
     srcs = ["cases.json"],
@@ -21,6 +21,15 @@ filegroup(
     srcs = [
         "wave.template.rs",
         ":cases",
+    ],
+)
+
+rust_autotest_template(
+    name = "template",
+    src = "wave.template.rs",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system/graph/symbolic/constructor:module",
     ],
 )
 

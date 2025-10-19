@@ -481,9 +481,32 @@ impl<T: Clone + Eq + Ord> Polytranslatable for Wave<T> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct Label(usize);
 
-impl std::fmt::Display for Label {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "#{}", self.0)
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(bound(serialize = "T: Serialize", deserialize = "T: Deserialize<'de>"))]
+pub struct Derivation<T: Clone + Eq + Ord> {
+    pub origin: Label,
+    pub target: Label,
+    pub path: Vec<Label>,
+    pub consumed: Particle<T>,
+}
+
+impl<T: Clone + Eq + Ord> Derivation<T> {
+    pub fn direct(label: Label, particle: Particle<T>) -> Self {
+        Self {
+            origin: label,
+            target: label,
+            path: vec![label],
+            consumed: particle,
+        }
+    }
+
+    pub fn derived(origin: Label, target: Label, path: Vec<Label>, consumed: Particle<T>) -> Self {
+        Self {
+            origin,
+            target,
+            path,
+            consumed,
+        }
     }
 }
 
@@ -497,7 +520,7 @@ pub struct Inference<T: Clone + Eq + Ord> {
     adjacency: BTreeMap<Label, BTreeSet<Label>>,
     #[serde_as(as = "Vec<(_, _)>")]
     reachability: BTreeMap<Label, BTreeSet<Label>>,
-    counter: usize,
+    worlds: usize,
 }
 
 impl<T: Clone + Eq + Ord> Default for Inference<T> {
@@ -506,7 +529,7 @@ impl<T: Clone + Eq + Ord> Default for Inference<T> {
             nodes: BTreeMap::new(),
             adjacency: BTreeMap::new(),
             reachability: BTreeMap::new(),
-            counter: 0,
+            worlds: 0,
         }
     }
 }
@@ -557,8 +580,8 @@ impl<T: Clone + Eq + Ord + Hash> Inference<T> {
     }
 
     pub fn insert(&mut self, particle: Particle<T>) -> Label {
-        let id = Label(self.counter);
-        self.counter += 1;
+        let id = Label(self.worlds);
+        self.worlds += 1;
         self.nodes.insert(id, particle);
         self.adjacency.insert(id, BTreeSet::new());
         self.reachability.insert(id, BTreeSet::new());
@@ -705,6 +728,95 @@ impl<T: Clone + Eq + Ord + Hash> Inference<T> {
             .collect()
     }
 
+    fn derivations(&self, origin: &Label, target: &Particle<T>) -> Vec<Derivation<T>> {
+        let mut results = Vec::new();
+
+        if let Some(packet) = self.nodes.get(origin) {
+            if target.subset(packet).is_some() {
+                results.push(Derivation::direct(*origin, target.clone()));
+            }
+
+            if let Some(reachable) = self.successors(origin) {
+                for candidate in reachable {
+                    if let Some(refraction) = self.nodes.get(candidate) {
+                        if target.subset(refraction).is_some() {
+                            let path = self.path(*origin, *candidate);
+                            if !path.is_empty() {
+                                let overlap =
+                                    packet.intersect(target).unwrap_or_else(Particle::empty);
+
+                                let needed =
+                                    target.diverge(&overlap).unwrap_or_else(Particle::empty);
+                                let requires_multiple =
+                                    needed.elements().any(|(_, &count)| count > 1);
+                                if requires_multiple {
+                                    continue;
+                                }
+
+                                let consumed = if self.reaches(candidate, origin) {
+                                    packet.clone()
+                                } else if !overlap.is_empty() {
+                                    overlap
+                                } else {
+                                    match packet.elements().next() {
+                                        Some((basis, _)) => Particle::fundamental(basis.clone()),
+                                        None => Particle::empty(),
+                                    }
+                                };
+
+                                results
+                                    .push(Derivation::derived(*origin, *candidate, path, consumed));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        results
+    }
+
+    fn path(&self, from: Label, to: Label) -> Vec<Label> {
+        if from == to {
+            return vec![from];
+        }
+
+        let mut visited = BTreeSet::new();
+        let mut queue = std::collections::VecDeque::new();
+        let mut predecessors: BTreeMap<Label, Label> = BTreeMap::new();
+
+        queue.push_back(from);
+        visited.insert(from);
+
+        while let Some(current) = queue.pop_front() {
+            if current == to {
+                let mut path = vec![to];
+                let mut node = to;
+                while let Some(&predecessor) = predecessors.get(&node) {
+                    path.push(predecessor);
+                    node = predecessor;
+                    if node == from {
+                        break;
+                    }
+                }
+                path.reverse();
+                return path;
+            }
+
+            if let Some(neighbors) = self.adjacency.get(&current) {
+                for &neighbor in neighbors {
+                    if !visited.contains(&neighbor) {
+                        visited.insert(neighbor);
+                        predecessors.insert(neighbor, current);
+                        queue.push_back(neighbor);
+                    }
+                }
+            }
+        }
+
+        Vec::new()
+    }
+
     pub fn matching(&self, wave: &Wave<T>) -> Vec<Vec<Label>> {
         if wave.is_empty() {
             return self
@@ -769,6 +881,106 @@ impl<T: Clone + Eq + Ord + Hash> Inference<T> {
         results
     }
 
+    pub fn resonance(&self, wave: &Wave<T>) -> Vec<Vec<Derivation<T>>> {
+        if wave.is_empty() {
+            return self
+                .nodes
+                .iter()
+                .filter(|(_, p)| p.is_empty())
+                .map(|(id, _)| vec![Derivation::direct(*id, Particle::empty())])
+                .collect();
+        }
+
+        let measured: Vec<_> = wave
+            .0
+            .iter()
+            .flat_map(|(particle, &count)| std::iter::repeat_n(particle.clone(), count))
+            .collect();
+
+        let mut results = Vec::new();
+
+        fn search<T: Clone + Eq + Ord + Hash>(
+            inference: &Inference<T>,
+            measured: &[Particle<T>],
+            index: usize,
+            current: &mut Vec<Derivation<T>>,
+            consumed: &mut BTreeMap<Label, Particle<T>>,
+            results: &mut Vec<Vec<Derivation<T>>>,
+        ) {
+            if index == measured.len() {
+                results.push(current.clone());
+                return;
+            }
+
+            let target = &measured[index];
+
+            for &id in inference.nodes.keys() {
+                let derivations = inference.derivations(&id, target);
+
+                for derivation in derivations {
+                    let parallel = current.iter().all(|previous| {
+                        previous.origin == id || inference.independent(&previous.origin, &id)
+                    });
+                    if !parallel {
+                        continue;
+                    }
+
+                    let packet = match inference.node(&id) {
+                        Some(p) => p.clone(),
+                        None => continue,
+                    };
+
+                    let prior = consumed.get(&id).cloned().unwrap_or_else(Particle::empty);
+
+                    let combined = prior
+                        .join(&derivation.consumed)
+                        .unwrap_or_else(|| prior.clone());
+
+                    if combined.subset(&packet).is_none() {
+                        continue;
+                    }
+
+                    current.push(derivation.clone());
+                    consumed.insert(id, combined);
+
+                    search(inference, measured, index + 1, current, consumed, results);
+
+                    current.pop();
+
+                    if prior.is_empty() {
+                        consumed.remove(&id);
+                    } else {
+                        consumed.insert(id, prior);
+                    }
+                }
+            }
+        }
+
+        search(
+            self,
+            &measured,
+            0,
+            &mut Vec::new(),
+            &mut BTreeMap::new(),
+            &mut results,
+        );
+
+        // Deduplicate by canonical key: sorted by origin, keeping only (origin, consumed)
+        let mut unique = std::collections::BTreeSet::new();
+        let mut deduped: Vec<Vec<Derivation<T>>> = Vec::new();
+
+        for set in results.into_iter() {
+            let mut key: Vec<(Label, Particle<T>)> =
+                set.iter().map(|d| (d.origin, d.consumed.clone())).collect();
+            key.sort_by(|a, b| a.0.cmp(&b.0).then(a.1.cmp(&b.1)));
+            if unique.insert(key) {
+                deduped.push(set);
+            }
+        }
+
+        deduped
+    }
+
     pub fn infer(&mut self, matched: &[Label], destinations: &[Particle<T>]) -> bool {
         let mut changed = false;
         let mut evolutions = Vec::new();
@@ -793,6 +1005,38 @@ impl<T: Clone + Eq + Ord + Hash> Inference<T> {
         for &source in matched {
             for &destination in &evolutions {
                 if self.connect(source, destination) {
+                    changed = true;
+                }
+            }
+        }
+
+        changed
+    }
+
+    pub fn apply(&mut self, matched: &[Derivation<T>], destinations: &[Particle<T>]) -> bool {
+        let mut changed = false;
+        let mut evolutions = Vec::new();
+
+        let preexisting: BTreeMap<&Particle<T>, Vec<Label>> = destinations
+            .iter()
+            .map(|dest| (dest, self.nodes(dest)))
+            .collect();
+
+        for destination in destinations {
+            let existing = &preexisting[destination];
+
+            if existing.is_empty() {
+                let id = self.insert(destination.clone());
+                evolutions.push(id);
+                changed = true;
+            } else {
+                evolutions.extend(existing.iter().copied());
+            }
+        }
+
+        for derivation in matched {
+            for &destination in &evolutions {
+                if self.connect(derivation.origin, destination) {
                     changed = true;
                 }
             }

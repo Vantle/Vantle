@@ -1,131 +1,202 @@
 """
-Code generation macros for generating test files from templates and data at build time.
+Code generation macros for test generation from templates and test cases.
 
-This module provides:
-- autotest: Generic macro for creating test targets from templates and data
-- rust_autotest: Rust-specific convenience wrapper
+Public API:
+- autotest_template: Generic template creation
+- autotest: Generic test generation
+- rust_autotest_template: Rust template with defaults
+- rust_autotest: Rust test generation with defaults
 
-Example usage:
-    rust_autotest(
-        name = "my_test",
-        cases = ":cases.json",
-        template = ":test.template.rs",
-        deps = ["//some:dependency"],
+Example:
+    rust_autotest_template(
+        name = "template",
+        src = "test.template.rs",
+        deps = [],  # Optional custom deps
     )
     
-    # Creates:
-    # - my_test_validation (rust_library): validates template compiles
-    # - my_test_generation (generate rule): cases.json + template → cases.generated.rs  
-    # - my_test (rust_test): compiles and runs test_data.generated.rs
+    rust_autotest(
+        name = "my_test",
+        template = ":template",
+        cases = ":cases.json",
+        deps = [],  # Optional custom deps (must match template if customized)
+    )
 """
 
+load("@rules_rust//rust:defs.bzl", "rust_library")
 load(":rule.bzl", "generate")
-load(":types.bzl", "LANGUAGES")
+load(":types.bzl", "LANGUAGES", "TemplateInfo")
+
+def autotest_template(name, src, language, library, deps = [], **kwargs):
+    """
+    Create a template target that validates compilation and provides metadata.
+
+    Language-agnostic base. Use language-specific wrappers (rust_autotest_template) for convenience.
+
+    Args:
+        name: Template target name (typically "template")
+        src: Template source file
+        language: Language string (e.g., "rust")
+        library: Library rule function (e.g., rust_library)
+        deps: Template dependencies
+        **kwargs: Passed to library rule
+    """
+
+    library_name = "{}_library".format(name)
+    library(
+        name = library_name,
+        srcs = [src],
+        deps = deps,
+        testonly = True,
+        **kwargs
+    )
+
+    _autotest_template_provider(
+        name = name,
+        src = src,
+        language = language,
+        deps = deps,
+        library = ":{}".format(library_name),
+        testonly = True,
+    )
+
+def _autotest_template_provider_impl(ctx):
+    """Internal implementation providing TemplateInfo."""
+    return [
+        DefaultInfo(files = depset([ctx.file.src])),
+        TemplateInfo(
+            source = ctx.file.src,
+            language = ctx.attr.language,
+            test = ctx.attr.language,
+            deps = ctx.attr.deps,
+        ),
+        ctx.attr.library[OutputGroupInfo],
+    ]
+
+_autotest_template_provider = rule(
+    implementation = _autotest_template_provider_impl,
+    attrs = {
+        "src": attr.label(
+            allow_single_file = True,
+            mandatory = True,
+            doc = "Template source file",
+        ),
+        "language": attr.string(
+            mandatory = True,
+            doc = "Template language string",
+        ),
+        "deps": attr.label_list(
+            doc = "Template dependencies",
+        ),
+        "library": attr.label(
+            mandatory = True,
+            doc = "Validation library target",
+        ),
+    },
+    doc = "Internal rule providing TemplateInfo for code generation templates",
+)
 
 def autotest(name, template, cases, language, generator = "//system/generation:generator", **kwargs):
     """
-    Generic autotest macro that generates a test file and creates a test target.
+    Create a test target from a template and test cases.
+
+    Language-agnostic base. Use language-specific wrappers (rust_autotest) for convenience.
 
     Args:
-        name: Name of the target
-        template: Template file to use for generation
-        cases: Single test case data file (e.g., JSON) used for generation (currently assumed JSON)
-        language: Language name (must be a key in LANGUAGES) or a Language struct
-        generator: Generator tool to use (defaults to standard generator)
-        **kwargs: Additional attributes passed to pipeline targets
+        name: Test target name
+        template: Template target (created with autotest_template)
+        cases: Test case data file (JSON)
+        language: Language name or Language struct
+        generator: Generator binary (default: //system/generation:generator)
+        **kwargs: Passed to test target (deps, data, visibility, etc.)
     """
 
-    # Handle both string language names and Language structs
     if type(language) == "string":
         target = LANGUAGES.get(language)
         if not target:
-            fail("Unsupported language '{}' for autotest target '{}'. Supported languages are: {}".format(
+            fail("Unsupported language '{}' for '{}'. Supported: {}".format(
                 language,
                 name,
                 ", ".join(sorted(LANGUAGES.keys())),
             ))
-        language_name = language
     else:
-        # Assume it's a Language struct
         target = language
 
-        # Try to find the language name from LANGUAGES dict
-        language_name = None
-        for lang_name, lang in LANGUAGES.items():
-            if lang == language:
-                language_name = lang_name
-                break
-        if not language_name:
-            language_name = "custom"  # Fallback for custom Language structs
-
-    # Validate required parameters
     if not template:
-        fail("autotest requires 'template' attribute for target '{}'".format(name))
+        fail("autotest requires 'template' for '{}'".format(name))
     if not cases:
-        fail("autotest requires 'cases' attribute for target '{}'".format(name))
+        fail("autotest requires 'cases' for '{}'".format(name))
 
-    # Create template validation library
-    validation_name = "{}_validation".format(name)
-
-    # Extract library-specific kwargs
-    library_kwargs = {k: v for k, v in kwargs.items() if k not in ["visibility", "testonly", "srcs", "size", "timeout", "flaky", "shard_count", "local"]}
-
-    # Add language-specific flags if applicable
-    if hasattr(target, "flags") and target.flags:
-        # Handle different flag attributes based on language
-        if language_name == "rust":
-            library_kwargs["rustc_flags"] = kwargs.get("rustc_flags", []) + target.flags
-
-    target.library(
-        name = validation_name,
-        srcs = [template],
-        testonly = True,
-        **library_kwargs
-    )
-
-    # Create generate rule for the data file
-    generate_target_name = "{}_generation".format(name)
+    generate_target = "{}_generation".format(name)
 
     generate(
-        name = generate_target_name,
+        name = generate_target,
         template = template,
         cases = cases,
-        language = language_name,
         generator = generator,
-        deps = [":{}".format(validation_name)],  # Depend on template validation
+        deps = [template],
         testonly = True,
         **{attr: kwargs[attr] for attr in ["visibility", "tags", "deprecation"] if attr in kwargs}
     )
 
-    # Ensure a reasonable default timeout for tests unless explicitly overridden.
     if "timeout" not in kwargs:
         kwargs["timeout"] = "short"
 
-    # Create test that uses the generated file
     target.test(
         name = name,
-        srcs = [":{}".format(generate_target_name)],
+        srcs = [":{}".format(generate_target)],
         **kwargs
     )
 
-def rust_autotest(name, template, cases, generator = "//system/generation:generator", **kwargs):
+def rust_autotest_template(name, src, deps = [], **kwargs):
     """
-    Generate a Rust test file and create a test target from a single data file.
+    Create a Rust template that validates compilation and enables IDE support.
 
-    This is a convenience wrapper around autotest for Rust.
+    Automatically adds `-A dead_code` flag. Templates are compiled as rust_library,
+    enabling rust-analyzer and other tooling to understand the code.
 
     Args:
-        name: Name of the target
-        template: Template .rs file to use for generation
-        cases: Single test case data file (e.g., JSON) used for generation (currently assumed JSON)
-        generator: Generator tool to use (defaults to standard generator)
-        **kwargs: Additional attributes passed to pipeline targets
+        name: Template target name (typically "template")
+        src: Template source file
+        deps: Template dependencies
+        **kwargs: Passed to rust_library
     """
 
-    # Merge user-supplied deps with serde_json, avoiding duplicates
-    deps = kwargs.get("deps", [])
-    extra = ["@crates//:serde_json", "@crates//:serde", "//:module"]
-    merged = depset(deps + extra).to_list()
+    rustc_flags = kwargs.get("rustc_flags", [])
+    if "-A" not in " ".join(rustc_flags):
+        rustc_flags = rustc_flags + ["-A", "dead_code"]
+    kwargs["rustc_flags"] = rustc_flags
+
+    rust_language = LANGUAGES.get("rust")
+    merged = depset(deps + rust_language.deps).to_list()
+    kwargs["deps"] = merged
+
+    autotest_template(
+        name = name,
+        src = src,
+        language = "rust",
+        library = rust_library,
+        **kwargs
+    )
+
+def rust_autotest(name, template, cases, generator = "//system/generation:generator", deps = [], **kwargs):
+    """
+    Generate and run Rust tests from a template and test cases.
+
+    Standard deps auto-included: serde, serde_json, vantle, component, utility.
+    Only specify deps if template has custom dependencies beyond defaults.
+
+    Args:
+        name: Test target name
+        template: Template target (created with rust_autotest_template)
+        cases: Test case data file (JSON)
+        generator: Generator binary (default: //system/generation:generator)
+        deps: Custom dependencies (only if template uses non-default deps)
+        **kwargs: Passed to rust_test (data, visibility, etc.)
+    """
+
+    rust_language = LANGUAGES.get("rust")
+    standard_deps = rust_language.deps
+    merged = depset(deps + standard_deps).to_list()
     kwargs["deps"] = merged
 
     autotest(

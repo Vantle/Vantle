@@ -1,0 +1,439 @@
+{
+    "functions": [
+        {
+            "function": "resonance",
+            "cases": [
+                {
+                    "tags": ["empty", "wave"],
+                    "parameters": {
+                        "inference": {
+                            "nodes": [],
+                            "adjacency": [],
+                            "reachability": [],
+                            "worlds": 0
+                        },
+                        "wave": []
+                    },
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["direct", "match"],
+                    "parameters": {
+                        "inference": {
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [100, 1] ]
+                                ]
+                            ],
+                            "adjacency": [ [0, []] ],
+                            "reachability": [ [0, []] ],
+                            "worlds": 1
+                        },
+                        "wave": [
+                            [
+                                [ [100, 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                {
+                                    "origin": 0,
+                                    "target": 0,
+                                    "path": [0],
+                                    "consumed": [ [100, 1] ]
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["derived", "match"],
+                    "parameters": {
+                        "inference": {
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [10, 1], [50, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [100, 1], [50, 1] ]
+                                ]
+                            ],
+                            "adjacency": [
+                                [ 0, [1] ],
+                                [ 1, [ ] ]
+                            ],
+                            "reachability": [
+                                [ 0, [1] ],
+                                [ 1, [ ] ]
+                            ],
+                            "worlds": 2
+                        },
+                        "wave": [
+                            [
+                                [ [100, 1], [50, 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                {
+                                    "origin": 0,
+                                    "target": 1,
+                                    "path": [0, 1],
+                                    "consumed": [ [50, 1] ]
+                                }
+                            ],
+                            [
+                                {
+                                    "origin": 1,
+                                    "target": 1,
+                                    "path": [1],
+                                    "consumed": [ [100, 1], [50, 1] ]
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["no", "match"],
+                    "parameters": {
+                        "inference": {
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [10, 1] ]
+                                ]
+                            ],
+                            "adjacency": [ [0, []] ],
+                            "reachability": [ [0, []] ],
+                            "worlds": 1
+                        },
+                        "wave": [
+                            [
+                                [ [100, 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["insufficient", "capacity"],
+                    "parameters": {
+                        "inference": {
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [10, 1], [50, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [100, 2], [50, 1] ]
+                                ]
+                            ],
+                            "adjacency": [
+                                [ 0, [1] ],
+                                [ 1, [ ] ]
+                            ],
+                            "reachability": [
+                                [ 0, [1] ],
+                                [ 1, [ ] ]
+                            ],
+                            "worlds": 2
+                        },
+                        "wave": [
+                            [
+                                [ [100, 2], [50, 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                {
+                                    "origin": 1,
+                                    "target": 1,
+                                    "path": [1],
+                                    "consumed": [ [100, 2], [50, 1] ]
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["complex", "two", "match"],
+                    "parameters": {
+                        "inference": {
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [200, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [200, 1] ]
+                                ],
+                                [
+                                    2,
+                                    [ [200, 1], [300, 1] ]
+                                ]
+                            ],
+                            "adjacency": [
+                                [ 0, [2] ],
+                                [ 1, [2] ],
+                                [ 2, [ ] ]
+                            ],
+                            "reachability": [
+                                [ 0, [2] ],
+                                [ 1, [2] ],
+                                [ 2, [ ] ]
+                            ],
+                            "worlds": 3
+                        },
+                        "wave": [
+                            [
+                                [ [200, 1] ],
+                                2
+                            ],
+                            [
+                                [ [300, 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                {
+                                    "origin": 0,
+                                    "target": 0,
+                                    "path": [0],
+                                    "consumed": [ [200, 1] ]
+                                },
+                                {
+                                    "origin": 0,
+                                    "target": 0,
+                                    "path": [0],
+                                    "consumed": [ [200, 1] ]
+                                },
+                                {
+                                    "origin": 0,
+                                    "target": 2,
+                                    "path": [0, 2],
+                                    "consumed": [ [200, 1] ]
+                                }
+                            ],
+                            [
+                                {
+                                    "origin": 0,
+                                    "target": 0,
+                                    "path": [0],
+                                    "consumed": [ [200, 1] ]
+                                },
+                                {
+                                    "origin": 0,
+                                    "target": 0,
+                                    "path": [0],
+                                    "consumed": [ [200, 1] ]
+                                },
+                                {
+                                    "origin": 1,
+                                    "target": 2,
+                                    "path": [1, 2],
+                                    "consumed": [ [200, 1] ]
+                                }
+                            ],
+                            [
+                                {
+                                    "origin": 0,
+                                    "target": 0,
+                                    "path": [0],
+                                    "consumed": [ [200, 1] ]
+                                },
+                                {
+                                    "origin": 1,
+                                    "target": 1,
+                                    "path": [1],
+                                    "consumed": [ [200, 1] ]
+                                },
+                                {
+                                    "origin": 1,
+                                    "target": 2,
+                                    "path": [1, 2],
+                                    "consumed": [ [200, 1] ]
+                                }
+                            ],
+                            [
+                                {
+                                    "origin": 1,
+                                    "target": 1,
+                                    "path": [1],
+                                    "consumed": [ [200, 1] ]
+                                },
+                                {
+                                    "origin": 1,
+                                    "target": 1,
+                                    "path": [1],
+                                    "consumed": [ [200, 1] ]
+                                },
+                                {
+                                    "origin": 1,
+                                    "target": 2,
+                                    "path": [1, 2],
+                                    "consumed": [ [200, 1] ]
+                                }
+                            ],
+                            [
+                                {
+                                    "origin": 2,
+                                    "target": 2,
+                                    "path": [2],
+                                    "consumed": [ [200, 1] ]
+                                },
+                                {
+                                    "origin": 2,
+                                    "target": 2,
+                                    "path": [2],
+                                    "consumed": [ [200, 1] ]
+                                },
+                                {
+                                    "origin": 2,
+                                    "target": 2,
+                                    "path": [2],
+                                    "consumed": [ [300, 1] ]
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["deep", "converge", "match"],
+                    "parameters": {
+                        "inference": {
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [100, 1], [200, 1] ]
+                                ],
+                                [1, []],
+                                [2, []],
+                                [
+                                    3,
+                                    [ [100, 1], [200, 1] ]
+                                ]
+                            ],
+                            "adjacency": [
+                                [ 0, [1, 2] ],
+                                [ 1, [3   ] ],
+                                [ 2, [3   ] ],
+                                [ 3, [    ] ]
+                            ],
+                            "reachability": [
+                                [ 0, [1, 2] ],
+                                [ 1, [3   ] ],
+                                [ 2, [3   ] ],
+                                [ 3, [    ] ]
+                            ],
+                            "worlds": 4
+                        },
+                        "wave": [
+                            [
+                                [ [100, 1], [200, 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                {
+                                    "origin": 0,
+                                    "target": 0,
+                                    "path": [0],
+                                    "consumed": [ [100, 1], [200, 1] ]
+                                }
+                            ],
+                            [
+                                {
+                                    "origin": 1,
+                                    "target": 3,
+                                    "path": [1, 3],
+                                    "consumed": []
+                                }
+                            ],
+                            [
+                                {
+                                    "origin": 2,
+                                    "target": 3,
+                                    "path": [2, 3],
+                                    "consumed": []
+                                }
+                            ],
+                            [
+                                {
+                                    "origin": 3,
+                                    "target": 3,
+                                    "path": [3],
+                                    "consumed": [ [100, 1], [200, 1] ]
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["cycle", "graph"],
+                    "parameters": {
+                        "inference": {
+                            "nodes": [
+                                [0, []],
+                                [1, []],
+                                [
+                                    2,
+                                    [ [400, 1] ]
+                                ]
+                            ],
+                            "adjacency": [
+                                [ 0, [1] ],
+                                [ 1, [0] ],
+                                [ 2, [ ] ]
+                            ],
+                            "reachability": [
+                                [ 0, [1] ],
+                                [ 1, [0] ],
+                                [ 2, [ ] ]
+                            ],
+                            "worlds": 3
+                        },
+                        "wave": [
+                            [
+                                [ [400, 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [
+                            [
+                                {
+                                    "origin": 2,
+                                    "target": 2,
+                                    "path": [2],
+                                    "consumed": [ [400, 1] ]
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

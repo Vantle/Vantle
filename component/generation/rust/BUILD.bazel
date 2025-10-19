@@ -12,6 +12,7 @@ rust_library(
     name = "error",
     srcs = ["error.rs"],
     deps = [
+        "//system:language",
         "@crates//:miette",
         "@crates//:serde_json",
         "@crates//:syn",

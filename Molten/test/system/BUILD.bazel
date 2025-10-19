@@ -19,11 +19,12 @@ rust_autotest(
     data = [
         "//Molten/test/resource/system/graph/module:data",
     ],
-    template = "//Molten/test/resource/system/graph/generate:graph.template.rs",
+    template = "//Molten/test/resource/system/graph/generate:template",
     deps = [
         "//Molten/component:module",
         "//Molten/system:module",
-        "//Molten/test/utility:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 

@@ -1,8 +1,20 @@
-use log::debug;
-
 use std::fmt::Debug;
+use std::io::Read;
+use std::io::Seek;
 use std::io::SeekFrom;
-use std::io::{Error, Read, Seek};
+
+use log::debug;
+use miette::Diagnostic;
+use thiserror::Error as ThisError;
+
+#[derive(ThisError, Debug, Diagnostic)]
+pub enum Error {
+    #[error(transparent)]
+    #[diagnostic(code(translator::io))]
+    Io(#[from] std::io::Error),
+}
+
+pub type Result<T> = miette::Result<T, Error>;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Translation<Element> {
@@ -142,16 +154,13 @@ impl<Element> Default for Rules<Element> {
 }
 
 impl Rules<u8> {
-    pub fn view<Source>(
-        &self,
-        mut source: impl Translator<Source, u8>,
-    ) -> Result<Translation<u8>, Error> {
+    pub fn view<Source>(&self, mut source: impl Translator<Source, u8>) -> Result<Translation<u8>> {
         source.view(self.filter.as_ref(), self.terminator.as_ref(), self.limiter)
     }
     pub fn consume<Source>(
         &self,
         mut source: impl Translator<Source, u8>,
-    ) -> Result<Translation<u8>, Error> {
+    ) -> Result<Translation<u8>> {
         source.consume(self.filter.as_ref(), self.terminator.as_ref(), self.limiter)
     }
 }
@@ -162,13 +171,13 @@ pub trait Translator<Source, Element> {
         filter: &Rule<Element>,
         terminator: &Rule<Element>,
         limit: Option<usize>,
-    ) -> Result<Translation<Element>, Error>;
+    ) -> Result<Translation<Element>>;
     fn consume(
         &mut self,
         filter: &Rule<Element>,
         terminator: &Rule<Element>,
         limit: Option<usize>,
-    ) -> Result<Translation<Element>, Error>;
+    ) -> Result<Translation<Element>>;
 }
 
 impl<Source: Read + Seek> Translator<Source, u8> for Source {
@@ -177,7 +186,7 @@ impl<Source: Read + Seek> Translator<Source, u8> for Source {
         filter: &Rule<u8>,
         terminator: &Rule<u8>,
         limiter: Option<usize>,
-    ) -> Result<Translation<u8>, Error> {
+    ) -> Result<Translation<u8>> {
         let initial = self.stream_position()?;
         let remaining = self.seek(SeekFrom::End(0))? - initial;
         let reset = self.seek(SeekFrom::Start(initial))?;
@@ -214,7 +223,7 @@ impl<Source: Read + Seek> Translator<Source, u8> for Source {
         filter: &Rule<u8>,
         terminator: &Rule<u8>,
         limiter: Option<usize>,
-    ) -> Result<Translation<u8>, Error> {
+    ) -> Result<Translation<u8>> {
         let initial = self.stream_position()?;
         let remaining = self.seek(SeekFrom::End(0))? - initial;
         let reset = self.seek(SeekFrom::Start(initial))?;

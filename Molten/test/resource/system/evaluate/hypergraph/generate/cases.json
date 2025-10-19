@@ -1,0 +1,853 @@
+{
+    "functions": [
+        {
+            "function": "focus",
+            "tags": ["hypergraph"],
+            "cases": [
+                {
+                    "tags": ["simple"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [],
+                            "edges": [],
+                            "particles": 0,
+                            "refractions": {},
+                            "world": {},
+                            "worlds": 0,
+                            "united": {},
+                            "future": {},
+                            "past": {}
+                        },
+                        "particle": [ [1, 1] ]
+                    },
+                    "returns": {
+                        "()": 0,
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 1,
+                            "refractions": {"0": 0},
+                            "world": {"0": 0},
+                            "worlds": 1,
+                            "united": { "0": [0] },
+                            "future": {"0": []},
+                            "past": {"0": []}
+                        }
+                    }
+                },
+                {
+                    "tags": ["complex"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [2, 1] ]
+                                ],
+                                [
+                                    2,
+                                    [ [3, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 3,
+                            "refractions": {"0": 0, "1": 1, "2": 2},
+                            "world": {"0": 0, "1": 1, "2": 2},
+                            "worlds": 3,
+                            "united": { "0": [0], "1": [1], "2": [2] },
+                            "future": {"0": [], "1": [], "2": []},
+                            "past": {"0": [], "1": [], "2": []}
+                        },
+                        "particle": [ [4, 1] ]
+                    },
+                    "returns": {
+                        "()": 3,
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [2, 1] ]
+                                ],
+                                [
+                                    2,
+                                    [ [3, 1] ]
+                                ],
+                                [
+                                    3,
+                                    [ [4, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 4,
+                            "refractions": {"0": 0, "1": 1, "2": 2, "3": 3},
+                            "world": {"0": 0, "1": 1, "2": 2, "3": 3},
+                            "worlds": 4,
+                            "united": {
+                                "0": [0],
+                                "1": [1],
+                                "2": [2],
+                                "3": [3]
+                            },
+                            "future": {"0": [], "1": [], "2": [], "3": []},
+                            "past": {"0": [], "1": [], "2": [], "3": []}
+                        }
+                    }
+                },
+                {
+                    "tags": ["sequential"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [2, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 2,
+                            "refractions": {"0": 0, "1": 1},
+                            "world": {"0": 0, "1": 1},
+                            "worlds": 2,
+                            "united": { "0": [0], "1": [1] },
+                            "future": {"0": [], "1": []},
+                            "past": {"0": [], "1": []}
+                        },
+                        "particle": [ [5, 1] ]
+                    },
+                    "returns": {
+                        "()": 2,
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [2, 1] ]
+                                ],
+                                [
+                                    2,
+                                    [ [5, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 3,
+                            "refractions": {"0": 0, "1": 1, "2": 2},
+                            "world": {"0": 0, "1": 1, "2": 2},
+                            "worlds": 3,
+                            "united": { "0": [0], "1": [1], "2": [2] },
+                            "future": {"0": [], "1": [], "2": []},
+                            "past": {"0": [], "1": [], "2": []}
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "function": "diffuse",
+            "tags": ["hypergraph"],
+            "cases": [
+                {
+                    "tags": ["simple"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [],
+                            "edges": [],
+                            "particles": 0,
+                            "refractions": {},
+                            "world": {},
+                            "worlds": 0,
+                            "united": {},
+                            "future": {},
+                            "past": {}
+                        },
+                        "signal": [
+                            [
+                                [ [1, 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [0],
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 1,
+                            "refractions": {"0": 0},
+                            "world": {"0": 0},
+                            "worlds": 1,
+                            "united": { "0": [0] },
+                            "future": {"0": []},
+                            "past": {"0": []}
+                        }
+                    }
+                },
+                {
+                    "tags": ["complex"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 1,
+                            "refractions": {"0": 0},
+                            "world": {"0": 0},
+                            "worlds": 1,
+                            "united": { "0": [0] },
+                            "future": {"0": []},
+                            "past": {"0": []}
+                        },
+                        "signal": [
+                            [
+                                [ [2, 1] ],
+                                1
+                            ],
+                            [
+                                [ [3, 1] ],
+                                1
+                            ],
+                            [
+                                [ [4, 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [1, 2, 3],
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [2, 1] ]
+                                ],
+                                [
+                                    2,
+                                    [ [3, 1] ]
+                                ],
+                                [
+                                    3,
+                                    [ [4, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 4,
+                            "refractions": {"0": 0, "1": 1, "2": 2, "3": 3},
+                            "world": {"0": 0, "1": 1, "2": 2, "3": 3},
+                            "worlds": 4,
+                            "united": {
+                                "0": [0],
+                                "1": [1],
+                                "2": [2],
+                                "3": [3]
+                            },
+                            "future": {"0": [], "1": [], "2": [], "3": []},
+                            "past": {"0": [], "1": [], "2": [], "3": []}
+                        }
+                    }
+                },
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 1,
+                            "refractions": {"0": 0},
+                            "world": {"0": 0},
+                            "worlds": 1,
+                            "united": { "0": [0] },
+                            "future": {"0": []},
+                            "past": {"0": []}
+                        },
+                        "signal": []
+                    },
+                    "returns": {
+                        "()": [],
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 1,
+                            "refractions": {"0": 0},
+                            "world": {"0": 0},
+                            "worlds": 1,
+                            "united": { "0": [0] },
+                            "future": {"0": []},
+                            "past": {"0": []}
+                        }
+                    }
+                },
+                {
+                    "tags": ["multiple"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [],
+                            "edges": [],
+                            "particles": 0,
+                            "refractions": {},
+                            "world": {},
+                            "worlds": 0,
+                            "united": {},
+                            "future": {},
+                            "past": {}
+                        },
+                        "signal": [
+                            [
+                                [ [1, 1] ],
+                                1
+                            ],
+                            [
+                                [ [2, 1] ],
+                                1
+                            ],
+                            [
+                                [ [3, 1] ],
+                                1
+                            ],
+                            [
+                                [ [4, 1] ],
+                                1
+                            ],
+                            [
+                                [ [5, 1] ],
+                                1
+                            ]
+                        ]
+                    },
+                    "returns": {
+                        "()": [0, 1, 2, 3, 4],
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [2, 1] ]
+                                ],
+                                [
+                                    2,
+                                    [ [3, 1] ]
+                                ],
+                                [
+                                    3,
+                                    [ [4, 1] ]
+                                ],
+                                [
+                                    4,
+                                    [ [5, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 5,
+                            "refractions": {
+                                "0": 0,
+                                "1": 1,
+                                "2": 2,
+                                "3": 3,
+                                "4": 4
+                            },
+                            "world": {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4},
+                            "worlds": 5,
+                            "united": {
+                                "0": [0],
+                                "1": [1],
+                                "2": [2],
+                                "3": [3],
+                                "4": [4]
+                            },
+                            "future": {
+                                "0": [],
+                                "1": [],
+                                "2": [],
+                                "3": [],
+                                "4": []
+                            },
+                            "past": {
+                                "0": [],
+                                "1": [],
+                                "2": [],
+                                "3": [],
+                                "4": []
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "function": "united",
+            "tags": ["hypergraph"],
+            "cases": [
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [],
+                            "edges": [],
+                            "particles": 0,
+                            "refractions": {},
+                            "world": {},
+                            "worlds": 0,
+                            "united": {},
+                            "future": {},
+                            "past": {}
+                        }
+                    },
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["single"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 1,
+                            "refractions": {"0": 0},
+                            "world": {"0": 0},
+                            "worlds": 1,
+                            "united": { "0": [0] },
+                            "future": {"0": []},
+                            "past": {"0": []}
+                        }
+                    },
+                    "returns": {
+                        "()": [ [0] ]
+                    }
+                },
+                {
+                    "tags": ["multiple"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [2, 1] ]
+                                ],
+                                [
+                                    2,
+                                    [ [3, 1] ]
+                                ],
+                                [
+                                    3,
+                                    [ [4, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 4,
+                            "refractions": {"0": 0, "1": 1, "2": 2, "3": 3},
+                            "world": {"0": 0, "1": 1, "2": 2, "3": 3},
+                            "worlds": 4,
+                            "united": {
+                                "0": [0],
+                                "1": [1],
+                                "2": [2],
+                                "3": [3]
+                            },
+                            "future": {"0": [], "1": [], "2": [], "3": []},
+                            "past": {"0": [], "1": [], "2": [], "3": []}
+                        }
+                    },
+                    "returns": {
+                        "()": [ [0], [1], [2], [3] ]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "node",
+            "tags": ["hypergraph"],
+            "cases": [
+                {
+                    "tags": ["simple"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 1,
+                            "refractions": {"0": 0},
+                            "world": {"0": 0},
+                            "worlds": 1,
+                            "united": { "0": [0] },
+                            "future": {"0": []},
+                            "past": {"0": []}
+                        },
+                        "label": 0
+                    },
+                    "returns": {"()": 0}
+                },
+                {
+                    "tags": ["multiple"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [2, 1] ]
+                                ],
+                                [
+                                    2,
+                                    [ [3, 1] ]
+                                ]
+                            ],
+                            "edges": [],
+                            "particles": 3,
+                            "refractions": {"0": 0, "1": 1, "2": 2},
+                            "world": {"0": 0, "1": 1, "2": 2},
+                            "worlds": 3,
+                            "united": { "0": [0], "1": [1], "2": [2] },
+                            "future": {"0": [], "1": [], "2": []},
+                            "past": {"0": [], "1": [], "2": []}
+                        },
+                        "label": 2
+                    },
+                    "returns": {"()": 2}
+                }
+            ]
+        },
+        {
+            "function": "edge",
+            "tags": ["hypergraph"],
+            "cases": [
+                {
+                    "tags": ["simple"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [
+                                    0,
+                                    [ [1, 1] ]
+                                ],
+                                [
+                                    1,
+                                    [ [2, 1] ]
+                                ]
+                            ],
+                            "edges": [
+                                {
+                                    "label": 0,
+                                    "sources": [0],
+                                    "refractions": [1],
+                                    "source": [
+                                        [
+                                            [ [1, 1] ],
+                                            1
+                                        ]
+                                    ],
+                                    "refraction": [
+                                        [
+                                            [ [2, 1] ],
+                                            1
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "particles": 2,
+                            "refractions": {"0": 0, "1": 1},
+                            "world": {"0": 0, "1": 1},
+                            "worlds": 2,
+                            "united": { "0": [0], "1": [1] },
+                            "future": {"0": [], "1": []},
+                            "past": {"0": [], "1": []}
+                        },
+                        "label": 0
+                    },
+                    "returns": {"()": 0}
+                }
+            ]
+        },
+        {
+            "function": "independent",
+            "tags": ["hypergraph", "independent"],
+            "cases": [
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [],
+                            "edges": [],
+                            "particles": 0,
+                            "refractions": {},
+                            "world": {},
+                            "worlds": 0,
+                            "united": {},
+                            "future": {},
+                            "past": {}
+                        },
+                        "rank": 1
+                    },
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["rank", "exceeds"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [0, [ [1, 1] ]],
+                                [1, [ [2, 1] ]]
+                            ],
+                            "edges": [],
+                            "particles": 2,
+                            "refractions": {"0": 0, "1": 1},
+                            "world": {"0": 0, "1": 1},
+                            "worlds": 2,
+                            "united": { "0": [0], "1": [1] },
+                            "future": {"0": [], "1": []},
+                            "past": {"0": [], "1": []}
+                        },
+                        "rank": 3
+                    },
+                    "returns": {"()": []}
+                },
+                {
+                    "tags": ["rank", "simple"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [0, [ [1, 1] ]],
+                                [1, [ [2, 1] ]],
+                                [2, [ [3, 1] ]]
+                            ],
+                            "edges": [],
+                            "particles": 3,
+                            "refractions": {"0": 0, "1": 1, "2": 2},
+                            "world": {"0": 0, "1": 1, "2": 2},
+                            "worlds": 3,
+                            "united": { "0": [0], "1": [1], "2": [2] },
+                            "future": {"0": [], "1": [], "2": []},
+                            "past": {"0": [], "1": [], "2": []}
+                        },
+                        "rank": 2
+                    },
+                    "returns": {
+                        "()": [
+                            [0, 1],
+                            [0, 2],
+                            [1, 2]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["rank", "united", "members"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [0, [ [1, 1] ]],
+                                [1, [ [2, 1] ]],
+                                [2, [ [3, 1] ]],
+                                [3, [ [4, 1] ]],
+                                [4, [ [5, 1] ]],
+                                [5, [ [6, 1] ]]
+                            ],
+                            "edges": [],
+                            "particles": 6,
+                            "refractions": {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5},
+                            "world": {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5},
+                            "worlds": 6,
+                            "united": {
+                                "0": [0, 1],
+                                "2": [2],
+                                "3": [3, 4, 5]
+                            },
+                            "future": {"0": [], "1": [], "2": [], "3": [], "4": [], "5": []},
+                            "past": {"0": [], "1": [], "2": [], "3": [], "4": [], "5": []}
+                        },
+                        "rank": 2
+                    },
+                    "returns": {
+                        "()": [
+                            [0, 2],
+                            [1, 2],
+                            [0, 3],
+                            [0, 4],
+                            [0, 5],
+                            [1, 3],
+                            [1, 4],
+                            [1, 5],
+                            [2, 3],
+                            [2, 4],
+                            [2, 5]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["rank", "three"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [0, [ [1, 1] ]],
+                                [1, [ [2, 1] ]],
+                                [2, [ [3, 1] ]],
+                                [3, [ [4, 1] ]],
+                                [4, [ [5, 1] ]]
+                            ],
+                            "edges": [],
+                            "particles": 5,
+                            "refractions": {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4},
+                            "world": {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4},
+                            "worlds": 5,
+                            "united": {
+                                "0": [0, 1],
+                                "2": [2],
+                                "3": [3],
+                                "4": [4]
+                            },
+                            "future": {"0": [], "1": [], "2": [], "3": [], "4": []},
+                            "past": {"0": [], "1": [], "2": [], "3": [], "4": []}
+                        },
+                        "rank": 3
+                    },
+                    "returns": {
+                        "()": [
+                            [0, 2, 3],
+                            [1, 2, 3],
+                            [0, 2, 4],
+                            [1, 2, 4],
+                            [0, 3, 4],
+                            [1, 3, 4],
+                            [2, 3, 4]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["rank", "one"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [0, [ [1, 1] ]],
+                                [1, [ [2, 1] ]],
+                                [2, [ [3, 1] ]]
+                            ],
+                            "edges": [],
+                            "particles": 3,
+                            "refractions": {"0": 0, "1": 1, "2": 2},
+                            "world": {"0": 0, "1": 1, "2": 2},
+                            "worlds": 3,
+                            "united": { "0": [0], "1": [1], "2": [2] },
+                            "future": {"0": [], "1": [], "2": []},
+                            "past": {"0": [], "1": [], "2": []}
+                        },
+                        "rank": 1
+                    },
+                    "returns": {
+                        "()": [
+                            [0],
+                            [1],
+                            [2]
+                        ]
+                    }
+                },
+                {
+                    "tags": ["rank", "zero"],
+                    "parameters": {
+                        "graph": {
+                            "_meta": {},
+                            "nodes": [
+                                [0, [ [1, 1] ]],
+                                [1, [ [2, 1] ]]
+                            ],
+                            "edges": [],
+                            "particles": 2,
+                            "refractions": {"0": 0, "1": 1},
+                            "world": {"0": 0, "1": 1},
+                            "worlds": 2,
+                            "united": { "0": [0], "1": [1] },
+                            "future": {"0": [], "1": []},
+                            "past": {"0": [], "1": []}
+                        },
+                        "rank": 0
+                    },
+                    "returns": {
+                        "()": [[]]
+                    }
+                }
+            ]
+        }
+    ]
+}

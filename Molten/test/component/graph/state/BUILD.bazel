@@ -14,20 +14,30 @@ package(default_visibility = [
 rust_autotest(
     name = "particle",
     cases = "//Molten/test/resource/component/graph/state/particle/generate:cases",
-    template = "//Molten/test/resource/component/graph/state/particle/generate:particle.template.rs",
+    template = "//Molten/test/resource/component/graph/state/particle/generate:template",
     deps = [
         "//Molten/component:module",
-        "//Molten/test/utility:module",
+        "//Molten/system:module",
     ],
 )
 
 rust_autotest(
     name = "wave",
     cases = "//Molten/test/resource/component/graph/state/wave/generate:cases",
-    template = "//Molten/test/resource/component/graph/state/wave/generate:wave.template.rs",
+    template = "//Molten/test/resource/component/graph/state/wave/generate:template",
     deps = [
         "//Molten/component:module",
-        "//Molten/test/utility:module",
+        "//Molten/system:module",
+    ],
+)
+
+rust_autotest(
+    name = "polymorphic",
+    cases = "//Molten/test/resource/component/graph/state/inference:cases",
+    template = "//Molten/test/resource/component/graph/state/inference:template",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system:module",
     ],
 )
 

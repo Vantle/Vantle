@@ -49,16 +49,6 @@ impl<Label: Eq + Hash + Clone + Serialize + for<'a> Deserialize<'a>> Related<Lab
             .insert(relation.clone());
         self
     }
-
-    pub fn merge(&mut self, other: &Self) -> &mut Self {
-        for (label, relations) in &other.adjacency {
-            self.adjacency
-                .entry(label.clone())
-                .or_default()
-                .extend(relations.iter().cloned());
-        }
-        self
-    }
 }
 
 impl<'a, Label: Eq + Hash + Serialize + for<'de> Deserialize<'de>> IntoIterator

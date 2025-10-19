@@ -1,6 +1,6 @@
 use component::graph::matrix::Related;
 use component::graph::state::{Inference, Wave};
-use system::evaluate::lava;
+use system::evaluation::evaluator::lava;
 
 fn propegate(
     signal: Wave<usize>,
@@ -8,7 +8,6 @@ fn propegate(
     limit: Option<usize>,
 ) -> Inference<usize> {
     let mut inference = Inference::new();
-    lava::propegate(&mut inference, &signal, &context, limit)
-        .expect("Inference iteration limit exceeded");
+    utility::unwrap(lava::propagate(&mut inference, &signal, &context, limit));
     inference
 }

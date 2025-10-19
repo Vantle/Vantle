@@ -29,6 +29,7 @@ rust_binary(
     visibility = ["//visibility:public"],
     deps = [
         "//component:module",
+        "//system:diagnostic",
         "//system:module",
         "//system/generation/rust:module",
         "//system/logging:autolog",

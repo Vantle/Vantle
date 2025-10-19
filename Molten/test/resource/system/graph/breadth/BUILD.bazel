@@ -13,7 +13,7 @@ package(default_visibility = [
 filegroup(
     name = "data",
     srcs = [
-        "//Molten/test/resource/system/graph/breadth/generate:data",
+        "//Molten/test/resource/system/graph/breadth/generate:cases",
     ],
 )
 

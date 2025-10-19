@@ -61,6 +61,20 @@
           }
         }
       ]
+    },
+    {
+      "function": "error",
+      "cases": [
+        {
+          "tags": ["invalid", "syntax"],
+          "parameters": {
+            "resource": "Molten/test/resource/component/graph/attribute/invalid.lava"
+          },
+          "returns": {
+            "()": true
+          }
+        }
+      ]
     }
   ]
 }

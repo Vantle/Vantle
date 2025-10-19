@@ -1,6 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_template")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -14,7 +15,16 @@ filegroup(
     name = "data",
     srcs = [
         "translator.template.rs",
-        "//Molten/test/resource/system/graph/symbolic/translator/generate:cases",
+        "//Molten/test/resource/system/graph/symbolic/translator/generate:data",
+    ],
+)
+
+rust_autotest_template(
+    name = "template",
+    src = "translator.template.rs",
+    deps = [
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 

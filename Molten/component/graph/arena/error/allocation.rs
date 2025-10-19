@@ -37,15 +37,6 @@ pub enum Allocation {
 }
 
 impl Allocation {
-    pub fn code(&self) -> i32 {
-        match self {
-            Self::Limit => 65,
-            Self::Collision { .. } => 66,
-            Self::Capacity { .. } => 68,
-            Self::Unification { .. } => 67,
-        }
-    }
-
     pub fn collision(index: usize) -> Self {
         Self::Collision { index }
     }

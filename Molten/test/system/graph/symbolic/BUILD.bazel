@@ -19,10 +19,11 @@ rust_autotest(
         "//Molten/test/resource/system/graph/module/breadth:data",
         "//Molten/test/resource/system/graph/module/echo:data",
     ],
-    template = "//Molten/test/resource/component/graph/attribute/module/generate:module.template.rs",
+    template = "//Molten/test/resource/component/graph/attribute/module/generate:template",
     deps = [
         "//Molten/component:module",
-        "//Molten/test/utility:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 
@@ -32,10 +33,11 @@ rust_autotest(
     data = [
         "//Molten/test/resource/system/graph/module:data",
     ],
-    template = "//Molten/test/resource/system/graph/arena/generate:arena.template.rs",
+    template = "//Molten/test/resource/system/graph/arena/generate:template",
     deps = [
         "//Molten/component:module",
-        "//Molten/test/utility:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 
@@ -43,10 +45,11 @@ rust_autotest(
     name = "attribute",
     cases = "//Molten/test/resource/component/graph/attribute/generate:cases",
     data = ["//Molten/test/resource/component/graph/attribute:data"],
-    template = "//Molten/test/resource/component/graph/attribute/generate:attribute.template.rs",
+    template = "//Molten/test/resource/component/graph/attribute/generate:template",
     deps = [
         "//Molten/component:module",
-        "//Molten/test/utility:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 
@@ -54,10 +57,11 @@ rust_autotest(
     name = "context",
     cases = "//Molten/test/resource/component/graph/attribute/context/generate:cases",
     data = ["//Molten/test/resource/component/graph/attribute:data"],
-    template = "//Molten/test/resource/component/graph/attribute/context/generate:context.template.rs",
+    template = "//Molten/test/resource/component/graph/attribute/context/generate:template",
     deps = [
         "//Molten/component:module",
-        "//Molten/test/utility:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 
@@ -65,10 +69,11 @@ rust_autotest(
     name = "group",
     cases = "//Molten/test/resource/component/graph/attribute/group/generate:cases",
     data = ["//Molten/test/resource/component/graph/attribute:data"],
-    template = "//Molten/test/resource/component/graph/attribute/group/generate:group.template.rs",
+    template = "//Molten/test/resource/component/graph/attribute/group/generate:template",
     deps = [
         "//Molten/component:module",
-        "//Molten/test/utility:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 
@@ -76,20 +81,33 @@ rust_autotest(
     name = "partition",
     cases = "//Molten/test/resource/component/graph/attribute/partition/generate:cases",
     data = ["//Molten/test/resource/component/graph/attribute:data"],
-    template = "//Molten/test/resource/component/graph/attribute/partition/generate:partition.template.rs",
+    template = "//Molten/test/resource/component/graph/attribute/partition/generate:template",
     deps = [
         "//Molten/component:module",
-        "//Molten/test/utility:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 
 rust_autotest(
     name = "translator",
     cases = "//Molten/test/resource/system/graph/symbolic/translator/generate:cases",
-    template = "//Molten/test/resource/system/graph/symbolic/translator:translator.template.rs",
+    template = "//Molten/test/resource/system/graph/symbolic/translator:template",
     deps = [
         "//Molten/system/graph/symbolic:module",
-        "//Molten/test/utility:module",
+        "//test/utility:module",
+    ],
+)
+
+rust_autotest(
+    name = "renderer",
+    cases = "//Molten/test/resource/system/graph/symbolic/renderer/generate:cases",
+    data = ["//Molten/test/resource/system/graph/module:data"],
+    template = "//Molten/test/resource/system/graph/symbolic/renderer:template",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system/graph/symbolic:module",
+        "//test/utility:module",
     ],
 )
 

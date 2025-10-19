@@ -1,5 +1,6 @@
 use autolog::{error, info};
 use clap::{Parser, ValueEnum};
+use component::generation::rust::error::Error;
 use component::generation::rust::schema::Cases;
 use miette::{IntoDiagnostic, Result};
 use std::{fs, path::PathBuf, process};
@@ -25,24 +26,6 @@ struct Arguments {
 }
 
 fn main() {
-    miette::set_hook(Box::new(|_| {
-        Box::new(
-            miette::MietteHandlerOpts::new()
-                .terminal_links(true)
-                .unicode(true)
-                .context_lines(5)
-                .tab_width(2)
-                .color(true)
-                .force_graphical(true)
-                .build(),
-        )
-    }))
-    .unwrap_or_else(|e| {
-        error!("Failed to initialize miette error reporting system: {}", e);
-        info!("This will affect error display quality but the program can continue.");
-        info!("Consider checking your terminal capabilities or miette configuration.");
-    });
-
     match run() {
         Ok(_output) => {
             info!(
@@ -79,13 +62,7 @@ fn run() -> Result<PathBuf> {
         })?;
 
     let data: Cases = serde_json::from_str(&cases)
-        .into_diagnostic()
-        .map_err(|e| {
-            e.with_source_code(format!(
-                "📄 Failed to parse JSON in cases file: {}\n\n💡 Tip: Check your JSON syntax using a JSON validator.",
-                arguments.cases.display()
-            ))
-        })?;
+        .map_err(|e| Error::deserialization("Cases", &arguments.cases, &cases, e))?;
 
     let output = match arguments.language {
         Language::Rust => {

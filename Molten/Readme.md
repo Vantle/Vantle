@@ -8,7 +8,7 @@
 
 ---
 
-This document describes **all of the semantics** of Molten’s computational expression. Since Molten programs build **hypergraphs**, you are encouraged to embrace _polymorphism_ to keep your code efficient and reusable.
+This document describes **all of the semantics** of Molten's computational expression. Since Molten programs build **hypergraphs**, you are encouraged to embrace _polymorphism_ to keep your code efficient and reusable.
 
 ---
 
@@ -25,12 +25,12 @@ This document describes **all of the semantics** of Molten’s computational exp
 
 ## Syntax
 
-| Symbol  | Pronounce it as… | What it does                                                                                           |
+| Symbol  | Action           | Elaboration                                                                                            |
 | ------- | ---------------- | ------------------------------------------------------------------------------------------------------ |
 | `.`     | “with”           | Group concepts together within the graph (no ordering).                                                |
 | `,`     | “meanwhile”      | Split the current orthogonality into **additional** parallel orthogonality.                            |
-| `[A]`   | “from A”         | A source expression of how to walk the hypergraph.                                                     |
-| `( … )` | —                | Groups sub-expressions within a partition; used for precedence and clarity. Recursively applies rules. |
+| `[ … ]` | “from … ”        | A source expression of how to walk the hypergraph.                                                     |
+| `( … )` | “group … ”       | Groups sub-expressions within a partition; used for precedence and clarity. Recursively applies rules. |
 
 > File extensions: a `.lava` file indicates a runnable Molten _script_, while a `.magma` file indicates a reusable Molten _library_. The semantics are identical; the distinction exists purely to help humans reason about intent.
 
@@ -40,7 +40,7 @@ This document describes **all of the semantics** of Molten’s computational exp
 
 ### Textual
 
-- **Orderless.** Molten does not march through the source left-to-right. Each orthogonality advances _only_ when the rule in front of it is enabled. Rules are ordered based upon `,` `()`, and `[]` semantics.
+- **Orderless** Molten does not march through the source left-to-right. Each orthogonality advances _only_ when the rule in front of it is enabled. Rules are ordered based upon `,` `()`, and `[]` semantics.
 - A **dot** `.` simply groups concepts _with_ one another inside the same orthogonality.
 - A **comma** `,` clones the current orthogonality **once for every extra branch**, so you can have any number of orthogonalities running in parallel. They move forward independently until another rule brings them back together.
 - A **bracket** `[…]` blocks its arriving orthogonality(ies) until they already hold every listed concept. Once satisfied it removes those concepts, inserts the ones that follow the bracket, and lets the orthogonality(ies) proceed.
@@ -58,11 +58,22 @@ Any number of parallel orthogonalities – each carrying one of the required con
 
 An orthogonality holding `A` replaces it with the grouped expression `([B.C] D)`. Inside that scope, `B.C` is required; once present, it is swapped for `D`. The scope then collapses, leaving `D` in the orthogonality’s state.
 
+### Polymorphism - `[A] C, [B] C, [C.D] E`
+
+Two orthogonalities, `A` and `B` derive `C`. This means that `A.D` and `B.D` both match `[C.D]` such that the resulting transformation yields `A.E` or `B.E`. 
+
+ - `C` is considered a `derivation` of `A` and `B`, but not `A` and `B` themselves. As a result, the originating `atoms` are preserved in the transformation.
+ - If `C` were instead provided, `C.D`, it would be consider a `measure` of `C`, as such it is *consumed* yielding just `E`.
+
+#### Derivations are infinitely recursable `A, [A] B, [B] A, [A.A.A.A.A] D`
+
+A is considered a short self-reproducer, where it is inductively defined with itself. Any such, no matter the complexity, occurance in your ruleset will allow this behavior, and, after some iteration A will match to D. 
+
 ## Examples
 
 ```molten
-[] Human.Male, 
-[] Earth.Location.America,
+Human.Male, 
+Earth.Location.America,
 [Human.Male, Earth.Location.America] American.Citizen.Male
 ```
 
@@ -72,5 +83,19 @@ Note that this function is an _infinite generator_ of the `American.Citzen.Male`
 
 - [Turing machine](test/resource/system/graph/module/math/numeric/logic/boolean/symbolic/boolean.magma)
 - [Joins](test/resource/system/graph/module/join/symbolic/join.magma)
+
+## Forge
+
+Forge `1.0.0` supports temporal runtime for `Molten`
+
+### Invoke
+
+Run the temporal interactive runtime:
+
+```bash
+bazel run //Molten/system/forge temporal
+```
+
+This starts an interactive session where you can enter Molten expressions line by line. Each expression is evaluated and the resulting hypergraph state is displayed. Subsequent commands are *disjoint* worlds to the previous graphs, but still evolve any existing state.
 
 © 2025 Vantle · @robert.vanderzee

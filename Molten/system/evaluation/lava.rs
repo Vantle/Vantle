@@ -20,12 +20,6 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn code(&self) -> i32 {
-        match self {
-            Self::Limit { .. } => 70,
-        }
-    }
-
     pub fn limit(iterations: usize, limit: usize, particles: usize) -> Self {
         Self::Limit {
             iterations,
@@ -46,18 +40,16 @@ pub fn infer<'a>(
             source.count()
         );
 
-        let quantums: Vec<_> = source.particles().cloned().collect();
-        let matchings = inference.matching(source);
+        let matchings = inference.resonance(source);
 
         info!("Found {} matchings", matchings.len());
 
         for matched in matchings {
             let residue = matched
                 .iter()
-                .zip(&quantums)
-                .filter_map(|(label, quantum)| {
-                    let particle = inference.node(label)?;
-                    particle.diverge(quantum)
+                .filter_map(|derivation| {
+                    let particle = inference.node(&derivation.origin)?;
+                    particle.diverge(&derivation.consumed)
                 })
                 .reduce(|construction, divergence| {
                     construction.join(&divergence).unwrap_or(divergence)
@@ -80,7 +72,7 @@ pub fn infer<'a>(
                 evolutions.len()
             );
 
-            if !evolutions.is_empty() && inference.infer(&matched, &evolutions) {
+            if !evolutions.is_empty() && inference.apply(&matched, &evolutions) {
                 changed = true;
                 info!("Applied, graph has {} particles", inference.len());
             }
@@ -90,7 +82,7 @@ pub fn infer<'a>(
     changed.then_some(inference)
 }
 
-pub fn propegate(
+pub fn propagate(
     inference: &mut Inference<usize>,
     signal: &Wave<usize>,
     context: &Related<Wave<usize>>,

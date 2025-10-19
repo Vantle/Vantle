@@ -8,7 +8,7 @@
 module(
     name = "vantle",
     version = "1.0.0",
-    bazel_compatibility = [">=8.0.0"],
+    bazel_compatibility = [">=8.4.0"],
 )
 
 #################################################################################################################################################################
@@ -25,6 +25,9 @@ use_repo(buildozer_binary, "buildozer_binary")
 
 ########## Toolchain                                                                                                                                [ Toolchain ]
 ##### Compilation                                                                                                                      [ Toolchain, Compilation ]
+########## Java                                                                                                                               [ Toolchain, Java ]
+bazel_dep(name = "rules_java", version = "8.16.1")
+
 ########## Python                                                                                                                           [ Toolchain, Python ]
 bazel_dep(name = "rules_python", version = "1.6.3")
 
@@ -42,7 +45,7 @@ pip.parse(
 use_repo(pip, "pypi")
 
 ########## Rust                                                                                                                               [ Toolchain, Rust ]
-bazel_dep(name = "rules_rust", version = "0.65.0")
+bazel_dep(name = "rules_rust", version = "0.66.0")
 
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
@@ -60,7 +63,11 @@ crate = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
 crate.spec(
     features = ["derive"],
     package = "clap",
-    version = "4.5.48",
+    version = "4.5.50",
+)
+crate.spec(
+    package = "cached",
+    version = "0.56.0",
 )
 crate.spec(
     package = "ctor",
@@ -79,9 +86,30 @@ crate.spec(
     version = "0.4.28",
 )
 crate.spec(
-    features = ["fancy"],
+    features = [
+        "fancy",
+        "syntect-highlighter",
+    ],
     package = "miette",
     version = "7.6.0",
+)
+crate.spec(
+    features = [
+        "default-fancy",
+        "parsing",
+        "regex-fancy",
+    ],
+    package = "syntect",
+    version = "5.2.0",
+)
+crate.spec(
+    features = ["editor"],
+    package = "inquire",
+    version = "0.9.1",
+)
+crate.spec(
+    package = "inquire-derive",
+    version = "0.9.0",
 )
 crate.spec(
     package = "prettyplease",
@@ -122,7 +150,7 @@ crate.spec(
         "extra-traits",
     ],
     package = "syn",
-    version = "2.0.106",
+    version = "2.0.107",
 )
 crate.spec(
     package = "winit",

@@ -18,11 +18,22 @@ rust_autotest(
     data = [
         "//Molten/test/resource/system/evaluate:data",
     ],
-    template = "//Molten/test/resource/system/evaluate/generate:lava.template.rs",
+    template = "//Molten/test/resource/system/evaluate/generate:template",
     deps = [
         "//Molten/component:module",
         "//Molten/system:module",
-        "//Molten/test/utility:module",
+        "//test/utility:module",
+    ],
+)
+
+rust_autotest(
+    name = "hypergraph",
+    cases = "//Molten/test/resource/system/evaluate/hypergraph/generate:cases",
+    template = "//Molten/test/resource/system/evaluate/hypergraph:template",
+    deps = [
+        "//Molten/component:module",
+        "//Molten/system:module",
+        "//test/utility:module",
     ],
 )
 

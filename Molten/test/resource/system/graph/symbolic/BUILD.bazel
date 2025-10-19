@@ -13,6 +13,7 @@ package(default_visibility = [
 filegroup(
     name = "data",
     srcs = [
+        "//Molten/test/resource/system/graph/symbolic/renderer:data",
         "//Molten/test/resource/system/graph/symbolic/translator:data",
     ],
 )

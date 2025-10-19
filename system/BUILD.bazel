@@ -16,7 +16,41 @@ rust_library(
     crate_name = "system",
     visibility = ["//visibility:public"],
     deps = [
+        ":diagnostic",
+        ":language",
+        ":resource",
         "//system/generation:module",
+        "//system/logging:module",
+    ],
+)
+
+rust_library(
+    name = "diagnostic",
+    srcs = ["diagnostic.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//Molten/system/graph/symbolic:highlighter",
+        "//system/logging:module",
+        "@crates//:ctor",
+        "@crates//:log",
+        "@crates//:miette",
+        "@crates//:syntect",
+    ],
+)
+
+rust_library(
+    name = "language",
+    srcs = ["language.rs"],
+    visibility = ["//visibility:public"],
+)
+
+rust_library(
+    name = "resource",
+    srcs = ["resource.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:thiserror",
     ],
 )
 

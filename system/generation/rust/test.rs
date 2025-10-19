@@ -8,6 +8,7 @@ use proc_macro2::Span;
 
 use serde_json::{Map, Value};
 use std::collections::HashMap;
+use std::path::Path;
 use syn::{FnArg, Signature, Type};
 
 #[derive(Debug, Clone)]
@@ -66,6 +67,7 @@ pub fn build(
         signature,
         &test.case.parameters,
         &test.case.returns,
+        path,
     )?;
 
     Ok(vec![(module.clone(), item)])
@@ -240,10 +242,11 @@ fn generate(
     signature: &Signature,
     parameters: &HashMap<syn::Ident, Value>,
     expected: &HashMap<String, Value>,
+    path: impl AsRef<Path>,
 ) -> Result<syn::Item, Box<Error>> {
     let mut code = Code::new();
 
-    let arguments = parameterize(&mut code, signature, parameters)?;
+    let arguments = parameterize(&mut code, signature, parameters, &path)?;
 
     let required = expected.contains_key(keyword::result().key)
         || expected
@@ -272,7 +275,7 @@ fn generate(
         code.push(statement);
     }
 
-    assertion(&mut code, signature, parameters, expected, name)?;
+    assertion(&mut code, signature, parameters, expected, name, &path)?;
 
     use quote::format_ident;
 
@@ -281,7 +284,7 @@ fn generate(
 
     let item: syn::ItemFn = syn::parse_quote! {
         #[test]
-        fn #identifier() #block
+        fn #identifier() -> miette::Result<()> #block
     };
 
     Ok(syn::Item::Fn(item))
@@ -311,7 +314,10 @@ impl Code {
 
     fn block(self) -> syn::Block {
         let statements = self.statements;
-        syn::parse_quote!({ #(#statements)* })
+        syn::parse_quote!({
+            #(#statements)*
+            Ok(())
+        })
     }
 }
 
@@ -319,6 +325,7 @@ fn parameterize(
     body: &mut Code,
     signature: &Signature,
     parameters: &HashMap<syn::Ident, Value>,
+    path: impl AsRef<Path>,
 ) -> Result<Vec<syn::Expr>, Box<Error>> {
     let mut arguments: Vec<syn::Expr> = Vec::new();
 
@@ -336,7 +343,7 @@ fn parameterize(
                 })
             })?;
 
-            let literal = expression(pattern.ty.as_ref(), value);
+            let literal = expression(pattern.ty.as_ref(), value, &path);
 
             let mutable = matches!(
                 pattern.ty.as_ref(),
@@ -374,10 +381,11 @@ fn assertion(
     parameters: &HashMap<syn::Ident, Value>,
     expected: &HashMap<String, Value>,
     test: &str,
+    path: impl AsRef<Path>,
 ) -> Result<(), Box<Error>> {
     if let Some(returns) = expected.get(keyword::result().key) {
         let literal = match &signature.output {
-            syn::ReturnType::Type(_, ty) => expression(ty.as_ref(), returns),
+            syn::ReturnType::Type(_, ty) => expression(ty.as_ref(), returns, &path),
             syn::ReturnType::Default => syn::parse_quote! { () },
         };
         let variable = &keyword::result().variable;
@@ -426,7 +434,7 @@ fn assertion(
                     })
                 })?;
 
-            let expected = expression(ty, result);
+            let expected = expression(ty, result, &path);
             let expression: syn::Expr = syn::parse_quote! { #identifier };
             code.assert(expression, expected, test, parameter);
         }

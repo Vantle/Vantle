@@ -1,4 +1,4 @@
-pub use log::{debug, error, info, warn};
+pub use log::{debug, error, info, trace, warn};
 
 pub fn configure(level: log::LevelFilter) {
     env_logger::Builder::from_default_env()

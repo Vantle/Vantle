@@ -17,14 +17,7 @@ rust_autotest(
     data = [
         "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean:data",
     ],
-    template = "//Molten/test/resource/component/graph/inspect/generate:inspect.template.rs",
-    deps = [
-        "//:module",
-        "//Molten/component:module",
-        "//Molten/system/graph:module",
-        "//Molten/test/utility:module",
-        "//system:module",
-    ],
+    template = "//Molten/test/resource/component/graph/inspect/generate:template",
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

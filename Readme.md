@@ -14,4 +14,14 @@
 
 ---
 
+## Installation
+
+### Requirements
+
+- [Bazel](https://bazel.build/) ≥ 8.0.0
+
+### 
+> `bazel build //...`
+---
+
 © 2025 Vantle · @robert.vanderzee

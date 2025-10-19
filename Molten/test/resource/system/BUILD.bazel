@@ -10,5 +10,12 @@ package(default_visibility = [
 ])
 
 ##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "data",
+    srcs = [
+        "//Molten/test/resource/system/evaluate:data",
+        "//Molten/test/resource/system/graph:data",
+    ],
+)
 
 ##### Documentation                                                                                                                             [ Documentation ]

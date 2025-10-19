@@ -14,14 +14,20 @@ rust_binary(
     srcs = ["forge.rs"],
     deps = [
         "//Molten/component:module",
-        "//Molten/system/evaluate:module",
+        "//Molten/system/evaluation:module",
         "//Molten/system/graph:module",
+        "//Molten/system/graph/symbolic:module",
         "//Molten/system/graph/symbolic/constructor:module",
+        "//system:diagnostic",
+        "//system:module",
         "//system/logging:module",
         "@crates//:clap",
+        "@crates//:ctor",
+        "@crates//:inquire",
         "@crates//:log",
         "@crates//:miette",
         "@crates//:serde_json",
+        "@crates//:thiserror",
     ],
 )
 

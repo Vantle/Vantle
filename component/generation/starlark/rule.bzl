@@ -1,7 +1,7 @@
 """
 Code generation rule definitions.
 
-This file contains the generate rule for code generation from templates and data.
+Public generate rule for creating test files from templates and test cases.
 """
 
 load(":impls.bzl", "generate_impl")
@@ -16,32 +16,28 @@ generate = rule(
     provides = [DefaultInfo, GeneratedInfo],
     attrs = {
         "template": attr.label(
-            allow_single_file = True,
             mandatory = True,
-            doc = "Template file to use for code generation",
+            allow_files = True,
+            doc = "Template target providing TemplateInfo",
         ),
         "cases": attr.label(
             allow_single_file = True,
             mandatory = True,
-            doc = "Cases file for code generation",
-        ),
-        "language": attr.string(
-            mandatory = True,
-            doc = "Language for the generated code",
+            doc = "Test cases data file (JSON)",
         ),
         "generator": attr.label(
             mandatory = True,
             executable = True,
             cfg = "exec",
-            doc = "The generator tool to use for creating the files",
+            doc = "Generator binary for creating test files",
         ),
         "deps": attr.label_list(
-            doc = "Dependencies that must be built before generation",
+            doc = "Build dependencies (typically includes template)",
         ),
         "_symlink_prefix": attr.label(
             default = "//:symlink_prefix",
-            doc = "Symlink prefix configuration",
+            doc = "Symlink prefix build setting",
         ),
     },
-    doc = "Rule for code generation from a single template and data file",
+    doc = "Generates test code from a template and test cases",
 )

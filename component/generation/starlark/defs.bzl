@@ -1,11 +1,13 @@
 """
-Public API for the code generation library.
+Public API for code generation.
 
-This file re-exports all public symbols for convenient access.
+Exports: autotest, autotest_template, rust_autotest, rust_autotest_template
 """
 
-load(":macro.bzl", _autotest = "autotest", _rust_autotest = "rust_autotest")
+load(":macro.bzl", _autotest = "autotest", _autotest_template = "autotest_template", _rust_autotest = "rust_autotest", _rust_autotest_template = "rust_autotest_template")
 
 # Re-export public macros
 autotest = _autotest
+autotest_template = _autotest_template
 rust_autotest = _rust_autotest
+rust_autotest_template = _rust_autotest_template

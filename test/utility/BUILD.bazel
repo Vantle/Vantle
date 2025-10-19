@@ -13,6 +13,9 @@ rust_library(
     srcs = ["utility.rs"],
     crate_name = "utility",
     deps = [
+        "//system:diagnostic",
+        "//system/logging:autolog",
+        "@crates//:miette",
         "@crates//:pretty_assertions",
         "@crates//:serde",
         "@crates//:serde_json",

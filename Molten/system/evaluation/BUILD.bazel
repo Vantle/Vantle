@@ -10,12 +10,24 @@ package(default_visibility = ["//visibility:public"])
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
     name = "module",
-    srcs = ["evaluate.rs"],
-    crate_name = "evaluate",
+    srcs = ["evaluation.rs"],
+    crate_name = "evaluation",
+    deps = [
+        ":evaluator",
+    ],
+)
+
+rust_library(
+    name = "evaluator",
+    srcs = ["evaluator.rs"],
     deps = [
         ":lava",
         ":obsidian",
         "//Molten/component:module",
+        "@crates//:itertools",
+        "@crates//:miette",
+        "@crates//:serde",
+        "@crates//:thiserror",
     ],
 )
 

@@ -1,18 +1,32 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_template")
 ##### External                                                                                                                               [ Import, External ]
-load("@rules_rust//rust:defs.bzl", "rust_library")
 
 ##### Visibility                                                                                                                                       [ Module ]
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
 
 ##### Module                                                                                                                                           [ Module ]
-rust_library(
-    name = "module",
-    srcs = ["algorithm.rs"],
-    crate_name = "algorithm",
+filegroup(
+    name = "data",
+    srcs = [
+        "renderer.template.rs",
+        "//Molten/test/resource/system/graph/symbolic/renderer/generate:data",
+    ],
+)
+
+rust_autotest_template(
+    name = "template",
+    src = "renderer.template.rs",
     deps = [
+        "//Molten/component:module",
+        "//Molten/system/graph/symbolic:module",
+        "//system/logging:autolog",
+        "//test/utility:module",
     ],
 )
 

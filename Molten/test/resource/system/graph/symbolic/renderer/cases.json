@@ -1,0 +1,87 @@
+{
+    "functions": [
+        {
+            "function": "attribute",
+            "cases": [
+                {
+                    "tags": [
+                        "simple",
+                        "full"
+                    ],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/breadth/symbolic/breadth.lava",
+                        "width": 1000
+                    },
+                    "returns": {
+                        "()": "(Alpha.Beta(Delta).Gamma)"
+                    }
+                },
+                {
+                    "tags": [
+                        "simple",
+                        "truncated"
+                    ],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/breadth/symbolic/breadth.lava",
+                        "width": 15
+                    },
+                    "returns": {
+                        "()": "(Alpha.Beta(Delta).3)"
+                    }
+                },
+                {
+                    "tags": [
+                        "echo",
+                        "full"
+                    ],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/echo/symbolic/echo.lava",
+                        "width": 1000
+                    },
+                    "returns": {
+                        "()": "([Echo(Data.Format.Unicode,  Binary.Width(8),  value)] (Stream.Sink.Console(value)))"
+                    }
+                },
+                {
+                    "tags": [
+                        "echo",
+                        "partial"
+                    ],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/echo/symbolic/echo.lava",
+                        "width": 30
+                    },
+                    "returns": {
+                        "()": "([Echo(Data.Format.Unicode,  Binary.15(18),  16)] (5.6.7(16)))"
+                    }
+                },
+                {
+                    "tags": [
+                        "nested",
+                        "full"
+                    ],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/nested/symbolic/nested.lava",
+                        "width": 1000
+                    },
+                    "returns": {
+                        "()": "(Alpha([Beta.Gamma([Epsilon(Delta,  Phi,  Upsilon)])](Pi,  Eta.Zeta)))"
+                    }
+                },
+                {
+                    "tags": [
+                        "nested",
+                        "truncated"
+                    ],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/nested/symbolic/nested.lava",
+                        "width": 10
+                    },
+                    "returns": {
+                        "()": "(Alpha([Beta.5([12(14,  15,  16)])](6,  9.10)))"
+                    }
+                }
+            ]
+        }
+    ]
+}

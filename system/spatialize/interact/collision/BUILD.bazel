@@ -1,0 +1,27 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "index",
+    srcs = ["index.rs"],
+    deps = [
+        "//component/spatialize:vector",
+        "//component/spatialize/geometry:intersect",
+        "//component/spatialize/geometry:ray",
+        "//component/spatialize/geometry:region",
+        "//component/spatialize/interact:collision",
+        "@crates//:rstar",
+    ],
+)
+
+rust_library(
+    name = "effect",
+    srcs = ["effect.rs"],
+    deps = [
+        ":index",
+        "//component/spatialize/geometry:ray",
+        "//component/spatialize/interact:collision",
+        "//system:event",
+    ],
+)

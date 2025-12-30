@@ -1,0 +1,88 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_proc_macro")
+load("@rules_rust_prost//:defs.bzl", "rust_prost_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Proto                                                                                                                                             [ Proto ]
+proto_library(
+    name = "proto",
+    srcs = ["observation.proto"],
+)
+
+rust_prost_library(
+    name = "protobuf",
+    proto = ":proto",
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:serde_json",
+        "@crates//:thiserror",
+        "@crates//:tonic",
+    ],
+)
+
+rust_library(
+    name = "trace",
+    srcs = ["trace.rs"],
+    deps = [
+        "//:platform",
+        "//system/observation/trace:error",
+        "@crates//:url",
+    ],
+)
+
+rust_proc_macro(
+    name = "macro",
+    srcs = ["macro.rs"],
+    crate_name = "observe",
+    deps = [
+        "//system/observation/macro:channel",
+        "//system/observation/macro:trace",
+        "@crates//:quote",
+        "@crates//:syn",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "peer",
+    srcs = ["peer.rs"],
+    deps = [
+        ":error",
+        ":protobuf",
+        "//component:assemble",
+        "//component/observation:stream",
+        "//system/observation/trace:decode",
+        "//system/observation/trace:encode",
+        "@crates//:async-stream",
+        "@crates//:dashmap",
+        "@crates//:tokio",
+        "@crates//:tokio-stream",
+        "@crates//:tokio-util",
+        "@crates//:tonic",
+        "@crates//:url",
+    ],
+)
+
+rust_library(
+    name = "record",
+    srcs = ["record.rs"],
+    deps = [
+        ":error",
+        "//component/observation:stream",
+        "@crates//:serde_json",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

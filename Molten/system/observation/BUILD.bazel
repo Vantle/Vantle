@@ -1,0 +1,49 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:serde_json",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
+    name = "state",
+    srcs = ["state.rs"],
+    deps = [
+        ":error",
+        "//Molten/component:hypergraph",
+        "//component:assemble",
+        "//component/observation:stream",
+        "@crates//:flate2",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
+
+rust_library(
+    name = "layer",
+    srcs = ["layer.rs"],
+    deps = [
+        ":state",
+        "//Molten/component:hypergraph",
+        "//component/observation:module",
+        "//component/observation:stream",
+        "@crates//:miette",
+        "@crates//:serde",
+        "@crates//:tokio",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

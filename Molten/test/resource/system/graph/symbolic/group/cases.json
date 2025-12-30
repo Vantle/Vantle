@@ -1,0 +1,33 @@
+{
+    "functions": [
+        {
+            "function": "group",
+            "cases": [
+                {
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/symbolic/group/group.lava"
+                    },
+                    "returns": {
+                        "()": {
+                            "category": "Group",
+                            "context": [
+                                { "category": "Void"                   },
+                                { "category": {"Attribute": "Molten"}  },
+                                { "category": "Partition"              },
+                                { "category": "Void"                   },
+                                { "category": {"Attribute": "Meta"}    },
+                                { "category": "Partition"              },
+                                { "category": "Void"                   },
+                                { "category": {"Attribute": "Program"} },
+                                { "category": "Partition"              },
+                                { "category": "Void"                   },
+                                { "category": {"Attribute": "Alpha"}   },
+                                { "category": {"Attribute": "Alpha"}   }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

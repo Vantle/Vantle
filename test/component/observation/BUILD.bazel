@@ -1,0 +1,53 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//test/component/observation:__pkg__",
+    "//test/component/observation:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "observation",
+    cases = "//test/resource/component/observation:cases",
+    template = "//test/resource/component/observation:template",
+    deps = [
+        "//component:assemble",
+        "//component/observation:collector",
+        "//component/observation:layer",
+        "//component/observation:stream",
+        "//system:observation",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_autotest(
+    name = "lifecycle",
+    cases = "//test/resource/component/observation/lifecycle:cases",
+    template = "//test/resource/component/observation/lifecycle:template",
+    deps = [
+        "//component:assemble",
+        "//component/observation:collector",
+        "//component/observation:layer",
+        "//component/observation:stream",
+        "//system:observation",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_autotest(
+    name = "channel",
+    cases = "//test/resource/component/observation/channel:cases",
+    template = "//test/resource/component/observation/channel:template",
+    deps = [
+        "//component/observation:channel",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

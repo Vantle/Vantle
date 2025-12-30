@@ -1,0 +1,61 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "state",
+    srcs = ["state.rs"],
+    deps = [
+        "//Molten/component/graph/state:particle",
+        "//Molten/component/graph/state:wave",
+    ],
+)
+
+rust_library(
+    name = "symbolic",
+    srcs = ["symbolic.rs"],
+    deps = [
+        "//Molten/component/graph/symbolic:constructor",
+        "//Molten/component/graph/symbolic:translator",
+    ],
+)
+
+rust_library(
+    name = "attribute",
+    srcs = ["attribute.rs"],
+    deps = [
+        "//Molten/component:arena",
+        "//component:assemble",
+        "@crates//:serde",
+    ],
+)
+
+rust_library(
+    name = "index",
+    srcs = ["index.rs"],
+    deps = [
+        ":attribute",
+        ":relation",
+        ":state",
+        "//Molten/component:arena",
+        "@crates//:serde",
+    ],
+)
+
+rust_library(
+    name = "relation",
+    srcs = ["relation.rs"],
+    deps = [
+        ":state",
+        "@crates//:serde",
+        "@crates//:serde_with",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

@@ -1,0 +1,52 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+string_flag(
+    name = "mode",
+    build_setting_default = "opaque",
+    values = [
+        "opaque",
+        "transparent",
+    ],
+)
+
+string_flag(
+    name = "level",
+    build_setting_default = "info",
+    values = [
+        "trace",
+        "debug",
+        "info",
+        "warn",
+        "error",
+    ],
+)
+
+string_flag(
+    name = "format",
+    build_setting_default = "chrome",
+    values = [
+        "standard",
+        "chrome",
+        "stream",
+    ],
+)
+
+config_setting(
+    name = "transparent",
+    flag_values = {"//platform/observation:mode": "transparent"},
+)
+
+config_setting(
+    name = "opaque",
+    flag_values = {"//platform/observation:mode": "opaque"},
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

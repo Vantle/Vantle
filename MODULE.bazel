@@ -1,0 +1,336 @@
+#################################################################################################################################################################
+"""
+    Vantle (c) 2025
+    projects.vantle.org
+    connect@vantle.org
+"""
+
+module(
+    name = "vantle",
+    version = "0.0.0",
+    bazel_compatibility = [">=9.0.0"],
+)
+
+#################################################################################################################################################################
+##################### Dependencies                                                                                                               [ Dependencies ]
+############### Toolchain                                                                                                                           [ Toolchain ]
+########## Bazel                                                                                                                             [ Toolchain, Bazel ]
+bazel_dep(name = "stardoc", version = "0.8.0")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
+bazel_dep(name = "toolchains_llvm", version = "1.6.0")
+
+bazel_dep(name = "buildozer", version = "8.2.1", dev_dependency = True)
+
+buildozer_binary = use_extension("@buildozer//:buildozer_binary.bzl", "buildozer_binary")
+use_repo(buildozer_binary, "buildozer_binary")
+
+########## Toolchain                                                                                                                                [ Toolchain ]
+########## BuildBuddy                                                                                                                   [ Toolchain, BuildBuddy ]
+bazel_dep(name = "toolchains_buildbuddy", version = "0.0.4")
+
+buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbuddy")
+buildbuddy.platform(
+    buildbuddy_container_image = "UBUNTU24_04_IMAGE",
+)
+use_repo(buildbuddy, "buildbuddy_toolchain")
+
+########## LLVM                                                                                                                               [ Toolchain, LLVM ]
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
+llvm.toolchain(
+    name = "llvm_toolchain",
+    llvm_version = "19.1.7",
+)
+llvm.toolchain(
+    name = "llvm_toolchain_linux",
+    llvm_version = "19.1.7",
+    stdlib = {"linux-x86_64": "stdc++"},
+)
+use_repo(llvm, "llvm_toolchain", "llvm_toolchain_linux")
+
+##### Compilation                                                                                                                      [ Toolchain, Compilation ]
+########## Java                                                                                                                               [ Toolchain, Java ]
+bazel_dep(name = "rules_java", version = "9.3.0")
+
+########## Python                                                                                                                           [ Toolchain, Python ]
+bazel_dep(name = "rules_python", version = "1.6.3")
+
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(
+    python_version = "3.13",
+)
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "pypi",
+    python_version = "3.13",
+    requirements_lock = "//:requirements.txt",
+)
+use_repo(pip, "pypi")
+
+########## Proto                                                                                                                             [ Toolchain, Proto ]
+bazel_dep(name = "rules_proto", version = "7.1.0")
+
+########## Rust                                                                                                                               [ Toolchain, Rust ]
+bazel_dep(name = "rules_rust", version = "0.68.1")
+bazel_dep(name = "rules_rust_prost", version = "0.68.1")
+
+rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+rust.toolchain(
+    edition = "2024",
+    versions = ["1.90.0"],
+)
+use_repo(rust, "rust_toolchains")
+
+register_toolchains(
+    "@llvm_toolchain//:all",
+    "@llvm_toolchain_linux//:all",
+    "@rust_toolchains//:all",
+    "//system/protobuf:toolchain",
+    "@buildifier_prebuilt_toolchains//:buildifier_linux_amd64_toolchain",
+    "@buildifier_prebuilt_toolchains//:buildozer_linux_amd64_toolchain",
+    "@buildifier_prebuilt_toolchains//:buildifier_darwin_arm64_toolchain",
+    "@buildifier_prebuilt_toolchains//:buildozer_darwin_arm64_toolchain",
+    "@buildifier_prebuilt_toolchains//:buildifier_darwin_amd64_toolchain",
+    "@buildifier_prebuilt_toolchains//:buildozer_darwin_amd64_toolchain",
+)
+
+##### Crates                                                                                                                          [ Toolchain, Rust, Crates ]
+crate = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
+crate.spec(
+    features = ["derive"],
+    package = "clap",
+    version = "4.5.54",
+)
+crate.spec(
+    package = "cached",
+    version = "0.56.0",
+)
+crate.spec(
+    package = "ctor",
+    version = "0.6.3",
+)
+crate.spec(
+    package = "difference",
+    version = "2.0.0",
+)
+crate.spec(
+    package = "flate2",
+    version = "1.1.5",
+)
+crate.spec(
+    features = ["derive"],
+    package = "bytemuck",
+    version = "1.24.0",
+)
+crate.spec(
+    package = "itertools",
+    version = "0.14.0",
+)
+crate.spec(
+    features = [
+        "fancy",
+        "syntect-highlighter",
+    ],
+    package = "miette",
+    version = "7.6.0",
+)
+crate.spec(
+    features = [
+        "default-fancy",
+        "parsing",
+        "regex-fancy",
+    ],
+    package = "syntect",
+    version = "5.3.0",
+)
+crate.spec(
+    features = ["editor"],
+    package = "inquire",
+    version = "0.9.1",
+)
+crate.spec(
+    package = "inquire-derive",
+    version = "0.9.1",
+)
+crate.spec(
+    package = "prettyplease",
+    version = "0.2.37",
+)
+crate.spec(
+    package = "proc-macro2",
+    version = "1.0.105",
+)
+crate.spec(
+    package = "quote",
+    version = "1.0.43",
+)
+crate.spec(
+    features = [
+        "derive",
+        "rc",
+        "std",
+    ],
+    package = "serde",
+    version = "1.0.228",
+)
+crate.spec(
+    package = "serde_json",
+    version = "1.0.149",
+)
+crate.spec(
+    package = "serde_with",
+    version = "3.16.1",
+)
+crate.spec(
+    package = "pollster",
+    version = "0.4.0",
+)
+crate.spec(
+    features = [
+        "full",
+        "extra-traits",
+    ],
+    package = "syn",
+    version = "2.0.112",
+)
+crate.spec(
+    package = "winit",
+    version = "0.30.12",
+)
+crate.spec(
+    package = "wgpu",
+    version = "28.0.0",
+)
+crate.spec(
+    default_features = False,
+    features = ["png"],
+    package = "image",
+    version = "0.25.9",
+)
+crate.spec(
+    package = "glyphon",
+    version = "0.10.0",
+)
+crate.spec(
+    package = "pretty_assertions",
+    version = "1.4.1",
+)
+crate.spec(
+    package = "thiserror",
+    version = "2.0.17",
+)
+crate.spec(
+    features = [
+        "deref",
+        "deref_mut",
+        "from",
+        "into",
+    ],
+    package = "derive_more",
+    version = "2.1.1",
+)
+crate.spec(
+    package = "tracing",
+    version = "0.1.44",
+)
+crate.spec(
+    package = "tracing-core",
+    version = "0.1.36",
+)
+crate.spec(
+    package = "tracing-subscriber",
+    version = "0.3.22",
+)
+crate.spec(
+    package = "tracing-chrome",
+    version = "0.7.2",
+)
+crate.spec(
+    package = "strsim",
+    version = "0.11.1",
+)
+crate.spec(
+    package = "rstar",
+    version = "0.12.2",
+)
+
+##### Prost Toolchain                                                                                              [ Toolchain, Rust, Crates, Prost ]
+crate.spec(
+    package = "prost",
+    version = "0.14.1",
+)
+crate.spec(
+    package = "prost-types",
+    version = "0.14.1",
+)
+crate.spec(
+    features = ["transport"],
+    package = "tonic",
+    version = "0.14.2",
+)
+crate.spec(
+    package = "tonic-prost",
+    version = "0.14.2",
+)
+crate.spec(
+    package = "protoc-gen-prost",
+    version = "0.5.0",
+)
+crate.annotation(
+    crate = "protoc-gen-prost",
+    gen_binaries = ["protoc-gen-prost"],
+)
+crate.spec(
+    package = "protoc-gen-tonic",
+    version = "0.5.0",
+)
+crate.annotation(
+    crate = "protoc-gen-tonic",
+    gen_binaries = ["protoc-gen-tonic"],
+)
+
+##### Streaming                                                                                                  [ Toolchain, Rust, Crates, Streaming ]
+crate.spec(
+    package = "async-stream",
+    version = "0.3.6",
+)
+crate.spec(
+    package = "futures-core",
+    version = "0.3.31",
+)
+crate.spec(
+    features = [
+        "macros",
+        "rt-multi-thread",
+        "sync",
+    ],
+    package = "tokio",
+    version = "1.49.0",
+)
+crate.spec(
+    features = ["sync"],
+    package = "tokio-stream",
+    version = "0.1.18",
+)
+crate.spec(
+    features = ["rt"],
+    package = "tokio-util",
+    version = "0.7.18",
+)
+crate.spec(
+    package = "dashmap",
+    version = "6.1.0",
+)
+crate.spec(
+    package = "url",
+    version = "2.5.8",
+)
+crate.from_specs()
+use_repo(crate, "crates")
+
+########## Validation
+##### Bazel                                                                                                                                 [ Validation, Bazel ]
+bazel_dep(name = "buildifier_prebuilt", version = "8.2.1.1", dev_dependency = True)
+
+buildifier_prebuilt = use_extension("@buildifier_prebuilt//:defs.bzl", "buildifier_prebuilt_deps_extension", dev_dependency = True)
+use_repo(buildifier_prebuilt, "buildifier_prebuilt_toolchains")

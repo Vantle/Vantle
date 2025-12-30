@@ -1,0 +1,44 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "particle",
+    srcs = ["particle.rs"],
+    deps = [
+        "//Molten:component",
+        "//Molten/system:query",
+        "//Molten/system:scale",
+        "//Molten/system:translate",
+        "@crates//:derive_more",
+        "@crates//:itertools",
+        "@crates//:serde",
+    ],
+)
+
+rust_library(
+    name = "wave",
+    srcs = ["wave.rs"],
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        ":particle",
+        "//Molten:component",
+        "//Molten/system:query",
+        "//Molten/system:scale",
+        "//Molten/system:translate",
+        "//component/observation:module",
+        "@crates//:itertools",
+        "@crates//:serde",
+        "@crates//:tracing",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

@@ -1,0 +1,78 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:private"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "generation",
+    srcs = ["generation.rs"],
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//:component",
+        "//system/generation:rust",
+    ],
+)
+
+rust_library(
+    name = "observation",
+    srcs = ["observation.rs"],
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//component/observation:module",
+        "//system/observation/trace:module",
+    ],
+)
+
+rust_library(
+    name = "graph",
+    srcs = ["graph.rs"],
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//system/graph:similarity",
+    ],
+)
+
+rust_library(
+    name = "diagnostic",
+    srcs = ["diagnostic.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//Molten/system/graph/symbolic:highlighter",
+        "//component/observation:module",
+        "@crates//:ctor",
+        "@crates//:miette",
+        "@crates//:syntect",
+    ],
+)
+
+rust_library(
+    name = "language",
+    srcs = ["language.rs"],
+    visibility = ["//visibility:public"],
+)
+
+rust_library(
+    name = "resource",
+    srcs = ["resource.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
+    name = "event",
+    srcs = ["event.rs"],
+    visibility = ["//visibility:public"],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

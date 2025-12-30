@@ -1,0 +1,37 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_template")
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "cases",
+    srcs = ["cases.json"],
+)
+
+filegroup(
+    name = "data",
+    srcs = [
+        "peer.template.rs",
+        ":cases",
+    ],
+)
+
+rust_autotest_template(
+    name = "template",
+    src = "peer.template.rs",
+    deps = [
+        "//component:assemble",
+        "//system/observation:peer",
+        "@crates//:url",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

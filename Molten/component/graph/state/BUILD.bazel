@@ -1,0 +1,32 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "particle",
+    srcs = ["particle.rs"],
+    deps = [
+        "@crates//:itertools",
+        "@crates//:serde",
+        "@crates//:serde_with",
+    ],
+)
+
+rust_library(
+    name = "wave",
+    srcs = ["wave.rs"],
+    deps = [
+        ":particle",
+        "@crates//:itertools",
+        "@crates//:serde",
+        "@crates//:serde_with",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

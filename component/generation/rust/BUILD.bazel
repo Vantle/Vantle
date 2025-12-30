@@ -1,0 +1,43 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//component/generation:__pkg__"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "//system:language",
+        "//system/graph:similarity",
+        "@crates//:miette",
+        "@crates//:serde_json",
+        "@crates//:syn",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
+    name = "types",
+    srcs = ["types.rs"],
+    deps = [
+        "@crates//:serde",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "schema",
+    srcs = ["schema.rs"],
+    deps = [
+        ":types",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
+
+##### Documentation                                                                                                                                 [ Documentation ]

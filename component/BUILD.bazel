@@ -1,0 +1,46 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//:__pkg__",
+    "//system:__pkg__",
+    "//system:__subpackages__",
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "assemble",
+    srcs = ["assemble.rs"],
+    visibility = ["//visibility:public"],
+)
+
+rust_library(
+    name = "tag",
+    srcs = ["tag.rs"],
+    visibility = ["//visibility:public"],
+)
+
+rust_library(
+    name = "generation",
+    srcs = ["generation.rs"],
+    deps = [
+        "//component/generation:rust",
+    ],
+)
+
+rust_library(
+    name = "observation",
+    srcs = ["observation.rs"],
+    deps = [
+        "//component/observation:collector",
+        "//component/observation:span",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

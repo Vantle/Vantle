@@ -1,0 +1,124 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "state",
+    srcs = ["state.rs"],
+    deps = [
+        "//Molten/system/graph/state:particle",
+        "//Molten/system/graph/state:wave",
+    ],
+)
+
+rust_library(
+    name = "symbolic",
+    srcs = ["symbolic.rs"],
+    deps = [
+        "//Molten/system/graph/symbolic:constructor",
+        "//Molten/system/graph/symbolic:highlighter",
+        "//Molten/system/graph/symbolic:renderer",
+        "//Molten/system/graph/symbolic:translator",
+    ],
+)
+
+rust_library(
+    name = "attribute",
+    srcs = ["attribute.rs"],
+    aliases = {
+        "//Molten/component:arena": "valued",
+    },
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        "//Molten:component",
+        "//Molten/component:arena",
+        "//Molten/system:arena",
+        "//component/observation:module",
+        "@crates//:serde",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "relation",
+    srcs = ["relation.rs"],
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        "//Molten:component",
+        "//Molten/component/graph:relation",
+        "@crates//:derive_more",
+        "@crates//:serde",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "index",
+    srcs = ["index.rs"],
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        ":attribute",
+        ":constructor",
+        ":mutator",
+        "//Molten:component",
+        "//Molten/system:arena",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "constructor",
+    srcs = ["constructor.rs"],
+    aliases = {
+        "//Molten/component:arena": "valued",
+    },
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        ":attribute",
+        ":relation",
+        "//Molten:component",
+        "//Molten/component:arena",
+        "//Molten/system:arena",
+        "//Molten/system/graph:state",
+        "//component/observation:module",
+        "@crates//:itertools",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "mutator",
+    srcs = ["mutator.rs"],
+    aliases = {
+        "//Molten/component:arena": "valued",
+    },
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        ":attribute",
+        ":constructor",
+        ":relation",
+        "//Molten:component",
+        "//Molten/component:arena",
+        "//Molten/system:arena",
+        "//Molten/system/graph:state",
+        "@crates//:tracing",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

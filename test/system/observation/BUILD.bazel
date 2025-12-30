@@ -1,0 +1,84 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//test/system/observation:__pkg__",
+    "//test/system/observation:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "level",
+    cases = "//test/resource/system/observation/level:cases",
+    template = "//test/resource/system/observation/level:template",
+    deps = [
+        "//component:assemble",
+        "//component/observation:collector",
+        "//component/observation:layer",
+        "//component/observation:stream",
+        "//system:observation",
+        "@crates//:tracing",
+    ],
+)
+
+rust_autotest(
+    name = "span",
+    cases = "//test/resource/system/observation/span:cases",
+    template = "//test/resource/system/observation/span:template",
+    deps = [
+        "//component:assemble",
+        "//component/observation:collector",
+        "//component/observation:layer",
+        "//component/observation:stream",
+        "//system:observation",
+        "@crates//:tracing",
+    ],
+)
+
+rust_autotest(
+    name = "hierarchy",
+    cases = "//test/resource/system/observation/hierarchy:cases",
+    template = "//test/resource/system/observation/hierarchy:template",
+    deps = [
+        "//component:assemble",
+        "//component/observation:collector",
+        "//component/observation:layer",
+        "//component/observation:stream",
+        "//system:observation",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_autotest(
+    name = "filtering",
+    cases = "//test/resource/system/observation/filtering:cases",
+    template = "//test/resource/system/observation/filtering:template",
+    deps = [
+        "//component:assemble",
+        "//component/observation:channel",
+        "//component/observation:collector",
+        "//component/observation:layer",
+        "//component/observation:stream",
+        "//system:observation",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_autotest(
+    name = "peer",
+    cases = "//test/resource/system/observation/peer:cases",
+    template = "//test/resource/system/observation/peer:template",
+    deps = [
+        "//component:assemble",
+        "//system/observation:peer",
+        "@crates//:url",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

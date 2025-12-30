@@ -1,0 +1,12 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "collision",
+    srcs = ["collision.rs"],
+    deps = [
+        "//Molten/system/spatialize/interact/collision:effect",
+        "//Molten/system/spatialize/interact/collision:form",
+    ],
+)

@@ -1,0 +1,44 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//system:__pkg__",
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "rust",
+    srcs = ["rust.rs"],
+    deps = [
+        "//:component",
+        "//system/generation/rust:test",
+        "//system/graph:similarity",
+        "@crates//:prettyplease",
+        "@crates//:syn",
+    ],
+)
+
+##### Binary                                                                                                                                           [ Binary ]
+rust_binary(
+    name = "generator",
+    srcs = ["main.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:component",
+        "//:system",
+        "//component/observation:module",
+        "//system:diagnostic",
+        "//system/generation:rust",
+        "@crates//:clap",
+        "@crates//:miette",
+        "@crates//:serde_json",
+    ],
+)
+
+##### Documentation                                                                                                                                 [ Documentation ]

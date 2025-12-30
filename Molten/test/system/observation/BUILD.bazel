@@ -1,0 +1,25 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test/system/observation:__pkg__",
+    "//Molten/test/system/observation:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "snapshot",
+    cases = "//Molten/test/resource/system/observation/snapshot:cases",
+    template = "//Molten/test/resource/system/observation/snapshot:template",
+    deps = [
+        "//Molten/component:hypergraph",
+        "//Molten/system/observation:state",
+        "//component:assemble",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

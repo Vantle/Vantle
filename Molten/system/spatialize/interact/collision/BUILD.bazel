@@ -1,0 +1,35 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "form",
+    srcs = ["form.rs"],
+    deps = [
+        "//Molten/component:hypergraph",
+        "//component/spatialize:vector",
+        "//component/spatialize/geometry:bound",
+        "//component/spatialize/geometry:cylinder",
+        "//component/spatialize/geometry:intersect",
+        "//component/spatialize/geometry:ray",
+        "//component/spatialize/geometry:region",
+        "//component/spatialize/geometry:sphere",
+        "//component/spatialize/interact:collision",
+    ],
+)
+
+rust_library(
+    name = "effect",
+    srcs = ["effect.rs"],
+    aliases = {
+        "//system/spatialize/interact/collision:effect": "effect",
+    },
+    deps = [
+        ":form",
+        "//Molten/component:hypergraph",
+        "//Molten/component/spatialize:space",
+        "//Molten/system/spatialize:scale",
+        "//component/spatialize:vector",
+        "//system/spatialize/interact/collision:effect",
+    ],
+)

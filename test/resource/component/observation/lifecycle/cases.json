@@ -1,0 +1,57 @@
+{
+  "functions": [
+    {
+      "function": "lifecycle",
+      "tags": ["span", "lifecycle"],
+      "cases": [
+        {
+          "tags": ["single"],
+          "parameters": {"scenario": 0},
+          "returns": {"()": [2, 1, 1]}
+        },
+        {
+          "tags": ["nested"],
+          "parameters": {"scenario": 1},
+          "returns": {"()": [4, 2, 2]}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {"scenario": 99},
+          "returns": {"()": [0, 0, 0]}
+        }
+      ]
+    },
+    {
+      "function": "hierarchy",
+      "tags": ["span", "parent"],
+      "cases": [
+        {
+          "tags": ["root"],
+          "parameters": {"scenario": 0},
+          "returns": {"()": [1, true]}
+        },
+        {
+          "tags": ["nested"],
+          "parameters": {"scenario": 1},
+          "returns": {"()": [1, true]}
+        }
+      ]
+    },
+    {
+      "function": "identifier",
+      "tags": ["identifier"],
+      "cases": [
+        {
+          "tags": ["root"],
+          "parameters": {"mode": 0},
+          "returns": {"()": [true, true, true]}
+        },
+        {
+          "tags": ["child"],
+          "parameters": {"mode": 1},
+          "returns": {"()": [true, true, true]}
+        }
+      ]
+    }
+  ]
+}

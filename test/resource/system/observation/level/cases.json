@@ -1,0 +1,40 @@
+{
+  "functions": [
+    {
+      "function": "leveled",
+      "tags": ["level"],
+      "cases": [
+        {
+          "tags": ["trace"],
+          "parameters": {"level": 0},
+          "returns": {"()": [1, "Trace"]}
+        },
+        {
+          "tags": ["debug"],
+          "parameters": {"level": 1},
+          "returns": {"()": [1, "Debug"]}
+        },
+        {
+          "tags": ["info"],
+          "parameters": {"level": 2},
+          "returns": {"()": [1, "Info"]}
+        },
+        {
+          "tags": ["warn"],
+          "parameters": {"level": 3},
+          "returns": {"()": [1, "Warn"]}
+        },
+        {
+          "tags": ["error"],
+          "parameters": {"level": 4},
+          "returns": {"()": [1, "Error"]}
+        },
+        {
+          "tags": ["unknown"],
+          "parameters": {"level": 99},
+          "returns": {"()": [0, ""]}
+        }
+      ]
+    }
+  ]
+}

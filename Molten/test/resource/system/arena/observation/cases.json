@@ -1,0 +1,64 @@
+{
+    "functions": [
+        {
+            "function": "allocate",
+            "tags": ["arena", "emission", "allocate"],
+            "cases": [
+                {
+                    "tags": ["new"],
+                    "parameters": {"existing": false},
+                    "returns": {
+                        "()": [0, ["arena"], "0", "Created"]
+                    }
+                },
+                {
+                    "tags": ["existing"],
+                    "parameters": {"existing": true},
+                    "returns": {
+                        "()": [0, ["arena"], "0", "Existing"]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "value",
+            "tags": ["arena", "emission", "value"],
+            "cases": [
+                {
+                    "tags": ["found"],
+                    "parameters": {"valid": true},
+                    "returns": {
+                        "()": [["arena"], "0", true]
+                    }
+                },
+                {
+                    "tags": ["missing"],
+                    "parameters": {"valid": false},
+                    "returns": {
+                        "()": [[], null, false]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "alias",
+            "tags": ["arena", "emission", "alias"],
+            "cases": [
+                {
+                    "tags": ["found"],
+                    "parameters": {"valid": true},
+                    "returns": {
+                        "()": [["arena"], "0", true]
+                    }
+                },
+                {
+                    "tags": ["missing"],
+                    "parameters": {"valid": false},
+                    "returns": {
+                        "()": [[], null, false]
+                    }
+                }
+            ]
+        }
+    ]
+}

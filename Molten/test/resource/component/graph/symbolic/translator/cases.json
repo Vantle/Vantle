@@ -1,0 +1,197 @@
+{
+  "functions": [
+    {
+      "function": "new",
+      "cases": [
+        {
+          "tags": ["empty"],
+          "parameters": {"initial": 0, "terminal": 0, "elements": []},
+          "returns": { "()": {"initial": 0, "terminal": 0, "elements": []} }
+        },
+        {
+          "tags": ["single", "element"],
+          "parameters": { "initial": 1, "terminal": 2, "elements": ["hello"] },
+          "returns": {
+            "()": { "initial": 1, "terminal": 2, "elements": ["hello"] }
+          }
+        },
+        {
+          "tags": ["multiple", "elements"],
+          "parameters": {
+            "initial": 10,
+            "terminal": 20,
+            "elements": ["foo", "bar", "baz"]
+          },
+          "returns": {
+            "()": {
+              "initial": 10,
+              "terminal": 20,
+              "elements": ["foo", "bar", "baz"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "function": "initial",
+      "cases": [
+        {
+          "parameters": {
+            "translation": {
+              "initial": 5,
+              "terminal": 10,
+              "elements": ["test"]
+            }
+          },
+          "returns": {"()": 5}
+        }
+      ]
+    },
+    {
+      "function": "terminal",
+      "cases": [
+        {
+          "parameters": {
+            "translation": {
+              "initial": 5,
+              "terminal": 10,
+              "elements": ["test"]
+            }
+          },
+          "returns": {"()": 10}
+        }
+      ]
+    },
+    {
+      "function": "elements",
+      "cases": [
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "translation": {"initial": 0, "terminal": 0, "elements": []}
+          },
+          "returns": {"()": []}
+        },
+        {
+          "tags": ["multiple"],
+          "parameters": {
+            "translation": {
+              "initial": 1,
+              "terminal": 2,
+              "elements": ["a", "b", "c"]
+            }
+          },
+          "returns": { "()": ["a", "b", "c"] }
+        }
+      ]
+    },
+    {
+      "function": "length",
+      "cases": [
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "translation": {"initial": 0, "terminal": 0, "elements": []}
+          },
+          "returns": {"()": 0}
+        },
+        {
+          "tags": ["single"],
+          "parameters": {
+            "translation": { "initial": 0, "terminal": 0, "elements": ["test"] }
+          },
+          "returns": {"()": 1}
+        },
+        {
+          "tags": ["multiple"],
+          "parameters": {
+            "translation": {
+              "initial": 0,
+              "terminal": 0,
+              "elements": ["a", "b", "c", "d", "e"]
+            }
+          },
+          "returns": {"()": 5}
+        }
+      ]
+    },
+    {
+      "function": "translation::u8::characterize",
+      "cases": [
+        {
+          "tags": ["ascii", "letters"],
+          "parameters": {
+            "translation": {
+              "initial": 1,
+              "terminal": 2,
+              "elements": [72, 101, 108, 108, 111]
+            }
+          },
+          "returns": {
+            "()": {
+              "initial": 1,
+              "terminal": 2,
+              "elements": ["H", "e", "l", "l", "o"]
+            }
+          }
+        },
+        {
+          "tags": ["digits"],
+          "parameters": {
+            "translation": {
+              "initial": 0,
+              "terminal": 1,
+              "elements": [49, 50, 51]
+            }
+          },
+          "returns": {
+            "()": { "initial": 0, "terminal": 1, "elements": ["1", "2", "3"] }
+          }
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "translation": {"initial": 5, "terminal": 5, "elements": []}
+          },
+          "returns": { "()": {"initial": 5, "terminal": 5, "elements": []} }
+        }
+      ]
+    },
+    {
+      "function": "translation::char::parsed",
+      "cases": [
+        {
+          "tags": ["simple", "word"],
+          "parameters": {
+            "translation": {
+              "initial": 0,
+              "terminal": 1,
+              "elements": ["H", "e", "l", "l", "o"]
+            }
+          },
+          "returns": {"()": "Hello"}
+        },
+        {
+          "tags": ["with", "spaces"],
+          "parameters": {
+            "translation": {
+              "initial": 1,
+              "terminal": 2,
+              "elements": [
+                "h", "e", "l", "l", "o", " ", "w", "o", "r", "l", "d"
+              ]
+            }
+          },
+          "returns": {"()": "hello world"}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "translation": {"initial": 0, "terminal": 0, "elements": []}
+          },
+          "returns": {"()": ""}
+        }
+      ]
+    }
+  ]
+}

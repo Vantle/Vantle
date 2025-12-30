@@ -1,0 +1,58 @@
+{
+  "functions": [
+    {
+      "function": "assembler",
+      "tags": ["peer", "assembler"],
+      "cases": [
+        {
+          "tags": ["empty"],
+          "parameters": {},
+          "returns": {"()": true}
+        }
+      ]
+    },
+    {
+      "function": "capacity",
+      "tags": ["peer", "capacity"],
+      "cases": [
+        {
+          "tags": ["small"],
+          "parameters": {"value": 1024},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["large"],
+          "parameters": {"value": 65536},
+          "returns": {"()": true}
+        }
+      ]
+    },
+    {
+      "function": "address",
+      "tags": ["peer", "address"],
+      "cases": [
+        {
+          "tags": ["grpc"],
+          "parameters": {"input": "grpc://127.0.0.1:50051"},
+          "returns": {"()": "grpc://127.0.0.1:50051"}
+        },
+        {
+          "tags": ["localhost"],
+          "parameters": {"input": "grpc://localhost:8080"},
+          "returns": {"()": "grpc://localhost:8080"}
+        }
+      ]
+    },
+    {
+      "function": "default",
+      "tags": ["peer", "default"],
+      "cases": [
+        {
+          "tags": ["empty"],
+          "parameters": {},
+          "returns": {"()": true}
+        }
+      ]
+    }
+  ]
+}

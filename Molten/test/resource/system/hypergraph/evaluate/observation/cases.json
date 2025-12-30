@@ -1,0 +1,137 @@
+{
+    "functions": [
+        {
+            "function": "focus",
+            "tags": ["hypergraph", "emission", "focus"],
+            "cases": [
+                {
+                    "tags": ["simple"],
+                    "parameters": {},
+                    "returns": {
+                        "()": [["hypergraph"], ["label", "particle", "world"], "0"]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "diffuse",
+            "tags": ["hypergraph", "emission", "diffuse"],
+            "cases": [
+                {
+                    "tags": ["single"],
+                    "parameters": {"count": 1},
+                    "returns": {
+                        "()": [["hypergraph"], ["signal", "labels"], 1]
+                    }
+                },
+                {
+                    "tags": ["multiple"],
+                    "parameters": {"count": 3},
+                    "returns": {
+                        "()": [["hypergraph"], ["signal", "labels"], 3]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "locate",
+            "tags": ["hypergraph", "emission", "locate"],
+            "cases": [
+                {
+                    "tags": ["found"],
+                    "parameters": {"valid": true},
+                    "returns": {
+                        "()": [["hypergraph"], ["label", "resolved"], true]
+                    }
+                },
+                {
+                    "tags": ["missing"],
+                    "parameters": {"valid": false},
+                    "returns": {
+                        "()": [[], [], false]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "unite",
+            "tags": ["hypergraph", "emission", "unite"],
+            "cases": [
+                {
+                    "tags": ["same"],
+                    "parameters": {"same": true},
+                    "returns": {
+                        "()": [["hypergraph"], ["first", "second", "merged"], false]
+                    }
+                },
+                {
+                    "tags": ["different"],
+                    "parameters": {"same": false},
+                    "returns": {
+                        "()": [["hypergraph"], ["first", "second", "merged", "subset"], true]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "translate",
+            "tags": ["hypergraph", "emission", "translate"],
+            "cases": [
+                {
+                    "tags": ["new"],
+                    "parameters": {"existing": false},
+                    "returns": {
+                        "()": [["hypergraph"], ["source", "destinations", "rule", "edge", "state"], "Created"]
+                    }
+                },
+                {
+                    "tags": ["existing"],
+                    "parameters": {"existing": true},
+                    "returns": {
+                        "()": [["hypergraph"], ["source", "destinations", "rule", "edge", "state"], "Existing"]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "infer",
+            "tags": ["query", "emission", "infer"],
+            "cases": [
+                {
+                    "tags": ["empty"],
+                    "parameters": {"populated": false},
+                    "returns": {
+                        "()": [["query"], ["rules", "edges", "count"], "0"]
+                    }
+                },
+                {
+                    "tags": ["populated"],
+                    "parameters": {"populated": true},
+                    "returns": {
+                        "()": [["query"], ["rules", "edges", "count"], "1"]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "fixed",
+            "tags": ["hypergraph", "emission", "fixed"],
+            "cases": [
+                {
+                    "tags": ["empty"],
+                    "parameters": {"populated": false},
+                    "returns": {
+                        "()": [["hypergraph"], ["rules", "edges", "iterations", "count"], "0"]
+                    }
+                },
+                {
+                    "tags": ["populated"],
+                    "parameters": {"populated": true},
+                    "returns": {
+                        "()": [["hypergraph"], ["rules", "edges", "iterations", "count"], "1"]
+                    }
+                }
+            ]
+        }
+    ]
+}

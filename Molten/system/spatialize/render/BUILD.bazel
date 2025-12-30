@@ -1,0 +1,28 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "stage",
+    srcs = ["stage.rs"],
+    deps = [
+        "//system/spatialize/render:error",
+        "//system/spatialize/render:graph",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "graph",
+    srcs = ["graph.rs"],
+    deps = [
+        "//Molten/component:hypergraph",
+        "//Molten/component/spatialize:space",
+        "//Molten/system/spatialize:layout",
+        "//Molten/system/spatialize:palette",
+        "//Molten/system/spatialize:scale",
+        "//Molten/system/spatialize/render/stage:effect",
+        "//Molten/system/spatialize/render/stage:primitive",
+        "//component/spatialize:vector",
+    ],
+)

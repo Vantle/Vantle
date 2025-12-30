@@ -1,0 +1,141 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "collector",
+    srcs = ["collector.rs"],
+    deps = [
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_library(
+    name = "span",
+    srcs = ["span.rs"],
+    deps = ["@crates//:tracing"],
+)
+
+rust_library(
+    name = "channel",
+    srcs = ["channel.rs"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:serde",
+        "@crates//:thiserror",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "visitor",
+    srcs = ["visitor.rs"],
+    deps = [
+        ":stream",
+        "@crates//:serde_json",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "filter",
+    srcs = ["filter.rs"],
+    deps = [
+        ":channel",
+        ":stream",
+        ":visitor",
+        "@crates//:miette",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_library(
+    name = "stream",
+    srcs = ["stream.rs"],
+    deps = [
+        ":channel",
+        "@crates//:serde",
+        "@crates//:serde_json",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "layer",
+    srcs = ["layer.rs"],
+    deps = [
+        ":channel",
+        ":stream",
+        ":visitor",
+        "//component:assemble",
+        "@crates//:dashmap",
+        "@crates//:miette",
+        "@crates//:tokio",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_library(
+    name = "serialize",
+    srcs = ["serialize.rs"],
+    deps = [
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
+
+rust_library(
+    name = "category",
+    srcs = ["category.rs"],
+    deps = ["@crates//:serde"],
+)
+
+rust_library(
+    name = "opaque",
+    srcs = ["opaque.rs"],
+    crate_name = "record",
+    deps = [":category"],
+)
+
+rust_library(
+    name = "transparent",
+    srcs = ["transparent.rs"],
+    crate_name = "record",
+    deps = [
+        ":category",
+        ":collector",
+        ":serialize",
+        ":span",
+        "@crates//:tracing",
+    ],
+)
+
+alias(
+    name = "module",
+    actual = select({
+        "//platform/observation:transparent": ":transparent",
+        "//conditions:default": ":opaque",
+    }),
+)
+
+alias(
+    name = "configuration",
+    actual = select({
+        "//platform/observation/level:trace": "//component/observation/configuration:trace",
+        "//platform/observation/level:debug": "//component/observation/configuration:debug",
+        "//platform/observation/level:warn": "//component/observation/configuration:warn",
+        "//platform/observation/level:error": "//component/observation/configuration:error",
+        "//conditions:default": "//component/observation/configuration:info",
+    }),
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

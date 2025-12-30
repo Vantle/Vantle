@@ -1,0 +1,113 @@
+{
+  "functions": [
+    {
+      "function": "new",
+      "cases": [
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "adjacency": []
+          },
+          "returns": {
+            "()": {
+              "adjacency": []
+            }
+          }
+        },
+        {
+          "tags": ["single", "relation"],
+          "parameters": {
+            "adjacency": [
+              ["a", ["b"]]
+            ]
+          },
+          "returns": {
+            "()": {
+              "adjacency": [
+                ["a", ["b"]]
+              ]
+            }
+          }
+        },
+        {
+          "tags": ["multiple", "relations"],
+          "parameters": {
+            "adjacency": [
+              ["a", ["b", "c"]],
+              ["b", ["d"]]
+            ]
+          },
+          "returns": {
+            "()": {
+              "adjacency": [
+                ["a", ["b", "c"]],
+                ["b", ["d"]]
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "function": "relate",
+      "cases": [
+        {
+          "tags": ["add", "to", "empty"],
+          "parameters": {
+            "related": {
+              "adjacency": []
+            },
+            "label": "a",
+            "relation": "b"
+          },
+          "returns": {
+            "()": {
+              "adjacency": [
+                ["a", ["b"]]
+              ]
+            }
+          }
+        },
+        {
+          "tags": ["add", "to", "existing", "label"],
+          "parameters": {
+            "related": {
+              "adjacency": [
+                ["a", ["b"]]
+              ]
+            },
+            "label": "a",
+            "relation": "c"
+          },
+          "returns": {
+            "()": {
+              "adjacency": [
+                ["a", ["b", "c"]]
+              ]
+            }
+          }
+        },
+        {
+          "tags": ["add", "new", "label"],
+          "parameters": {
+            "related": {
+              "adjacency": [
+                ["a", ["b"]]
+              ]
+            },
+            "label": "c",
+            "relation": "d"
+          },
+          "returns": {
+            "()": {
+              "adjacency": [
+                ["a", ["b"]],
+                ["c", ["d"]]
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

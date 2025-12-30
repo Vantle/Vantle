@@ -1,0 +1,163 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "effect",
+    srcs = ["effect.rs"],
+    deps = ["//Molten/system/spatialize/render/stage/effect:outline"],
+)
+
+rust_library(
+    name = "palette",
+    srcs = ["palette.rs"],
+    deps = [
+        "//Molten/system/spatialize/render/stage/effect:outline",
+        "//component/spatialize:color",
+        "//component/spatialize:proportion",
+        "//component/spatialize:tolerance",
+    ],
+)
+
+rust_library(
+    name = "field",
+    srcs = ["field.rs"],
+    deps = [
+        ":effect",
+        ":primitive",
+        "//component/spatialize:vector",
+    ],
+)
+
+rust_library(
+    name = "combine",
+    srcs = ["combine.rs"],
+    deps = [":field"],
+)
+
+rust_library(
+    name = "vertex",
+    srcs = ["vertex.rs"],
+    deps = [
+        "//component/spatialize:color",
+        "//component/spatialize:vector",
+        "@crates//:bytemuck",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "uniform",
+    srcs = ["uniform.rs"],
+    deps = [
+        "//component/spatialize:matrix",
+        "//component/spatialize:vector",
+        "@crates//:bytemuck",
+    ],
+)
+
+rust_library(
+    name = "primitive",
+    srcs = ["primitive.rs"],
+    deps = [
+        ":effect",
+        "//component/spatialize:color",
+        "//component/spatialize:vector",
+    ],
+)
+
+rust_library(
+    name = "tessellate",
+    srcs = ["tessellate.rs"],
+    deps = [
+        ":primitive",
+        ":vertex",
+        "//component/spatialize:vector",
+    ],
+)
+
+rust_library(
+    name = "batch",
+    srcs = ["batch.rs"],
+    deps = [
+        ":effect",
+        ":field",
+        ":palette",
+        ":primitive",
+        ":tessellate",
+        ":vertex",
+        "@crates//:bytemuck",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "observer",
+    srcs = ["observer.rs"],
+    deps = [
+        "//component/spatialize:matrix",
+        "//component/spatialize:vector",
+    ],
+)
+
+rust_library(
+    name = "geometry",
+    srcs = ["geometry.rs"],
+    data = [
+        "//Molten/resource/system/spatialize:pipeline",
+    ],
+    deps = [
+        ":batch",
+        ":field",
+        ":observer",
+        ":palette",
+        "//Molten/system/spatialize/render:stage",
+        ":uniform",
+        ":vertex",
+        "//component:tag",
+        "//system/spatialize/render:attachment",
+        "//system/spatialize/render:binding",
+        "//system/spatialize/render:error",
+        "//system/spatialize/render:graph",
+        "//system/spatialize/render:raster",
+        "@crates//:bytemuck",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "outline",
+    srcs = ["outline.rs"],
+    data = [
+        "//Molten/resource/system/spatialize:outline",
+    ],
+    deps = [
+        "//Molten/system/spatialize/render:stage",
+        "//component:tag",
+        "//component/spatialize:dimension",
+        "//system/spatialize/render:attachment",
+        "//system/spatialize/render:binding",
+        "//system/spatialize/render:error",
+        "//system/spatialize/render:graph",
+        "//system/spatialize/render:raster",
+        "@crates//:bytemuck",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "typography",
+    srcs = ["typography.rs"],
+    deps = [
+        ":primitive",
+        "//Molten/system/spatialize/render:stage",
+        "//component:tag",
+        "//component/spatialize:dimension",
+        "//component/spatialize:matrix",
+        "//component/spatialize:proportion",
+        "//system/spatialize/render:error",
+        "//system/spatialize/render:graph",
+        "@crates//:glyphon",
+        "@crates//:wgpu",
+    ],
+)

@@ -1,0 +1,50 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_template")
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+
+filegroup(
+    name = "cases",
+    srcs = ["cases.json"],
+)
+
+filegroup(
+    name = "attribute",
+    srcs = ["attribute.lava"],
+)
+
+filegroup(
+    name = "invalid",
+    srcs = ["invalid.lava"],
+)
+
+filegroup(
+    name = "data",
+    srcs = [
+        "attribute.template.rs",
+        ":attribute",
+        ":cases",
+        ":invalid",
+    ],
+)
+
+rust_autotest_template(
+    name = "template",
+    src = "attribute.template.rs",
+    deps = [
+        "//Molten:component",
+        "//Molten/system/graph:symbolic",
+        "//test:utility",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

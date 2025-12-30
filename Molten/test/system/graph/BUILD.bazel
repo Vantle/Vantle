@@ -1,0 +1,34 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "graph",
+    aliases = {
+        "//Molten/component:arena": "valued",
+    },
+    cases = "//Molten/test/resource/system/graph:cases",
+    data = [
+        "//Molten/test/resource/system/graph/module:data",
+    ],
+    template = "//Molten/test/resource/system/graph:template",
+    deps = [
+        "//Molten:component",
+        "//Molten:system",
+        "//Molten/component:arena",
+        "//Molten/system/graph:attribute",
+        "//Molten/system/graph:symbolic",
+        "//test:utility",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

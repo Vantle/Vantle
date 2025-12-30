@@ -1,0 +1,56 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "color",
+    srcs = ["color.rs"],
+    deps = ["@crates//:bytemuck"],
+)
+
+rust_library(
+    name = "pair",
+    srcs = ["pair.rs"],
+)
+
+rust_library(
+    name = "dimension",
+    srcs = ["dimension.rs"],
+)
+
+rust_library(
+    name = "vector",
+    srcs = ["vector.rs"],
+)
+
+rust_library(
+    name = "quaternion",
+    srcs = ["quaternion.rs"],
+    deps = [":vector"],
+)
+
+rust_library(
+    name = "matrix",
+    srcs = ["matrix.rs"],
+    deps = [
+        ":quaternion",
+        ":tolerance",
+        ":vector",
+    ],
+)
+
+rust_library(
+    name = "interact",
+    srcs = ["interact.rs"],
+    deps = ["//component/spatialize/interact:collision"],
+)
+
+rust_library(
+    name = "proportion",
+    srcs = ["proportion.rs"],
+)
+
+rust_library(
+    name = "tolerance",
+    srcs = ["tolerance.rs"],
+)

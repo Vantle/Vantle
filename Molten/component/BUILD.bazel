@@ -1,0 +1,44 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "graph",
+    srcs = ["graph.rs"],
+    deps = [
+        "//Molten/component/graph:attribute",
+        "//Molten/component/graph:index",
+        "//Molten/component/graph:relation",
+        "//Molten/component/graph:state",
+        "//Molten/component/graph:symbolic",
+    ],
+)
+
+rust_library(
+    name = "arena",
+    srcs = ["arena.rs"],
+    deps = [
+        "@crates//:serde",
+        "@crates//:serde_with",
+    ],
+)
+
+rust_library(
+    name = "hypergraph",
+    srcs = ["hypergraph.rs"],
+    deps = [
+        "//Molten/component/graph:relation",
+        "//Molten/component/graph:state",
+        "//Molten/component/graph/state:particle",
+        "//Molten/component/graph/state:wave",
+        "@crates//:serde",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

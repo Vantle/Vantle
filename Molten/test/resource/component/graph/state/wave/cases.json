@@ -1,0 +1,158 @@
+{
+  "functions": [
+    {
+      "function": "monochromatic",
+      "cases": [
+        {
+          "parameters": {
+            "data": [["test", 1]]
+          },
+          "returns": {
+            "()": [
+              [[["test", 1]], 1]
+            ]
+          }
+        },
+        {
+          "parameters": {
+            "data": [["a", 2], ["b", 3]]
+          },
+          "returns": {
+            "()": [
+              [[["a", 2], ["b", 3]], 1]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "function": "polychromatic",
+      "cases": [
+        {
+          "parameters": {
+            "data": [["test", 1]],
+            "multiplicity": 5
+          },
+          "returns": {
+            "()": [
+              [[["test", 1]], 5]
+            ]
+          }
+        },
+        {
+          "parameters": {
+            "data": [["a", 2], ["b", 1]],
+            "multiplicity": 3
+          },
+          "returns": {
+            "()": [
+              [[["a", 2], ["b", 1]], 3]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "function": "new",
+      "cases": [
+        {
+          "parameters": {
+            "particles": []
+          },
+          "returns": {
+            "()": []
+          }
+        },
+        {
+          "parameters": {
+            "particles": [
+              [[["a", 1]], 2]
+            ]
+          },
+          "returns": {
+            "()": [
+              [[["a", 1]], 2]
+            ]
+          }
+        },
+        {
+          "parameters": {
+            "particles": [
+              [[["a", 1]], 2],
+              [[["b", 1]], 3]
+            ]
+          },
+          "returns": {
+            "()": [
+              [[["a", 1]], 2],
+              [[["b", 1]], 3]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "function": "empty",
+      "cases": [
+        {
+          "parameters": {
+            "wave": []
+          },
+          "returns": {
+            "()": true
+          }
+        },
+        {
+          "parameters": {
+            "wave": [
+              [[["a", 1]], 1]
+            ]
+          },
+          "returns": {
+            "()": false
+          }
+        }
+      ]
+    },
+    {
+      "function": "from::slice",
+      "cases": [
+        {
+          "parameters": {
+            "particles": []
+          },
+          "returns": {
+            "()": []
+          }
+        },
+        {
+          "parameters": {
+            "particles": [
+              [["a", 1]]
+            ]
+          },
+          "returns": {
+            "()": [
+              [[["a", 1]], 1]
+            ]
+          }
+        },
+        {
+          "parameters": {
+            "particles": [
+              [["a", 1]],
+              [["a", 1]],
+              [["b", 1]]
+            ]
+          },
+          "returns": {
+            "()": [
+              [[["a", 1]], 2],
+              [[["b", 1]], 1]
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

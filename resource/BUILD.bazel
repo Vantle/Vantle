@@ -1,0 +1,15 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "logo",
+    srcs = ["logo.png"],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

@@ -1,0 +1,27 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "proportion",
+    srcs = ["proportion.rs"],
+    deps = ["//component/spatialize:proportion"],
+)
+
+rust_library(
+    name = "render",
+    srcs = ["render.rs"],
+    deps = [
+        "//component:assemble",
+        "//component/spatialize:dimension",
+        "//system/spatialize/render:error",
+        "//system/spatialize/render:frame",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "interact",
+    srcs = ["interact.rs"],
+    deps = ["//system/spatialize/interact:collision"],
+)

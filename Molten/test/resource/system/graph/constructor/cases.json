@@ -1,0 +1,270 @@
+{
+    "functions": [
+        {
+            "function": "graph",
+            "tags": [
+                "constructor"
+            ],
+            "cases": [
+                {
+                    "tags": [
+                        "basic"
+                    ],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Context",
+                            "context": [
+                                {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "inner"
+                                            },
+                                            "context": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "category": "Void",
+                                    "context": []
+                                },
+                                {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "inner"
+                                                    },
+                                                    "context": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {
+                        "()": {
+                            "adjacency": [
+                                [
+                                    [
+                                        [
+                                            [
+                                                [
+                                                    4,
+                                                    1
+                                                ]
+                                            ],
+                                            1
+                                        ]
+                                    ],
+                                    [
+                                        [
+                                            [
+                                                [
+                                                    [
+                                                        3,
+                                                        1
+                                                    ]
+                                                ],
+                                                1
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        }
+                    }
+                },
+                {
+                    "tags": [
+                        "dotted",
+                        "sink"
+                    ],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Group",
+                            "context": [
+                                {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "A"
+                                            },
+                                            "context": []
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "B"
+                                            },
+                                            "context": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "category": "Void",
+                                    "context": []
+                                },
+                                {
+                                    "category": {
+                                        "Attribute": "C"
+                                    },
+                                    "context": []
+                                },
+                                {
+                                    "category": {
+                                        "Attribute": "D"
+                                    },
+                                    "context": []
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {
+                        "()": {
+                            "adjacency": [
+                                [
+                                    [
+                                        [
+                                            [
+                                                [
+                                                    5,
+                                                    1
+                                                ],
+                                                [
+                                                    6,
+                                                    1
+                                                ]
+                                            ],
+                                            1
+                                        ]
+                                    ],
+                                    [
+                                        [
+                                            [
+                                                [
+                                                    [
+                                                        3,
+                                                        1
+                                                    ],
+                                                    [
+                                                        4,
+                                                        1
+                                                    ]
+                                                ],
+                                                1
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        }
+                    }
+                },
+                {
+                    "tags": [
+                        "whitespace",
+                        "separate"
+                    ],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Group",
+                            "context": [
+                                {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "A"
+                                            },
+                                            "context": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "category": "Void",
+                                    "context": []
+                                },
+                                {
+                                    "category": {
+                                        "Attribute": "B"
+                                    },
+                                    "context": []
+                                },
+                                {
+                                    "category": {
+                                        "Attribute": "C"
+                                    },
+                                    "context": []
+                                },
+                                {
+                                    "category": "Void",
+                                    "context": []
+                                },
+                                {
+                                    "category": {
+                                        "Attribute": "D"
+                                    },
+                                    "context": []
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {
+                        "()": {
+                            "adjacency": [
+                                [
+                                    [
+                                        [
+                                            [
+                                                [
+                                                    6,
+                                                    1
+                                                ]
+                                            ],
+                                            1
+                                        ]
+                                    ],
+                                    [
+                                        [
+                                            [
+                                                [
+                                                    [
+                                                        3,
+                                                        1
+                                                    ],
+                                                    [
+                                                        4,
+                                                        1
+                                                    ]
+                                                ],
+                                                1
+                                            ]
+                                        ],
+                                        [
+                                            [
+                                                [
+                                                    [
+                                                        5,
+                                                        1
+                                                    ]
+                                                ],
+                                                1
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

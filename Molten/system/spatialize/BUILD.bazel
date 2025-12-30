@@ -1,0 +1,219 @@
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "palette",
+    srcs = ["palette.rs"],
+    deps = [
+        "//component/spatialize:color",
+        "//component/spatialize:proportion",
+    ],
+)
+
+rust_library(
+    name = "scale",
+    srcs = ["scale.rs"],
+    deps = [
+        "//component/spatialize:proportion",
+    ],
+)
+
+rust_library(
+    name = "view",
+    srcs = ["view.rs"],
+    deps = [
+        ":scale",
+        "//component/spatialize:dimension",
+        "//component/spatialize:matrix",
+        "//component/spatialize:pair",
+        "//component/spatialize:proportion",
+        "//component/spatialize:quaternion",
+        "//component/spatialize:vector",
+    ],
+)
+
+rust_library(
+    name = "layout",
+    srcs = ["layout.rs"],
+    deps = [
+        ":error",
+        ":scale",
+        "//Molten/component:hypergraph",
+        "//Molten/component/spatialize:space",
+        "//component/spatialize:proportion",
+        "//component/spatialize:vector",
+        "@crates//:rstar",
+    ],
+)
+
+rust_library(
+    name = "pane",
+    srcs = ["pane.rs"],
+    deps = [
+        ":error",
+        ":palette",
+        ":scale",
+        "//Molten/component:hypergraph",
+        "//Molten/component/graph/state:particle",
+        "//Molten/component/graph/state:wave",
+        "//Molten/component/spatialize:space",
+        "@crates//:serde",
+    ],
+)
+
+rust_library(
+    name = "mouse",
+    srcs = ["mouse.rs"],
+    deps = [
+        "//Molten/component:hypergraph",
+        "//system:event",
+    ],
+)
+
+rust_library(
+    name = "interact",
+    srcs = ["interact.rs"],
+    deps = [
+        "//Molten/system/spatialize/interact:collision",
+    ],
+)
+
+rust_library(
+    name = "mock",
+    srcs = ["mock.rs"],
+    deps = [
+        "//Molten/component:hypergraph",
+        "//Molten/component/graph:relation",
+        "//Molten/component/graph/state:particle",
+        "//Molten/component/graph/state:wave",
+    ],
+)
+
+rust_library(
+    name = "scene",
+    srcs = ["scene.rs"],
+    deps = [
+        ":error",
+        ":layout",
+        "//Molten/component:hypergraph",
+        "//Molten/component/spatialize:space",
+        "//component/spatialize:vector",
+    ],
+)
+
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    aliases = {
+        "//Molten/component/spatialize:error": "space",
+        "//system/spatialize/render:error": "render",
+    },
+    deps = [
+        "//Molten/component:hypergraph",
+        "//Molten/component/spatialize:error",
+        "//system/spatialize/render:error",
+        "@crates//:miette",
+        "@crates//:thiserror",
+        "@crates//:wgpu",
+        "@crates//:winit",
+    ],
+)
+
+rust_library(
+    name = "launcher",
+    srcs = ["launcher.rs"],
+    data = [
+        "//Molten/resource:logo.png",
+    ],
+    deps = [
+        ":error",
+        ":pane",
+        ":render",
+        "//component/spatialize:proportion",
+        "@crates//:image",
+        "@crates//:pollster",
+        "@crates//:wgpu",
+        "@crates//:winit",
+    ],
+)
+
+rust_library(
+    name = "event",
+    srcs = ["event.rs"],
+    deps = [
+        ":mouse",
+        ":pane",
+        ":view",
+        "//component/spatialize:dimension",
+        "@crates//:winit",
+    ],
+)
+
+rust_library(
+    name = "render",
+    srcs = ["render.rs"],
+    aliases = {
+        "//system/spatialize/render:graph": "gpu",
+    },
+    data = [
+        "//Molten/resource/system/spatialize/glyph/font:inter",
+    ],
+    deps = [
+        ":error",
+        "//Molten/system/spatialize/render/stage:field",
+        "//Molten/system/spatialize/render/stage:geometry",
+        "//Molten/system/spatialize/render/stage:observer",
+        "//Molten/system/spatialize/render/stage:outline",
+        "//Molten/system/spatialize/render/stage:primitive",
+        "//Molten/system/spatialize/render:stage",
+        "//Molten/system/spatialize/render/stage:typography",
+        "//component:assemble",
+        "//component:tag",
+        "//component/spatialize:color",
+        "//component/spatialize:dimension",
+        "//system/spatialize:render",
+        "//system/spatialize/render:frame",
+        "//system/spatialize/render:graph",
+        "//system/spatialize/render:resource",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_binary(
+    name = "command",
+    srcs = ["command.rs"],
+    aliases = {
+        "//Molten/system/spatialize/interact/collision:effect": "collision",
+        "//Molten/system/spatialize/render:graph": "graph",
+        "//system/spatialize/interact/collision:effect": "effect",
+    },
+    deps = [
+        ":error",
+        ":event",
+        ":launcher",
+        ":layout",
+        ":mock",
+        ":mouse",
+        ":palette",
+        ":pane",
+        ":render",
+        ":scale",
+        ":scene",
+        ":view",
+        "//Molten/component:hypergraph",
+        "//Molten/system/spatialize/interact/collision:effect",
+        "//Molten/system/spatialize/interact/collision:form",
+        "//Molten/system/spatialize/render:graph",
+        "//Molten/system/spatialize/render/stage:field",
+        "//Molten/system/spatialize/render/stage:observer",
+        "//Molten/system/spatialize/render/stage:primitive",
+        "//component/spatialize:dimension",
+        "//component/spatialize/geometry:ray",
+        "//system/spatialize/interact/collision:effect",
+        "@crates//:miette",
+        "@crates//:tracing",
+        "@crates//:wgpu",
+        "@crates//:winit",
+    ],
+)

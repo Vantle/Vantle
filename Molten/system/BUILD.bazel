@@ -1,0 +1,97 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "arena",
+    srcs = ["arena.rs"],
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        "//Molten:component",
+        "//Molten/system/arena:error",
+        "//component/observation:module",
+        "@crates//:serde",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "optimize",
+    srcs = ["optimize.rs"],
+)
+
+rust_library(
+    name = "query",
+    srcs = ["query.rs"],
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        "//Molten:component",
+        "//Molten/component/graph:state",
+        "//component/observation:module",
+        "@crates//:serde",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "scale",
+    srcs = ["scale.rs"],
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        "//Molten:component",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "spatialize",
+    srcs = ["spatialize.rs"],
+)
+
+rust_library(
+    name = "translate",
+    srcs = ["translate.rs"],
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        "//Molten:component",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "hypergraph",
+    srcs = ["hypergraph.rs"],
+    deps = [
+        "//Molten/system/hypergraph:evaluate",
+    ],
+)
+
+rust_library(
+    name = "graph",
+    srcs = ["graph.rs"],
+    deps = [
+        "//Molten/system/graph:attribute",
+        "//Molten/system/graph:constructor",
+        "//Molten/system/graph:index",
+        "//Molten/system/graph:mutator",
+        "//Molten/system/graph:relation",
+        "//Molten/system/graph:state",
+        "//Molten/system/graph:symbolic",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

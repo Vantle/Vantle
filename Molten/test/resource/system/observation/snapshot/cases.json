@@ -1,0 +1,167 @@
+{
+  "functions": [
+    {
+      "function": "roundtrip",
+      "tags": ["snapshot", "serialize"],
+      "parameters": {
+        "graph": {
+          "_meta": {},
+          "nodes": [],
+          "edges": [],
+          "particles": 0,
+          "refractions": {},
+          "world": {},
+          "worlds": 0,
+          "united": {},
+          "future": {},
+          "past": {}
+        }
+      },
+      "returns": {"()": true},
+      "cases": [
+        {
+          "tags": ["empty"]
+        },
+        {
+          "tags": ["single"],
+          "parameters": {
+            "graph": {
+              "_meta": {},
+              "nodes": [[0, [[1, 1]]]],
+              "edges": [],
+              "particles": 1,
+              "refractions": {"0": 0},
+              "world": {"0": 0},
+              "worlds": 1,
+              "united": {"0": [0]},
+              "future": {"0": []},
+              "past": {"0": []}
+            }
+          }
+        },
+        {
+          "tags": ["multiple"],
+          "parameters": {
+            "graph": {
+              "_meta": {},
+              "nodes": [
+                [0, [[1, 1]]],
+                [1, [[2, 1]]],
+                [2, [[3, 1]]]
+              ],
+              "edges": [],
+              "particles": 3,
+              "refractions": {"0": 0, "1": 1, "2": 2},
+              "world": {"0": 0, "1": 0, "2": 0},
+              "worlds": 1,
+              "united": {"0": [0, 1, 2]},
+              "future": {"0": [], "1": [], "2": []},
+              "past": {"0": [], "1": [], "2": []}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "function": "compressed",
+      "tags": ["snapshot", "compress"],
+      "parameters": {
+        "graph": {
+          "_meta": {},
+          "nodes": [],
+          "edges": [],
+          "particles": 0,
+          "refractions": {},
+          "world": {},
+          "worlds": 0,
+          "united": {},
+          "future": {},
+          "past": {}
+        }
+      },
+      "returns": {"()": [true, true]},
+      "cases": [
+        {
+          "tags": ["empty"]
+        },
+        {
+          "tags": ["populated"],
+          "parameters": {
+            "graph": {
+              "_meta": {},
+              "nodes": [
+                [0, [[1, 1]]],
+                [1, [[2, 1]]],
+                [2, [[3, 1]]],
+                [3, [[4, 1]]],
+                [4, [[5, 1]]]
+              ],
+              "edges": [],
+              "particles": 5,
+              "refractions": {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4},
+              "world": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0},
+              "worlds": 1,
+              "united": {"0": [0, 1, 2, 3, 4]},
+              "future": {"0": [], "1": [], "2": [], "3": [], "4": []},
+              "past": {"0": [], "1": [], "2": [], "3": [], "4": []}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "function": "trigger",
+      "tags": ["snapshot", "metadata"],
+      "parameters": {
+        "graph": {
+          "_meta": {},
+          "nodes": [],
+          "edges": [],
+          "particles": 0,
+          "refractions": {},
+          "world": {},
+          "worlds": 0,
+          "united": {},
+          "future": {},
+          "past": {}
+        }
+      },
+      "cases": [
+        {
+          "tags": ["simple"],
+          "parameters": {"name": "manual"},
+          "returns": {"()": "manual"}
+        },
+        {
+          "tags": ["step"],
+          "parameters": {"name": "step"},
+          "returns": {"()": "step"}
+        }
+      ]
+    },
+    {
+      "function": "timestamp",
+      "tags": ["snapshot", "timestamp"],
+      "parameters": {
+        "graph": {
+          "_meta": {},
+          "nodes": [],
+          "edges": [],
+          "particles": 0,
+          "refractions": {},
+          "world": {},
+          "worlds": 0,
+          "united": {},
+          "future": {},
+          "past": {}
+        }
+      },
+      "returns": {"()": true},
+      "cases": [
+        {
+          "tags": ["nonzero"]
+        }
+      ]
+    }
+  ]
+}

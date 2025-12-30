@@ -1,0 +1,36 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//:__pkg__",
+    "//:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "resource",
+    srcs = ["resource.rs"],
+    deps = [
+        "//test/resource:system",
+    ],
+)
+
+rust_library(
+    name = "utility",
+    srcs = ["utility.rs"],
+    deps = [
+        "//:platform",
+        "//component/observation:module",
+        "//system:diagnostic",
+        "@crates//:miette",
+        "@crates//:pretty_assertions",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

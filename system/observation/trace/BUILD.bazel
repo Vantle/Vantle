@@ -1,0 +1,95 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "//:platform",
+        "@crates//:miette",
+        "@crates//:thiserror",
+        "@crates//:url",
+    ],
+)
+
+rust_library(
+    name = "standard",
+    srcs = ["standard.rs"],
+    crate_name = "trace",
+    deps = [
+        ":error",
+        "//component/observation:channel",
+        "//component/observation:configuration",
+        "//component/observation:filter",
+        "//system/observation:trace",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_library(
+    name = "chrome",
+    srcs = ["chrome.rs"],
+    crate_name = "trace",
+    deps = [
+        ":error",
+        "//component/observation:channel",
+        "//component/observation:configuration",
+        "//component/observation:filter",
+        "//system/observation:trace",
+        "@crates//:tracing",
+        "@crates//:tracing-chrome",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_library(
+    name = "encode",
+    srcs = ["encode.rs"],
+    deps = ["//system/observation/trace/encode:proto"],
+)
+
+rust_library(
+    name = "decode",
+    srcs = ["decode.rs"],
+    deps = ["//system/observation/trace/decode:proto"],
+)
+
+rust_library(
+    name = "stream",
+    srcs = ["stream.rs"],
+    crate_name = "trace",
+    deps = [
+        ":error",
+        "//component:assemble",
+        "//component/observation:channel",
+        "//component/observation:configuration",
+        "//component/observation:layer",
+        "//component/observation:stream",
+        "//system/concurrent:runtime",
+        "//system/observation:peer",
+        "@crates//:tokio",
+        "@crates//:tokio-util",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
+        "@crates//:url",
+    ],
+)
+
+alias(
+    name = "module",
+    actual = select({
+        "//platform/observation/format:standard": ":standard",
+        "//platform/observation/format:stream": ":stream",
+        "//conditions:default": ":chrome",
+    }),
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

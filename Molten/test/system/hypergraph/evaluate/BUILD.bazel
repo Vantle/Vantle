@@ -1,0 +1,42 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+load("//component/generation/starlark:defs.bzl", "rust_autotest")
+
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "evaluate",
+    cases = "//Molten/test/resource/system/hypergraph/evaluate:cases",
+    template = "//Molten/test/resource/system/hypergraph/evaluate:template",
+    deps = [
+        "//Molten:component",
+        "//Molten:system",
+        "//Molten/system/hypergraph:evaluate",
+        "//test:utility",
+    ],
+)
+
+rust_autotest(
+    name = "observation",
+    cases = "//Molten/test/resource/system/hypergraph/evaluate/observation:cases",
+    template = "//Molten/test/resource/system/hypergraph/evaluate/observation:template",
+    deps = [
+        "//Molten:component",
+        "//Molten:system",
+        "//Molten/system/hypergraph:evaluate",
+        "//component:assemble",
+        "//component/observation:collector",
+        "//component/observation:layer",
+        "//component/observation:stream",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

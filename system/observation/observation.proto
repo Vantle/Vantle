@@ -1,0 +1,117 @@
+syntax = "proto3";
+package observation;
+
+message Identifier {
+  fixed64 trace = 1;
+  fixed64 span = 2;
+  optional fixed64 parent = 3;
+}
+
+message Metadata {
+  string target = 1;
+  string name = 2;
+  Level level = 3;
+}
+
+enum Level {
+  UNDEFINED = 0;
+  TRACE = 1;
+  DEBUG = 2;
+  INFO = 3;
+  WARN = 4;
+  ERROR = 5;
+}
+
+message Field {
+  string name = 1;
+  oneof value {
+    int64 signed = 2;
+    uint64 unsigned = 3;
+    bool boolean = 4;
+    string text = 5;
+    bytes serialized = 6;
+  }
+}
+
+message Channel {
+  string name = 1;
+  uint32 weight = 2;
+}
+
+message Span {
+  Identifier id = 1;
+  Metadata metadata = 2;
+  repeated Channel channels = 5;
+  oneof event {
+    Begin begin = 3;
+    End end = 4;
+  }
+}
+
+message Begin {
+  uint64 timestamp = 1;
+  repeated Field fields = 2;
+}
+
+message End {
+  uint64 timestamp = 1;
+}
+
+message Event {
+  optional fixed64 parent = 1;
+  Metadata metadata = 2;
+  repeated Channel channels = 5;
+  uint64 timestamp = 3;
+  repeated Field fields = 4;
+}
+
+message Snapshot {
+  uint64 timestamp = 1;
+  bytes state = 2;
+  string trigger = 3;
+}
+
+message Update {
+  oneof payload {
+    Span span = 1;
+    Event event = 2;
+    Snapshot snapshot = 3;
+  }
+}
+
+message Command {
+  oneof instruction {
+    bool pause = 1;
+    bool resume = 2;
+    Seek seek = 3;
+    Filter filter = 4;
+    bool snapshot = 5;
+  }
+}
+
+message Seek {
+  uint64 timestamp = 1;
+}
+
+message Filter {
+  repeated string targets = 1;
+  Level level = 2;
+}
+
+message Record {
+  string path = 1;
+  uint64 count = 2;
+  uint64 duration = 3;
+}
+
+message Acknowledge {}
+
+service Sink {
+  rpc Send(stream Update) returns (Acknowledge);
+  rpc Store(stream Update) returns (Record);
+}
+
+service Source {
+  rpc Emit(stream Command) returns (stream Update);
+  rpc Replay(Record) returns (stream Update);
+}

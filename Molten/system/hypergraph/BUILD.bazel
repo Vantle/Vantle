@@ -1,0 +1,32 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+
+rust_library(
+    name = "evaluate",
+    srcs = ["evaluate.rs"],
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
+    deps = [
+        "//Molten:component",
+        "//Molten/system:query",
+        "//Molten/system:translate",
+        "//Molten/system/graph:relation",
+        "//Molten/system/graph:state",
+        "//Molten/system/hypergraph/evaluate:error",
+        "//component/observation:module",
+        "@crates//:itertools",
+        "@crates//:serde",
+        "@crates//:tracing",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

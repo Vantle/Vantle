@@ -1,0 +1,21 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "context",
+    srcs = ["context.rs"],
+)
+
+rust_library(
+    name = "group",
+    srcs = ["group.rs"],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

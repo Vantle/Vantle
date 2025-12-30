@@ -1,0 +1,2 @@
+.build/bazel/result/
+.build/bazel/trace.log

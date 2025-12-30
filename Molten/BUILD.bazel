@@ -1,0 +1,67 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "component",
+    srcs = ["component.rs"],
+    deps = [
+        "//Molten/component:arena",
+        "//Molten/component:graph",
+        "//Molten/component:hypergraph",
+    ],
+)
+
+rust_library(
+    name = "system",
+    srcs = ["system.rs"],
+    deps = [
+        ":component",
+        "//Molten/system:arena",
+        "//Molten/system:graph",
+        "//Molten/system:hypergraph",
+        "//Molten/system:optimize",
+        "//Molten/system:query",
+        "//Molten/system:scale",
+        "//Molten/system:spatialize",
+        "//Molten/system:translate",
+    ],
+)
+
+rust_library(
+    name = "module",
+    srcs = ["molten.rs"],
+    crate_name = "molten",
+    deps = [
+        ":component",
+        ":system",
+    ],
+)
+
+##### License                                                                                                                                         [ License ]
+filegroup(
+    name = "license",
+    srcs = [
+        "License.md",
+        "Notice.md",
+    ],
+)
+
+##### Documentation                                                                                                                                 [ Documentation ]
+filegroup(
+    name = "documents",
+    srcs = [
+        "Info.md",
+        "License.md",
+        "Notice.md",
+        "Readme.md",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

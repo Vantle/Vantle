@@ -1,0 +1,15 @@
+{
+    "functions": [
+        {
+            "function": "partition",
+            "cases": [
+                {
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/symbolic/partition/partition.lava"
+                    },
+                    "returns": { "()": {"category": "Partition"} }
+                }
+            ]
+        }
+    ]
+}

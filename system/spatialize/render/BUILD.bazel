@@ -1,0 +1,79 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:thiserror",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "resource",
+    srcs = ["resource.rs"],
+    deps = [
+        "//component:tag",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "binding",
+    srcs = ["binding.rs"],
+    deps = [
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "attachment",
+    srcs = ["attachment.rs"],
+    deps = [
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "raster",
+    srcs = ["raster.rs"],
+    deps = [
+        ":attachment",
+        ":binding",
+        ":error",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "compute",
+    srcs = ["compute.rs"],
+    deps = [
+        ":binding",
+        ":error",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "frame",
+    srcs = ["frame.rs"],
+    deps = [
+        "//component/spatialize:color",
+        "@crates//:wgpu",
+    ],
+)
+
+rust_library(
+    name = "graph",
+    srcs = ["graph.rs"],
+    deps = [
+        ":error",
+        ":resource",
+        "//component:tag",
+        "@crates//:wgpu",
+    ],
+)

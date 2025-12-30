@@ -1,0 +1,48 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "arena",
+    aliases = {
+        "//Molten/component:arena": "valued",
+    },
+    cases = "//Molten/test/resource/system/arena:cases",
+    data = [
+        "//Molten/test/resource/system/graph/module:data",
+    ],
+    template = "//Molten/test/resource/system/arena:template",
+    deps = [
+        "//Molten:component",
+        "//Molten:system",
+        "//Molten/component:arena",
+        "//Molten/system/graph:attribute",
+        "//Molten/system/graph:symbolic",
+        "//test:utility",
+    ],
+)
+
+rust_autotest(
+    name = "observation",
+    cases = "//Molten/test/resource/system/arena/observation:cases",
+    template = "//Molten/test/resource/system/arena/observation:template",
+    deps = [
+        "//Molten:component",
+        "//Molten:system",
+        "//component:assemble",
+        "//component/observation:collector",
+        "//component/observation:layer",
+        "//component/observation:stream",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

@@ -1,0 +1,73 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "bound",
+    srcs = ["bound.rs"],
+)
+
+rust_library(
+    name = "ray",
+    srcs = ["ray.rs"],
+    deps = [
+        "//component/spatialize:matrix",
+        "//component/spatialize:tolerance",
+        "//component/spatialize:vector",
+    ],
+)
+
+rust_library(
+    name = "intersect",
+    srcs = ["intersect.rs"],
+    deps = [
+        ":ray",
+        "//component/spatialize:vector",
+        "//component/spatialize/geometry/intersect:ray",
+    ],
+)
+
+rust_library(
+    name = "segment",
+    srcs = ["segment.rs"],
+    deps = [
+        "//component/spatialize:tolerance",
+        "//component/spatialize:vector",
+    ],
+)
+
+rust_library(
+    name = "sphere",
+    srcs = ["sphere.rs"],
+    deps = [
+        ":bound",
+        ":intersect",
+        ":ray",
+        "//component/spatialize:vector",
+    ],
+)
+
+rust_library(
+    name = "cylinder",
+    srcs = ["cylinder.rs"],
+    deps = [
+        ":bound",
+        ":intersect",
+        ":ray",
+        ":segment",
+        "//component/spatialize:tolerance",
+        "//component/spatialize:vector",
+    ],
+)
+
+rust_library(
+    name = "region",
+    srcs = ["region.rs"],
+    deps = [
+        ":bound",
+        ":intersect",
+        ":ray",
+        "//component/spatialize:tolerance",
+        "//component/spatialize:vector",
+    ],
+)

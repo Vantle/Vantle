@@ -1,0 +1,90 @@
+{
+  "functions": [
+    {
+      "function": "from::u8",
+      "cases": [
+        {
+          "tags": ["context", "initial"],
+          "parameters": {
+            "value": 91
+          },
+          "returns": {
+            "()": "Contexting"
+          }
+        },
+        {
+          "tags": ["context", "terminal"],
+          "parameters": {
+            "value": 93
+          },
+          "returns": {
+            "()": "Contexted"
+          }
+        },
+        {
+          "tags": ["group", "initial"],
+          "parameters": {
+            "value": 40
+          },
+          "returns": {
+            "()": "Grouping"
+          }
+        },
+        {
+          "tags": ["group", "terminal"],
+          "parameters": {
+            "value": 41
+          },
+          "returns": {
+            "()": "Grouped"
+          }
+        },
+        {
+          "tags": ["partition"],
+          "parameters": {
+            "value": 44
+          },
+          "returns": {
+            "()": "Partition"
+          }
+        },
+        {
+          "tags": ["continuation"],
+          "parameters": {
+            "value": 46
+          },
+          "returns": {
+            "()": "Continuation"
+          }
+        },
+        {
+          "tags": ["element", "letter"],
+          "parameters": {
+            "value": 65
+          },
+          "returns": {
+            "()": "Element(65)"
+          }
+        },
+        {
+          "tags": ["element", "digit"],
+          "parameters": {
+            "value": 48
+          },
+          "returns": {
+            "()": "Element(48)"
+          }
+        },
+        {
+          "tags": ["element", "space"],
+          "parameters": {
+            "value": 32
+          },
+          "returns": {
+            "()": "Element(32)"
+          }
+        }
+      ]
+    }
+  ]
+}

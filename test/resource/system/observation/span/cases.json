@@ -1,0 +1,20 @@
+{
+  "functions": [
+    {
+      "function": "instrumented",
+      "tags": ["span", "macro"],
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {"value": 10},
+          "returns": {"()": [1, "Info", "10"]}
+        },
+        {
+          "tags": ["zero"],
+          "parameters": {"value": 0},
+          "returns": {"()": [1, "Info", "0"]}
+        }
+      ]
+    }
+  ]
+}

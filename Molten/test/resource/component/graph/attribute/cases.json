@@ -1,0 +1,227 @@
+{
+  "functions": [
+    {
+      "function": "category::attribute",
+      "cases": [
+        {
+          "parameters": {
+            "value": "test"
+          },
+          "returns": {
+            "()": {
+              "Attribute": "test"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "value": "hello"
+          },
+          "returns": {
+            "()": {
+              "Attribute": "hello"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "function": "category::context",
+      "cases": [
+        {
+          "parameters": {},
+          "returns": {
+            "()": "Context"
+          }
+        }
+      ]
+    },
+    {
+      "function": "category::group",
+      "cases": [
+        {
+          "parameters": {},
+          "returns": {
+            "()": "Group"
+          }
+        }
+      ]
+    },
+    {
+      "function": "category::partition",
+      "cases": [
+        {
+          "parameters": {},
+          "returns": {
+            "()": "Partition"
+          }
+        }
+      ]
+    },
+    {
+      "function": "category::void",
+      "cases": [
+        {
+          "parameters": {},
+          "returns": {
+            "()": "Void"
+          }
+        }
+      ]
+    },
+    {
+      "function": "assembler::new",
+      "cases": [
+        {
+          "tags": ["with", "attribute"],
+          "parameters": {
+            "category": {
+              "Attribute": "value"
+            }
+          },
+          "returns": {
+            "()": {
+              "category": {
+                "Attribute": "value"
+              },
+              "context": []
+            }
+          }
+        },
+        {
+          "tags": ["with", "context"],
+          "parameters": {
+            "category": "Context"
+          },
+          "returns": {
+            "()": {
+              "category": "Context",
+              "context": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "function": "assembler::empty",
+      "cases": [
+        {
+          "parameters": {},
+          "returns": {
+            "()": {
+              "category": "Void",
+              "context": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "function": "assembler::context",
+      "cases": [
+        {
+          "tags": ["single", "context"],
+          "parameters": {
+            "category": {
+              "Attribute": "parent"
+            },
+            "attribute": {
+              "category": {
+                "Attribute": "child"
+              },
+              "context": []
+            }
+          },
+          "returns": {
+            "()": {
+              "category": {
+                "Attribute": "parent"
+              },
+              "context": [
+                {
+                  "category": {
+                    "Attribute": "child"
+                  },
+                  "context": []
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "function": "assembler::then",
+      "cases": [
+        {
+          "tags": ["empty", "list"],
+          "parameters": {
+            "category": {
+              "Attribute": "root"
+            },
+            "attributes": []
+          },
+          "returns": {
+            "()": {
+              "category": {
+                "Attribute": "root"
+              },
+              "context": []
+            }
+          }
+        },
+        {
+          "tags": ["multiple", "contexts"],
+          "parameters": {
+            "category": {
+              "Attribute": "root"
+            },
+            "attributes": [
+              {
+                "category": "Context",
+                "context": []
+              },
+              {
+                "category": "Group",
+                "context": []
+              }
+            ]
+          },
+          "returns": {
+            "()": {
+              "category": {
+                "Attribute": "root"
+              },
+              "context": [
+                {
+                  "category": "Context",
+                  "context": []
+                },
+                {
+                  "category": "Group",
+                  "context": []
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "function": "assembler::category",
+      "cases": [
+        {
+          "parameters": {
+            "value": "Partition"
+          },
+          "returns": {
+            "()": {
+              "category": "Partition",
+              "context": []
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
+    name = "runtime",
+    srcs = ["runtime.rs"],
+    deps = [
+        ":error",
+        "@crates//:tokio",
+        "@crates//:tokio-util",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

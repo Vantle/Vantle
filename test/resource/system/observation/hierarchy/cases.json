@@ -1,0 +1,57 @@
+{
+  "functions": [
+    {
+      "function": "nested",
+      "tags": ["hierarchy", "depth"],
+      "cases": [
+        {
+          "tags": ["zero"],
+          "parameters": {"depth": 0},
+          "returns": {"()": [1, 0]}
+        },
+        {
+          "tags": ["single"],
+          "parameters": {"depth": 1},
+          "returns": {"()": [2, 1]}
+        },
+        {
+          "tags": ["deep"],
+          "parameters": {"depth": 3},
+          "returns": {"()": [4, 3]}
+        }
+      ]
+    },
+    {
+      "function": "ancestry",
+      "tags": ["hierarchy", "parent"],
+      "cases": [
+        {
+          "tags": ["root"],
+          "parameters": {"depth": 0},
+          "returns": {"()": [true]}
+        },
+        {
+          "tags": ["chain"],
+          "parameters": {"depth": 2},
+          "returns": {"()": [true, true, true]}
+        }
+      ]
+    },
+    {
+      "function": "consistent",
+      "tags": ["hierarchy", "trace"],
+      "cases": [
+        {
+          "tags": ["empty"],
+          "parameters": {"depth": 0},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["deep"],
+          "parameters": {"depth": 4},
+          "returns": {"()": true}
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "functions": [
+    {
+      "function": "fundamental",
+      "cases": [
+        {
+          "parameters": {
+            "data": "test"
+          },
+          "returns": {
+            "()": [["test", 1]]
+          }
+        },
+        {
+          "parameters": {
+            "data": "hello"
+          },
+          "returns": {
+            "()": [["hello", 1]]
+          }
+        }
+      ]
+    },
+    {
+      "function": "new",
+      "cases": [
+        {
+          "parameters": {
+            "elements": {"a": 2, "b": 3}
+          },
+          "returns": {
+            "()": [["a", 2], ["b", 3]]
+          }
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "elements": {}
+          },
+          "returns": {
+            "()": []
+          }
+        }
+      ]
+    },
+    {
+      "function": "from::slice",
+      "cases": [
+        {
+          "tags": ["counts", "duplicates"],
+          "parameters": {
+            "elements": ["a", "b", "a", "c", "b", "a"]
+          },
+          "returns": {
+            "()": [["a", 3], ["b", 2], ["c", 1]]
+          }
+        },
+        {
+          "tags": ["unique"],
+          "parameters": {
+            "elements": ["x", "y", "z"]
+          },
+          "returns": {
+            "()": [["x", 1], ["y", 1], ["z", 1]]
+          }
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {
+            "elements": []
+          },
+          "returns": {
+            "()": []
+          }
+        }
+      ]
+    }
+  ]
+}

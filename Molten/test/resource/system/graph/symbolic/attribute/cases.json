@@ -1,0 +1,84 @@
+{
+  "functions": [
+    {
+      "function": "attribute",
+      "cases": [
+        {
+          "parameters": {
+            "resource": "Molten/test/resource/system/graph/symbolic/attribute/attribute.lava"
+          },
+          "returns": {
+            "()": { "category": {"Attribute": "Meta"}, "context": [] }
+          }
+        },
+        {
+          "parameters": {
+            "resource": "Molten/test/resource/system/graph/symbolic/group/group.lava"
+          },
+          "returns": {
+            "()": {
+              "category": {"Attribute": ""},
+              "context": [
+                {
+                  "category": "Group",
+                  "context": [
+                    { "category": "Void",                   "context": [] },
+                    { "category": {"Attribute": "Molten"},  "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": "Void",                   "context": [] },
+                    { "category": {"Attribute": "Meta"},    "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": "Void",                   "context": [] },
+                    { "category": {"Attribute": "Program"}, "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": "Void",                   "context": [] },
+                    { "category": {"Attribute": "Alpha"},   "context": [] },
+                    { "category": {"Attribute": "Alpha"},   "context": [] }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "parameters": {
+            "resource": "Molten/test/resource/system/graph/symbolic/context/context.lava"
+          },
+          "returns": {
+            "()": {
+              "category": {"Attribute": ""},
+              "context": [
+                {
+                  "category": "Context",
+                  "context": [
+                    { "category": {"Attribute": "Molten"},  "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": {"Attribute": "Meta"},    "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": {"Attribute": "Program"}, "context": [] },
+                    { "category": "Partition",              "context": [] },
+                    { "category": "Partition",              "context": [] }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "function": "error",
+      "cases": [
+        {
+          "tags": ["invalid", "syntax"],
+          "parameters": {
+            "resource": "Molten/test/resource/system/graph/symbolic/attribute/invalid.lava"
+          },
+          "returns": {
+            "()": true
+          }
+        }
+      ]
+    }
+  ]
+}

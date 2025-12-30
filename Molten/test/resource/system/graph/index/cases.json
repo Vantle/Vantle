@@ -1,0 +1,215 @@
+{
+    "functions": [
+        {
+            "function": "allocate",
+            "tags": ["index", "empty"],
+            "parameters": {
+                "index": {
+                    "arena": {
+                        "indices": [],
+                        "values": {},
+                        "counter": 0
+                    },
+                    "relations": {
+                        "adjacency": []
+                    }
+                }
+            },
+            "cases": [
+                {
+                    "tags": ["simple"],
+                    "parameters": {
+                        "attribute": {
+                            "category": {
+                                "Attribute": "test"
+                            },
+                            "context": []
+                        }
+                    },
+                    "returns": {
+                        "()": [0, []]
+                    }
+                },
+                {
+                    "tags": ["context"],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Context",
+                            "context": [
+                                {
+                                    "category": {
+                                        "Attribute": "inner"
+                                    },
+                                    "context": []
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {
+                        "()": [0, [[[[1, 1]], 1]]]
+                    }
+                },
+                {
+                    "tags": ["group"],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Group",
+                            "context": [
+                                {
+                                    "category": {
+                                        "Attribute": "member"
+                                    },
+                                    "context": []
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {
+                        "()": [0, [[[[1, 1]], 1]]]
+                    }
+                },
+                {
+                    "tags": ["partition"],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Partition",
+                            "context": []
+                        }
+                    },
+                    "returns": {
+                        "()": [0, []]
+                    }
+                },
+                {
+                    "tags": ["void"],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Void",
+                            "context": []
+                        }
+                    },
+                    "returns": {
+                        "()": [0, []]
+                    }
+                },
+                {
+                    "tags": ["nested"],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Context",
+                            "context": [
+                                {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "deep"
+                                            },
+                                            "context": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {
+                        "()": [0, [[[[1, 1]], 1]]]
+                    }
+                },
+                {
+                    "tags": ["multiple"],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Context",
+                            "context": [
+                                {
+                                    "category": {
+                                        "Attribute": "first"
+                                    },
+                                    "context": []
+                                },
+                                {
+                                    "category": {
+                                        "Attribute": "second"
+                                    },
+                                    "context": []
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {
+                        "()": [0, [[[[1, 1], [2, 1]], 1]]]
+                    }
+                }
+            ]
+        },
+        {
+            "function": "allocate",
+            "tags": ["index", "populated"],
+            "parameters": {
+                "index": {
+                    "arena": {
+                        "indices": [
+                            [
+                                {
+                                    "category": {
+                                        "Attribute": "existing"
+                                    },
+                                    "context": []
+                                },
+                                0
+                            ]
+                        ],
+                        "values": {
+                            "0": {
+                                "category": {
+                                    "Attribute": "existing"
+                                },
+                                "context": []
+                            }
+                        },
+                        "counter": 1
+                    },
+                    "relations": {
+                        "adjacency": []
+                    }
+                }
+            },
+            "cases": [
+                {
+                    "tags": ["simple"],
+                    "parameters": {
+                        "attribute": {
+                            "category": {
+                                "Attribute": "new"
+                            },
+                            "context": []
+                        }
+                    },
+                    "returns": {
+                        "()": [1, []]
+                    }
+                },
+                {
+                    "tags": ["context"],
+                    "parameters": {
+                        "attribute": {
+                            "category": "Context",
+                            "context": [
+                                {
+                                    "category": {
+                                        "Attribute": "child"
+                                    },
+                                    "context": []
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {
+                        "()": [1, [[[[2, 1]], 1]]]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,113 @@
+{
+  "functions": [
+    {
+      "function": "parse",
+      "tags": ["channel", "parse"],
+      "cases": [
+        {
+          "tags": ["single"],
+          "parameters": {"input": "core"},
+          "returns": {"()": [["core", 1]]}
+        },
+        {
+          "tags": ["weighted"],
+          "parameters": {"input": "core:5"},
+          "returns": {"()": [["core", 5]]}
+        },
+        {
+          "tags": ["multiple"],
+          "parameters": {"input": "core,debug,trace"},
+          "returns": {"()": [["core", 1], ["debug", 1], ["trace", 1]]}
+        },
+        {
+          "tags": ["weighted", "multiple"],
+          "parameters": {"input": "core:3,trace:7"},
+          "returns": {"()": [["core", 3], ["trace", 7]]}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {"input": ""},
+          "returns": {"()": []}
+        },
+        {
+          "tags": ["whitespace"],
+          "parameters": {"input": "  core  ,  trace  "},
+          "returns": {"()": [["core", 1], ["trace", 1]]}
+        }
+      ]
+    },
+    {
+      "function": "duplicate",
+      "tags": ["channel", "error"],
+      "cases": [
+        {
+          "tags": ["valid"],
+          "parameters": {"input": "core,trace"},
+          "returns": {"()": false}
+        },
+        {
+          "tags": ["duplicate"],
+          "parameters": {"input": "core,core"},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["duplicate", "weighted"],
+          "parameters": {"input": "core:1,core:2"},
+          "returns": {"()": true}
+        }
+      ]
+    },
+    {
+      "function": "serialize",
+      "tags": ["channel", "serialize"],
+      "cases": [
+        {
+          "tags": ["single"],
+          "parameters": {"channels": [["core", 1]]},
+          "returns": {"()": "core:1"}
+        },
+        {
+          "tags": ["multiple"],
+          "parameters": {"channels": [["core", 3], ["trace", 5]]},
+          "returns": {"()": "core:3,trace:5"}
+        },
+        {
+          "tags": ["empty"],
+          "parameters": {"channels": []},
+          "returns": {"()": ""}
+        }
+      ]
+    },
+    {
+      "function": "matches",
+      "tags": ["channel", "filter"],
+      "cases": [
+        {
+          "tags": ["match"],
+          "parameters": {"channels": ["core", "trace"], "filter": ["core"]},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["nomatch"],
+          "parameters": {"channels": ["core"], "filter": ["debug"]},
+          "returns": {"()": false}
+        },
+        {
+          "tags": ["empty", "channels"],
+          "parameters": {"channels": [], "filter": ["core"]},
+          "returns": {"()": false}
+        },
+        {
+          "tags": ["empty", "filter"],
+          "parameters": {"channels": ["core"], "filter": []},
+          "returns": {"()": false}
+        },
+        {
+          "tags": ["multiple"],
+          "parameters": {"channels": ["core", "trace", "debug"], "filter": ["trace", "info"]},
+          "returns": {"()": true}
+        }
+      ]
+    }
+  ]
+}

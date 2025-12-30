@@ -1,0 +1,39 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest(
+    name = "translator",
+    cases = "//Molten/test/resource/system/graph/symbolic/translator:cases",
+    template = "//Molten/test/resource/system/graph/symbolic/translator:template",
+    deps = [
+        "//Molten:component",
+        "//Molten/system/graph:symbolic",
+        "//test:utility",
+    ],
+)
+
+rust_autotest(
+    name = "renderer",
+    cases = "//Molten/test/resource/system/graph/symbolic/renderer:cases",
+    data = ["//Molten/test/resource/system/graph/module:data"],
+    template = "//Molten/test/resource/system/graph/symbolic/renderer:template",
+    deps = [
+        "//Molten:component",
+        "//Molten:system",
+        "//Molten/system/graph:attribute",
+        "//Molten/system/graph:symbolic",
+        "//test:utility",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

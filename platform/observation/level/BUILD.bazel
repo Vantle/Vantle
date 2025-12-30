@@ -1,0 +1,35 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+config_setting(
+    name = "trace",
+    flag_values = {"//platform/observation:level": "trace"},
+)
+
+config_setting(
+    name = "debug",
+    flag_values = {"//platform/observation:level": "debug"},
+)
+
+config_setting(
+    name = "info",
+    flag_values = {"//platform/observation:level": "info"},
+)
+
+config_setting(
+    name = "warn",
+    flag_values = {"//platform/observation:level": "warn"},
+)
+
+config_setting(
+    name = "error",
+    flag_values = {"//platform/observation:level": "error"},
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

@@ -1,0 +1,114 @@
+{
+  "functions": [
+    {
+      "function": "view.quantity",
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {"input": "This is a viewable string", "limit": 4},
+          "returns": {"()": "This"}
+        },
+        {
+          "tags": ["repeated"],
+          "parameters": {"input": "This is a viewable string", "limit": 4},
+          "returns": {"()": "This"}
+        }
+      ]
+    },
+    {
+      "function": "view.termination",
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {
+            "input"     : "This is a viewable string",
+            "terminator": "i"
+          },
+          "returns": {"()": "Th"}
+        }
+      ]
+    },
+    {
+      "function": "view.filter",
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {
+            "input" : "    \n\t\n \rThis is a consumable string",
+            "target": "i"
+          },
+          "returns": {"()": "iii"}
+        }
+      ]
+    },
+    {
+      "function": "view.space",
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {"input": "    \n\t\n \rThis is a consumable string"},
+          "returns": {"()": "    \n\t\n \r"}
+        }
+      ]
+    },
+    {
+      "function": "consume.quantity",
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {"input": "This is a viewable string", "limit": 4},
+          "returns": {"()": "This"}
+        },
+        {
+          "tags": ["repeated"],
+          "parameters": {"input": "This is a viewable string", "limit": 4},
+          "returns": {"()": "This"}
+        }
+      ]
+    },
+    {
+      "function": "consume.termination",
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {
+            "input"     : "This is a consumable string",
+            "terminator": "i"
+          },
+          "returns": {"()": "Th"}
+        },
+        {
+          "tags": ["partial"],
+          "parameters": {
+            "input"     : "    \n\t\n \rThis is a consumable string",
+            "terminator": "T"
+          },
+          "returns": {"()": "    \n\t\n \r"}
+        }
+      ]
+    },
+    {
+      "function": "consume.filter",
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {
+            "input" : "    \n\t\n \rThis is a consumable string",
+            "target": "i"
+          },
+          "returns": {"()": "iii"}
+        }
+      ]
+    },
+    {
+      "function": "consume.space",
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {"input": "    \n\t\n \rThis is a consumable string"},
+          "returns": {"()": "    \n\t\n \r"}
+        }
+      ]
+    }
+  ]
+}

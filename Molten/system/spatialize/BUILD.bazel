@@ -1,0 +1,30 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "client",
+    srcs = ["client.rs"],
+    deps = [
+        "//component/observation:stream",
+        "@crates//:tokio",
+    ],
+)
+
+rust_binary(
+    name = "command",
+    srcs = ["command.rs"],
+    deps = [
+        ":client",
+        "@crates//:clap",
+        "@crates//:winit",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

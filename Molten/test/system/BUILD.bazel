@@ -1,0 +1,11 @@
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//Molten/test:__pkg__",
+    "//Molten/test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+
+##### Documentation                                                                                                                             [ Documentation ]

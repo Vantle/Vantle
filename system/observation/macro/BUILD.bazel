@@ -1,0 +1,25 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "channel",
+    srcs = ["channel.rs"],
+    deps = [
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "trace",
+    srcs = ["trace.rs"],
+    deps = [
+        ":channel",
+        "@crates//:syn",
+    ],
+)

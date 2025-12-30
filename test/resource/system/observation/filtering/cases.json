@@ -1,0 +1,99 @@
+{
+  "functions": [
+    {
+      "function": "included",
+      "tags": ["channel", "include"],
+      "cases": [
+        {
+          "tags": ["alpha"],
+          "parameters": {"filter": ["alpha"]},
+          "returns": {"()": 4}
+        },
+        {
+          "tags": ["beta"],
+          "parameters": {"filter": ["beta"]},
+          "returns": {"()": 4}
+        },
+        {
+          "tags": ["both"],
+          "parameters": {"filter": ["alpha", "beta"]},
+          "returns": {"()": 6}
+        },
+        {
+          "tags": ["none"],
+          "parameters": {"filter": ["gamma"]},
+          "returns": {"()": 0}
+        }
+      ]
+    },
+    {
+      "function": "excluded",
+      "tags": ["channel", "exclude"],
+      "cases": [
+        {
+          "tags": ["alpha"],
+          "parameters": {"filter": ["alpha"]},
+          "returns": {"()": 2}
+        },
+        {
+          "tags": ["both"],
+          "parameters": {"filter": ["alpha", "beta"]},
+          "returns": {"()": 0}
+        }
+      ]
+    },
+    {
+      "function": "weighted",
+      "tags": ["channel", "weight"],
+      "cases": [
+        {
+          "tags": ["all"],
+          "parameters": {"threshold": 1},
+          "returns": {"()": 6}
+        },
+        {
+          "tags": ["medium"],
+          "parameters": {"threshold": 5},
+          "returns": {"()": 4}
+        },
+        {
+          "tags": ["high"],
+          "parameters": {"threshold": 10},
+          "returns": {"()": 2}
+        }
+      ]
+    },
+    {
+      "function": "parsed",
+      "tags": ["channel", "parse"],
+      "cases": [
+        {
+          "tags": ["simple"],
+          "parameters": {"specification": "core"},
+          "returns": {"()": [1, 1]}
+        },
+        {
+          "tags": ["weighted"],
+          "parameters": {"specification": "core:5"},
+          "returns": {"()": [1, 5]}
+        }
+      ]
+    },
+    {
+      "function": "serialized",
+      "tags": ["channel", "serialize"],
+      "cases": [
+        {
+          "tags": ["single"],
+          "parameters": {"names": ["core"], "weights": [1]},
+          "returns": {"()": "core:1"}
+        },
+        {
+          "tags": ["multiple"],
+          "parameters": {"names": ["alpha", "beta"], "weights": [1, 5]},
+          "returns": {"()": "alpha:1,beta:5"}
+        }
+      ]
+    }
+  ]
+}

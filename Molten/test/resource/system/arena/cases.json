@@ -1,0 +1,964 @@
+{
+    "functions": [
+        {
+            "function": "arena",
+            "tags": [
+                "valued"
+            ],
+            "cases": [
+                {
+                    "tags": [
+                        "echo"
+                    ],
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/echo/symbolic/echo.lava"
+                    },
+                    "returns": {
+                        "()": {
+                            "indices": [
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Stream"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Sink"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Console"
+                                                },
+                                                "context": [
+                                                    {
+                                                        "category": "Group",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "value"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    3
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Width"
+                                        },
+                                        "context": [
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "8"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    15
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Data"
+                                        }
+                                    },
+                                    10
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Echo"
+                                        },
+                                        "context": [
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Data"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Format"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Unicode"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": "Partition"
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Binary"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Width"
+                                                        },
+                                                        "context": [
+                                                            {
+                                                                "category": "Group",
+                                                                "context": [
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "8"
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "category": "Partition"
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "value"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    4
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Sink"
+                                        }
+                                    },
+                                    6
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Stream"
+                                        }
+                                    },
+                                    5
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Console"
+                                        },
+                                        "context": [
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "value"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    7
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Data"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Format"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Unicode"
+                                                }
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Binary"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Width"
+                                                },
+                                                "context": [
+                                                    {
+                                                        "category": "Group",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "8"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "value"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    8
+                                ],
+                                [
+                                    {
+                                        "category": "Partition"
+                                    },
+                                    13
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "value"
+                                        }
+                                    },
+                                    16
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "8"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    17
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Format"
+                                        }
+                                    },
+                                    11
+                                ],
+                                [
+                                    {
+                                        "category": "Void"
+                                    },
+                                    2
+                                ],
+                                [
+                                    {
+                                        "category": "Context",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Echo"
+                                                },
+                                                "context": [
+                                                    {
+                                                        "category": "Group",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Data"
+                                                                }
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Format"
+                                                                }
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Unicode"
+                                                                }
+                                                            },
+                                                            {
+                                                                "category": "Partition"
+                                                            },
+                                                            {
+                                                                "category": "Void"
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Binary"
+                                                                }
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Width"
+                                                                },
+                                                                "context": [
+                                                                    {
+                                                                        "category": "Group",
+                                                                        "context": [
+                                                                            {
+                                                                                "category": {
+                                                                                    "Attribute": "8"
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "category": "Partition"
+                                                            },
+                                                            {
+                                                                "category": "Void"
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "value"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    1
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Binary"
+                                        }
+                                    },
+                                    14
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "value"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    9
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "8"
+                                        }
+                                    },
+                                    18
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Unicode"
+                                        }
+                                    },
+                                    12
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Echo"
+                                                        },
+                                                        "context": [
+                                                            {
+                                                                "category": "Group",
+                                                                "context": [
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "Data"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "Format"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "Unicode"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "category": "Partition"
+                                                                    },
+                                                                    {
+                                                                        "category": "Void"
+                                                                    },
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "Binary"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "Width"
+                                                                        },
+                                                                        "context": [
+                                                                            {
+                                                                                "category": "Group",
+                                                                                "context": [
+                                                                                    {
+                                                                                        "category": {
+                                                                                            "Attribute": "8"
+                                                                                        }
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "category": "Partition"
+                                                                    },
+                                                                    {
+                                                                        "category": "Void"
+                                                                    },
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "value"
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Stream"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Sink"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Console"
+                                                        },
+                                                        "context": [
+                                                            {
+                                                                "category": "Group",
+                                                                "context": [
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "value"
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    0
+                                ]
+                            ],
+                            "values": {
+                                "6": {
+                                    "category": {
+                                        "Attribute": "Sink"
+                                    }
+                                },
+                                "17": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "8"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "18": {
+                                    "category": {
+                                        "Attribute": "8"
+                                    }
+                                },
+                                "13": {
+                                    "category": "Partition"
+                                },
+                                "9": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "value"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "1": {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "Echo"
+                                            },
+                                            "context": [
+                                                {
+                                                    "category": "Group",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Data"
+                                                            }
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Format"
+                                                            }
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Unicode"
+                                                            }
+                                                        },
+                                                        {
+                                                            "category": "Partition"
+                                                        },
+                                                        {
+                                                            "category": "Void"
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Binary"
+                                                            }
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Width"
+                                                            },
+                                                            "context": [
+                                                                {
+                                                                    "category": "Group",
+                                                                    "context": [
+                                                                        {
+                                                                            "category": {
+                                                                                "Attribute": "8"
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "category": "Partition"
+                                                        },
+                                                        {
+                                                            "category": "Void"
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "value"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "15": {
+                                    "category": {
+                                        "Attribute": "Width"
+                                    },
+                                    "context": [
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "8"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "7": {
+                                    "category": {
+                                        "Attribute": "Console"
+                                    },
+                                    "context": [
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "value"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "10": {
+                                    "category": {
+                                        "Attribute": "Data"
+                                    }
+                                },
+                                "16": {
+                                    "category": {
+                                        "Attribute": "value"
+                                    }
+                                },
+                                "4": {
+                                    "category": {
+                                        "Attribute": "Echo"
+                                    },
+                                    "context": [
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Data"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Format"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Unicode"
+                                                    }
+                                                },
+                                                {
+                                                    "category": "Partition"
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Binary"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Width"
+                                                    },
+                                                    "context": [
+                                                        {
+                                                            "category": "Group",
+                                                            "context": [
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "8"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "category": "Partition"
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "value"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "0": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Echo"
+                                                    },
+                                                    "context": [
+                                                        {
+                                                            "category": "Group",
+                                                            "context": [
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "Data"
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "Format"
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "Unicode"
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "category": "Partition"
+                                                                },
+                                                                {
+                                                                    "category": "Void"
+                                                                },
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "Binary"
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "Width"
+                                                                    },
+                                                                    "context": [
+                                                                        {
+                                                                            "category": "Group",
+                                                                            "context": [
+                                                                                {
+                                                                                    "category": {
+                                                                                        "Attribute": "8"
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "category": "Partition"
+                                                                },
+                                                                {
+                                                                    "category": "Void"
+                                                                },
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "value"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Stream"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Sink"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Console"
+                                                    },
+                                                    "context": [
+                                                        {
+                                                            "category": "Group",
+                                                            "context": [
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "value"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "8": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "Data"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Format"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Unicode"
+                                            }
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Binary"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Width"
+                                            },
+                                            "context": [
+                                                {
+                                                    "category": "Group",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "8"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "value"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "2": {
+                                    "category": "Void"
+                                },
+                                "14": {
+                                    "category": {
+                                        "Attribute": "Binary"
+                                    }
+                                },
+                                "11": {
+                                    "category": {
+                                        "Attribute": "Format"
+                                    }
+                                },
+                                "5": {
+                                    "category": {
+                                        "Attribute": "Stream"
+                                    }
+                                },
+                                "12": {
+                                    "category": {
+                                        "Attribute": "Unicode"
+                                    }
+                                },
+                                "3": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "Stream"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Sink"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Console"
+                                            },
+                                            "context": [
+                                                {
+                                                    "category": "Group",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "value"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "counter": 19
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

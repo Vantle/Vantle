@@ -1,0 +1,2477 @@
+{
+    "functions": [
+        {
+            "function": "arena",
+            "cases": [
+                {
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/echo/symbolic/echo.lava"
+                    },
+                    "returns": {
+                        "()": {
+                            "indices": [
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Binary"
+                                        }
+                                    },
+                                    14
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "value"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    9
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Unicode"
+                                        }
+                                    },
+                                    12
+                                ],
+                                [
+                                    {
+                                        "category": "Void"
+                                    },
+                                    2
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Echo"
+                                                        },
+                                                        "context": [
+                                                            {
+                                                                "category": "Group",
+                                                                "context": [
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "Data"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "Format"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "Unicode"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "category": "Partition"
+                                                                    },
+                                                                    {
+                                                                        "category": "Void"
+                                                                    },
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "Binary"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "Width"
+                                                                        },
+                                                                        "context": [
+                                                                            {
+                                                                                "category": "Group",
+                                                                                "context": [
+                                                                                    {
+                                                                                        "category": {
+                                                                                            "Attribute": "8"
+                                                                                        }
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "category": "Partition"
+                                                                    },
+                                                                    {
+                                                                        "category": "Void"
+                                                                    },
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "value"
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Stream"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Sink"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Console"
+                                                        },
+                                                        "context": [
+                                                            {
+                                                                "category": "Group",
+                                                                "context": [
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "value"
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    0
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Data"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Format"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Unicode"
+                                                }
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Binary"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Width"
+                                                },
+                                                "context": [
+                                                    {
+                                                        "category": "Group",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "8"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "value"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    8
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Data"
+                                        }
+                                    },
+                                    10
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "8"
+                                        }
+                                    },
+                                    18
+                                ],
+                                [
+                                    {
+                                        "category": "Context",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Echo"
+                                                },
+                                                "context": [
+                                                    {
+                                                        "category": "Group",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Data"
+                                                                }
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Format"
+                                                                }
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Unicode"
+                                                                }
+                                                            },
+                                                            {
+                                                                "category": "Partition"
+                                                            },
+                                                            {
+                                                                "category": "Void"
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Binary"
+                                                                }
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Width"
+                                                                },
+                                                                "context": [
+                                                                    {
+                                                                        "category": "Group",
+                                                                        "context": [
+                                                                            {
+                                                                                "category": {
+                                                                                    "Attribute": "8"
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "category": "Partition"
+                                                            },
+                                                            {
+                                                                "category": "Void"
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "value"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    1
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Stream"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Sink"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Console"
+                                                },
+                                                "context": [
+                                                    {
+                                                        "category": "Group",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "value"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    3
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Sink"
+                                        }
+                                    },
+                                    6
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Width"
+                                        },
+                                        "context": [
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "8"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    15
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Console"
+                                        },
+                                        "context": [
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "value"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    7
+                                ],
+                                [
+                                    {
+                                        "category": "Partition"
+                                    },
+                                    13
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Stream"
+                                        }
+                                    },
+                                    5
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "value"
+                                        }
+                                    },
+                                    16
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Echo"
+                                        },
+                                        "context": [
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Data"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Format"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Unicode"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": "Partition"
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Binary"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Width"
+                                                        },
+                                                        "context": [
+                                                            {
+                                                                "category": "Group",
+                                                                "context": [
+                                                                    {
+                                                                        "category": {
+                                                                            "Attribute": "8"
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "category": "Partition"
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "value"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    4
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Format"
+                                        }
+                                    },
+                                    11
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "8"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    17
+                                ]
+                            ],
+                            "values": {
+                                "15": {
+                                    "category": {
+                                        "Attribute": "Width"
+                                    },
+                                    "context": [
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "8"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "18": {
+                                    "category": {
+                                        "Attribute": "8"
+                                    }
+                                },
+                                "10": {
+                                    "category": {
+                                        "Attribute": "Data"
+                                    }
+                                },
+                                "17": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "8"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "5": {
+                                    "category": {
+                                        "Attribute": "Stream"
+                                    }
+                                },
+                                "9": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "value"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "12": {
+                                    "category": {
+                                        "Attribute": "Unicode"
+                                    }
+                                },
+                                "14": {
+                                    "category": {
+                                        "Attribute": "Binary"
+                                    }
+                                },
+                                "1": {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "Echo"
+                                            },
+                                            "context": [
+                                                {
+                                                    "category": "Group",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Data"
+                                                            }
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Format"
+                                                            }
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Unicode"
+                                                            }
+                                                        },
+                                                        {
+                                                            "category": "Partition"
+                                                        },
+                                                        {
+                                                            "category": "Void"
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Binary"
+                                                            }
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Width"
+                                                            },
+                                                            "context": [
+                                                                {
+                                                                    "category": "Group",
+                                                                    "context": [
+                                                                        {
+                                                                            "category": {
+                                                                                "Attribute": "8"
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "category": "Partition"
+                                                        },
+                                                        {
+                                                            "category": "Void"
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "value"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "4": {
+                                    "category": {
+                                        "Attribute": "Echo"
+                                    },
+                                    "context": [
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Data"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Format"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Unicode"
+                                                    }
+                                                },
+                                                {
+                                                    "category": "Partition"
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Binary"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Width"
+                                                    },
+                                                    "context": [
+                                                        {
+                                                            "category": "Group",
+                                                            "context": [
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "8"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "category": "Partition"
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "value"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "8": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "Data"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Format"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Unicode"
+                                            }
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Binary"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Width"
+                                            },
+                                            "context": [
+                                                {
+                                                    "category": "Group",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "8"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "value"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "16": {
+                                    "category": {
+                                        "Attribute": "value"
+                                    }
+                                },
+                                "7": {
+                                    "category": {
+                                        "Attribute": "Console"
+                                    },
+                                    "context": [
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "value"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "0": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Echo"
+                                                    },
+                                                    "context": [
+                                                        {
+                                                            "category": "Group",
+                                                            "context": [
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "Data"
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "Format"
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "Unicode"
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "category": "Partition"
+                                                                },
+                                                                {
+                                                                    "category": "Void"
+                                                                },
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "Binary"
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "Width"
+                                                                    },
+                                                                    "context": [
+                                                                        {
+                                                                            "category": "Group",
+                                                                            "context": [
+                                                                                {
+                                                                                    "category": {
+                                                                                        "Attribute": "8"
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "category": "Partition"
+                                                                },
+                                                                {
+                                                                    "category": "Void"
+                                                                },
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "value"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Stream"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Sink"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Console"
+                                                    },
+                                                    "context": [
+                                                        {
+                                                            "category": "Group",
+                                                            "context": [
+                                                                {
+                                                                    "category": {
+                                                                        "Attribute": "value"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "2": {
+                                    "category": "Void"
+                                },
+                                "3": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "Stream"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Sink"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Console"
+                                            },
+                                            "context": [
+                                                {
+                                                    "category": "Group",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "value"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "11": {
+                                    "category": {
+                                        "Attribute": "Format"
+                                    }
+                                },
+                                "6": {
+                                    "category": {
+                                        "Attribute": "Sink"
+                                    }
+                                },
+                                "13": {
+                                    "category": "Partition"
+                                }
+                            },
+                            "counter": 19
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "function": "arena",
+            "cases": [
+                {
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/breadth/symbolic/breadth.lava"
+                    },
+                    "returns": {
+                        "()": {
+                            "indices": [
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Delta"
+                                        }
+                                    },
+                                    5
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Alpha"
+                                        }
+                                    },
+                                    1
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Alpha"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Beta"
+                                                },
+                                                "context": [
+                                                    {
+                                                        "category": "Group",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "Delta"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Gamma"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    0
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Delta"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    4
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Beta"
+                                        },
+                                        "context": [
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Delta"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    2
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Gamma"
+                                        }
+                                    },
+                                    3
+                                ]
+                            ],
+                            "values": {
+                                "3": {
+                                    "category": {
+                                        "Attribute": "Gamma"
+                                    }
+                                },
+                                "0": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "Alpha"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Beta"
+                                            },
+                                            "context": [
+                                                {
+                                                    "category": "Group",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "Delta"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Gamma"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "4": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "Delta"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "1": {
+                                    "category": {
+                                        "Attribute": "Alpha"
+                                    }
+                                },
+                                "2": {
+                                    "category": {
+                                        "Attribute": "Beta"
+                                    },
+                                    "context": [
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Delta"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "5": {
+                                    "category": {
+                                        "Attribute": "Delta"
+                                    }
+                                }
+                            },
+                            "counter": 6
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "function": "arena",
+            "cases": [
+                {
+                    "parameters": {
+                        "resource": "Molten/test/resource/system/graph/module/math/numeric/logic/boolean/symbolic/boolean.magma"
+                    },
+                    "returns": {
+                        "()": {
+                            "indices": [
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Not"
+                                        }
+                                    },
+                                    14
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Boolean"
+                                        }
+                                    },
+                                    3
+                                ],
+                                [
+                                    {
+                                        "category": "Context",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "False"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    1
+                                ],
+                                [
+                                    {
+                                        "category": "Void"
+                                    },
+                                    2
+                                ],
+                                [
+                                    {
+                                        "category": "Context",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "False"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "False"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    18
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "True"
+                                        }
+                                    },
+                                    13
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "And"
+                                        }
+                                    },
+                                    15
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "Or"
+                                        }
+                                    },
+                                    17
+                                ],
+                                [
+                                    {
+                                        "category": "Context",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Not"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Boolean"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    6
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "True"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "False"
+                                                }
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "False"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "True"
+                                                }
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            }
+                                        ]
+                                    },
+                                    7
+                                ],
+                                [
+                                    {
+                                        "category": {
+                                            "Attribute": "False"
+                                        }
+                                    },
+                                    12
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "False"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Boolean"
+                                                }
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "True"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Boolean"
+                                                }
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Not"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Boolean"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": "Context",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "True"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "False"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": "Partition"
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": "Context",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "False"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "True"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": "Partition"
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "And"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Boolean"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Boolean"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": "Context",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "True"
+                                                                }
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "True"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "True"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": "Partition"
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": "Context",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "False"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "False"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": "Partition"
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Or"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Boolean"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "Boolean"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Group",
+                                                "context": [
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": "Context",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "True"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "True"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": "Partition"
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": "Context",
+                                                        "context": [
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "False"
+                                                                }
+                                                            },
+                                                            {
+                                                                "category": {
+                                                                    "Attribute": "False"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "False"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": "Partition"
+                                                    },
+                                                    {
+                                                        "category": "Void"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            }
+                                        ]
+                                    },
+                                    0
+                                ],
+                                [
+                                    {
+                                        "category": "Partition"
+                                    },
+                                    4
+                                ],
+                                [
+                                    {
+                                        "category": "Context",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "True"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "True"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    16
+                                ],
+                                [
+                                    {
+                                        "category": "Context",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "Or"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Boolean"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Boolean"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    10
+                                ],
+                                [
+                                    {
+                                        "category": "Context",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "And"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Boolean"
+                                                }
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "Boolean"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    8
+                                ],
+                                [
+                                    {
+                                        "category": "Context",
+                                        "context": [
+                                            {
+                                                "category": {
+                                                    "Attribute": "True"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    5
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "True"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "True"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "True"
+                                                }
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "False"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "False"
+                                                }
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            }
+                                        ]
+                                    },
+                                    9
+                                ],
+                                [
+                                    {
+                                        "category": "Group",
+                                        "context": [
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "True"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "True"
+                                                }
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": "Context",
+                                                "context": [
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "False"
+                                                        }
+                                                    },
+                                                    {
+                                                        "category": {
+                                                            "Attribute": "False"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "category": "Void"
+                                            },
+                                            {
+                                                "category": {
+                                                    "Attribute": "False"
+                                                }
+                                            },
+                                            {
+                                                "category": "Partition"
+                                            },
+                                            {
+                                                "category": "Void"
+                                            }
+                                        ]
+                                    },
+                                    11
+                                ]
+                            ],
+                            "values": {
+                                "15": {
+                                    "category": {
+                                        "Attribute": "And"
+                                    }
+                                },
+                                "18": {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "False"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "False"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "1": {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "False"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "12": {
+                                    "category": {
+                                        "Attribute": "False"
+                                    }
+                                },
+                                "8": {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "And"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Boolean"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Boolean"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "4": {
+                                    "category": "Partition"
+                                },
+                                "5": {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "True"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "2": {
+                                    "category": "Void"
+                                },
+                                "10": {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "Or"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Boolean"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Boolean"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "7": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "True"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "False"
+                                            }
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "False"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "True"
+                                            }
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        }
+                                    ]
+                                },
+                                "3": {
+                                    "category": {
+                                        "Attribute": "Boolean"
+                                    }
+                                },
+                                "17": {
+                                    "category": {
+                                        "Attribute": "Or"
+                                    }
+                                },
+                                "11": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "True"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "True"
+                                            }
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "False"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "False"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "False"
+                                            }
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        }
+                                    ]
+                                },
+                                "0": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "False"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Boolean"
+                                            }
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "True"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Boolean"
+                                            }
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Not"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Boolean"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": "Context",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "True"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "False"
+                                                    }
+                                                },
+                                                {
+                                                    "category": "Partition"
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": "Context",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "False"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "True"
+                                                    }
+                                                },
+                                                {
+                                                    "category": "Partition"
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "And"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Boolean"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Boolean"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": "Context",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "True"
+                                                            }
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "True"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "True"
+                                                    }
+                                                },
+                                                {
+                                                    "category": "Partition"
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": "Context",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "False"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "False"
+                                                    }
+                                                },
+                                                {
+                                                    "category": "Partition"
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Or"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Boolean"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "Boolean"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Group",
+                                            "context": [
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": "Context",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "True"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "True"
+                                                    }
+                                                },
+                                                {
+                                                    "category": "Partition"
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": "Context",
+                                                    "context": [
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "False"
+                                                            }
+                                                        },
+                                                        {
+                                                            "category": {
+                                                                "Attribute": "False"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "False"
+                                                    }
+                                                },
+                                                {
+                                                    "category": "Partition"
+                                                },
+                                                {
+                                                    "category": "Void"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        }
+                                    ]
+                                },
+                                "16": {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "True"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "True"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "9": {
+                                    "category": "Group",
+                                    "context": [
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "True"
+                                                    }
+                                                },
+                                                {
+                                                    "category": {
+                                                        "Attribute": "True"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "True"
+                                            }
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": "Context",
+                                            "context": [
+                                                {
+                                                    "category": {
+                                                        "Attribute": "False"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "category": "Void"
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "False"
+                                            }
+                                        },
+                                        {
+                                            "category": "Partition"
+                                        },
+                                        {
+                                            "category": "Void"
+                                        }
+                                    ]
+                                },
+                                "14": {
+                                    "category": {
+                                        "Attribute": "Not"
+                                    }
+                                },
+                                "13": {
+                                    "category": {
+                                        "Attribute": "True"
+                                    }
+                                },
+                                "6": {
+                                    "category": "Context",
+                                    "context": [
+                                        {
+                                            "category": {
+                                                "Attribute": "Not"
+                                            }
+                                        },
+                                        {
+                                            "category": {
+                                                "Attribute": "Boolean"
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            "counter": 19
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

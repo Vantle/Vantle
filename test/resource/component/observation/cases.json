@@ -1,0 +1,37 @@
+{
+  "functions": [
+    {
+      "function": "traced",
+      "tags": ["macro", "trace"],
+      "cases": [
+        {
+          "tags": ["basic"],
+          "parameters": {"value": 5},
+          "returns": {"()": [10, "Info", "10"]}
+        },
+        {
+          "tags": ["zero"],
+          "parameters": {"value": 0},
+          "returns": {"()": [0, "Info", "0"]}
+        },
+        {
+          "tags": ["large"],
+          "parameters": {"value": 100},
+          "returns": {"()": [200, "Info", "200"]}
+        }
+      ]
+    },
+    {
+      "function": "identity",
+      "tags": ["basic"],
+      "cases": [
+        {
+          "tags": ["simple"],
+          "parameters": {"value": 42},
+          "returns": {"()": 42}
+        }
+      ]
+    }
+  ]
+}
+ 

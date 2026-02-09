@@ -75,4 +75,14 @@ rust_library(
     visibility = ["//visibility:public"],
 )
 
+rust_library(
+    name = "web",
+    srcs = ["web.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//system/web:highlight",
+        "//system/web:render",
+    ],
+)
+
 ##### Documentation                                                                                                                             [ Documentation ]

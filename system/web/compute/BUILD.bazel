@@ -1,0 +1,76 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_shared_library")
+load("@rules_rust_wasm_bindgen//:defs.bzl", "rust_wasm_bindgen")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "scroll",
+    srcs = ["scroll.rs"],
+    deps = [
+        "@crates//:js-sys",
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
+    name = "theme",
+    srcs = ["theme.rs"],
+    deps = [
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
+    name = "clipboard",
+    srcs = ["clipboard.rs"],
+    deps = [
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_shared_library(
+    name = "binary",
+    srcs = ["module.rs"],
+    platform = "@rules_rust//rust/platform:wasm",
+    deps = [
+        ":clipboard",
+        ":scroll",
+        ":theme",
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_wasm_bindgen(
+    name = "compute",
+    target = "web",
+    wasm_file = ":binary",
+)
+
+genrule(
+    name = "module",
+    srcs = [":compute"],
+    outs = [
+        "compute.js",
+        "compute.wasm",
+    ],
+    cmd = """for f in $(SRCS); do
+    name=$$(basename "$$f")
+    if [ "$$name" = "compute_bg.wasm" ]; then
+        cp "$$f" "$(RULEDIR)/compute.wasm"
+    elif [ "$$name" = "compute.js" ]; then
+        sed 's/compute_bg\\.wasm/compute.wasm/g' "$$f" > "$(RULEDIR)/compute.js"
+    fi
+done""",
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

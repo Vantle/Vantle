@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module — Vantle</title>
+<link rel="stylesheet" href="./resource/system/document/vantle.css">
+</head>
+<body>
+<main></main><h1>Module</h1><p class="subtitle">Bazel module definition</p><nav><a href="Readme.html">Vantle</a><a href="License.html">License</a></nav><hr><p><a href="MODULE.bazel">[source]</a></p><div class="code-block" data-language="starlark"><pre style="background-color:#2b303b;">
+<span style="color:#65737e;">#################################################################################################################################################################
+</span><span style="color:#65737e;">&quot;&quot;&quot;
+</span><span style="color:#65737e;">    Vantle (c) 2025
+</span><span style="color:#65737e;">    projects.vantle.org
+</span><span style="color:#65737e;">    connect@vantle.org
+</span><span style="color:#65737e;">&quot;&quot;&quot;
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#8fa1b3;">module</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">vantle</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.0.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">bazel_compatibility </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">&gt;=9.0.0</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">#################################################################################################################################################################
+</span><span style="color:#65737e;">##################### Dependencies                                                                                                               [ Dependencies ]
+</span><span style="color:#65737e;">############### Toolchain                                                                                                                           [ Toolchain ]
+</span><span style="color:#65737e;">########## Bazel                                                                                                                             [ Toolchain, Bazel ]
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">stardoc</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.8.0</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">bazel_skylib</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.9.0</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">toolchains_llvm</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.6.0</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">buildozer</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">8.2.1</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">dev_dependency </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">True</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">buildozer_binary = </span><span style="color:#8fa1b3;">use_extension</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@buildozer//:buildozer_binary.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">buildozer_binary</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#8fa1b3;">use_repo</span><span style="color:#c0c5ce;">(buildozer_binary, &quot;</span><span style="color:#a3be8c;">buildozer_binary</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">########## Toolchain                                                                                                                                [ Toolchain ]
+</span><span style="color:#65737e;">########## BuildBuddy                                                                                                                   [ Toolchain, BuildBuddy ]
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">toolchains_buildbuddy</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.0.4</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">buildbuddy = </span><span style="color:#8fa1b3;">use_extension</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@toolchains_buildbuddy//:extensions.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">buildbuddy</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">buildbuddy.</span><span style="color:#8fa1b3;">platform</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">buildbuddy_container_image </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">UBUNTU24_04_IMAGE</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#8fa1b3;">use_repo</span><span style="color:#c0c5ce;">(buildbuddy, &quot;</span><span style="color:#a3be8c;">buildbuddy_toolchain</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">########## LLVM                                                                                                                               [ Toolchain, LLVM ]
+</span><span style="color:#c0c5ce;">llvm = </span><span style="color:#8fa1b3;">use_extension</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@toolchains_llvm//toolchain/extensions:llvm.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">llvm</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">llvm.</span><span style="color:#8fa1b3;">toolchain</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">llvm_toolchain</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">llvm_version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">19.1.7</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">llvm.</span><span style="color:#8fa1b3;">toolchain</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">llvm_toolchain_linux</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">llvm_version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">19.1.7</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">stdlib </span><span style="color:#c0c5ce;">= {&quot;</span><span style="color:#a3be8c;">linux-x86_64</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">stdc++</span><span style="color:#c0c5ce;">&quot;},
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#8fa1b3;">use_repo</span><span style="color:#c0c5ce;">(llvm, &quot;</span><span style="color:#a3be8c;">llvm_toolchain</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">llvm_toolchain_linux</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">##### Compilation                                                                                                                      [ Toolchain, Compilation ]
+</span><span style="color:#65737e;">########## Java                                                                                                                               [ Toolchain, Java ]
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rules_java</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">9.3.0</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">########## Python                                                                                                                           [ Toolchain, Python ]
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rules_python</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.6.3</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">python = </span><span style="color:#8fa1b3;">use_extension</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@rules_python//python/extensions:python.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">python</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">python.</span><span style="color:#8fa1b3;">toolchain</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">python_version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">3.13</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">pip = </span><span style="color:#8fa1b3;">use_extension</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@rules_python//python/extensions:pip.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">pip</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">pip.</span><span style="color:#8fa1b3;">parse</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">hub_name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">pypi</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">python_version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">3.13</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">requirements_lock </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">//:requirements.txt</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#8fa1b3;">use_repo</span><span style="color:#c0c5ce;">(pip, &quot;</span><span style="color:#a3be8c;">pypi</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">########## Proto                                                                                                                             [ Toolchain, Proto ]
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rules_proto</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">7.1.0</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">########## Rust                                                                                                                               [ Toolchain, Rust ]
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rules_rust</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.68.1</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rules_rust_prost</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.68.1</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rules_rust_wasm_bindgen</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.68.1</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">rust = </span><span style="color:#8fa1b3;">use_extension</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@rules_rust//rust:extensions.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">rust</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">rust.</span><span style="color:#8fa1b3;">toolchain</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">edition </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">2024</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">extra_target_triples </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">wasm32-unknown-unknown</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">versions </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">1.90.0</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#8fa1b3;">use_repo</span><span style="color:#c0c5ce;">(rust, &quot;</span><span style="color:#a3be8c;">rust_toolchains</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#8fa1b3;">register_toolchains</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">@llvm_toolchain//:all</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">@llvm_toolchain_linux//:all</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">@rust_toolchains//:all</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">//system/protobuf:toolchain</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">@buildifier_prebuilt_toolchains//:buildifier_linux_amd64_toolchain</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">@buildifier_prebuilt_toolchains//:buildozer_linux_amd64_toolchain</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">@buildifier_prebuilt_toolchains//:buildifier_darwin_arm64_toolchain</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">@buildifier_prebuilt_toolchains//:buildozer_darwin_arm64_toolchain</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">@buildifier_prebuilt_toolchains//:buildifier_darwin_amd64_toolchain</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">@buildifier_prebuilt_toolchains//:buildozer_darwin_amd64_toolchain</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">##### Crates                                                                                                                          [ Toolchain, Rust, Crates ]
+</span><span style="color:#c0c5ce;">crate = </span><span style="color:#8fa1b3;">use_extension</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@rules_rust//crate_universe:extension.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">crate</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">derive</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">clap</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">4.5.54</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">cached</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.56.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">ctor</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.6.3</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">difference</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">2.0.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">flate2</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.1.5</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">derive</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">bytemuck</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.24.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">itertools</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.14.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">fancy</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">syntect-highlighter</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    ],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">miette</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">7.6.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">default-fancy</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">parsing</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">regex-fancy</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    ],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">syntect</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">5.3.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">editor</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">inquire</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.9.1</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">inquire-derive</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.9.1</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">prettyplease</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.2.37</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">proc-macro2</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.0.105</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">quote</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.0.43</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">derive</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">rc</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">std</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    ],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">serde</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.0.228</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">serde_json</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.0.149</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">serde_with</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">3.16.1</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">pollster</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.4.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">full</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">extra-traits</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    ],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">syn</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">2.0.112</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">winit</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.30.12</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">wgpu</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">28.0.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">default_features </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">False</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">png</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">image</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.25.9</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">glyphon</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.10.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">pretty_assertions</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.4.1</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">thiserror</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">2.0.17</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">deref</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">deref_mut</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">from</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">into</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    ],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">derive_more</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">2.1.1</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">tracing</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.1.44</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">tracing-core</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.1.36</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">tracing-subscriber</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.3.22</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">tracing-chrome</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.7.2</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">strsim</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.11.1</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rstar</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.12.2</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">##### Web Assembly                                                                                                   [ Toolchain, Rust, Crates, Wasm ]
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">wasm-bindgen</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">=0.2.105</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">Clipboard</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">Document</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">DomTokenList</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">Element</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">Event</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">EventTarget</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">HtmlCollection</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">HtmlElement</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">IntersectionObserver</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">IntersectionObserverEntry</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">IntersectionObserverInit</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">MediaQueryList</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">Navigator</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">Node</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">NodeList</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">Window</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    ],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">web-sys</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">=0.3.82</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">js-sys</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">=0.3.82</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">##### Prost Toolchain                                                                                              [ Toolchain, Rust, Crates, Prost ]
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">prost</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.14.1</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">prost-types</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.14.1</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">transport</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">tonic</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.14.2</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">tonic-prost</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.14.2</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">protoc-gen-prost</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.5.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">annotation</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">crate </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">protoc-gen-prost</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">gen_binaries </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">protoc-gen-prost</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">protoc-gen-tonic</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.5.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">annotation</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">crate </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">protoc-gen-tonic</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">gen_binaries </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">protoc-gen-tonic</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">##### Streaming                                                                                                  [ Toolchain, Rust, Crates, Streaming ]
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">async-stream</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.3.6</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">futures-core</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.3.31</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">macros</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">rt-multi-thread</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">        &quot;</span><span style="color:#a3be8c;">sync</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    ],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">tokio</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.49.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">sync</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">tokio-stream</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.1.18</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">features </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">rt</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">tokio-util</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.7.18</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">dashmap</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">6.1.0</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">spec</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">package </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">url</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">2.5.8</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">crate.</span><span style="color:#8fa1b3;">from_specs</span><span style="color:#c0c5ce;">()
+</span><span style="color:#8fa1b3;">use_repo</span><span style="color:#c0c5ce;">(crate, &quot;</span><span style="color:#a3be8c;">crates</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">########## Validation
+</span><span style="color:#65737e;">##### Document                                                                                                                           [ Validation, Document ]
+</span><span style="color:#c0c5ce;">vnu = </span><span style="color:#8fa1b3;">use_repo_rule</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@bazel_tools//tools/build_defs/repo:http.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">http_archive</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#8fa1b3;">vnu</span><span style="color:#c0c5ce;">(
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">vnu</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">build_file_content </span><span style="color:#c0c5ce;">= &quot;&quot;&quot;</span><span style="color:#a3be8c;">exports_files([&quot;package/build/dist/vnu.jar&quot;])</span><span style="color:#c0c5ce;">&quot;&quot;&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">sha256 </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">a28e107f00d1d2dceb5a6857e90db36c92b4e387d0480dec70bae5cbc46d16eb</span><span style="color:#c0c5ce;">&quot;,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">urls </span><span style="color:#c0c5ce;">= [&quot;</span><span style="color:#a3be8c;">https://registry.npmjs.org/vnu-jar/-/vnu-jar-26.2.6.tgz</span><span style="color:#c0c5ce;">&quot;],
+</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">##### Bazel                                                                                                                                 [ Validation, Bazel ]
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">buildifier_prebuilt</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">8.2.1.1</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">dev_dependency </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">True</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">buildifier_prebuilt = </span><span style="color:#8fa1b3;">use_extension</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@buildifier_prebuilt//:defs.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">buildifier_prebuilt_deps_extension</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">dev_dependency </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">True</span><span style="color:#c0c5ce;">)
+</span><span style="color:#8fa1b3;">use_repo</span><span style="color:#c0c5ce;">(buildifier_prebuilt, &quot;</span><span style="color:#a3be8c;">buildifier_prebuilt_toolchains</span><span style="color:#c0c5ce;">&quot;)
+</span></pre>
+</div><footer><p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p></footer><script type="module">
+import init from './resource/system/document/compute.js';
+await init();
+</script>
+</body>
+</html>

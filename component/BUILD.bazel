@@ -43,4 +43,19 @@ rust_library(
     ],
 )
 
+rust_library(
+    name = "web",
+    srcs = ["web.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//component/web:body",
+        "//component/web:element",
+        "//component/web:error",
+        "//component/web:page",
+        "//component/web:span",
+        "//component/web:style",
+        "//component/web:table",
+    ],
+)
+
 ##### Documentation                                                                                                                             [ Documentation ]

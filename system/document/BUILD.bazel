@@ -1,0 +1,49 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+load("//component/web/starlark:defs.bzl", "generate")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "vantle",
+    srcs = ["vantle.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
+    deps = [
+        "//component/web:body",
+        "//component/web:element",
+        "//component/web:page",
+        "//component/web:span",
+        "//component/web:style",
+        "//system/web:render",
+        "@crates//:miette",
+        "@crates//:tracing",
+    ],
+)
+
+##### Binary                                                                                                                                           [ Binary ]
+rust_binary(
+    name = "publish",
+    srcs = ["publish.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
+    deps = [
+        "//component/observation:module",
+        "//component/web:error",
+        "//system/observation/trace:module",
+        "@crates//:clap",
+        "@crates//:miette",
+        "@crates//:tracing",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]
+generate(
+    name = "stylesheet",
+    src = "stylesheet.generator.rs",
+    destination = "resource/system/document/vantle.css",
+    deps = ["//system/document:vantle"],
+)

@@ -51,6 +51,8 @@ def generate_file(ctx, template, cases, language, generator, lang):
     output_name = "{}.generated.{}".format(test_name, lang.extension)
     output = ctx.actions.declare_file(output_name)
 
+    prefix = ctx.attr._symlink_prefix[BuildSettingInfo].value
+
     ctx.actions.run(
         executable = generator,
         arguments = [
@@ -62,14 +64,13 @@ def generate_file(ctx, template, cases, language, generator, lang):
             language,
             "--output",
             output.path,
+            "--prefix",
+            prefix,
         ],
         inputs = [template, cases],
         outputs = [output],
         mnemonic = "Generator",
         progress_message = "Generating: {}".format(output.basename),
-        env = {
-            "OUTPUT_PATH": ctx.attr._symlink_prefix[BuildSettingInfo].value + "bin/" + output.short_path,
-        },
     )
 
     return output

@@ -1,4 +1,5 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+load("//component/web/starlark:defs.bzl", "generate")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -161,12 +162,12 @@ rust_library(
     ],
     deps = [
         ":error",
+        "//Molten/system/spatialize/render:stage",
         "//Molten/system/spatialize/render/stage:field",
         "//Molten/system/spatialize/render/stage:geometry",
         "//Molten/system/spatialize/render/stage:observer",
         "//Molten/system/spatialize/render/stage:outline",
         "//Molten/system/spatialize/render/stage:primitive",
-        "//Molten/system/spatialize/render:stage",
         "//Molten/system/spatialize/render/stage:typography",
         "//component:assemble",
         "//component:tag",
@@ -216,4 +217,12 @@ rust_binary(
         "@crates//:wgpu",
         "@crates//:winit",
     ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]
+generate(
+    name = "readme",
+    src = "readme.generator.rs",
+    destination = "Molten/system/spatialize/Readme.html",
+    deps = ["//system/document:vantle"],
 )

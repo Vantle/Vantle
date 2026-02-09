@@ -15,7 +15,7 @@ module(
 ##################### Dependencies                                                                                                               [ Dependencies ]
 ############### Toolchain                                                                                                                           [ Toolchain ]
 ########## Bazel                                                                                                                             [ Toolchain, Bazel ]
-bazel_dep(name = "stardoc", version = "0.8.0")
+bazel_dep(name = "stardoc", version = "0.8.1")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "toolchains_llvm", version = "1.6.0")
 
@@ -49,10 +49,10 @@ use_repo(llvm, "llvm_toolchain", "llvm_toolchain_linux")
 
 ##### Compilation                                                                                                                      [ Toolchain, Compilation ]
 ########## Java                                                                                                                               [ Toolchain, Java ]
-bazel_dep(name = "rules_java", version = "9.3.0")
+bazel_dep(name = "rules_java", version = "9.4.0")
 
 ########## Python                                                                                                                           [ Toolchain, Python ]
-bazel_dep(name = "rules_python", version = "1.6.3")
+bazel_dep(name = "rules_python", version = "1.8.3")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(
@@ -73,10 +73,12 @@ bazel_dep(name = "rules_proto", version = "7.1.0")
 ########## Rust                                                                                                                               [ Toolchain, Rust ]
 bazel_dep(name = "rules_rust", version = "0.68.1")
 bazel_dep(name = "rules_rust_prost", version = "0.68.1")
+bazel_dep(name = "rules_rust_wasm_bindgen", version = "0.68.1")
 
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
     edition = "2024",
+    extra_target_triples = ["wasm32-unknown-unknown"],
     versions = ["1.90.0"],
 )
 use_repo(rust, "rust_toolchains")
@@ -254,6 +256,38 @@ crate.spec(
     version = "0.12.2",
 )
 
+##### Web Assembly                                                                                                   [ Toolchain, Rust, Crates, Wasm ]
+crate.spec(
+    package = "wasm-bindgen",
+    version = "=0.2.105",
+)
+crate.spec(
+    features = [
+        "Clipboard",
+        "Document",
+        "DomTokenList",
+        "Element",
+        "Event",
+        "EventTarget",
+        "HtmlCollection",
+        "HtmlElement",
+        "IntersectionObserver",
+        "IntersectionObserverEntry",
+        "IntersectionObserverInit",
+        "MediaQueryList",
+        "Navigator",
+        "Node",
+        "NodeList",
+        "Window",
+    ],
+    package = "web-sys",
+    version = "=0.3.82",
+)
+crate.spec(
+    package = "js-sys",
+    version = "=0.3.82",
+)
+
 ##### Prost Toolchain                                                                                              [ Toolchain, Rust, Crates, Prost ]
 crate.spec(
     package = "prost",
@@ -329,8 +363,18 @@ crate.from_specs()
 use_repo(crate, "crates")
 
 ########## Validation
+##### Document                                                                                                                           [ Validation, Document ]
+vnu = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+vnu(
+    name = "vnu",
+    build_file_content = """exports_files(["package/build/dist/vnu.jar"])""",
+    sha256 = "a28e107f00d1d2dceb5a6857e90db36c92b4e387d0480dec70bae5cbc46d16eb",
+    urls = ["https://registry.npmjs.org/vnu-jar/-/vnu-jar-26.2.6.tgz"],
+)
+
 ##### Bazel                                                                                                                                 [ Validation, Bazel ]
-bazel_dep(name = "buildifier_prebuilt", version = "8.2.1.1", dev_dependency = True)
+bazel_dep(name = "buildifier_prebuilt", version = "8.2.1.2", dev_dependency = True)
 
 buildifier_prebuilt = use_extension("@buildifier_prebuilt//:defs.bzl", "buildifier_prebuilt_deps_extension", dev_dependency = True)
 use_repo(buildifier_prebuilt, "buildifier_prebuilt_toolchains")

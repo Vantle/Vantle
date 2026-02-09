@@ -13,5 +13,7 @@ pub enum Error {
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub fn directory() -> PathBuf {
-    std::env::var("TEST_UNDECLARED_OUTPUTS_DIR").map_or_else(|_| PathBuf::from("./"), PathBuf::from)
+    std::env::var("TEST_UNDECLARED_OUTPUTS_DIR")
+        .or_else(|_| std::env::var("BUILD_WORKING_DIRECTORY"))
+        .map_or_else(|_| PathBuf::from("./"), PathBuf::from)
 }

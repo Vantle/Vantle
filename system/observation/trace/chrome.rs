@@ -25,10 +25,13 @@ where
     let (chrome, guard) = ChromeLayerBuilder::new().file(&path).build();
 
     tracing_subscriber::registry()
-        .with(configuration::LEVEL)
         .with(Filter::new(predicate))
-        .with(tracing_subscriber::fmt::layer().with_ansi(true))
-        .with(chrome)
+        .with(
+            tracing_subscriber::fmt::layer()
+                .with_ansi(true)
+                .with_filter(configuration::LEVEL),
+        )
+        .with(chrome.with_filter(configuration::LEVEL))
         .try_init()
         .map_err(|e| error::Error::Subscriber {
             details: e.to_string(),

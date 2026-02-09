@@ -26,12 +26,12 @@ where
             })?;
             trace::store(&PATH, path);
             tracing_subscriber::registry()
-                .with(configuration::LEVEL)
                 .with(filter)
                 .with(
                     tracing_subscriber::fmt::layer()
                         .with_ansi(false)
-                        .with_writer(Mutex::new(LineWriter::new(file))),
+                        .with_writer(Mutex::new(LineWriter::new(file)))
+                        .with_filter(configuration::LEVEL),
                 )
                 .try_init()
                 .map_err(|e| error::Error::Subscriber {
@@ -39,9 +39,12 @@ where
                 })
         }
         Sink::Stdout => tracing_subscriber::registry()
-            .with(configuration::LEVEL)
             .with(filter)
-            .with(tracing_subscriber::fmt::layer().with_ansi(true))
+            .with(
+                tracing_subscriber::fmt::layer()
+                    .with_ansi(true)
+                    .with_filter(configuration::LEVEL),
+            )
             .try_init()
             .map_err(|e| error::Error::Subscriber {
                 details: e.to_string(),

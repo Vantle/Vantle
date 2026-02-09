@@ -6,6 +6,9 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_proc_macro")
 load("@rules_rust_prost//:defs.bzl", "rust_prost_library")
 
+##### Documentation                                                                                                                             [ Documentation ]
+load("//component/web/starlark:defs.bzl", "generate")
+
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
 
@@ -85,4 +88,9 @@ rust_library(
     ],
 )
 
-##### Documentation                                                                                                                             [ Documentation ]
+generate(
+    name = "readme",
+    src = "readme.generator.rs",
+    destination = "system/observation/Readme.html",
+    deps = ["//system/document:vantle"],
+)

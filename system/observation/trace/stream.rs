@@ -51,9 +51,12 @@ where
     let (layer, receiver) = layer::Streamer::assembler(predicate).assemble();
 
     tracing_subscriber::registry()
-        .with(configuration::LEVEL)
-        .with(tracing_subscriber::fmt::layer().with_ansi(true))
-        .with(layer)
+        .with(
+            tracing_subscriber::fmt::layer()
+                .with_ansi(true)
+                .with_filter(configuration::LEVEL),
+        )
+        .with(layer.with_filter(configuration::LEVEL))
         .try_init()
         .map_err(|e| error::Error::Subscriber {
             details: e.to_string(),

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generation — Vantle</title>
+<link rel="stylesheet" href="../../resource/system/document/vantle.css">
+</head>
+<body>
+<main></main><h1>Generation</h1><p class="subtitle">Code generation framework for Rust</p><nav><a href="../../Readme.html">Vantle</a><a href="../../Module.html">Module</a><a href="../../License.html">License</a></nav><hr><p>This document describes the <strong>Generation</strong> framework, a code generation system for Rust projects built on Bazel.</p><hr><section><h2>Autotest</h2><p>Autotest is an implementation of the Generation framework that provides JSON-driven test generation, eliminating boilerplate and enabling data-driven testing.</p><section><h3>Template</h3><p>Write functions in a <code>.template.rs</code> file:</p><pre><code class="language-rust">use component::graph::state::particle::Particle;
+
+fn disjoint(candidate: Particle&lt;String&gt;, basis: Particle&lt;String&gt;) -&gt; Option&lt;Particle&lt;String&gt;&gt; {
+    candidate.disjoint(&amp;basis).map(|_| candidate.clone())
+}</code></pre></section><section><h3>Cases</h3><p>Define test data in <code>cases.json</code>:</p><pre><code class="language-json">{
+  &quot;functions&quot;: [
+    {
+      &quot;function&quot;: &quot;disjoint&quot;,
+      &quot;tags&quot;: [&quot;particle&quot;, &quot;disjoint&quot;],
+      &quot;parameters&quot;: {
+        &quot;candidate&quot;: [[&quot;a&quot;, 1]],
+        &quot;basis&quot;: [[&quot;b&quot;, 1]]
+      },
+      &quot;returns&quot;: { &quot;()&quot;: [[&quot;a&quot;, 1]] },
+      &quot;cases&quot;: [
+        {
+          &quot;tags&quot;: [&quot;empty&quot;],
+          &quot;parameters&quot;: { &quot;basis&quot;: [] },
+          &quot;returns&quot;: { &quot;()&quot;: [[&quot;a&quot;, 1]] }
+        }
+      ]
+    }
+  ]
+}</code></pre></section><section><h3>Build</h3><p>Use Bazel rules to generate and run tests:</p><pre><code class="language-python">rust_autotest_template(
+    name = &quot;template&quot;,
+    src = &quot;function.template.rs&quot;,
+    deps = [&quot;//Molten/component/graph/state/particle:module&quot;],
+)
+
+rust_autotest(
+    name = &quot;function&quot;,
+    template = &quot;:template&quot;,
+    cases = &quot;:cases.json&quot;,
+    deps = [&quot;//Molten/component/graph/state/particle:module&quot;],
+)</code></pre></section><section><h3>Features</h3><ul><li><strong>Parameter shadowing</strong>: Function-level defaults with case-level overrides</li><li><strong>Tag organization</strong>: Filter tests by tags</li><li><strong>Schema validation</strong>: Parameters match function signatures</li><li><strong>Rich diagnostics</strong>: Error reporting via miette</li></ul></section></section><hr><section><h2>Structure</h2><pre><code>component/generation/     Schema and types
+system/generation/        Generator binary</code></pre></section><footer><p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p></footer><script type="module">
+import init from '../../resource/system/document/compute.js';
+await init();
+</script>
+</body>
+</html>

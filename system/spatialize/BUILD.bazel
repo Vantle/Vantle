@@ -1,4 +1,5 @@
 load("@rules_rust//rust:defs.bzl", "rust_library")
+load("//component/web/starlark:defs.bzl", "generate")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -24,4 +25,12 @@ rust_library(
     name = "interact",
     srcs = ["interact.rs"],
     deps = ["//system/spatialize/interact:collision"],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]
+generate(
+    name = "readme",
+    src = "readme.generator.rs",
+    destination = "system/spatialize/Readme.html",
+    deps = ["//system/document:vantle"],
 )

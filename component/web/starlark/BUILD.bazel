@@ -1,0 +1,72 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//component/web:__pkg__",
+    "//component/web:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+bzl_library(
+    name = "types",
+    srcs = ["types.bzl"],
+)
+
+bzl_library(
+    name = "impls",
+    srcs = ["impls.bzl"],
+    deps = [":types"],
+)
+
+bzl_library(
+    name = "rule",
+    srcs = ["rule.bzl"],
+    deps = [
+        ":impls",
+        ":types",
+    ],
+)
+
+bzl_library(
+    name = "collection",
+    srcs = ["collection.bzl"],
+    deps = [":impls"],
+)
+
+bzl_library(
+    name = "drift",
+    srcs = ["drift.bzl"],
+    deps = [":impls"],
+)
+
+bzl_library(
+    name = "macro",
+    srcs = ["macro.bzl"],
+    deps = [":rule"],
+)
+
+bzl_library(
+    name = "aspect",
+    srcs = ["aspect.bzl"],
+    deps = [":types"],
+)
+
+bzl_library(
+    name = "defs",
+    srcs = ["defs.bzl"],
+    visibility = [
+        "//visibility:public",
+    ],
+    deps = [
+        ":aspect",
+        ":collection",
+        ":drift",
+        ":macro",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

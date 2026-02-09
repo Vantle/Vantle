@@ -4,6 +4,9 @@
 ##### External                                                                                                                               [ Import, External ]
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 
+##### Documentation                                                                                                                                 [ Documentation ]
+load("//component/web/starlark:defs.bzl", "generate")
+
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
     "//system:__pkg__",
@@ -28,17 +31,27 @@ rust_library(
 rust_binary(
     name = "generator",
     srcs = ["main.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
     visibility = ["//visibility:public"],
     deps = [
         "//:component",
         "//:system",
         "//component/observation:module",
         "//system:diagnostic",
+        "//system/bazel:symlink",
         "//system/generation:rust",
+        "//system/observation/trace:module",
         "@crates//:clap",
         "@crates//:miette",
         "@crates//:serde_json",
+        "@crates//:tracing",
     ],
 )
 
-##### Documentation                                                                                                                                 [ Documentation ]
+generate(
+    name = "readme",
+    src = "readme.generator.rs",
+    destination = "system/generation/Readme.html",
+    visibility = ["//visibility:public"],
+    deps = ["//system/document:vantle"],
+)

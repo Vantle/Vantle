@@ -2,8 +2,8 @@
 
 **Vantle** implements **Molten**, a computational expression language over hypergraphs.
 
-Rust 2021 | Bazel 9+ | Forge runtime | Autotest testing
-Docs: @Molten/Readme.md | Deps: @MODULE.bazel
+Rust 2021 | Bazel 9+ | Autotest testing
+Docs: @Molten/Readme.html | Deps: @MODULE.bazel
 
 ---
 
@@ -21,7 +21,7 @@ When you see an abstraction opportunity, take it. Prefer composition over repeti
 *Module namespacing replaces compound names; single words enable polymorphic composition.*
 
 | Rule | Example |
-|------|---------|
+| ------ | --------- |
 | Single-word identifiers | `channel::Specification` not `ChannelSpec` |
 | No underscores | `coalesce(particles)` not `coalesce_particles` |
 | No abbreviations | `configuration` not `cfg`, `specification` not `spec` |
@@ -36,7 +36,7 @@ Exceptions: Underscore re-exports are acceptable only when wrapping or exposing 
 *Bazel manages module resolution; re-exports define public API surface.*
 
 | Rule | Good | Bad |
-|------|------|-----|
+| ------ | ------ | ----- |
 | No `mod` directive | `pub use collision;` | `mod collision;` |
 | Re-export owned children only | `pub use child;` (child/ exists) | `pub use sibling;` |
 | Depth limit: one level | `pub use child;` | `pub use a::b::c;` |
@@ -130,7 +130,7 @@ rust_library(name = "module", srcs = ["vantle.rs"], crate_name = "vantle")
 
 ## Structure
 
-```
+```txt
 Vantle/
 ├── Molten/
 │   ├── system/      # Core: forge, graph, hypergraph, query

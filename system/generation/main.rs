@@ -1,8 +1,8 @@
 use clap::{Parser, ValueEnum};
 use component::generation::rust::error::Error;
 use component::generation::rust::schema::Cases;
-use miette::{IntoDiagnostic, Result};
-use record::info;
+use miette::{Context, IntoDiagnostic};
+use observe::trace;
 use std::{fs, path::PathBuf};
 
 #[derive(Debug, Clone, ValueEnum)]
@@ -23,38 +23,46 @@ struct Arguments {
     language: Language,
     #[arg(long, required = true)]
     output: PathBuf,
+    #[arg(long, required = true)]
+    prefix: String,
 }
 
-fn main() -> Result<()> {
-    let output = run()?;
-    info!(
-        "✅ Generated: {} in sandbox {}",
-        std::env::var("OUTPUT_PATH").unwrap_or_default(),
-        output.display()
-    );
-    Ok(())
+fn main() -> miette::Result<()> {
+    trace::initialize(None, |channels| {
+        channels.iter().any(|c| c.name == "generation")
+    })?;
+    let result = run();
+    trace::flush();
+    result
 }
 
-fn run() -> miette::Result<PathBuf> {
+#[trace(channels = [generation])]
+fn run() -> miette::Result<()> {
+    match generate() {
+        Ok(()) => Ok(()),
+        Err(report) => {
+            tracing::error!("{report}");
+            Err(report)
+        }
+    }
+}
+
+fn generate() -> miette::Result<()> {
     let arguments = Arguments::parse();
 
     let template = fs::read_to_string(&arguments.template)
         .into_diagnostic()
-        .map_err(|e| {
-            e.with_source_code(format!(
-                "📁 Failed to read template file: {}\n\n💡 Tip: Check that the file exists and you have read permissions.",
-                arguments.template.display()
-            ))
-        })?;
+        .wrap_err(format!(
+            "📁 failed to read template: {}\n\n💡 check that the file exists and you have read permissions",
+            arguments.template.display()
+        ))?;
 
     let cases = fs::read_to_string(&arguments.cases)
         .into_diagnostic()
-        .map_err(|e| {
-            e.with_source_code(format!(
-                "📁 Failed to read cases file: {}\n\n💡 Tip: Check that the file exists and you have read permissions.",
-                arguments.cases.display()
-            ))
-        })?;
+        .wrap_err(format!(
+            "📁 failed to read cases: {}\n\n💡 check that the file exists and you have read permissions",
+            arguments.cases.display()
+        ))?;
 
     let data: Cases = serde_json::from_str(&cases)
         .map_err(|e| Error::deserialization("Cases", &arguments.cases, &cases, e))?;
@@ -69,22 +77,20 @@ fn run() -> miette::Result<PathBuf> {
     if let Some(parent) = arguments.output.parent() {
         fs::create_dir_all(parent)
             .into_diagnostic()
-            .map_err(|e| {
-                e.with_source_code(format!(
-                    "📁 Failed to create output directory: {}\n\n💡 Tip: Check that you have write permissions to the parent directory.",
-                    parent.display()
-                ))
-            })?;
+            .wrap_err(format!(
+                "📁 failed to create output directory: {}\n\n💡 check that you have write permissions to the parent directory",
+                parent.display()
+            ))?;
     }
 
     fs::write(&arguments.output, &output)
         .into_diagnostic()
-        .map_err(|e| {
-            e.with_source_code(format!(
-                "📁 Failed to write output file: {}\n\n💡 Tip: Check that you have write permissions to the output directory.",
-                arguments.output.display()
-            ))
-        })?;
+        .wrap_err(format!(
+            "📁 failed to write output: {}\n\n💡 check that you have write permissions to the output directory",
+            arguments.output.display()
+        ))?;
 
-    Ok(arguments.output)
+    let resolved = symlink::resolve(&arguments.output, &arguments.prefix)?;
+    tracing::info!("generated: {}", resolved.display());
+    Ok(())
 }

@@ -4,6 +4,7 @@ Code generation rule definitions.
 Public generate rule for creating test files from templates and test cases.
 """
 
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load(":impls.bzl", "generate_impl")
 load(":types.bzl", "GeneratedInfo")
 
@@ -36,7 +37,7 @@ generate = rule(
         ),
         "_symlink_prefix": attr.label(
             default = "//:symlink_prefix",
-            doc = "Symlink prefix build setting",
+            providers = [BuildSettingInfo],
         ),
     },
     doc = "Generates test code from a template and test cases",

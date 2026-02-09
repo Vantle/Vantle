@@ -3,6 +3,7 @@
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
 load("@rules_rust//rust:defs.bzl", "rust_library")
+load("//component/web/starlark:defs.bzl", "generate")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
@@ -44,24 +45,44 @@ rust_library(
     ],
 )
 
-##### License                                                                                                                                         [ License ]
-filegroup(
-    name = "license",
-    srcs = [
-        "License.md",
-        "Notice.md",
-    ],
-)
-
-##### Documentation                                                                                                                                 [ Documentation ]
-filegroup(
-    name = "documents",
-    srcs = [
-        "Info.md",
-        "License.md",
-        "Notice.md",
-        "Readme.md",
-    ],
-)
-
 ##### Documentation                                                                                                                             [ Documentation ]
+generate(
+    name = "readme",
+    src = "readme.generator.rs",
+    data = [
+        "//Molten/test/resource/system/graph/module/join/symbolic:data",
+        "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean/symbolic:data",
+    ],
+    destination = "Molten/Readme.html",
+    deps = [
+        "//component/web:element",
+        "//system/document:vantle",
+    ],
+)
+
+generate(
+    name = "info",
+    src = "info.generator.rs",
+    destination = "Molten/Info.html",
+    deps = [
+        "//system/document:vantle",
+    ],
+)
+
+generate(
+    name = "notice",
+    src = "notice.generator.rs",
+    destination = "Molten/Notice.html",
+    deps = [
+        "//system/document:vantle",
+    ],
+)
+
+generate(
+    name = "license",
+    src = "license.generator.rs",
+    destination = "Molten/License.html",
+    deps = [
+        "//system/document:vantle",
+    ],
+)

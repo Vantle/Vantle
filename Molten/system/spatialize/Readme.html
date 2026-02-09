@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Molten Spatialize — Vantle</title>
+<link rel="stylesheet" href="../../../resource/system/document/vantle.css">
+</head>
+<body>
+<main></main><h1>Spatialize</h1><p class="subtitle">Interactive hypergraph visualization for Molten</p><nav><a href="../../Readme.html">Molten</a><a href="../../../Readme.html">Vantle</a><a href="../../../Module.html">Module</a><a href="../../../system/spatialize/Readme.html">Platform Spatialize</a><a href="../../../License.html">License</a></nav><hr><p>This document describes <strong>Molten Spatialize</strong>, an interactive visualization system for hypergraph exploration.</p><hr><section><h2>Invoke</h2><p>Run the spatialize visualization:</p><pre><code class="language-bash">bazel run //Molten/system/spatialize:command</code></pre><p>This opens an interactive window displaying hypergraph state with real-time layout simulation.</p></section><hr><section><h2>Panes</h2><p>Toggle between visualization modes:</p><table><thead><tr><th>Pane</th><th>Description</th><th>Key</th></tr></thead><tbody><tr><td>Relation</td><td>Edge and node relationships</td><td>Tab</td></tr><tr><td>Inference</td><td>Derivation and inference paths</td><td>Tab</td></tr></tbody></table></section><hr><section><h2>Controls</h2><section><h3>Navigation</h3><table><thead><tr><th>Action</th><th>Control</th></tr></thead><tbody><tr><td>Pan</td><td>Left click + drag</td></tr><tr><td>Rotate</td><td>Middle click + drag / Control + drag</td></tr><tr><td>Zoom</td><td>Scroll wheel / pinch</td></tr><tr><td>Select</td><td>Right click</td></tr></tbody></table></section><section><h3>View</h3><table><thead><tr><th>Action</th><th>Control</th></tr></thead><tbody><tr><td>Toggle pane</td><td>Tab</td></tr><tr><td>Relation pane</td><td>R key</td></tr><tr><td>Inference pane</td><td>I key</td></tr><tr><td>Deselect</td><td>Escape</td></tr></tbody></table></section></section><hr><section><h2>Layout</h2><p>Force-directed layout simulation positions nodes and edges automatically. The simulation uses:</p><ul><li>Repulsion between nodes</li><li>Attraction along edges</li><li>Boundary constraints</li></ul></section><hr><section><h2>Structure</h2><pre><code>Molten/system/spatialize/
+  command.rs        Application entry point
+  pane.rs           Visualization pane modes
+  view.rs           View state and transformations
+  layout.rs         Force-directed simulation
+  scene.rs          Scene graph management
+  render.rs         Render submission
+  mouse.rs          Input state tracking
+  palette.rs        Color definitions</code></pre></section><footer><p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p></footer><script type="module">
+import init from '../../../resource/system/document/compute.js';
+await init();
+</script>
+</body>
+</html>

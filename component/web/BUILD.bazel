@@ -1,0 +1,93 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//component:__pkg__",
+    "//system/document:__pkg__",
+    "//system/document:__subpackages__",
+    "//system/web:__pkg__",
+    "//system/web:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "element",
+    srcs = ["element.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":span",
+    ],
+)
+
+rust_library(
+    name = "span",
+    srcs = ["span.rs"],
+    visibility = ["//visibility:public"],
+)
+
+rust_library(
+    name = "table",
+    srcs = ["table.rs"],
+    visibility = ["//visibility:public"],
+)
+
+rust_library(
+    name = "style",
+    srcs = ["style.rs"],
+    visibility = ["//visibility:public"],
+)
+
+rust_library(
+    name = "body",
+    srcs = ["body.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":element",
+        ":span",
+        ":table",
+    ],
+)
+
+rust_library(
+    name = "page",
+    srcs = ["page.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":body",
+        ":element",
+    ],
+)
+
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//system/graph:similarity",
+        "@crates//:miette",
+        "@crates//:thiserror",
+    ],
+)
+
+##### Binary                                                                                                                                           [ Binary ]
+rust_binary(
+    name = "validate",
+    srcs = ["validate.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//system/bazel:symlink",
+        "@crates//:clap",
+        "@crates//:miette",
+        "@crates//:serde",
+        "@crates//:serde_json",
+        "@crates//:thiserror",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

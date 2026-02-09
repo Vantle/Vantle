@@ -5,6 +5,7 @@
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
+    "//Molten:__pkg__",
     "//Molten/test:__pkg__",
     "//Molten/test:__subpackages__",
 ])

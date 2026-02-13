@@ -5,6 +5,9 @@ pub struct Page {
     pub title: String,
     pub stylesheet: Option<String>,
     pub wasm: Option<String>,
+    pub context: Option<String>,
+    pub identifier: Option<String>,
+    pub root: Option<String>,
     pub body: Vec<Element>,
 }
 
@@ -15,6 +18,9 @@ impl Page {
             title: String::new(),
             stylesheet: None,
             wasm: None,
+            context: None,
+            identifier: None,
+            root: None,
             body: Vec::new(),
         }
     }
@@ -34,6 +40,24 @@ impl Page {
     #[must_use]
     pub fn wasm(mut self, path: &str) -> Self {
         self.wasm = Some(path.into());
+        self
+    }
+
+    #[must_use]
+    pub fn context(mut self, value: &str) -> Self {
+        self.context = Some(value.into());
+        self
+    }
+
+    #[must_use]
+    pub fn identifier(mut self, value: &str) -> Self {
+        self.identifier = Some(value.into());
+        self
+    }
+
+    #[must_use]
+    pub fn root(mut self, value: &str) -> Self {
+        self.root = Some(value.into());
         self
     }
 

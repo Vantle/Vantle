@@ -8,7 +8,7 @@ Example:
     generate(
         name = "readme",
         src = "document.rs",
-        destination = "Molten/Readme.html",
+        destination = "Molten/index.html",
         deps = ["//system/document:vantle"],
         data = ["//Molten/test/resource:data"],
     )

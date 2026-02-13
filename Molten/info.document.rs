@@ -2,14 +2,8 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Molten Info", |c| {
+    vantle::page(&arguments, "Molten Info", "molten", "info", |c| {
         c.title("Vantle.Molten")
-            .navigation(|n| {
-                n.link("Readme.html", "Molten")
-                    .link("../Readme.html", "Vantle")
-                    .link("../Module.html", "Module")
-                    .link("License.html", "License")
-            })
             .rule()
             .paragraph(|p| {
                 p.bold("Website: ").link(

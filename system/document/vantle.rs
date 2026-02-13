@@ -12,6 +12,12 @@ fn scale(k: i32) -> String {
     format!("{}rem", PHI.powi(k))
 }
 
+fn grid() -> String {
+    let left = PHI.powi(-3);
+    let right = PHI.powi(-2);
+    format!("{left}fr 1fr {right}fr")
+}
+
 const LIGHT: &[(&str, &str)] = &[
     ("--background", "#fafaf9"),
     ("--text", "#1a1a1a"),
@@ -56,6 +62,8 @@ fn overrides(properties: style::Properties, values: &[(&str, &str)]) -> style::P
 pub fn page(
     arguments: &render::Arguments,
     title: &str,
+    context: &str,
+    identifier: &str,
     f: impl FnOnce(Body) -> Body,
 ) -> miette::Result<()> {
     let root = arguments.root();
@@ -65,14 +73,131 @@ pub fn page(
             .title(&format!("{title} \u{2014} Vantle"))
             .stylesheet(&format!("{root}resource/system/document/vantle.css"))
             .wasm(&format!("{root}resource/system/document/compute.js"))
+            .context(context)
+            .identifier(identifier)
+            .root(&root)
             .body(|b| {
-                f(b.element("main", |m| m)).element("footer", |f| {
-                    f.element("p", |p| {
-                        p.span(|s| {
-                            s.text("\u{00a9} 2025 Vantle \u{00b7} ")
-                                .link("https://vantle.org", "@robert.vanderzee")
-                        })
+                let molten = context == "molten";
+                b.element("nav", |n| {
+                    let logo_href = if molten {
+                        format!("{root}Molten/")
+                    } else {
+                        format!("{root}index.html")
+                    };
+                    let logo_src = if molten {
+                        format!("{root}Molten/resource/logo.png")
+                    } else {
+                        format!("{root}resource/logo.png")
+                    };
+                    let logo_alt = if molten { "Molten" } else { "Vantle" };
+                    n.element("a", |a| {
+                        a.class("nav-logo")
+                            .attribute("href", &logo_href)
+                            .element("img", |i| {
+                                i.attribute("src", &logo_src).attribute("alt", logo_alt)
+                            })
                     })
+                    .element("div", |d| {
+                        d.class("nav-links")
+                            .element("div", |dd| {
+                                dd.class("nav-dropdown")
+                                    .element("a", |a| {
+                                        a.attribute("href", &format!("{root}index.html"))
+                                            .text("Vantle")
+                                    })
+                                    .element("div", |m| {
+                                        m.class("nav-dropdown-menu")
+                                            .element("a", |a| {
+                                                a.attribute("href", &format!("{root}info.html"))
+                                                    .text("Info")
+                                            })
+                                            .element("a", |a| {
+                                                a.attribute("href", &format!("{root}notice.html"))
+                                                    .text("Notice")
+                                            })
+                                            .element("a", |a| {
+                                                a.attribute("href", &format!("{root}module.html"))
+                                                    .text("Module")
+                                            })
+                                            .element("a", |a| {
+                                                a.attribute("href", &format!("{root}license.html"))
+                                                    .text("License")
+                                            })
+                                    })
+                            })
+                            .element("div", |dd| {
+                                dd.class("nav-dropdown")
+                                    .element("a", |a| {
+                                        a.attribute("href", &format!("{root}Molten/"))
+                                            .text("Molten")
+                                    })
+                                    .element("div", |m| {
+                                        m.class("nav-dropdown-menu")
+                                            .element("a", |a| {
+                                                a.attribute(
+                                                    "href",
+                                                    &format!("{root}Molten/system/spatialize/"),
+                                                )
+                                                .text("Spatialize")
+                                            })
+                                            .element("hr", |h| h)
+                                            .element("a", |a| {
+                                                a.attribute(
+                                                    "href",
+                                                    &format!("{root}Molten/info.html"),
+                                                )
+                                                .text("Info")
+                                            })
+                                            .element("a", |a| {
+                                                a.attribute(
+                                                    "href",
+                                                    &format!("{root}Molten/notice.html"),
+                                                )
+                                                .text("Notice")
+                                            })
+                                            .element("a", |a| {
+                                                a.attribute(
+                                                    "href",
+                                                    &format!("{root}Molten/license.html"),
+                                                )
+                                                .text("License")
+                                            })
+                                    })
+                            })
+                            .element("a", |a| {
+                                a.attribute("href", &format!("{root}system/generation/"))
+                                    .text("Generation")
+                            })
+                            .element("a", |a| {
+                                a.attribute("href", &format!("{root}system/observation/"))
+                                    .text("Observation")
+                            })
+                            .element("a", |a| {
+                                a.attribute("href", &format!("{root}system/spatialize/"))
+                                    .text("Spatialize")
+                            })
+                    })
+                })
+                .element("div", |l| {
+                    l.class("layout")
+                        .element("aside", |a| {
+                            a.class("sidebar")
+                                .attribute("aria-label", "Page navigation")
+                        })
+                        .element("main", |m| {
+                            f(m).element("footer", |footer| {
+                                footer.element("p", |p| {
+                                    p.span(|s| {
+                                        s.text("\u{00a9} 2025 Vantle \u{00b7} ")
+                                            .link("https://vantle.org", "@robert.vanderzee")
+                                    })
+                                })
+                            })
+                        })
+                        .element("aside", |a| {
+                            a.class("outline")
+                                .attribute("aria-label", "Table of contents")
+                        })
                 })
             }),
     )
@@ -89,7 +214,6 @@ pub fn theme() -> Style {
         .variable("--scale-1", &scale(1))
         .variable("--scale-2", &scale(2))
         .variable("--scale-3", &scale(3))
-        .variable("--content-width", "61.8%")
         .rule("*", |r| r.margin("0").padding("0").box_sizing("border-box"))
         .rule("body", |r| {
             r.font_family("-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif")
@@ -99,30 +223,39 @@ pub fn theme() -> Style {
                 .font_size("var(--scale-0)")
         })
         .rule("main", |r| {
-            r.max_width("var(--content-width)")
-                .margin("0 auto")
-                .padding("var(--scale-2) var(--scale-0)")
+            r.padding("var(--scale-2) var(--scale-1)")
+                .custom("min-width", "0")
         })
         .rule("h1", |r| {
             r.font_size("var(--scale-3)")
                 .font_weight("700")
-                .text_align("center")
                 .margin_bottom("var(--scale-n1)")
-                .line_height("1.2")
+                .line_height("1.1")
+                .custom("letter-spacing", "-0.03em")
         })
         .rule("h2", |r| {
             r.font_size("var(--scale-2)")
                 .font_weight("600")
                 .margin_top("var(--scale-2)")
                 .margin_bottom("var(--scale-0)")
-                .border_bottom("1px solid var(--border)")
-                .padding("0 0 var(--scale-n2) 0")
+                .custom("letter-spacing", "-0.02em")
         })
         .rule("h3", |r| {
             r.font_size("var(--scale-1)")
                 .font_weight("600")
                 .margin_top("var(--scale-1)")
                 .margin_bottom("var(--scale-n1)")
+                .custom("letter-spacing", "-0.01em")
+        })
+        .rule("h4", |r| {
+            r.font_size("var(--scale-0)")
+                .font_weight("600")
+                .custom("letter-spacing", "-0.01em")
+        })
+        .rule("h5", |r| {
+            r.font_size("var(--scale-0)")
+                .font_weight("500")
+                .color("var(--text-secondary)")
         })
         .rule("p", |r| r.margin_bottom("var(--scale-0)"))
         .rule("a", |r| {
@@ -135,7 +268,7 @@ pub fn theme() -> Style {
         })
         .rule("code", |r| {
             r.font_family("'SF Mono', 'Fira Code', 'Cascadia Code', monospace")
-                .font_size("var(--scale-n1)")
+                .font_size("var(--scale-0)")
                 .background("var(--code-background)")
                 .color("var(--code-text)")
                 .padding("0.15em 0.4em")
@@ -153,7 +286,7 @@ pub fn theme() -> Style {
         .rule("pre code", |r| {
             r.background("transparent")
                 .padding("0")
-                .font_size("var(--scale-n1)")
+                .font_size("var(--scale-0)")
         })
         .rule(".code-block", |r| {
             r.position("relative").margin_bottom("var(--scale-0)")
@@ -164,20 +297,152 @@ pub fn theme() -> Style {
                 .top("0")
                 .background("var(--nav-background)")
                 .backdrop_filter("blur(8px)")
-                .padding("var(--scale-n1) var(--scale-0)")
+                .height("calc(var(--scale-3) + var(--scale-n2))")
+                .padding("0 var(--scale-1)")
                 .border_bottom("1px solid var(--border)")
                 .display("flex")
-                .gap("var(--scale-0)")
-                .flex_wrap("wrap")
-                .justify_content("center")
                 .align_items("center")
                 .custom("z-index", "100")
         })
-        .rule("nav a", |r| {
+        .rule(".nav-logo", |r| {
+            r.display("flex")
+                .align_items("center")
+                .custom("flex-shrink", "0")
+        })
+        .rule(".nav-logo img", |r| r.height("var(--scale-2)"))
+        .rule(".nav-links", |r| {
+            r.display("flex")
+                .align_items("center")
+                .gap("var(--scale-n1)")
+                .custom("margin-left", "auto")
+        })
+        .rule(".nav-links > a, .nav-dropdown > a", |r| {
             r.color("var(--text-secondary)")
                 .font_size("var(--scale-n1)")
+                .font_weight("500")
+                .padding("var(--scale-n2) var(--scale-n1)")
+                .white_space("nowrap")
+                .custom("letter-spacing", "0.01em")
         })
-        .rule("nav strong", |r| r.color("var(--text)"))
+        .rule(".nav-links > a:hover, .nav-dropdown > a:hover", |r| {
+            r.color("var(--text)").text_decoration("none")
+        })
+        .rule(".nav-dropdown", |r| {
+            r.position("relative").display("flex").align_items("center")
+        })
+        .rule(".nav-dropdown-menu", |r| {
+            r.display("none")
+                .position("absolute")
+                .top("100%")
+                .left("0")
+                .background("var(--background)")
+                .border("1px solid var(--border)")
+                .border_radius("6px")
+                .custom("box-shadow", "0 4px 12px rgba(0, 0, 0, 0.1)")
+                .padding("var(--scale-n2) 0")
+                .custom("min-width", "160px")
+                .custom("z-index", "200")
+        })
+        .rule(
+            ".nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu",
+            |r| r.display("block"),
+        )
+        .rule(".nav-dropdown-menu a", |r| {
+            r.display("block")
+                .padding("var(--scale-n2) var(--scale-0)")
+                .color("var(--text-secondary)")
+                .font_size("var(--scale-n1)")
+        })
+        .rule(".nav-dropdown-menu a:hover", |r| {
+            r.background("var(--code-background)")
+                .color("var(--text)")
+                .text_decoration("none")
+        })
+        .rule(".nav-dropdown-menu hr", |r| r.margin("var(--scale-n2) 0"))
+        .rule(".layout", |r| {
+            r.display("grid")
+                .custom("grid-template-columns", &grid())
+                .min_height("calc(100vh - calc(var(--scale-3) + var(--scale-n2)))")
+        })
+        .rule(".sidebar", |r| {
+            r.position("sticky")
+                .top("calc(var(--scale-3) + var(--scale-n2))")
+                .height("calc(100vh - calc(var(--scale-3) + var(--scale-n2)))")
+                .custom("overflow-y", "auto")
+                .padding("var(--scale-1) var(--scale-0)")
+                .custom("border-right", "1px solid var(--border)")
+        })
+        .rule(".sidebar a", |r| {
+            r.display("block")
+                .padding("var(--scale-n2) var(--scale-n1)")
+                .color("var(--text-secondary)")
+                .font_size("var(--scale-n1)")
+                .border_radius("4px")
+        })
+        .rule(".sidebar a:hover", |r| {
+            r.color("var(--text)")
+                .background("var(--code-background)")
+                .text_decoration("none")
+        })
+        .rule(".sidebar a[aria-current=\"page\"]", |r| {
+            r.color("var(--accent)")
+                .background("var(--code-background)")
+        })
+        .rule(".outline", |r| {
+            r.position("sticky")
+                .top("calc(var(--scale-3) + var(--scale-n2))")
+                .height("calc(100vh - calc(var(--scale-3) + var(--scale-n2)))")
+                .custom("overflow-y", "auto")
+                .padding("var(--scale-1) var(--scale-0)")
+                .border_left("1px solid var(--border)")
+        })
+        .rule(".outline-label", |r| {
+            r.font_size("var(--scale-n1)")
+                .font_weight("500")
+                .custom("text-transform", "uppercase")
+                .custom("letter-spacing", "0.08em")
+                .color("var(--text-secondary)")
+                .margin_bottom("var(--scale-n1)")
+        })
+        .rule(".outline a", |r| {
+            r.display("block")
+                .padding("var(--scale-n2) var(--scale-n1)")
+                .color("var(--text-secondary)")
+                .font_size("var(--scale-n1)")
+                .border_left("2px solid transparent")
+        })
+        .rule(".outline a:hover", |r| {
+            r.color("var(--text)").text_decoration("none")
+        })
+        .rule(".outline a[data-depth=\"3\"]", |r| {
+            r.padding_left("var(--scale-0)")
+        })
+        .rule(".outline a[data-depth=\"4\"]", |r| {
+            r.padding_left("var(--scale-1)")
+        })
+        .rule(".outline a.active", |r| {
+            r.color("var(--accent)")
+                .custom("border-left-color", "var(--accent)")
+        })
+        .rule(".sidebar-label", |r| {
+            r.font_size("var(--scale-n1)")
+                .font_weight("500")
+                .custom("text-transform", "uppercase")
+                .custom("letter-spacing", "0.08em")
+                .color("var(--text-secondary)")
+                .margin_top("var(--scale-1)")
+                .margin_bottom("var(--scale-n1)")
+        })
+        .rule(".hamburger", |r| {
+            r.display("none")
+                .background("transparent")
+                .border("none")
+                .cursor("pointer")
+                .font_size("var(--scale-1)")
+                .color("var(--text-secondary)")
+                .padding("var(--scale-n2)")
+        })
+        .rule(".hamburger:hover", |r| r.color("var(--text)"))
         .rule("table", |r| {
             r.width("100%")
                 .border_collapse("collapse")
@@ -188,6 +453,10 @@ pub fn theme() -> Style {
                 .padding("var(--scale-n1)")
                 .border_bottom("2px solid var(--border)")
                 .font_weight("600")
+                .font_size("var(--scale-n1)")
+                .custom("text-transform", "uppercase")
+                .custom("letter-spacing", "0.02em")
+                .color("var(--text-secondary)")
         })
         .rule("td", |r| {
             r.padding("var(--scale-n1)")
@@ -213,10 +482,10 @@ pub fn theme() -> Style {
         })
         .rule(".center", |r| r.text_align("center").margin("0 auto"))
         .rule(".subtitle", |r| {
-            r.text_align("center")
-                .color("var(--text-secondary)")
+            r.color("var(--text-secondary)")
                 .font_size("var(--scale-1)")
-                .custom("font-style", "italic")
+                .font_weight("400")
+                .custom("letter-spacing", "-0.01em")
                 .margin_bottom("var(--scale-1)")
         })
         .rule("ul, ol", |r| {
@@ -225,18 +494,23 @@ pub fn theme() -> Style {
         })
         .rule("li", |r| r.margin_bottom("var(--scale-n2)"))
         .rule("dl", |r| r.margin_bottom("var(--scale-0)"))
-        .rule("dt", |r| r.font_weight("600").margin_top("var(--scale-n1)"))
+        .rule("dt", |r| {
+            r.font_weight("600")
+                .margin_top("var(--scale-n1)")
+                .custom("letter-spacing", "-0.01em")
+        })
         .rule("dd", |r| {
             r.margin_bottom("var(--scale-n1)")
                 .padding_left("var(--scale-0)")
         })
         .rule("footer", |r| {
             r.text_align("center")
-                .padding("var(--scale-1) 0")
+                .padding("var(--scale-2) 0 var(--scale-1) 0")
                 .margin_top("var(--scale-2)")
-                .border_bottom("none")
+                .custom("border-top", "1px solid var(--border)")
                 .color("var(--text-secondary)")
                 .font_size("var(--scale-n1)")
+                .custom("letter-spacing", "0.02em")
         })
         .rule(".copy-button", |r| {
             r.position("absolute")
@@ -272,15 +546,44 @@ pub fn theme() -> Style {
             r.opacity("1").transform("translateY(0)")
         })
         .rule("html[data-theme=\"dark\"]", |r| overrides(r, DARK))
+        .rule("html[data-theme=\"dark\"] .nav-dropdown-menu", |r| {
+            r.custom("box-shadow", "0 4px 12px rgba(0, 0, 0, 0.4)")
+        })
         .rule("html[data-theme=\"light\"]", |r| overrides(r, LIGHT))
-        .media("prefers-color-scheme: dark", |m| palette(m, DARK))
-        .media("max-width: 768px", |m| {
-            m.rule("main", |r| {
-                r.max_width("100%")
-                    .padding("var(--scale-0) var(--scale-n1)")
+        .media("prefers-color-scheme: dark", |m| {
+            palette(m, DARK).rule(".nav-dropdown-menu", |r| {
+                r.custom("box-shadow", "0 4px 12px rgba(0, 0, 0, 0.4)")
             })
-            .rule("h1", |r| r.font_size("var(--scale-2)"))
-            .rule("nav", |r| r.padding("var(--scale-n2) var(--scale-n1)"))
+        })
+        .media("max-width: 1280px", |m| {
+            m.rule(".outline", |r| r.display("none"))
+                .rule(".layout", |r| {
+                    r.custom("grid-template-columns", &format!("{}fr 1fr", PHI.powi(-3)))
+                })
+        })
+        .media("max-width: 1024px", |m| {
+            m.rule(".sidebar", |r| {
+                r.display("none")
+                    .position("fixed")
+                    .top("calc(var(--scale-3) + var(--scale-n2))")
+                    .left("0")
+                    .width("280px")
+                    .height("calc(100vh - calc(var(--scale-3) + var(--scale-n2)))")
+                    .background("var(--background)")
+                    .custom("z-index", "150")
+                    .custom("border-right", "1px solid var(--border)")
+            })
+            .rule(".sidebar.open", |r| r.display("block"))
+            .rule(".layout", |r| r.custom("grid-template-columns", "1fr"))
+            .rule(".hamburger", |r| r.display("block"))
+        })
+        .media("max-width: 768px", |m| {
+            m.rule("main", |r| r.padding("var(--scale-0) var(--scale-n1)"))
+                .rule("h1", |r| {
+                    r.font_size("var(--scale-2)")
+                        .custom("letter-spacing", "-0.02em")
+                })
+                .rule("nav", |r| r.padding("0 var(--scale-n1)"))
         })
 }
 

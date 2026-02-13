@@ -2,14 +2,9 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Generation", |c| {
+    vantle::page(&arguments, "Generation", "vantle", "generation", |c| {
         c.title("Generation")
             .subtitle("Code generation framework for Rust")
-            .navigation(|n| {
-                n.link("../../Readme.html", "Vantle")
-                    .link("../../Module.html", "Module")
-                    .link("../../License.html", "License")
-            })
             .rule()
             .paragraph(|p| {
                 p.text("This document describes the ")

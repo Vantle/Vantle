@@ -50,8 +50,8 @@ rust_binary(
 
 generate(
     name = "readme",
-    src = "readme.generator.rs",
-    destination = "system/generation/Readme.html",
+    src = "generation.document.rs",
+    destination = "system/generation/index.html",
     visibility = ["//visibility:public"],
     deps = ["//system/document:vantle"],
 )

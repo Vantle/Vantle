@@ -16,4 +16,7 @@ pub fn start() {
     scroll::initialize(&document);
     theme::initialize(&document);
     clipboard::initialize(&document);
+    sidebar::initialize(&document);
+    outline::initialize(&document);
+    hamburger::initialize(&document);
 }

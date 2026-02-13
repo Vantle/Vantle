@@ -2,20 +2,9 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Vantle", |c| {
-        c.image("resource/logo.png", "Vantle")
-            .title("Vantle")
+    vantle::page(&arguments, "Vantle", "vantle", "readme", |c| {
+        c.title("Vantle")
             .subtitle("Platform for everything")
-            .navigation(|n| {
-                n.link("Info.html", "Info")
-                    .link("Notice.html", "Notice")
-                    .link("Module.html", "Module")
-                    .link("Molten/Readme.html", "Molten")
-                    .link("system/generation/Readme.html", "Generation")
-                    .link("system/observation/Readme.html", "Observation")
-                    .link("system/spatialize/Readme.html", "Spatialize")
-                    .link("License.html", "License")
-            })
             .rule()
             .paragraph(|p| {
                 p.bold("Vantle")
@@ -28,7 +17,7 @@ fn main() -> miette::Result<()> {
                         .paragraph(|p| {
                             p.text("An AI frontend language designed for continual learning algorithms. Build hypergraphs through polymorphic relations, enabling declarative computation with concepts, orthogonalities, and transformations evaluated with temporal semantics.")
                         })
-                        .paragraph(|p| p.link("Molten/Readme.html", "more →"))
+                        .paragraph(|p| p.link("Molten/", "more →"))
                 })
                 .subsection("Generation", |ss| {
                     ss.aside(|a| a.italic("Code generation framework for Rust"))
@@ -37,7 +26,7 @@ fn main() -> miette::Result<()> {
                                 .bold("autotest")
                                 .text(" system eliminates boilerplate while enabling data-driven testing with parameter shadowing and tag organization.")
                         })
-                        .paragraph(|p| p.link("system/generation/Readme.html", "more →"))
+                        .paragraph(|p| p.link("system/generation/", "more →"))
                 })
                 .subsection("Observation", |ss| {
                     ss.aside(|a| a.italic("Trace streaming and recording"))
@@ -46,14 +35,14 @@ fn main() -> miette::Result<()> {
                                 .code("#[trace]")
                                 .text(" macro instruments functions with channel-based filtering for selective observation to files or remote peers.")
                         })
-                        .paragraph(|p| p.link("system/observation/Readme.html", "more →"))
+                        .paragraph(|p| p.link("system/observation/", "more →"))
                 })
                 .subsection("Spatialize", |ss| {
                     ss.aside(|a| a.italic("GPU rendering infrastructure"))
                         .paragraph(|p| {
                             p.text("Render with wgpu using assembler-pattern context creation and frame-based draw submission. Golden ratio scaling utilities ensure harmonious visual proportions throughout.")
                         })
-                        .paragraph(|p| p.link("system/spatialize/Readme.html", "more →"))
+                        .paragraph(|p| p.link("system/spatialize/", "more →"))
                 })
             })
             .rule()

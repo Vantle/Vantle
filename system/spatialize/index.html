@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" data-context="vantle" data-page="spatialize" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spatialize — Vantle</title>
+<link rel="stylesheet" href="../../resource/system/document/vantle.css">
+</head>
+<body>
+<nav><a class="nav-logo" href="../../index.html"><img src="../../resource/logo.png" alt="Vantle"></a><div class="nav-links"><div class="nav-dropdown"><a href="../../index.html">Vantle</a><div class="nav-dropdown-menu"><a href="../../info.html">Info</a><a href="../../notice.html">Notice</a><a href="../../module.html">Module</a><a href="../../license.html">License</a></div></div><div class="nav-dropdown"><a href="../../Molten/">Molten</a><div class="nav-dropdown-menu"><a href="../../Molten/system/spatialize/">Spatialize</a><hr><a href="../../Molten/info.html">Info</a><a href="../../Molten/notice.html">Notice</a><a href="../../Molten/license.html">License</a></div></div><a href="../../system/generation/">Generation</a><a href="../../system/observation/">Observation</a><a href="../../system/spatialize/">Spatialize</a></div></nav><div class="layout"><aside class="sidebar" aria-label="Page navigation"></aside><main><h1>Spatialize</h1><p class="subtitle">GPU rendering infrastructure for Vantle</p><hr><p>This document describes the <strong>Spatialize</strong> system, a GPU rendering infrastructure built on wgpu.</p><hr><section><h2>Context</h2><p>The render context manages GPU resources and pipeline state.</p><section><h3>Assembler</h3><p>Build a rendering context with the assembler pattern:</p><pre><code class="language-rust">use render::{Assembler, Context};
+
+let context = Assembler::new()
+    .surface(surface)
+    .adapter(adapter)
+    .size(width, height)
+    .assemble()
+    .await?;</code></pre><table><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td>surface</td><td>wgpu surface for presentation</td></tr><tr><td>adapter</td><td>wgpu adapter for device creation</td></tr><tr><td>size</td><td>Initial viewport dimensions</td></tr></tbody></table></section><section><h3>Pipelines</h3><p>Build GPU pipelines with the raster and compute assemblers:</p><pre><code class="language-rust">use raster::Raster;
+
+let pipeline = Raster::assembler()
+    .shader(&quot;path/to/pipeline.wgsl&quot;)
+    .vertex(Vertex::layout())
+    .bind(0, Binding::uniform(wgpu::ShaderStages::VERTEX))
+    .target(format, Some(wgpu::BlendState::ALPHA_BLENDING))
+    .assemble(device)?;</code></pre></section></section><hr><section><h2>Structure</h2><pre><code>system/spatialize/
+  render/           GPU pipeline and frame management
+  interact/         Input and collision systems
+  proportion.rs     Golden ratio utilities</code></pre></section><footer><p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p></footer></main><aside class="outline" aria-label="Table of contents"></aside></div><script type="module">
+import init from '../../resource/system/document/compute.js';
+await init();
+</script>
+</body>
+</html>

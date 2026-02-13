@@ -2,14 +2,9 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Observation", |c| {
+    vantle::page(&arguments, "Observation", "vantle", "observation", |c| {
         c.title("Observation")
             .subtitle("Trace streaming and recording for Vantle")
-            .navigation(|n| {
-                n.link("../../Readme.html", "Vantle")
-                    .link("../../Module.html", "Module")
-                    .link("../../License.html", "License")
-            })
             .rule()
             .paragraph(|p| {
                 p.text("This document describes the ")
@@ -43,7 +38,7 @@ fn main() -> miette::Result<()> {
                 })
                 .paragraph(|p| {
                     p.text("Each application decides where to send its traces. See ")
-                        .link("../../Molten/Readme.html#forge", "Forge")
+                        .link("../../Molten/#forge", "Forge")
                         .text(" for an example of configuring trace destinations.")
                 })
             })

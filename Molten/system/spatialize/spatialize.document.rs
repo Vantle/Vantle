@@ -2,16 +2,14 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Molten Spatialize", |c| {
-        c.title("Spatialize")
+    vantle::page(
+        &arguments,
+        "Molten Spatialize",
+        "molten",
+        "spatialize",
+        |c| {
+            c.title("Spatialize")
             .subtitle("Interactive hypergraph visualization for Molten")
-            .navigation(|n| {
-                n.link("../../Readme.html", "Molten")
-                    .link("../../../Readme.html", "Vantle")
-                    .link("../../../Module.html", "Module")
-                    .link("../../../system/spatialize/Readme.html", "Platform Spatialize")
-                    .link("../../../License.html", "License")
-            })
             .rule()
             .paragraph(|p| {
                 p.text("This document describes ")
@@ -75,5 +73,6 @@ fn main() -> miette::Result<()> {
                     })
                 })
             })
-    })
+        },
+    )
 }

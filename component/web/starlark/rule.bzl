@@ -19,7 +19,7 @@ document_generate = rule(
         ),
         "destination": attr.string(
             mandatory = True,
-            doc = "Workspace-relative output path (e.g., 'Molten/Readme.html')",
+            doc = "Workspace-relative output path (e.g., 'Molten/index.html')",
         ),
         "data": attr.label_list(
             allow_files = True,

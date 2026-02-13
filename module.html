@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-context="vantle" data-page="module" data-root="./">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="./resource/system/document/vantle.css">
 </head>
 <body>
-<main></main><h1>Module</h1><p class="subtitle">Bazel module definition</p><nav><a href="Readme.html">Vantle</a><a href="License.html">License</a></nav><hr><p><a href="MODULE.bazel">[source]</a></p><div class="code-block" data-language="starlark"><pre style="background-color:#2b303b;">
+<nav><a class="nav-logo" href="./index.html"><img src="./resource/logo.png" alt="Vantle"></a><div class="nav-links"><div class="nav-dropdown"><a href="./index.html">Vantle</a><div class="nav-dropdown-menu"><a href="./info.html">Info</a><a href="./notice.html">Notice</a><a href="./module.html">Module</a><a href="./license.html">License</a></div></div><div class="nav-dropdown"><a href="./Molten/">Molten</a><div class="nav-dropdown-menu"><a href="./Molten/system/spatialize/">Spatialize</a><hr><a href="./Molten/info.html">Info</a><a href="./Molten/notice.html">Notice</a><a href="./Molten/license.html">License</a></div></div><a href="./system/generation/">Generation</a><a href="./system/observation/">Observation</a><a href="./system/spatialize/">Spatialize</a></div></nav><div class="layout"><aside class="sidebar" aria-label="Page navigation"></aside><main><h1>Module</h1><p class="subtitle">Bazel module definition</p><hr><p><a href="MODULE.bazel">[source]</a></p><div class="code-block" data-language="starlark"><pre style="background-color:#2b303b;">
 <span style="color:#65737e;">#################################################################################################################################################################
 </span><span style="color:#65737e;">&quot;&quot;&quot;
 </span><span style="color:#65737e;">    Vantle (c) 2025
@@ -25,7 +25,7 @@
 </span><span style="color:#65737e;">##################### Dependencies                                                                                                               [ Dependencies ]
 </span><span style="color:#65737e;">############### Toolchain                                                                                                                           [ Toolchain ]
 </span><span style="color:#65737e;">########## Bazel                                                                                                                             [ Toolchain, Bazel ]
-</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">stardoc</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.8.0</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">stardoc</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">0.8.1</span><span style="color:#c0c5ce;">&quot;)
 </span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">bazel_skylib</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.9.0</span><span style="color:#c0c5ce;">&quot;)
 </span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">toolchains_llvm</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.6.0</span><span style="color:#c0c5ce;">&quot;)
 </span><span style="color:#c0c5ce;">
@@ -59,10 +59,10 @@
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#65737e;">##### Compilation                                                                                                                      [ Toolchain, Compilation ]
 </span><span style="color:#65737e;">########## Java                                                                                                                               [ Toolchain, Java ]
-</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rules_java</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">9.3.0</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rules_java</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">9.4.0</span><span style="color:#c0c5ce;">&quot;)
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#65737e;">########## Python                                                                                                                           [ Toolchain, Python ]
-</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rules_python</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.6.3</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">rules_python</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">1.8.3</span><span style="color:#c0c5ce;">&quot;)
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#c0c5ce;">python = </span><span style="color:#8fa1b3;">use_extension</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@rules_python//python/extensions:python.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">python</span><span style="color:#c0c5ce;">&quot;)
 </span><span style="color:#c0c5ce;">python.</span><span style="color:#8fa1b3;">toolchain</span><span style="color:#c0c5ce;">(
@@ -384,12 +384,12 @@
 </span><span style="color:#c0c5ce;">)
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#65737e;">##### Bazel                                                                                                                                 [ Validation, Bazel ]
-</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">buildifier_prebuilt</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">8.2.1.1</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">dev_dependency </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">True</span><span style="color:#c0c5ce;">)
+</span><span style="color:#8fa1b3;">bazel_dep</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">buildifier_prebuilt</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">version </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">8.2.1.2</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">dev_dependency </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">True</span><span style="color:#c0c5ce;">)
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#c0c5ce;">buildifier_prebuilt = </span><span style="color:#8fa1b3;">use_extension</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">@buildifier_prebuilt//:defs.bzl</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">buildifier_prebuilt_deps_extension</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#bf616a;">dev_dependency </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">True</span><span style="color:#c0c5ce;">)
 </span><span style="color:#8fa1b3;">use_repo</span><span style="color:#c0c5ce;">(buildifier_prebuilt, &quot;</span><span style="color:#a3be8c;">buildifier_prebuilt_toolchains</span><span style="color:#c0c5ce;">&quot;)
 </span></pre>
-</div><footer><p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p></footer><script type="module">
+</div><footer><p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p></footer></main><aside class="outline" aria-label="Table of contents"></aside></div><script type="module">
 import init from './resource/system/document/compute.js';
 await init();
 </script>

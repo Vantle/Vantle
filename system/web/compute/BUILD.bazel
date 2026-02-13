@@ -37,13 +37,44 @@ rust_library(
     ],
 )
 
+rust_library(
+    name = "sidebar",
+    srcs = ["sidebar.rs"],
+    deps = [
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
+    name = "outline",
+    srcs = ["outline.rs"],
+    deps = [
+        "@crates//:js-sys",
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
+    name = "hamburger",
+    srcs = ["hamburger.rs"],
+    deps = [
+        "@crates//:js-sys",
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
 rust_shared_library(
     name = "binary",
     srcs = ["module.rs"],
     platform = "@rules_rust//rust/platform:wasm",
     deps = [
         ":clipboard",
+        ":hamburger",
+        ":outline",
         ":scroll",
+        ":sidebar",
         ":theme",
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",

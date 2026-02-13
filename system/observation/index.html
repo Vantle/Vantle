@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" data-context="vantle" data-page="observation" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observation — Vantle</title>
+<link rel="stylesheet" href="../../resource/system/document/vantle.css">
+</head>
+<body>
+<nav><a class="nav-logo" href="../../index.html"><img src="../../resource/logo.png" alt="Vantle"></a><div class="nav-links"><div class="nav-dropdown"><a href="../../index.html">Vantle</a><div class="nav-dropdown-menu"><a href="../../info.html">Info</a><a href="../../notice.html">Notice</a><a href="../../module.html">Module</a><a href="../../license.html">License</a></div></div><div class="nav-dropdown"><a href="../../Molten/">Molten</a><div class="nav-dropdown-menu"><a href="../../Molten/system/spatialize/">Spatialize</a><hr><a href="../../Molten/info.html">Info</a><a href="../../Molten/notice.html">Notice</a><a href="../../Molten/license.html">License</a></div></div><a href="../../system/generation/">Generation</a><a href="../../system/observation/">Observation</a><a href="../../system/spatialize/">Spatialize</a></div></nav><div class="layout"><aside class="sidebar" aria-label="Page navigation"></aside><main><h1>Observation</h1><p class="subtitle">Trace streaming and recording for Vantle</p><hr><p>This document describes the <strong>Observation</strong> system, a peer-to-peer trace streaming framework for Vantle.</p><hr><section><h2>Architecture</h2><p>Observation uses a peer-to-peer model with no central server. Applications stream traces directly to:</p><ul><li><strong>Files</strong>: Local recording via <code>file://</code> URIs</li><li><strong>Peers</strong>: Remote streaming via <code>grpc://</code> URIs</li></ul><p>Each application decides where to send its traces. See <a href="../../Molten/#forge">Forge</a> for an example of configuring trace destinations.</p></section><hr><section><h2>Trace</h2><p>The <code>#[trace]</code> macro instruments functions for observation.</p><section><h3>Usage</h3><pre><code class="language-rust">#[trace(channels = [core])]
+fn process() {
+    evaluate();
+}</code></pre></section><section><h3>Channels</h3><p>Channels filter which spans to observe. Common channels include:</p><ul><li><code>core</code>: Core runtime operations</li><li><code>analysis</code>: Analysis and evaluation</li><li><code>debug</code>: Debugging and diagnostics</li></ul></section></section><hr><section><h2>Structure</h2><pre><code>component/observation/     Streaming layer and span types
+system/observation/        Trace initialization and encoding</code></pre></section><footer><p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p></footer></main><aside class="outline" aria-label="Table of contents"></aside></div><script type="module">
+import init from '../../resource/system/document/compute.js';
+await init();
+</script>
+</body>
+</html>

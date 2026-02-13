@@ -6,7 +6,7 @@ pub fn initialize(document: &Document) {
         return;
     };
 
-    let Ok(Some(nav)) = document.query_selector("nav") else {
+    let Ok(Some(container)) = document.query_selector(".nav-links") else {
         return;
     };
 
@@ -37,7 +37,7 @@ pub fn initialize(document: &Document) {
     let _ = toggle.add_event_listener_with_callback("click", callback.as_ref().unchecked_ref());
     callback.forget();
 
-    let _ = nav.append_child(&toggle);
+    let _ = container.append_child(&toggle);
 }
 
 fn update(html: &web_sys::Element, toggle: &web_sys::Element, prefers: bool) {

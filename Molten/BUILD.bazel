@@ -48,12 +48,12 @@ rust_library(
 ##### Documentation                                                                                                                             [ Documentation ]
 generate(
     name = "readme",
-    src = "readme.generator.rs",
+    src = "molten.document.rs",
     data = [
         "//Molten/test/resource/system/graph/module/join/symbolic:data",
         "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean/symbolic:data",
     ],
-    destination = "Molten/Readme.html",
+    destination = "Molten/index.html",
     deps = [
         "//component/web:element",
         "//system/document:vantle",
@@ -62,8 +62,8 @@ generate(
 
 generate(
     name = "info",
-    src = "info.generator.rs",
-    destination = "Molten/Info.html",
+    src = "info.document.rs",
+    destination = "Molten/info.html",
     deps = [
         "//system/document:vantle",
     ],
@@ -71,8 +71,8 @@ generate(
 
 generate(
     name = "notice",
-    src = "notice.generator.rs",
-    destination = "Molten/Notice.html",
+    src = "notice.document.rs",
+    destination = "Molten/notice.html",
     deps = [
         "//system/document:vantle",
     ],
@@ -80,8 +80,8 @@ generate(
 
 generate(
     name = "license",
-    src = "license.generator.rs",
-    destination = "Molten/License.html",
+    src = "license.document.rs",
+    destination = "Molten/license.html",
     deps = [
         "//system/document:vantle",
     ],

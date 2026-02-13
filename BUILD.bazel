@@ -95,8 +95,8 @@ buildifier(
 ##### Documentation                                                                                                                              [ Documentation ]
 generate(
     name = "readme",
-    src = "readme.generator.rs",
-    destination = "Readme.html",
+    src = "vantle.document.rs",
+    destination = "index.html",
     deps = [
         "//system/document:vantle",
     ],
@@ -104,8 +104,8 @@ generate(
 
 generate(
     name = "info",
-    src = "info.generator.rs",
-    destination = "Info.html",
+    src = "info.document.rs",
+    destination = "info.html",
     deps = [
         "//system/document:vantle",
     ],
@@ -113,8 +113,8 @@ generate(
 
 generate(
     name = "notice",
-    src = "notice.generator.rs",
-    destination = "Notice.html",
+    src = "notice.document.rs",
+    destination = "notice.html",
     deps = [
         "//system/document:vantle",
     ],
@@ -122,8 +122,8 @@ generate(
 
 generate(
     name = "license",
-    src = "license.generator.rs",
-    destination = "License.html",
+    src = "license.document.rs",
+    destination = "license.html",
     deps = [
         "//system/document:vantle",
     ],
@@ -131,9 +131,9 @@ generate(
 
 generate(
     name = "bazel_module",
-    src = "module.generator.rs",
+    src = "module.document.rs",
     data = ["//:MODULE.bazel"],
-    destination = "Module.html",
+    destination = "module.html",
     deps = [
         "//component/web:element",
         "//system/document:vantle",

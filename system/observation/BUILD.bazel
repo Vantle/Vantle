@@ -90,7 +90,7 @@ rust_library(
 
 generate(
     name = "readme",
-    src = "readme.generator.rs",
-    destination = "system/observation/Readme.html",
+    src = "observation.document.rs",
+    destination = "system/observation/index.html",
     deps = ["//system/document:vantle"],
 )

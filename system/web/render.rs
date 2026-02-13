@@ -51,7 +51,17 @@ pub fn render<S: std::hash::BuildHasher>(
     let highlighter = Highlighter::new();
     let mut html = String::new();
 
-    html.push_str("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n");
+    html.push_str("<!DOCTYPE html>\n<html lang=\"en\"");
+    if let Some(ref context) = page.context {
+        write!(html, " data-context=\"{}\"", escape(context)).unwrap();
+    }
+    if let Some(ref identifier) = page.identifier {
+        write!(html, " data-page=\"{}\"", escape(identifier)).unwrap();
+    }
+    if let Some(ref root) = page.root {
+        write!(html, " data-root=\"{}\"", escape(root)).unwrap();
+    }
+    html.push_str(">\n<head>\n");
     html.push_str("<meta charset=\"UTF-8\">\n");
     html.push_str("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
     writeln!(html, "<title>{}</title>", escape(&page.title)).unwrap();

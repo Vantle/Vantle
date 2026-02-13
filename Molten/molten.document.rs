@@ -3,19 +3,9 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Molten", |c| {
-        c.image("resource/logo.png", "Molten")
-            .title("Molten")
+    vantle::page(&arguments, "Molten", "molten", "readme", |c| {
+        c.title("Molten")
             .subtitle("Computational expression over hypergraphs")
-            .navigation(|n| {
-                n.link("Info.html", "Info")
-                    .link("Notice.html", "Notice")
-                    .link("../Readme.html", "Vantle")
-                    .link("../Module.html", "Module")
-                    .link("../system/observation/Readme.html", "Observation")
-                    .link("system/spatialize/Readme.html", "Spatialize")
-                    .link("License.html", "License")
-            })
             .rule()
             .paragraph(|p| {
                 p.text("This document describes ")

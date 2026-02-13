@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-context="vantle" data-page="generation" data-root="../../">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../resource/system/document/vantle.css">
 </head>
 <body>
-<main></main><h1>Generation</h1><p class="subtitle">Code generation framework for Rust</p><nav><a href="../../Readme.html">Vantle</a><a href="../../Module.html">Module</a><a href="../../License.html">License</a></nav><hr><p>This document describes the <strong>Generation</strong> framework, a code generation system for Rust projects built on Bazel.</p><hr><section><h2>Autotest</h2><p>Autotest is an implementation of the Generation framework that provides JSON-driven test generation, eliminating boilerplate and enabling data-driven testing.</p><section><h3>Template</h3><p>Write functions in a <code>.template.rs</code> file:</p><pre><code class="language-rust">use component::graph::state::particle::Particle;
+<nav><a class="nav-logo" href="../../index.html"><img src="../../resource/logo.png" alt="Vantle"></a><div class="nav-links"><div class="nav-dropdown"><a href="../../index.html">Vantle</a><div class="nav-dropdown-menu"><a href="../../info.html">Info</a><a href="../../notice.html">Notice</a><a href="../../module.html">Module</a><a href="../../license.html">License</a></div></div><div class="nav-dropdown"><a href="../../Molten/">Molten</a><div class="nav-dropdown-menu"><a href="../../Molten/system/spatialize/">Spatialize</a><hr><a href="../../Molten/info.html">Info</a><a href="../../Molten/notice.html">Notice</a><a href="../../Molten/license.html">License</a></div></div><a href="../../system/generation/">Generation</a><a href="../../system/observation/">Observation</a><a href="../../system/spatialize/">Spatialize</a></div></nav><div class="layout"><aside class="sidebar" aria-label="Page navigation"></aside><main><h1>Generation</h1><p class="subtitle">Code generation framework for Rust</p><hr><p>This document describes the <strong>Generation</strong> framework, a code generation system for Rust projects built on Bazel.</p><hr><section><h2>Autotest</h2><p>Autotest is an implementation of the Generation framework that provides JSON-driven test generation, eliminating boilerplate and enabling data-driven testing.</p><section><h3>Template</h3><p>Write functions in a <code>.template.rs</code> file:</p><pre><code class="language-rust">use component::graph::state::particle::Particle;
 
 fn disjoint(candidate: Particle&lt;String&gt;, basis: Particle&lt;String&gt;) -&gt; Option&lt;Particle&lt;String&gt;&gt; {
     candidate.disjoint(&amp;basis).map(|_| candidate.clone())
@@ -42,7 +42,7 @@ rust_autotest(
     cases = &quot;:cases.json&quot;,
     deps = [&quot;//Molten/component/graph/state/particle:module&quot;],
 )</code></pre></section><section><h3>Features</h3><ul><li><strong>Parameter shadowing</strong>: Function-level defaults with case-level overrides</li><li><strong>Tag organization</strong>: Filter tests by tags</li><li><strong>Schema validation</strong>: Parameters match function signatures</li><li><strong>Rich diagnostics</strong>: Error reporting via miette</li></ul></section></section><hr><section><h2>Structure</h2><pre><code>component/generation/     Schema and types
-system/generation/        Generator binary</code></pre></section><footer><p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p></footer><script type="module">
+system/generation/        Generator binary</code></pre></section><footer><p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p></footer></main><aside class="outline" aria-label="Table of contents"></aside></div><script type="module">
 import init from '../../resource/system/document/compute.js';
 await init();
 </script>

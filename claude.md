@@ -3,7 +3,7 @@
 **Vantle** implements **Molten**, a computational expression language over hypergraphs.
 
 Rust 2021 | Bazel 9+ | Autotest testing
-Docs: @Molten/Readme.html | Deps: @MODULE.bazel
+Docs: @Molten/index.html | Deps: @MODULE.bazel
 
 ---
 

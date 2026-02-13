@@ -2,15 +2,9 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Spatialize", |c| {
+    vantle::page(&arguments, "Spatialize", "vantle", "spatialize", |c| {
         c.title("Spatialize")
             .subtitle("GPU rendering infrastructure for Vantle")
-            .navigation(|n| {
-                n.link("../../Readme.html", "Vantle")
-                    .link("../../Module.html", "Module")
-                    .link("../../Molten/system/spatialize/Readme.html", "Molten Spatialize")
-                    .link("../../License.html", "License")
-            })
             .rule()
             .paragraph(|p| {
                 p.text("This document describes the ")

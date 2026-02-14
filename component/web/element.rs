@@ -10,12 +10,17 @@ pub enum Element {
     Span(Vec<Fragment>),
     Raw(String),
     Code {
-        name: String,
+        source: Source,
         language: Language,
     },
     Inject {
         name: String,
     },
+}
+
+pub enum Source {
+    File(String),
+    Inline(String),
 }
 
 #[derive(Debug, Clone, Copy)]

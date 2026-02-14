@@ -9,16 +9,11 @@ pub fn handler() -> miette::MietteHandler {
         Ok(definition) => builder.add(definition),
         Err(e) => error!("Failed to load Molten syntax highlighting: {}", e),
     }
-    let syntax = builder.build();
 
-    let set = ThemeSet::load_defaults();
-    let theme = set
-        .themes
-        .get("base16-mocha.dark")
-        .cloned()
-        .unwrap_or_else(|| set.themes.values().next().unwrap().clone());
-
-    let molten = miette::highlighters::SyntectHighlighter::new(syntax, theme, false);
+    let mut defaults = ThemeSet::load_defaults().themes;
+    let theme = defaults
+        .remove("base16-mocha.dark")
+        .unwrap_or_else(|| defaults.into_values().next().unwrap());
 
     miette::MietteHandlerOpts::new()
         .terminal_links(true)
@@ -27,7 +22,7 @@ pub fn handler() -> miette::MietteHandler {
         .tab_width(2)
         .color(true)
         .force_graphical(true)
-        .with_syntax_highlighting(molten)
+        .with_syntax_highlighting(highlight::Syntax::new(builder.build(), theme))
         .build()
 }
 

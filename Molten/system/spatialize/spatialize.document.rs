@@ -2,13 +2,8 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
-    vantle::page(
-        &arguments,
-        "Molten Spatialize",
-        "molten",
-        "spatialize",
-        |c| {
-            c.title("Spatialize")
+    vantle::page(&arguments, "Spatialize", "molten", "spatialize", |c| {
+        c.title("Spatialize")
             .subtitle("Interactive hypergraph visualization for Molten")
             .rule()
             .paragraph(|p| {
@@ -73,6 +68,5 @@ fn main() -> miette::Result<()> {
                     })
                 })
             })
-        },
-    )
+    })
 }

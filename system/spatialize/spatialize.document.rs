@@ -1,3 +1,4 @@
+use element::Language;
 use vantle::Composition;
 
 fn main() -> miette::Result<()> {
@@ -20,11 +21,7 @@ fn main() -> miette::Result<()> {
                     ss.paragraph(|p| {
                         p.text("Build a rendering context with the assembler pattern:")
                     })
-                    .element("pre", |p| {
-                        p.element("code", |c| {
-                            c.class("language-rust").text("use render::{Assembler, Context};\n\nlet context = Assembler::new()\n    .surface(surface)\n    .adapter(adapter)\n    .size(width, height)\n    .assemble()\n    .await?;")
-                        })
-                    })
+                    .literal("use render::{Assembler, Context};\n\nlet context = Assembler::new()\n    .surface(surface)\n    .adapter(adapter)\n    .size(width, height)\n    .assemble()\n    .await?;", Language::Rust)
                     .table(|t| {
                         t.header(["Field", "Description"])
                             .row(["surface", "wgpu surface for presentation"])
@@ -36,11 +33,7 @@ fn main() -> miette::Result<()> {
                     ss.paragraph(|p| {
                         p.text("Build GPU pipelines with the raster and compute assemblers:")
                     })
-                    .element("pre", |p| {
-                        p.element("code", |c| {
-                            c.class("language-rust").text("use raster::Raster;\n\nlet pipeline = Raster::assembler()\n    .shader(\"path/to/pipeline.wgsl\")\n    .vertex(Vertex::layout())\n    .bind(0, Binding::uniform(wgpu::ShaderStages::VERTEX))\n    .target(format, Some(wgpu::BlendState::ALPHA_BLENDING))\n    .assemble(device)?;")
-                        })
-                    })
+                    .literal("use raster::Raster;\n\nlet pipeline = Raster::assembler()\n    .shader(\"path/to/pipeline.wgsl\")\n    .vertex(Vertex::layout())\n    .bind(0, Binding::uniform(wgpu::ShaderStages::VERTEX))\n    .target(format, Some(wgpu::BlendState::ALPHA_BLENDING))\n    .assemble(device)?;", Language::Rust)
                 })
             })
             .rule()

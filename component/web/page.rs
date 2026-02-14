@@ -3,6 +3,7 @@ use element::Element;
 
 pub struct Page {
     pub title: String,
+    pub favicon: Option<String>,
     pub stylesheet: Option<String>,
     pub wasm: Option<String>,
     pub context: Option<String>,
@@ -16,6 +17,7 @@ impl Page {
     pub fn new() -> Self {
         Self {
             title: String::new(),
+            favicon: None,
             stylesheet: None,
             wasm: None,
             context: None,
@@ -28,6 +30,12 @@ impl Page {
     #[must_use]
     pub fn title(mut self, title: &str) -> Self {
         self.title = title.into();
+        self
+    }
+
+    #[must_use]
+    pub fn favicon(mut self, path: &str) -> Self {
+        self.favicon = Some(path.into());
         self
     }
 

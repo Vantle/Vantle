@@ -41,12 +41,24 @@ rust_library(
 )
 
 rust_library(
+    name = "highlight",
+    srcs = ["highlight.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:owo-colors",
+        "@crates//:syntect",
+    ],
+)
+
+rust_library(
     name = "diagnostic",
     srcs = ["diagnostic.rs"],
     visibility = ["//visibility:public"],
     deps = [
         "//Molten/system/graph/symbolic:highlighter",
         "//component/observation:module",
+        "//system:highlight",
         "@crates//:ctor",
         "@crates//:miette",
         "@crates//:syntect",

@@ -23,7 +23,7 @@ pub fn initialize(document: &Document) {
         return;
     };
 
-    let Ok(elements) = document.query_selector_all("[data-animate]") else {
+    let Ok(elements) = document.query_selector_all("[data-animate]:not([data-visible])") else {
         return;
     };
 

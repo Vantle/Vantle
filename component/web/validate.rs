@@ -92,6 +92,10 @@ enum Error {
         noun: String,
         destination: String,
     },
+
+    #[error("unrecognized file extension for {path}")]
+    #[diagnostic(code(w3c::extension), help("supported extensions are .html and .css"))]
+    Extension { path: String },
 }
 
 fn offset(content: &str, line: usize, column: usize) -> usize {
@@ -169,7 +173,14 @@ fn main() -> miette::Result<()> {
     }
 
     let spans = errors.iter().map(|e| span(&content, e)).collect::<Vec<_>>();
-    let source = NamedSource::new(&destination, content).with_language("html");
+    let language = arguments
+        .source
+        .extension()
+        .and_then(|e| e.to_str())
+        .ok_or_else(|| Error::Extension {
+            path: arguments.source.display().to_string(),
+        })?;
+    let source = NamedSource::new(&destination, content).with_language(language);
 
     for (error, s) in errors.iter().zip(spans) {
         let diagnostic = Error::Validation {

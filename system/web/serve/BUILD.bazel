@@ -1,0 +1,30 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_binary")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_binary(
+    name = "command",
+    srcs = ["command.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
+    deps = [
+        "//component/observation:module",
+        "//system/concurrent:error",
+        "//system/concurrent:runtime",
+        "//system/observation/trace:module",
+        "@crates//:axum",
+        "@crates//:clap",
+        "@crates//:miette",
+        "@crates//:thiserror",
+        "@crates//:tokio",
+        "@crates//:tower-http",
+        "@crates//:tracing",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

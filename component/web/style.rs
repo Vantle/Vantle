@@ -1,6 +1,7 @@
 pub struct Style {
     pub rules: Vec<Rule>,
     pub variables: Vec<(String, String)>,
+    pub keyframes: Vec<Keyframe>,
     pub media: Vec<Media>,
 }
 
@@ -11,6 +12,11 @@ pub struct Rule {
 
 pub struct Properties {
     pub entries: Vec<(String, String)>,
+}
+
+pub struct Keyframe {
+    pub name: String,
+    pub steps: Vec<Rule>,
 }
 
 pub struct Media {
@@ -24,6 +30,7 @@ impl Style {
         Self {
             rules: Vec::new(),
             variables: Vec::new(),
+            keyframes: Vec::new(),
             media: Vec::new(),
         }
     }
@@ -44,6 +51,12 @@ impl Style {
     }
 
     #[must_use]
+    pub fn keyframe(mut self, name: &str, f: impl FnOnce(Keyframe) -> Keyframe) -> Self {
+        self.keyframes.push(f(Keyframe::new(name)));
+        self
+    }
+
+    #[must_use]
     pub fn media(mut self, query: &str, f: impl FnOnce(Style) -> Style) -> Self {
         self.media.push(Media {
             query: query.into(),
@@ -56,7 +69,27 @@ impl Style {
     pub fn extend(mut self, other: Style) -> Self {
         self.variables.extend(other.variables);
         self.rules.extend(other.rules);
+        self.keyframes.extend(other.keyframes);
         self.media.extend(other.media);
+        self
+    }
+}
+
+impl Keyframe {
+    #[must_use]
+    pub fn new(name: &str) -> Self {
+        Self {
+            name: name.into(),
+            steps: Vec::new(),
+        }
+    }
+
+    #[must_use]
+    pub fn step(mut self, position: &str, f: impl FnOnce(Properties) -> Properties) -> Self {
+        self.steps.push(Rule {
+            selector: position.into(),
+            properties: f(Properties::new()),
+        });
         self
     }
 }

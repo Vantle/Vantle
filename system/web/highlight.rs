@@ -1,12 +1,11 @@
 use element::Language;
-use syntect::highlighting::ThemeSet;
-use syntect::html::highlighted_html_for_string;
-use syntect::parsing::{SyntaxDefinition, SyntaxSet, SyntaxSetBuilder};
+use syntect::html::{ClassStyle, ClassedHTMLGenerator};
+use syntect::parsing::{SyntaxDefinition, SyntaxReference, SyntaxSet, SyntaxSetBuilder};
+use syntect::util::LinesWithEndings;
 
 pub struct Highlighter {
     defaults: SyntaxSet,
     custom: SyntaxSet,
-    theme: syntect::highlighting::Theme,
 }
 
 impl Highlighter {
@@ -14,30 +13,38 @@ impl Highlighter {
     pub fn new() -> Self {
         let defaults = SyntaxSet::load_defaults_newlines();
         let custom = match load() {
-            Ok(definition) => {
+            Some(definition) => {
                 let mut builder = SyntaxSetBuilder::new();
                 builder.add(definition);
                 builder.build()
             }
-            Err(_) => SyntaxSet::new(),
+            None => SyntaxSet::new(),
         };
 
-        let set = ThemeSet::load_defaults();
-        let theme = set
-            .themes
-            .get("base16-ocean.dark")
-            .or_else(|| set.themes.values().next())
-            .cloned()
-            .unwrap_or_default();
-
-        Self {
-            defaults,
-            custom,
-            theme,
-        }
+        Self { defaults, custom }
     }
 
     pub fn highlight(&self, code: &str, language: Language) -> miette::Result<String> {
+        let (syntax, set) = self.resolve(language);
+
+        let mut generator = ClassedHTMLGenerator::new_with_class_style(
+            syntax,
+            set,
+            ClassStyle::SpacedPrefixed { prefix: "syntax-" },
+        );
+
+        for line in LinesWithEndings::from(code) {
+            let _ = generator.parse_html_for_line_which_includes_newline(line);
+        }
+
+        Ok(format!(
+            "<pre><code class=\"language-{}\">{}</code></pre>",
+            language.name(),
+            generator.finalize()
+        ))
+    }
+
+    fn resolve(&self, language: Language) -> (&SyntaxReference, &SyntaxSet) {
         let name = language.name();
         let extension = language.extension();
 
@@ -46,13 +53,7 @@ impl Highlighter {
             .find_syntax_by_token(name)
             .or_else(|| self.defaults.find_syntax_by_extension(extension))
         {
-            return highlighted_html_for_string(code, &self.defaults, syntax, &self.theme).map_err(
-                |_| {
-                    miette::Report::new(error::Error::Highlight {
-                        language: name.into(),
-                    })
-                },
-            );
+            return (syntax, &self.defaults);
         }
 
         if let Some(syntax) = self
@@ -60,21 +61,10 @@ impl Highlighter {
             .find_syntax_by_token(name)
             .or_else(|| self.custom.find_syntax_by_extension(extension))
         {
-            return highlighted_html_for_string(code, &self.custom, syntax, &self.theme).map_err(
-                |_| {
-                    miette::Report::new(error::Error::Highlight {
-                        language: name.into(),
-                    })
-                },
-            );
+            return (syntax, &self.custom);
         }
 
-        let plain = self.defaults.find_syntax_plain_text();
-        highlighted_html_for_string(code, &self.defaults, plain, &self.theme).map_err(|_| {
-            miette::Report::new(error::Error::Highlight {
-                language: name.into(),
-            })
-        })
+        (self.defaults.find_syntax_plain_text(), &self.defaults)
     }
 }
 
@@ -84,9 +74,7 @@ impl Default for Highlighter {
     }
 }
 
-fn load() -> std::io::Result<SyntaxDefinition> {
-    let path = "Molten/resource/system/graph/syntax.yaml";
-    let content = std::fs::read_to_string(path)?;
-    SyntaxDefinition::load_from_str(&content, false, None)
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))
+fn load() -> Option<SyntaxDefinition> {
+    let content = include_str!("../../Molten/resource/system/graph/syntax.yaml");
+    SyntaxDefinition::load_from_str(content, false, None).ok()
 }

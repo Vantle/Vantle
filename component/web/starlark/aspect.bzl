@@ -1,7 +1,7 @@
 """
-W3C HTML validation aspect using the Nu HTML Checker.
+W3C validation aspect using the Nu HTML Checker.
 
-Validates HTML outputs from DocumentInfo targets during the build.
+Validates HTML and CSS outputs from DocumentInfo targets during the build.
 """
 
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
@@ -9,7 +9,15 @@ load(":types.bzl", "DocumentInfo")
 
 def _validate_impl(target, ctx):
     info = target[DocumentInfo]
-    if not info.output.path.endswith(".html"):
+    path = info.output.path
+
+    if path.endswith(".html"):
+        kind = "Html"
+        flags = ""
+    elif path.endswith(".css"):
+        kind = "Css"
+        flags = "--css "
+    else:
         return [OutputGroupInfo(validation = depset())]
 
     json = ctx.actions.declare_file(target.label.name + ".validation.json")
@@ -24,13 +32,14 @@ def _validate_impl(target, ctx):
             transitive = [runtime.files],
         ),
         outputs = [json],
-        command = "{java} -jar {validator} --format json {input} > {json} 2>&1; true".format(
+        command = "{java} -jar {validator} --format json {flags}{input} > {json} 2>&1; true".format(
             java = runtime.java_executable_exec_path,
             validator = validator.path,
+            flags = flags,
             input = info.output.path,
             json = json.path,
         ),
-        mnemonic = "CheckHtml",
+        mnemonic = "Check" + kind,
         progress_message = "Checking: %s" % info.destination,
     )
 
@@ -50,7 +59,7 @@ def _validate_impl(target, ctx):
         ],
         inputs = [info.output, json],
         outputs = [report],
-        mnemonic = "ValidateHtml",
+        mnemonic = "Validate" + kind,
         progress_message = "Validating: %s" % info.destination,
     )
 

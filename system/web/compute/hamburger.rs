@@ -6,6 +6,10 @@ pub fn initialize(document: &Document) {
         return;
     };
 
+    if nav.query_selector(".hamburger").ok().flatten().is_some() {
+        return;
+    }
+
     let Ok(Some(sidebar)) = document.query_selector(".sidebar") else {
         return;
     };

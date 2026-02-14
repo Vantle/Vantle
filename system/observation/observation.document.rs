@@ -1,3 +1,4 @@
+use element::Language;
 use vantle::Composition;
 
 fn main() -> miette::Result<()> {
@@ -50,13 +51,10 @@ fn main() -> miette::Result<()> {
                         .text(" macro instruments functions for observation.")
                 })
                 .subsection("Usage", |ss| {
-                    ss.element("pre", |p| {
-                        p.element("code", |c| {
-                            c.class("language-rust").text(
-                                "#[trace(channels = [core])]\nfn process() {\n    evaluate();\n}",
-                            )
-                        })
-                    })
+                    ss.literal(
+                        "#[trace(channels = [core])]\nfn process() {\n    evaluate();\n}",
+                        Language::Rust,
+                    )
                 })
                 .subsection("Channels", |ss| {
                     ss.paragraph(|p| {

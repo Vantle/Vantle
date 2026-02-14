@@ -15,6 +15,7 @@ package(default_visibility = [
 rust_library(
     name = "highlight",
     srcs = ["highlight.rs"],
+    compile_data = ["//Molten/resource/system/graph:data"],
     visibility = ["//visibility:public"],
     deps = [
         "//component/web:element",

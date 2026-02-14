@@ -47,7 +47,6 @@ rust_library(
 
 ##### Documentation                                                                                                                             [ Documentation ]
 generate(
-    name = "readme",
     src = "molten.document.rs",
     data = [
         "//Molten/test/resource/system/graph/module/join/symbolic:data",
@@ -61,7 +60,6 @@ generate(
 )
 
 generate(
-    name = "info",
     src = "info.document.rs",
     destination = "Molten/info.html",
     deps = [
@@ -70,7 +68,6 @@ generate(
 )
 
 generate(
-    name = "notice",
     src = "notice.document.rs",
     destination = "Molten/notice.html",
     deps = [
@@ -79,7 +76,6 @@ generate(
 )
 
 generate(
-    name = "license",
     src = "license.document.rs",
     destination = "Molten/license.html",
     deps = [

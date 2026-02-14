@@ -5,57 +5,47 @@ use page::Page;
 use span::Span;
 use style::Style;
 
-const PHI: f64 = 1.618_033_988_749_895;
-
 #[trace(channels = [document])]
 fn scale(k: i32) -> String {
-    format!("{}rem", PHI.powi(k))
+    format!("{}rem", proportion::scale(k))
+}
+
+fn half(k: i32) -> String {
+    format!("{}rem", proportion::half(k))
 }
 
 fn grid() -> String {
-    let left = PHI.powi(-3);
-    let right = PHI.powi(-2);
-    format!("{left}fr 1fr {right}fr")
-}
-
-const LIGHT: &[(&str, &str)] = &[
-    ("--background", "#fafaf9"),
-    ("--text", "#1a1a1a"),
-    ("--text-secondary", "#6b7280"),
-    ("--accent", "#d45d00"),
-    ("--accent-hover", "#b84e00"),
-    ("--border", "#e5e5e5"),
-    ("--code-background", "#f5f5f4"),
-    ("--code-text", "#1a1a1a"),
-    ("--nav-background", "rgba(250, 250, 249, 0.8)"),
-    ("--table-stripe", "#f9fafb"),
-];
-
-const DARK: &[(&str, &str)] = &[
-    ("--background", "#0f0f0f"),
-    ("--text", "#e5e5e5"),
-    ("--text-secondary", "#9ca3af"),
-    ("--accent", "#ff8c42"),
-    ("--accent-hover", "#ffa366"),
-    ("--border", "#2e2e2e"),
-    ("--code-background", "#1e1e1e"),
-    ("--code-text", "#e5e5e5"),
-    ("--nav-background", "rgba(15, 15, 15, 0.8)"),
-    ("--table-stripe", "#1a1a1a"),
-];
-
-#[trace(channels = [document])]
-fn palette(style: Style, values: &[(&str, &str)]) -> Style {
-    values
-        .iter()
-        .fold(style, |s, &(name, value)| s.variable(name, value))
+    let side = proportion::scale(-3);
+    format!("{side}fr 1fr {side}fr")
 }
 
 #[trace(channels = [document])]
-fn overrides(properties: style::Properties, values: &[(&str, &str)]) -> style::Properties {
-    values
+fn variables(style: Style) -> Style {
+    let style = palette::PALETTE
         .iter()
-        .fold(properties, |p, &(name, value)| p.custom(name, value))
+        .chain(palette::SYNTAX)
+        .fold(style, |s, token| {
+            s.variable(&format!("--{}", token.role), token.light)
+        });
+    style
+        .variable("--phi", &proportion::PHI.to_string())
+        .variable("--scale-n2", &scale(-2))
+        .variable("--scale-n1", &scale(-1))
+        .variable("--scale-n0h", &half(0))
+        .variable("--scale-0", &scale(0))
+        .variable("--scale-1", &scale(1))
+        .variable("--scale-2", &scale(2))
+        .variable("--scale-3", &scale(3))
+}
+
+#[trace(channels = [document])]
+fn dark(properties: style::Properties) -> style::Properties {
+    palette::PALETTE
+        .iter()
+        .chain(palette::SYNTAX)
+        .fold(properties, |p, token| {
+            p.custom(&format!("--{}", token.role), token.dark)
+        })
 }
 
 #[trace(channels = [document])]
@@ -67,10 +57,16 @@ pub fn page(
     f: impl FnOnce(Body) -> Body,
 ) -> miette::Result<()> {
     let root = arguments.root();
+    let favicon = format!("{root}resource/favicon.ico");
     render::generate(
         arguments,
         Page::new()
-            .title(&format!("{title} \u{2014} Vantle"))
+            .title(&match (context, title) {
+                ("vantle", "Vantle") | ("molten", "Molten") => title.to_string(),
+                ("molten", _) => format!("Molten.{title}"),
+                _ => format!("Vantle.{title}"),
+            })
+            .favicon(&favicon)
             .stylesheet(&format!("{root}resource/system/document/vantle.css"))
             .wasm(&format!("{root}resource/system/document/compute.js"))
             .context(context)
@@ -180,10 +176,7 @@ pub fn page(
                 })
                 .element("div", |l| {
                     l.class("layout")
-                        .element("aside", |a| {
-                            a.class("sidebar")
-                                .attribute("aria-label", "Page navigation")
-                        })
+                        .element("aside", |a| sidebar(a, &root, context, identifier))
                         .element("main", |m| {
                             f(m).element("footer", |footer| {
                                 footer.element("p", |p| {
@@ -203,24 +196,78 @@ pub fn page(
     )
 }
 
+fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Body {
+    type Links<'a> = Vec<(&'a str, String, &'a str)>;
+    let (primary, legal): (Links<'_>, Links<'_>) = match context {
+        "molten" => (
+            vec![("Molten", format!("{root}Molten/"), "readme")],
+            vec![
+                ("Info", format!("{root}Molten/info.html"), "info"),
+                ("Notice", format!("{root}Molten/notice.html"), "notice"),
+                ("License", format!("{root}Molten/license.html"), "license"),
+            ],
+        ),
+        _ => (
+            vec![
+                ("Vantle", format!("{root}index.html"), "readme"),
+                ("Module", format!("{root}module.html"), "module"),
+            ],
+            vec![
+                ("Info", format!("{root}info.html"), "info"),
+                ("Notice", format!("{root}notice.html"), "notice"),
+                ("License", format!("{root}license.html"), "license"),
+            ],
+        ),
+    };
+
+    let body = body
+        .class("sidebar")
+        .attribute("aria-label", "Page navigation")
+        .element("div", |d| d.class("sidebar-label").text("Pages"));
+
+    let body = primary.into_iter().fold(body, |b, (text, href, id)| {
+        b.element("a", |a| {
+            let a = a.attribute("href", &href).text(text);
+            if id == identifier {
+                a.attribute("aria-current", "page")
+            } else {
+                a
+            }
+        })
+    });
+
+    let body = body.element("div", |d| d.class("sidebar-label").text("Legal"));
+
+    legal.into_iter().fold(body, |b, (text, href, id)| {
+        b.element("a", |a| {
+            let a = a.attribute("href", &href).text(text);
+            if id == identifier {
+                a.attribute("aria-current", "page")
+            } else {
+                a
+            }
+        })
+    })
+}
+
 #[trace(channels = [document])]
 #[must_use]
 pub fn theme() -> Style {
-    palette(Style::new(), LIGHT)
-        .variable("--phi", &PHI.to_string())
-        .variable("--scale-n2", &scale(-2))
-        .variable("--scale-n1", &scale(-1))
-        .variable("--scale-0", &scale(0))
-        .variable("--scale-1", &scale(1))
-        .variable("--scale-2", &scale(2))
-        .variable("--scale-3", &scale(3))
+    variables(Style::new())
+        .rule("html", |r| {
+            r.custom(
+                "scroll-padding-top",
+                "calc(var(--scale-3) + var(--scale-n2) + var(--scale-n2))",
+            )
+        })
         .rule("*", |r| r.margin("0").padding("0").box_sizing("border-box"))
         .rule("body", |r| {
             r.font_family("-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif")
                 .background("var(--background)")
                 .color("var(--text)")
-                .line_height(&PHI.to_string())
+                .line_height(&proportion::PHI.to_string())
                 .font_size("var(--scale-0)")
+                .transition("background-color 0.3s ease, color 0.3s ease")
         })
         .rule("main", |r| {
             r.padding("var(--scale-2) var(--scale-1)")
@@ -273,6 +320,7 @@ pub fn theme() -> Style {
                 .color("var(--code-text)")
                 .padding("0.15em 0.4em")
                 .border_radius("4px")
+                .transition("background-color 0.3s ease, color 0.3s ease")
         })
         .rule("pre", |r| {
             r.background("var(--code-background)")
@@ -282,11 +330,26 @@ pub fn theme() -> Style {
                 .margin_bottom("var(--scale-0)")
                 .line_height("1.5")
                 .position("relative")
+                .transition("background-color 0.3s ease")
         })
         .rule("pre code", |r| {
             r.background("transparent")
                 .padding("0")
                 .font_size("var(--scale-0)")
+        })
+        .rule("pre .syntax-keyword", |r| r.color("var(--syntax-keyword)"))
+        .rule("pre .syntax-entity", |r| r.color("var(--syntax-entity)"))
+        .rule("pre .syntax-string", |r| r.color("var(--syntax-string)"))
+        .rule("pre .syntax-comment", |r| {
+            r.color("var(--syntax-comment)")
+                .custom("font-style", "italic")
+        })
+        .rule("pre .syntax-constant", |r| {
+            r.color("var(--syntax-constant)")
+        })
+        .rule("pre .syntax-storage", |r| r.color("var(--syntax-storage)"))
+        .rule("pre .syntax-punctuation", |r| {
+            r.color("var(--syntax-punctuation)")
         })
         .rule(".code-block", |r| {
             r.position("relative").margin_bottom("var(--scale-0)")
@@ -303,6 +366,7 @@ pub fn theme() -> Style {
                 .display("flex")
                 .align_items("center")
                 .custom("z-index", "100")
+                .transition("background-color 0.3s ease, border-color 0.3s ease")
         })
         .rule(".nav-logo", |r| {
             r.display("flex")
@@ -318,7 +382,7 @@ pub fn theme() -> Style {
         })
         .rule(".nav-links > a, .nav-dropdown > a", |r| {
             r.color("var(--text-secondary)")
-                .font_size("var(--scale-n1)")
+                .font_size("var(--scale-0)")
                 .font_weight("500")
                 .padding("var(--scale-n2) var(--scale-n1)")
                 .white_space("nowrap")
@@ -338,7 +402,7 @@ pub fn theme() -> Style {
                 .background("var(--background)")
                 .border("1px solid var(--border)")
                 .border_radius("6px")
-                .custom("box-shadow", "0 4px 12px rgba(0, 0, 0, 0.1)")
+                .custom("box-shadow", "0 4px 12px #0000001a")
                 .padding("var(--scale-n2) 0")
                 .custom("min-width", "160px")
                 .custom("z-index", "200")
@@ -351,7 +415,7 @@ pub fn theme() -> Style {
             r.display("block")
                 .padding("var(--scale-n2) var(--scale-0)")
                 .color("var(--text-secondary)")
-                .font_size("var(--scale-n1)")
+                .font_size("var(--scale-0)")
         })
         .rule(".nav-dropdown-menu a:hover", |r| {
             r.background("var(--code-background)")
@@ -376,7 +440,7 @@ pub fn theme() -> Style {
             r.display("block")
                 .padding("var(--scale-n2) var(--scale-n1)")
                 .color("var(--text-secondary)")
-                .font_size("var(--scale-n1)")
+                .font_size("var(--scale-n0h)")
                 .border_radius("4px")
         })
         .rule(".sidebar a:hover", |r| {
@@ -397,7 +461,7 @@ pub fn theme() -> Style {
                 .border_left("1px solid var(--border)")
         })
         .rule(".outline-label", |r| {
-            r.font_size("var(--scale-n1)")
+            r.font_size("var(--scale-n0h)")
                 .font_weight("500")
                 .custom("text-transform", "uppercase")
                 .custom("letter-spacing", "0.08em")
@@ -408,24 +472,36 @@ pub fn theme() -> Style {
             r.display("block")
                 .padding("var(--scale-n2) var(--scale-n1)")
                 .color("var(--text-secondary)")
-                .font_size("var(--scale-n1)")
+                .font_size("var(--scale-n0h)")
                 .border_left("2px solid transparent")
         })
         .rule(".outline a:hover", |r| {
             r.color("var(--text)").text_decoration("none")
         })
-        .rule(".outline a[data-depth=\"3\"]", |r| {
+        .rule(".outline a[data-depth=\"0\"]", |r| {
+            r.font_weight("500")
+                .custom("text-transform", "uppercase")
+                .custom("letter-spacing", "0.08em")
+        })
+        .rule(".outline a:first-child", |r| r.custom("padding-top", "0"))
+        .rule(".outline a[data-depth=\"1\"]", |r| {
             r.padding_left("var(--scale-0)")
         })
-        .rule(".outline a[data-depth=\"4\"]", |r| {
+        .rule(".outline a[data-depth=\"2\"]", |r| {
             r.padding_left("var(--scale-1)")
+        })
+        .rule(".outline a[data-depth=\"3\"]", |r| {
+            r.padding_left("var(--scale-2)")
+        })
+        .rule(".outline a[data-depth=\"4\"]", |r| {
+            r.padding_left("var(--scale-3)")
         })
         .rule(".outline a.active", |r| {
             r.color("var(--accent)")
                 .custom("border-left-color", "var(--accent)")
         })
         .rule(".sidebar-label", |r| {
-            r.font_size("var(--scale-n1)")
+            r.font_size("var(--scale-n0h)")
                 .font_weight("500")
                 .custom("text-transform", "uppercase")
                 .custom("letter-spacing", "0.08em")
@@ -433,6 +509,7 @@ pub fn theme() -> Style {
                 .margin_top("var(--scale-1)")
                 .margin_bottom("var(--scale-n1)")
         })
+        .rule(".sidebar-label:first-child", |r| r.margin_top("0"))
         .rule(".hamburger", |r| {
             r.display("none")
                 .background("transparent")
@@ -545,20 +622,36 @@ pub fn theme() -> Style {
         .rule(".enhanced [data-visible]", |r| {
             r.opacity("1").transform("translateY(0)")
         })
-        .rule("html[data-theme=\"dark\"]", |r| overrides(r, DARK))
+        .rule("html[data-theme=\"dark\"]", dark)
         .rule("html[data-theme=\"dark\"] .nav-dropdown-menu", |r| {
-            r.custom("box-shadow", "0 4px 12px rgba(0, 0, 0, 0.4)")
+            r.custom("box-shadow", "0 4px 12px #00000066")
         })
-        .rule("html[data-theme=\"light\"]", |r| overrides(r, LIGHT))
+        .rule("html[data-theme=\"light\"]", |r| {
+            palette::PALETTE
+                .iter()
+                .chain(palette::SYNTAX)
+                .fold(r, |p, token| {
+                    p.custom(&format!("--{}", token.role), token.light)
+                })
+        })
         .media("prefers-color-scheme: dark", |m| {
-            palette(m, DARK).rule(".nav-dropdown-menu", |r| {
-                r.custom("box-shadow", "0 4px 12px rgba(0, 0, 0, 0.4)")
-            })
+            palette::PALETTE
+                .iter()
+                .chain(palette::SYNTAX)
+                .fold(m, |s, token| {
+                    s.variable(&format!("--{}", token.role), token.dark)
+                })
+                .rule(".nav-dropdown-menu", |r| {
+                    r.custom("box-shadow", "0 4px 12px #00000066")
+                })
         })
         .media("max-width: 1280px", |m| {
             m.rule(".outline", |r| r.display("none"))
                 .rule(".layout", |r| {
-                    r.custom("grid-template-columns", &format!("{}fr 1fr", PHI.powi(-3)))
+                    r.custom(
+                        "grid-template-columns",
+                        &format!("{}fr 1fr", proportion::scale(-3)),
+                    )
                 })
         })
         .media("max-width: 1024px", |m| {
@@ -724,6 +817,8 @@ pub trait Composition {
     #[must_use]
     fn navigation(self, f: impl FnOnce(Body) -> Body) -> Self;
     #[must_use]
+    fn literal(self, source: &str, language: Language) -> Self;
+    #[must_use]
     fn shell(self, command: &str) -> Self;
     #[must_use]
     fn bold(self, text: &str) -> Self;
@@ -796,10 +891,13 @@ impl Composition for Body {
     }
 
     #[trace(channels = [document])]
+    fn literal(self, source: &str, language: Language) -> Self {
+        body::Body::literal(self, source, language)
+    }
+
+    #[trace(channels = [document])]
     fn shell(self, command: &str) -> Self {
-        self.element("pre", |p| {
-            p.element("code", |c| c.class("language-bash").text(command))
-        })
+        self.literal(command, Language::Bash)
     }
 
     #[trace(channels = [document])]

@@ -248,13 +248,10 @@ fn main() -> miette::Result<()> {
             })
             .rule()
             .section("Examples", |s| {
-                s.element("pre", |p| {
-                    p.element("code", |c| {
-                        c.class("language-molten").text(
-                            "Human.Male, \nEarth.Location.America,\n[Human.Male, Earth.Location.America] American.Citizen.Male",
-                        )
-                    })
-                })
+                s.literal(
+                    "Human.Male, \nEarth.Location.America,\n[Human.Male, Earth.Location.America] American.Citizen.Male",
+                    Language::Molten,
+                )
                 .paragraph(|p| {
                     p.text("Note that this function is an ")
                         .italic("infinite generator")

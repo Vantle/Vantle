@@ -10,6 +10,15 @@ pub fn initialize(document: &Document) {
         return;
     };
 
+    if container
+        .query_selector(".theme-toggle")
+        .ok()
+        .flatten()
+        .is_some()
+    {
+        return;
+    }
+
     let Ok(toggle) = document.create_element("button") else {
         return;
     };
@@ -21,6 +30,10 @@ pub fn initialize(document: &Document) {
         .and_then(|w| w.match_media("(prefers-color-scheme: dark)").ok().flatten())
         .is_some_and(|m| m.matches());
 
+    if let Some(saved) = storage().and_then(|s| s.get_item("theme").ok().flatten()) {
+        let _ = html.set_attribute("data-theme", &saved);
+    }
+
     update(&html, &toggle, prefers);
 
     let html_clone = html.clone();
@@ -29,7 +42,12 @@ pub fn initialize(document: &Document) {
         let current = html_clone.get_attribute("data-theme");
         let dark = current.as_deref() == Some("dark") || (current.is_none() && prefers);
 
-        let _ = html_clone.set_attribute("data-theme", if dark { "light" } else { "dark" });
+        let theme = if dark { "light" } else { "dark" };
+        let _ = html_clone.set_attribute("data-theme", theme);
+
+        if let Some(s) = storage() {
+            let _ = s.set_item("theme", theme);
+        }
 
         update(&html_clone, &toggle_clone, prefers);
     });
@@ -38,6 +56,10 @@ pub fn initialize(document: &Document) {
     callback.forget();
 
     let _ = container.append_child(&toggle);
+}
+
+fn storage() -> Option<web_sys::Storage> {
+    web_sys::window()?.local_storage().ok()?
 }
 
 fn update(html: &web_sys::Element, toggle: &web_sys::Element, prefers: bool) {

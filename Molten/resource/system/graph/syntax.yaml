@@ -6,15 +6,15 @@ scope: source.molten
 
 contexts:
   main:
-    - match: '[()]'
-      scope: punctuation.parens.molten
     - match: '[\[\]]'
-      scope: punctuation.brackets.molten
+      scope: keyword.control.molten
+    - match: '[()]'
+      scope: punctuation.section.molten
     - match: ','
-      scope: punctuation.separator.molten
+      scope: keyword.operator.molten
     - match: '\.'
       scope: punctuation.accessor.molten
     - match: '[a-zA-Z_][a-zA-Z0-9_]*'
-      scope: entity.name.concept.molten
+      scope: entity.name.molten
     - match: '\s+'
       scope: text.molten

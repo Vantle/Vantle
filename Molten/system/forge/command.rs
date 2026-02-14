@@ -88,7 +88,7 @@ fn process(input: String, index: &mut Index<String>) -> Result<()> {
     let module = match Source::string(input).module() {
         Ok(module) => module,
         Err(parsing) => {
-            record::error!("{:?}", miette::Report::new(parsing));
+            eprintln!("{:?}", miette::Report::new(parsing));
             return Ok(());
         }
     };

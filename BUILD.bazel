@@ -5,7 +5,7 @@
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@rules_rust//rust:defs.bzl", "rust_library")
-load("//component/web/starlark:defs.bzl", "collection", "drift", "generate")
+load("//component/web/starlark:defs.bzl", "collection", "drift", "generate", "serve")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
@@ -94,7 +94,6 @@ buildifier(
 
 ##### Documentation                                                                                                                              [ Documentation ]
 generate(
-    name = "readme",
     src = "vantle.document.rs",
     destination = "index.html",
     deps = [
@@ -103,7 +102,6 @@ generate(
 )
 
 generate(
-    name = "info",
     src = "info.document.rs",
     destination = "info.html",
     deps = [
@@ -112,7 +110,6 @@ generate(
 )
 
 generate(
-    name = "notice",
     src = "notice.document.rs",
     destination = "notice.html",
     deps = [
@@ -121,7 +118,6 @@ generate(
 )
 
 generate(
-    name = "license",
     src = "license.document.rs",
     destination = "license.html",
     deps = [
@@ -144,19 +140,19 @@ collection(
     name = "generate.documentation",
     generator = "//system/document:publish",
     pages = [
-        ":document_readme",
+        ":document_vantle",
         ":document_info",
         ":document_notice",
         ":document_license",
         ":document_bazel_module",
-        "//Molten:document_readme",
+        "//Molten:document_molten",
         "//Molten:document_info",
         "//Molten:document_notice",
         "//Molten:document_license",
-        "//system/generation:document_readme",
-        "//system/observation:document_readme",
-        "//system/spatialize:document_readme",
-        "//Molten/system/spatialize:document_readme",
+        "//system/generation:document_generation",
+        "//system/observation:document_observation",
+        "//system/spatialize:document_spatialize",
+        "//Molten/system/spatialize:document_spatialize",
         "//system/document:document_stylesheet",
     ],
     static = {
@@ -168,22 +164,27 @@ drift(
     name = "verify.documentation",
     generator = "//system/document:publish",
     pages = [
-        ":document_readme",
+        ":document_vantle",
         ":document_info",
         ":document_notice",
         ":document_license",
         ":document_bazel_module",
-        "//Molten:document_readme",
+        "//Molten:document_molten",
         "//Molten:document_info",
         "//Molten:document_notice",
         "//Molten:document_license",
-        "//system/generation:document_readme",
-        "//system/observation:document_readme",
-        "//system/spatialize:document_readme",
-        "//Molten/system/spatialize:document_readme",
+        "//system/generation:document_generation",
+        "//system/observation:document_observation",
+        "//system/spatialize:document_spatialize",
+        "//Molten/system/spatialize:document_spatialize",
         "//system/document:document_stylesheet",
     ],
     static = {
         "//system/web/compute:module": "resource/system/document",
     },
+)
+
+serve(
+    name = "serve.documentation",
+    server = "//system/web/serve:command",
 )

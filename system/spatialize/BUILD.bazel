@@ -29,8 +29,10 @@ rust_library(
 
 ##### Documentation                                                                                                                             [ Documentation ]
 generate(
-    name = "readme",
     src = "spatialize.document.rs",
     destination = "system/spatialize/index.html",
-    deps = ["//system/document:vantle"],
+    deps = [
+        "//component/web:element",
+        "//system/document:vantle",
+    ],
 )

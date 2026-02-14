@@ -89,8 +89,10 @@ rust_library(
 )
 
 generate(
-    name = "readme",
     src = "observation.document.rs",
     destination = "system/observation/index.html",
-    deps = ["//system/document:vantle"],
+    deps = [
+        "//component/web:element",
+        "//system/document:vantle",
+    ],
 )

@@ -14,6 +14,8 @@ rust_library(
     srcs = ["vantle.rs"],
     proc_macro_deps = ["//system/observation:macro"],
     deps = [
+        "//component/design:palette",
+        "//component/design:proportion",
         "//component/web:body",
         "//component/web:element",
         "//component/web:page",
@@ -42,7 +44,6 @@ rust_binary(
 
 ##### Documentation                                                                                                                             [ Documentation ]
 generate(
-    name = "stylesheet",
     src = "stylesheet.document.rs",
     destination = "resource/system/document/vantle.css",
     deps = ["//system/document:vantle"],

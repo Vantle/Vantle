@@ -1,3 +1,4 @@
+use element::Language;
 use vantle::Composition;
 
 fn main() -> miette::Result<()> {
@@ -22,11 +23,7 @@ fn main() -> miette::Result<()> {
                             .code(".template.rs")
                             .text(" file:")
                     })
-                    .element("pre", |p| {
-                        p.element("code", |c| {
-                            c.class("language-rust").text("use component::graph::state::particle::Particle;\n\nfn disjoint(candidate: Particle<String>, basis: Particle<String>) -> Option<Particle<String>> {\n    candidate.disjoint(&basis).map(|_| candidate.clone())\n}")
-                        })
-                    })
+                    .literal("use component::graph::state::particle::Particle;\n\nfn disjoint(candidate: Particle<String>, basis: Particle<String>) -> Option<Particle<String>> {\n    candidate.disjoint(&basis).map(|_| candidate.clone())\n}", Language::Rust)
                 })
                 .subsection("Cases", |ss| {
                     ss.paragraph(|p| {
@@ -34,19 +31,11 @@ fn main() -> miette::Result<()> {
                             .code("cases.json")
                             .text(":")
                     })
-                    .element("pre", |p| {
-                        p.element("code", |c| {
-                            c.class("language-json").text("{\n  \"functions\": [\n    {\n      \"function\": \"disjoint\",\n      \"tags\": [\"particle\", \"disjoint\"],\n      \"parameters\": {\n        \"candidate\": [[\"a\", 1]],\n        \"basis\": [[\"b\", 1]]\n      },\n      \"returns\": { \"()\": [[\"a\", 1]] },\n      \"cases\": [\n        {\n          \"tags\": [\"empty\"],\n          \"parameters\": { \"basis\": [] },\n          \"returns\": { \"()\": [[\"a\", 1]] }\n        }\n      ]\n    }\n  ]\n}")
-                        })
-                    })
+                    .literal("{\n  \"functions\": [\n    {\n      \"function\": \"disjoint\",\n      \"tags\": [\"particle\", \"disjoint\"],\n      \"parameters\": {\n        \"candidate\": [[\"a\", 1]],\n        \"basis\": [[\"b\", 1]]\n      },\n      \"returns\": { \"()\": [[\"a\", 1]] },\n      \"cases\": [\n        {\n          \"tags\": [\"empty\"],\n          \"parameters\": { \"basis\": [] },\n          \"returns\": { \"()\": [[\"a\", 1]] }\n        }\n      ]\n    }\n  ]\n}", Language::Json)
                 })
                 .subsection("Build", |ss| {
                     ss.paragraph(|p| p.text("Use Bazel rules to generate and run tests:"))
-                        .element("pre", |p| {
-                            p.element("code", |c| {
-                                c.class("language-python").text("rust_autotest_template(\n    name = \"template\",\n    src = \"function.template.rs\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)\n\nrust_autotest(\n    name = \"function\",\n    template = \":template\",\n    cases = \":cases.json\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)")
-                            })
-                        })
+                        .literal("rust_autotest_template(\n    name = \"template\",\n    src = \"function.template.rs\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)\n\nrust_autotest(\n    name = \"function\",\n    template = \":template\",\n    cases = \":cases.json\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)", Language::Starlark)
                 })
                 .subsection("Features", |ss| {
                     ss.element("ul", |ul| {

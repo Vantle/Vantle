@@ -2,7 +2,7 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Molten Info", "molten", "info", |c| {
+    vantle::page(&arguments, "Info", "molten", "info", |c| {
         c.title("Vantle.Molten")
             .rule()
             .paragraph(|p| {

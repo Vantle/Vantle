@@ -9,6 +9,15 @@ pub fn initialize(document: &Document) {
             continue;
         };
 
+        if block
+            .query_selector(".copy-button")
+            .ok()
+            .flatten()
+            .is_some()
+        {
+            continue;
+        }
+
         let Ok(button) = document.create_element("button") else {
             continue;
         };

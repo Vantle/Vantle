@@ -6,8 +6,7 @@ Public API:
 
 Example:
     generate(
-        name = "readme",
-        src = "document.rs",
+        src = "molten.document.rs",
         destination = "Molten/index.html",
         deps = ["//system/document:vantle"],
         data = ["//Molten/test/resource:data"],
@@ -17,7 +16,7 @@ Example:
 load("@rules_rust//rust:defs.bzl", "rust_binary")
 load(":rule.bzl", "document_generate")
 
-def generate(name, src, destination, data = [], deps = [], **kwargs):
+def generate(src, destination, name = None, data = [], deps = [], **kwargs):
     """
     Build a file from a Rust DSL source file.
 
@@ -26,13 +25,15 @@ def generate(name, src, destination, data = [], deps = [], **kwargs):
       - document_{name}     - the generated file (via ctx.actions.run)
 
     Args:
-        name: Target name
         src: Rust source file
         destination: Workspace-relative output path (e.g., "Molten/Readme.html")
+        name: Target name (derived from src if omitted)
         data: Runtime data files (code injection, WASM)
         deps: Additional compile deps (page-to-page deps)
         **kwargs: Standard Bazel attrs (visibility, tags, testonly)
     """
+    if name == None:
+        name = src.removesuffix(".document.rs") if src.endswith(".document.rs") else src.removesuffix(".rs")
     standard = ["//component:web", "//system/web:render", "@crates//:miette"]
 
     rust_binary(

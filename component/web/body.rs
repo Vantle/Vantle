@@ -1,4 +1,4 @@
-use element::{Element, Language};
+use element::{Element, Language, Source};
 use span::Span;
 use table::Table;
 
@@ -66,7 +66,16 @@ impl Body {
     #[must_use]
     pub fn code(mut self, name: &str, language: Language) -> Self {
         self.elements.push(Element::Code {
-            name: name.into(),
+            source: Source::File(name.into()),
+            language,
+        });
+        self
+    }
+
+    #[must_use]
+    pub fn literal(mut self, source: &str, language: Language) -> Self {
+        self.elements.push(Element::Code {
+            source: Source::Inline(source.into()),
             language,
         });
         self

@@ -83,6 +83,12 @@ rust.toolchain(
 )
 use_repo(rust, "rust_toolchains")
 
+git_override(
+    module_name = "rules_rust",
+    commit = "504413cebab8aa7539fb09f75ffd4069c62fd808",
+    remote = "https://github.com/robbie-vanderzee/rules_rust.git",
+)
+
 register_toolchains(
     "@llvm_toolchain//:all",
     "@llvm_toolchain_linux//:all",
@@ -144,6 +150,18 @@ crate.spec(
     ],
     package = "syntect",
     version = "5.3.0",
+)
+crate.annotation(
+    crate = "syntect",
+    features_to_remove = [
+        "default",
+        "default-onig",
+        "regex-onig",
+    ],
+)
+crate.spec(
+    package = "owo-colors",
+    version = "4.2.3",
 )
 crate.spec(
     features = ["editor"],
@@ -256,28 +274,56 @@ crate.spec(
     version = "0.12.2",
 )
 
+##### Server                                                                                                        [ Toolchain, Rust, Crates, Server ]
+crate.spec(
+    package = "axum",
+    version = "0.8.8",
+)
+crate.spec(
+    features = [
+        "fs",
+        "trace",
+    ],
+    package = "tower-http",
+    version = "0.6.8",
+)
+
 ##### Web Assembly                                                                                                   [ Toolchain, Rust, Crates, Wasm ]
 crate.spec(
     package = "wasm-bindgen",
     version = "=0.2.105",
 )
 crate.spec(
+    package = "wasm-bindgen-futures",
+    version = "=0.4.55",
+)
+crate.spec(
     features = [
         "Clipboard",
         "Document",
+        "DomParser",
         "DomTokenList",
         "Element",
         "Event",
         "EventTarget",
+        "Headers",
+        "History",
         "HtmlCollection",
         "HtmlElement",
         "IntersectionObserver",
         "IntersectionObserverEntry",
         "IntersectionObserverInit",
+        "Location",
         "MediaQueryList",
         "Navigator",
         "Node",
         "NodeList",
+        "PopStateEvent",
+        "Request",
+        "RequestInit",
+        "Response",
+        "Storage",
+        "SupportedType",
         "Window",
     ],
     package = "web-sys",
@@ -336,6 +382,7 @@ crate.spec(
     features = [
         "macros",
         "rt-multi-thread",
+        "signal",
         "sync",
     ],
     package = "tokio",

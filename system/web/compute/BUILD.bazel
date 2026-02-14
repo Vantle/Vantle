@@ -38,14 +38,6 @@ rust_library(
 )
 
 rust_library(
-    name = "sidebar",
-    srcs = ["sidebar.rs"],
-    deps = [
-        "@crates//:web-sys",
-    ],
-)
-
-rust_library(
     name = "outline",
     srcs = ["outline.rs"],
     deps = [
@@ -65,6 +57,16 @@ rust_library(
     ],
 )
 
+rust_library(
+    name = "navigate",
+    srcs = ["navigate.rs"],
+    deps = [
+        "@crates//:wasm-bindgen",
+        "@crates//:wasm-bindgen-futures",
+        "@crates//:web-sys",
+    ],
+)
+
 rust_shared_library(
     name = "binary",
     srcs = ["module.rs"],
@@ -72,9 +74,9 @@ rust_shared_library(
     deps = [
         ":clipboard",
         ":hamburger",
+        ":navigate",
         ":outline",
         ":scroll",
-        ":sidebar",
         ":theme",
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",

@@ -1,4 +1,7 @@
-pub const PHI: f32 = 1.618_034;
+use proportion as design;
+
+#[expect(clippy::cast_possible_truncation)]
+pub const PHI: f32 = design::PHI as f32;
 
 pub struct Scale {
     base: f32,

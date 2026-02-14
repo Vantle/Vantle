@@ -221,7 +221,6 @@ rust_binary(
 
 ##### Documentation                                                                                                                             [ Documentation ]
 generate(
-    name = "readme",
     src = "spatialize.document.rs",
     destination = "Molten/system/spatialize/index.html",
     deps = ["//system/document:vantle"],

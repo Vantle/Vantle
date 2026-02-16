@@ -1,6 +1,8 @@
+use element::Element;
+
 pub struct Table {
     pub headers: Vec<String>,
-    pub rows: Vec<Vec<String>>,
+    pub rows: Vec<Vec<Element>>,
 }
 
 impl Table {
@@ -20,8 +22,18 @@ impl Table {
 
     #[must_use]
     pub fn row<const N: usize>(mut self, cells: [&str; N]) -> Self {
-        self.rows
-            .push(cells.iter().map(|c| (*c).into()).collect::<Vec<_>>());
+        self.rows.push(
+            cells
+                .iter()
+                .map(|c| Element::Text((*c).into()))
+                .collect::<Vec<_>>(),
+        );
+        self
+    }
+
+    #[must_use]
+    pub fn markup<const N: usize>(mut self, cells: [Element; N]) -> Self {
+        self.rows.push(cells.into());
         self
     }
 }

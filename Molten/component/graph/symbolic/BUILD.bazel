@@ -21,7 +21,6 @@ rust_library(
     name = "constructor",
     srcs = ["constructor.rs"],
     deps = [
-        "//:system",
         "//system:language",
         "//system:resource",
         "@crates//:miette",

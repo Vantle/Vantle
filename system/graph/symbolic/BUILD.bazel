@@ -9,63 +9,32 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
-    name = "translator",
-    srcs = ["translator.rs"],
-    deps = [
-        "//Molten:component",
-        "//Molten/system/graph/symbolic/translator:consume",
-        "//Molten/system/graph/symbolic/translator:error",
-        "//Molten/system/graph/symbolic/translator:view",
-    ],
-)
-
-rust_library(
     name = "constructor",
     srcs = ["constructor.rs"],
-    proc_macro_deps = [
-        "//system/observation:macro",
-    ],
-    deps = [
-        ":translator",
-        "//Molten:component",
-        "//Molten/component/graph/symbolic:constructor",
-        "//Molten/component/graph/symbolic/constructor:syntax",
-        "//Molten/system/graph:attribute",
-        "//Molten/system/graph/symbolic/constructor:consume",
-        "//Molten/system/graph/symbolic/constructor:error",
-        "//Molten/system/graph/symbolic/constructor:view",
-        "//component:assemble",
-        "//component/observation:module",
-        "//system:language",
-        "@crates//:miette",
-        "@crates//:tracing",
-    ],
-)
-
-rust_library(
-    name = "renderer",
-    srcs = ["renderer.rs"],
     aliases = {
-        "//Molten/component:arena": "valued",
+        "//Molten/system/graph/symbolic:constructor": "parse",
     },
-    proc_macro_deps = [
-        "//system/observation:macro",
-    ],
     deps = [
         "//Molten:component",
-        "//Molten/component:arena",
-        "//Molten/system:arena",
-        "//Molten/system/graph:attribute",
-        "//Molten/system/graph:state",
-        "@crates//:tracing",
+        "//Molten/system/graph/symbolic:constructor",
+        "@crates//:miette",
+        "@crates//:serde_json",
+        "@crates//:syn",
+        "@crates//:tree-sitter",
+        "@crates//:tree-sitter-bash",
+        "@crates//:tree-sitter-python",
     ],
 )
 
 rust_library(
     name = "traversal",
     srcs = ["traversal.rs"],
+    aliases = {
+        "//Molten/system/graph/symbolic:traversal": "token",
+    },
     deps = [
-        "//Molten:component",
+        "//Molten/system/graph/symbolic:traversal",
+        "@crates//:serde_json",
     ],
 )
 

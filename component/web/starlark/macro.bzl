@@ -16,7 +16,7 @@ Example:
 load("@rules_rust//rust:defs.bzl", "rust_binary")
 load(":rule.bzl", "document_generate")
 
-def generate(src, destination, name = None, data = [], deps = [], **kwargs):
+def generate(src, destination, name = None, data = [], deps = [], compile_data = [], **kwargs):
     """
     Build a file from a Rust DSL source file.
 
@@ -30,6 +30,7 @@ def generate(src, destination, name = None, data = [], deps = [], **kwargs):
         name: Target name (derived from src if omitted)
         data: Runtime data files (code injection, WASM)
         deps: Additional compile deps (page-to-page deps)
+        compile_data: Compile-time data files (include_str! sources)
         **kwargs: Standard Bazel attrs (visibility, tags, testonly)
     """
     if name == None:
@@ -39,6 +40,7 @@ def generate(src, destination, name = None, data = [], deps = [], **kwargs):
     rust_binary(
         name = name,
         srcs = [src],
+        compile_data = compile_data,
         deps = standard + deps,
         data = data,
         **{k: kwargs[k] for k in ["visibility", "tags", "testonly"] if k in kwargs}

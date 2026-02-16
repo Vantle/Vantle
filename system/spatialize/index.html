@@ -65,14 +65,15 @@ await init();
       <section>
         <h3 id="assembler">Assembler</h3>
         <p>Build a rendering context with the assembler pattern:</p>
-        <div class="code-block" data-language="rust"><pre><code class="language-rust"><span class="syntax-source syntax-rust"><span class="syntax-keyword syntax-other syntax-rust">use</span> <span class="syntax-meta syntax-path syntax-rust">render<span class="syntax-punctuation syntax-accessor syntax-rust">::</span></span><span class="syntax-meta syntax-block syntax-rust"><span class="syntax-punctuation syntax-section syntax-block syntax-begin syntax-rust">{</span>Assembler<span class="syntax-punctuation syntax-separator syntax-rust">,</span> Context</span><span class="syntax-meta syntax-block syntax-rust"><span class="syntax-punctuation syntax-section syntax-block syntax-end syntax-rust">}</span></span><span class="syntax-punctuation syntax-terminator syntax-rust">;</span>
-
-<span class="syntax-storage syntax-type syntax-rust">let</span> context <span class="syntax-keyword syntax-operator syntax-rust">=</span> <span class="syntax-meta syntax-path syntax-rust">Assembler<span class="syntax-punctuation syntax-accessor syntax-rust">::</span></span>new<span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span>
-    .<span class="syntax-support syntax-function syntax-rust">surface</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span>surface</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span>
-    .<span class="syntax-support syntax-function syntax-rust">adapter</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span>adapter</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span>
-    .<span class="syntax-support syntax-function syntax-rust">size</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span>width<span class="syntax-punctuation syntax-separator syntax-rust">,</span> height</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span>
-    .<span class="syntax-support syntax-function syntax-rust">assemble</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span>
-    .await<span class="syntax-keyword syntax-operator syntax-rust">?</span><span class="syntax-punctuation syntax-terminator syntax-rust">;</span></span></code></pre></div>
+        <div class="code-block" data-language="rust"><span class="node-use"><span class="syntax-keyword">use</span> render<span class="syntax-punctuation">::</span>{<span class="syntax-entity">Assembler</span>, <span class="syntax-entity">Context</span>}<span class="syntax-punctuation">;</span>
+</span>
+<span class="node-let"><span class="syntax-keyword">let</span> <span class="node-pattern"><span class="syntax-variable">context</span></span> <span class="syntax-operator">=</span> <span class="node-expression"><span class="node-expression"><span class="node-expression"><span class="node-path"><span class="syntax-entity">Assembler</span><span class="syntax-punctuation">::</span>new</span></span><span class="syntax-punctuation">(</span><span class="syntax-punctuation">)</span></span>
+    <span class="syntax-punctuation">.</span><span class="syntax-function">surface</span><span class="syntax-punctuation">(</span><span class="node-expression"><span class="syntax-variable">surface</span></span><span class="syntax-punctuation">)</span>
+    <span class="syntax-punctuation">.</span><span class="syntax-function">adapter</span><span class="syntax-punctuation">(</span><span class="node-expression"><span class="syntax-variable">adapter</span></span><span class="syntax-punctuation">)</span>
+    <span class="syntax-punctuation">.</span><span class="syntax-function">size</span><span class="syntax-punctuation">(</span><span class="node-expression"><span class="syntax-variable">width</span></span>, <span class="node-expression"><span class="syntax-variable">height</span></span><span class="syntax-punctuation">)</span>
+    <span class="syntax-punctuation">.</span><span class="syntax-function">assemble</span><span class="syntax-punctuation">(</span><span class="syntax-punctuation">)</span>
+    <span class="syntax-punctuation">.</span><span class="syntax-keyword">await</span><span class="syntax-operator">?</span></span><span class="syntax-punctuation">;</span>
+</span></div>
         <table>
           <thead>
             <tr>
@@ -82,15 +83,15 @@ await init();
           </thead>
           <tbody>
             <tr>
-              <td>surface</td>
+              <td><code>surface</code></td>
               <td>wgpu surface for presentation</td>
             </tr>
             <tr>
-              <td>adapter</td>
+              <td><code>adapter</code></td>
               <td>wgpu adapter for device creation</td>
             </tr>
             <tr>
-              <td>size</td>
+              <td><code>size</code></td>
               <td>Initial viewport dimensions</td>
             </tr>
           </tbody>
@@ -99,23 +100,16 @@ await init();
       <section>
         <h3 id="pipelines">Pipelines</h3>
         <p>Build GPU pipelines with the raster and compute assemblers:</p>
-        <div class="code-block" data-language="rust"><pre><code class="language-rust"><span class="syntax-source syntax-rust"><span class="syntax-keyword syntax-other syntax-rust">use</span> <span class="syntax-meta syntax-path syntax-rust">raster<span class="syntax-punctuation syntax-accessor syntax-rust">::</span></span>Raster<span class="syntax-punctuation syntax-terminator syntax-rust">;</span>
-
-<span class="syntax-storage syntax-type syntax-rust">let</span> pipeline <span class="syntax-keyword syntax-operator syntax-rust">=</span> <span class="syntax-meta syntax-path syntax-rust">Raster<span class="syntax-punctuation syntax-accessor syntax-rust">::</span></span>assembler<span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span>
-    .<span class="syntax-support syntax-function syntax-rust">shader</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span><span class="syntax-string syntax-quoted syntax-double syntax-rust"><span class="syntax-punctuation syntax-definition syntax-string syntax-begin syntax-rust">&quot;</span>path/to/pipeline.wgsl<span class="syntax-punctuation syntax-definition syntax-string syntax-end syntax-rust">&quot;</span></span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span>
-    .<span class="syntax-support syntax-function syntax-rust">vertex</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span><span class="syntax-meta syntax-path syntax-rust">Vertex<span class="syntax-punctuation syntax-accessor syntax-rust">::</span></span>layout<span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span>
-    .<span class="syntax-support syntax-function syntax-rust">bind</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span><span class="syntax-constant syntax-numeric syntax-integer syntax-decimal syntax-rust">0</span><span class="syntax-punctuation syntax-separator syntax-rust">,</span> <span class="syntax-meta syntax-path syntax-rust">Binding<span class="syntax-punctuation syntax-accessor syntax-rust">::</span></span>uniform<span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span><span class="syntax-meta syntax-path syntax-rust">wgpu<span class="syntax-punctuation syntax-accessor syntax-rust">::</span></span><span class="syntax-meta syntax-path syntax-rust">ShaderStages<span class="syntax-punctuation syntax-accessor syntax-rust">::</span></span><span class="syntax-constant syntax-other syntax-rust">VERTEX</span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span>
-    .<span class="syntax-support syntax-function syntax-rust">target</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span>format<span class="syntax-punctuation syntax-separator syntax-rust">,</span> <span class="syntax-support syntax-type syntax-rust">Some</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span><span class="syntax-meta syntax-path syntax-rust">wgpu<span class="syntax-punctuation syntax-accessor syntax-rust">::</span></span><span class="syntax-meta syntax-path syntax-rust">BlendState<span class="syntax-punctuation syntax-accessor syntax-rust">::</span></span><span class="syntax-constant syntax-other syntax-rust">ALPHA_BLENDING</span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span>
-    .<span class="syntax-support syntax-function syntax-rust">assemble</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span>device</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span><span class="syntax-keyword syntax-operator syntax-rust">?</span><span class="syntax-punctuation syntax-terminator syntax-rust">;</span></span></code></pre></div>
+        <div class="code-block" data-language="rust"><span class="node-use"><span class="syntax-keyword">use</span> raster<span class="syntax-punctuation">::</span><span class="syntax-entity">Raster</span><span class="syntax-punctuation">;</span>
+</span>
+<span class="node-let"><span class="syntax-keyword">let</span> <span class="node-pattern"><span class="syntax-variable">pipeline</span></span> <span class="syntax-operator">=</span> <span class="node-expression"><span class="node-expression"><span class="node-expression"><span class="node-path"><span class="syntax-entity">Raster</span><span class="syntax-punctuation">::</span>assembler</span></span><span class="syntax-punctuation">(</span><span class="syntax-punctuation">)</span></span>
+    <span class="syntax-punctuation">.</span><span class="syntax-function">shader</span><span class="syntax-punctuation">(</span><span class="node-expression"><span class="syntax-string">&quot;path/to/pipeline.wgsl&quot;</span></span><span class="syntax-punctuation">)</span>
+    <span class="syntax-punctuation">.</span><span class="syntax-function">vertex</span><span class="syntax-punctuation">(</span><span class="node-expression"><span class="node-expression"><span class="node-path"><span class="syntax-entity">Vertex</span><span class="syntax-punctuation">::</span>layout</span></span><span class="syntax-punctuation">(</span><span class="syntax-punctuation">)</span></span><span class="syntax-punctuation">)</span>
+    <span class="syntax-punctuation">.</span><span class="syntax-function">bind</span><span class="syntax-punctuation">(</span><span class="node-expression"><span class="syntax-constant">0</span></span>, <span class="node-expression"><span class="node-expression"><span class="node-path"><span class="syntax-entity">Binding</span><span class="syntax-punctuation">::</span>uniform</span></span><span class="syntax-punctuation">(</span><span class="node-expression"><span class="node-path">wgpu<span class="syntax-punctuation">::</span><span class="syntax-entity">ShaderStages</span><span class="syntax-punctuation">::</span><span class="syntax-entity">VERTEX</span></span></span><span class="syntax-punctuation">)</span></span><span class="syntax-punctuation">)</span>
+    <span class="syntax-punctuation">.</span><span class="syntax-function">target</span><span class="syntax-punctuation">(</span><span class="node-expression"><span class="syntax-variable">format</span></span>, <span class="node-expression"><span class="node-expression"><span class="syntax-entity">Some</span></span><span class="syntax-punctuation">(</span><span class="node-expression"><span class="node-path">wgpu<span class="syntax-punctuation">::</span><span class="syntax-entity">BlendState</span><span class="syntax-punctuation">::</span><span class="syntax-entity">ALPHA_BLENDING</span></span></span><span class="syntax-punctuation">)</span></span><span class="syntax-punctuation">)</span>
+    <span class="syntax-punctuation">.</span><span class="syntax-function">assemble</span><span class="syntax-punctuation">(</span><span class="node-expression"><span class="syntax-variable">device</span></span><span class="syntax-punctuation">)</span><span class="syntax-operator">?</span></span><span class="syntax-punctuation">;</span>
+</span></div>
       </section>
-    </section>
-    <hr>
-    <section>
-      <h2 id="structure">Structure</h2>
-      <pre><code>system/spatialize/
-  render/           GPU pipeline and frame management
-  interact/         Input and collision systems
-  proportion.rs     Golden ratio utilities</code></pre>
     </section>
     <footer>
       <p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p>
@@ -126,7 +120,6 @@ await init();
     <a href="#context" data-depth="1">Context</a>
     <a href="#assembler" data-depth="2">Assembler</a>
     <a href="#pipelines" data-depth="2">Pipelines</a>
-    <a href="#structure" data-depth="1">Structure</a>
   </aside>
 </div>
 </body>

@@ -323,38 +323,66 @@ pub fn theme() -> Style {
                 .transition("background-color 0.3s ease, color 0.3s ease")
         })
         .rule("pre", |r| {
-            r.background("var(--code-background)")
+            r.font_family("'SF Mono', 'Fira Code', 'Cascadia Code', monospace")
+                .font_size("var(--scale-0)")
+                .background("var(--code-background)")
+                .border_radius("6px")
+                .padding("var(--scale-0)")
+                .overflow("auto")
+                .margin_bottom("var(--scale-0)")
+                .line_height("1.5")
+                .transition("background-color 0.3s ease")
+        })
+        .rule("pre code", |r| {
+            r.background("transparent").padding("0").border_radius("0")
+        })
+        .rule(".code-block", |r| {
+            r.font_family("'SF Mono', 'Fira Code', 'Cascadia Code', monospace")
+                .font_size("var(--scale-0)")
+                .background("var(--code-background)")
                 .border_radius("6px")
                 .padding("var(--scale-0)")
                 .overflow("auto")
                 .margin_bottom("var(--scale-0)")
                 .line_height("1.5")
                 .position("relative")
+                .white_space("pre-wrap")
                 .transition("background-color 0.3s ease")
         })
-        .rule("pre code", |r| {
-            r.background("transparent")
-                .padding("0")
-                .font_size("var(--scale-0)")
+        .rule(".code-block .syntax-keyword", |r| {
+            r.color("var(--syntax-keyword)")
         })
-        .rule("pre .syntax-keyword", |r| r.color("var(--syntax-keyword)"))
-        .rule("pre .syntax-entity", |r| r.color("var(--syntax-entity)"))
-        .rule("pre .syntax-string", |r| r.color("var(--syntax-string)"))
-        .rule("pre .syntax-comment", |r| {
+        .rule(".code-block .syntax-entity", |r| {
+            r.color("var(--syntax-entity)")
+        })
+        .rule(".code-block .syntax-string", |r| {
+            r.color("var(--syntax-string)")
+        })
+        .rule(".code-block .syntax-comment", |r| {
             r.color("var(--syntax-comment)")
                 .custom("font-style", "italic")
         })
-        .rule("pre .syntax-constant", |r| {
+        .rule(".code-block .syntax-constant", |r| {
             r.color("var(--syntax-constant)")
         })
-        .rule("pre .syntax-storage", |r| r.color("var(--syntax-storage)"))
-        .rule("pre .syntax-punctuation", |r| {
+        .rule(".code-block .syntax-storage", |r| {
+            r.color("var(--syntax-storage)")
+        })
+        .rule(".code-block .syntax-punctuation", |r| {
             r.color("var(--syntax-punctuation)")
         })
-        .rule(".code-block", |r| {
-            r.position("relative").margin_bottom("var(--scale-0)")
+        .rule(".code-block .syntax-variable", |r| {
+            r.color("var(--syntax-variable)")
         })
-        .rule(".code-block pre", |r| r.margin("0"))
+        .rule(".code-block .syntax-function", |r| {
+            r.color("var(--syntax-function)")
+        })
+        .rule(".code-block .syntax-operator", |r| {
+            r.color("var(--syntax-operator)")
+        })
+        .rule(".code-block .syntax-macro", |r| {
+            r.color("var(--syntax-macro)")
+        })
         .rule("nav", |r| {
             r.position("sticky")
                 .top("0")
@@ -599,7 +627,7 @@ pub fn theme() -> Style {
                 .padding("2px 8px")
                 .color("var(--text-secondary)")
                 .cursor("pointer")
-                .font_size("var(--scale-n2)")
+                .font_size("var(--scale-0)")
                 .opacity("0")
                 .transition("opacity 0.2s")
         })
@@ -819,6 +847,8 @@ pub trait Composition {
     #[must_use]
     fn literal(self, source: &str, language: Language) -> Self;
     #[must_use]
+    fn highlight(self, html: &str, language: Language) -> Self;
+    #[must_use]
     fn shell(self, command: &str) -> Self;
     #[must_use]
     fn bold(self, text: &str) -> Self;
@@ -893,6 +923,11 @@ impl Composition for Body {
     #[trace(channels = [document])]
     fn literal(self, source: &str, language: Language) -> Self {
         body::Body::literal(self, source, language)
+    }
+
+    #[trace(channels = [document])]
+    fn highlight(self, html: &str, language: Language) -> Self {
+        body::Body::highlight(self, html, language)
     }
 
     #[trace(channels = [document])]

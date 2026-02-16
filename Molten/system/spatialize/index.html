@@ -61,7 +61,7 @@ await init();
     <section>
       <h2 id="invoke">Invoke</h2>
       <p>Run the spatialize visualization:</p>
-      <div class="code-block" data-language="bash"><pre><code class="language-bash"><span class="syntax-source syntax-shell syntax-bash"><span class="syntax-meta syntax-function-call syntax-shell"><span class="syntax-variable syntax-function syntax-shell">bazel</span></span><span class="syntax-meta syntax-function-call syntax-arguments syntax-shell"> run //Molten/system/spatialize:command</span></span></code></pre></div>
+      <div class="code-block" data-language="bash"><span class="syntax-function">bazel</span> run <span class="syntax-entity">//Molten/system/spatialize:command</span></div>
       <p>This opens an interactive window displaying hypergraph state with real-time layout simulation.</p>
     </section>
     <hr>
@@ -80,12 +80,12 @@ await init();
           <tr>
             <td>Relation</td>
             <td>Edge and node relationships</td>
-            <td>Tab</td>
+            <td><code>Tab</code></td>
           </tr>
           <tr>
             <td>Inference</td>
             <td>Derivation and inference paths</td>
-            <td>Tab</td>
+            <td><code>Tab</code></td>
           </tr>
         </tbody>
       </table>
@@ -134,19 +134,19 @@ await init();
           <tbody>
             <tr>
               <td>Toggle pane</td>
-              <td>Tab</td>
+              <td><code>Tab</code></td>
             </tr>
             <tr>
               <td>Relation pane</td>
-              <td>R key</td>
+              <td><code>R</code></td>
             </tr>
             <tr>
               <td>Inference pane</td>
-              <td>I key</td>
+              <td><code>I</code></td>
             </tr>
             <tr>
               <td>Deselect</td>
-              <td>Escape</td>
+              <td><code>Escape</code></td>
             </tr>
           </tbody>
         </table>
@@ -162,19 +162,6 @@ await init();
         <li>Boundary constraints</li>
       </ul>
     </section>
-    <hr>
-    <section>
-      <h2 id="structure">Structure</h2>
-      <pre><code>Molten/system/spatialize/
-  command.rs        Application entry point
-  pane.rs           Visualization pane modes
-  view.rs           View state and transformations
-  layout.rs         Force-directed simulation
-  scene.rs          Scene graph management
-  render.rs         Render submission
-  mouse.rs          Input state tracking
-  palette.rs        Color definitions</code></pre>
-    </section>
     <footer>
       <p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p>
     </footer>
@@ -187,7 +174,6 @@ await init();
     <a href="#navigation" data-depth="2">Navigation</a>
     <a href="#view" data-depth="2">View</a>
     <a href="#layout" data-depth="1">Layout</a>
-    <a href="#structure" data-depth="1">Structure</a>
   </aside>
 </div>
 </body>

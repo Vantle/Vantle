@@ -217,32 +217,32 @@ function wasm_bindgen__convert__closures_____invoke__h646db61b4eb1f2db(arg0, arg
     wasm.wasm_bindgen__convert__closures_____invoke__h646db61b4eb1f2db(arg0, arg1);
 }
 
-function wasm_bindgen__convert__closures_____invoke__h60c58db952757ee1(arg0, arg1, arg2, arg3) {
-    wasm.wasm_bindgen__convert__closures_____invoke__h60c58db952757ee1(arg0, arg1, arg2, arg3);
-}
-
-function wasm_bindgen__convert__closures_____invoke__hdc2d6130f7775a68(arg0, arg1) {
-    wasm.wasm_bindgen__convert__closures_____invoke__hdc2d6130f7775a68(arg0, arg1);
-}
-
-function wasm_bindgen__convert__closures_____invoke__hac6b3bc6dbfe7bb0(arg0, arg1) {
-    wasm.wasm_bindgen__convert__closures_____invoke__hac6b3bc6dbfe7bb0(arg0, arg1);
-}
-
 function wasm_bindgen__convert__closures_____invoke__h713bad70ad88ff44(arg0, arg1, arg2, arg3) {
     wasm.wasm_bindgen__convert__closures_____invoke__h713bad70ad88ff44(arg0, arg1, arg2, arg3);
-}
-
-function wasm_bindgen__convert__closures_____invoke__h8a112d4ea2f45412(arg0, arg1, arg2) {
-    wasm.wasm_bindgen__convert__closures_____invoke__h8a112d4ea2f45412(arg0, arg1, arg2);
 }
 
 function wasm_bindgen__convert__closures_____invoke__hace6b592fb3ec847(arg0, arg1, arg2) {
     wasm.wasm_bindgen__convert__closures_____invoke__hace6b592fb3ec847(arg0, arg1, arg2);
 }
 
+function wasm_bindgen__convert__closures_____invoke__hdc2d6130f7775a68(arg0, arg1) {
+    wasm.wasm_bindgen__convert__closures_____invoke__hdc2d6130f7775a68(arg0, arg1);
+}
+
+function wasm_bindgen__convert__closures_____invoke__h60c58db952757ee1(arg0, arg1, arg2, arg3) {
+    wasm.wasm_bindgen__convert__closures_____invoke__h60c58db952757ee1(arg0, arg1, arg2, arg3);
+}
+
+function wasm_bindgen__convert__closures_____invoke__hac6b3bc6dbfe7bb0(arg0, arg1) {
+    wasm.wasm_bindgen__convert__closures_____invoke__hac6b3bc6dbfe7bb0(arg0, arg1);
+}
+
 function wasm_bindgen__convert__closures_____invoke__h70261f9278d83162(arg0, arg1, arg2) {
     wasm.wasm_bindgen__convert__closures_____invoke__h70261f9278d83162(arg0, arg1, arg2);
+}
+
+function wasm_bindgen__convert__closures_____invoke__h8a112d4ea2f45412(arg0, arg1, arg2) {
+    wasm.wasm_bindgen__convert__closures_____invoke__h8a112d4ea2f45412(arg0, arg1, arg2);
 }
 
 function wasm_bindgen__convert__closures_____invoke__haa075234d404e3ca(arg0, arg1) {
@@ -333,6 +333,10 @@ function __wbg_get_imports() {
         const ret = arg0.call(arg1);
         return ret;
     }, arguments) };
+    imports.wbg.__wbg_childNodes_66c4fe44be48d0e1 = function(arg0) {
+        const ret = arg0.childNodes;
+        return ret;
+    };
     imports.wbg.__wbg_classList_ccf51ec11aa444f9 = function(arg0) {
         const ret = arg0.classList;
         return ret;
@@ -345,6 +349,10 @@ function __wbg_get_imports() {
         const ret = arg0.closest(getStringFromWasm0(arg1, arg2));
         return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
     }, arguments) };
+    imports.wbg.__wbg_contains_1d751208ce313272 = function(arg0, arg1, arg2) {
+        const ret = arg0.contains(getStringFromWasm0(arg1, arg2));
+        return ret;
+    };
     imports.wbg.__wbg_contains_6002f366d5ee0625 = function(arg0, arg1) {
         const ret = arg0.contains(arg1);
         return ret;
@@ -440,6 +448,16 @@ function __wbg_get_imports() {
         const ret = arg0.insertBefore(arg1, arg2);
         return ret;
     }, arguments) };
+    imports.wbg.__wbg_instanceof_Element_437534ce3e96fe49 = function(arg0) {
+        let result;
+        try {
+            result = arg0 instanceof Element;
+        } catch (_) {
+            result = false;
+        }
+        const ret = result;
+        return ret;
+    };
     imports.wbg.__wbg_instanceof_Window_4846dbb3de56c84c = function(arg0) {
         let result;
         try {
@@ -455,6 +473,10 @@ function __wbg_get_imports() {
         return ret;
     };
     imports.wbg.__wbg_item_7b29ce86888eb4ea = function(arg0, arg1) {
+        const ret = arg0.item(arg1 >>> 0);
+        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+    };
+    imports.wbg.__wbg_item_c9164a2843281946 = function(arg0, arg1) {
         const ret = arg0.item(arg1 >>> 0);
         return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
     };

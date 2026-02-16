@@ -17,4 +17,13 @@ rust_library(
     ],
 )
 
+rust_library(
+    name = "symbolic",
+    srcs = ["symbolic.rs"],
+    deps = [
+        "//system/graph/symbolic:constructor",
+        "//system/graph/symbolic:traversal",
+    ],
+)
+
 ##### Documentation                                                                                                                             [ Documentation ]

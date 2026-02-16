@@ -1,4 +1,14 @@
+use element::Element;
+use span::Fragment;
 use vantle::Composition;
+
+fn code(value: &str) -> Element {
+    Element::Span(vec![Fragment::Code(value.into())])
+}
+
+fn text(value: &str) -> Element {
+    Element::Text(value.into())
+}
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
@@ -24,8 +34,8 @@ fn main() -> miette::Result<()> {
                 s.paragraph(|p| p.text("Toggle between visualization modes:"))
                     .table(|t| {
                         t.header(["Pane", "Description", "Key"])
-                            .row(["Relation", "Edge and node relationships", "Tab"])
-                            .row(["Inference", "Derivation and inference paths", "Tab"])
+                            .markup([text("Relation"), text("Edge and node relationships"), code("Tab")])
+                            .markup([text("Inference"), text("Derivation and inference paths"), code("Tab")])
                     })
             })
             .rule()
@@ -34,7 +44,7 @@ fn main() -> miette::Result<()> {
                     ss.table(|t| {
                         t.header(["Action", "Control"])
                             .row(["Pan", "Left click + drag"])
-                            .row(["Rotate", "Middle click + drag / Control + drag"])
+                            .markup([text("Rotate"), text("Middle click + drag / Control + drag")])
                             .row(["Zoom", "Scroll wheel / pinch"])
                             .row(["Select", "Right click"])
                     })
@@ -42,10 +52,10 @@ fn main() -> miette::Result<()> {
                 .subsection("View", |ss| {
                     ss.table(|t| {
                         t.header(["Action", "Control"])
-                            .row(["Toggle pane", "Tab"])
-                            .row(["Relation pane", "R key"])
-                            .row(["Inference pane", "I key"])
-                            .row(["Deselect", "Escape"])
+                            .markup([text("Toggle pane"), code("Tab")])
+                            .markup([text("Relation pane"), code("R")])
+                            .markup([text("Inference pane"), code("I")])
+                            .markup([text("Deselect"), code("Escape")])
                     })
                 })
             })

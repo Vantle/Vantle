@@ -12,9 +12,5 @@ package(default_visibility = [
 ])
 
 ##### Module                                                                                                                                           [ Module ]
-filegroup(
-    name = "data",
-    srcs = ["syntax.yaml"],
-)
 
 ##### Documentation                                                                                                                             [ Documentation ]

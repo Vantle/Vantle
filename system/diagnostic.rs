@@ -1,20 +1,7 @@
 use record::{error, info};
-use syntect::highlighting::ThemeSet;
-use syntect::parsing::SyntaxSetBuilder;
 
 #[must_use]
 pub fn handler() -> miette::MietteHandler {
-    let mut builder = SyntaxSetBuilder::new();
-    match highlighter::syntax() {
-        Ok(definition) => builder.add(definition),
-        Err(e) => error!("Failed to load Molten syntax highlighting: {}", e),
-    }
-
-    let mut defaults = ThemeSet::load_defaults().themes;
-    let theme = defaults
-        .remove("base16-mocha.dark")
-        .unwrap_or_else(|| defaults.into_values().next().unwrap());
-
     miette::MietteHandlerOpts::new()
         .terminal_links(true)
         .unicode(true)
@@ -22,7 +9,7 @@ pub fn handler() -> miette::MietteHandler {
         .tab_width(2)
         .color(true)
         .force_graphical(true)
-        .with_syntax_highlighting(highlight::Syntax::new(builder.build(), theme))
+        .with_syntax_highlighting(highlight::Syntax)
         .build()
 }
 

@@ -135,29 +135,9 @@ crate.spec(
     version = "0.14.0",
 )
 crate.spec(
-    features = [
-        "fancy",
-        "syntect-highlighter",
-    ],
+    features = ["fancy"],
     package = "miette",
     version = "7.6.0",
-)
-crate.spec(
-    features = [
-        "default-fancy",
-        "parsing",
-        "regex-fancy",
-    ],
-    package = "syntect",
-    version = "5.3.0",
-)
-crate.annotation(
-    crate = "syntect",
-    features_to_remove = [
-        "default",
-        "default-onig",
-        "regex-onig",
-    ],
 )
 crate.spec(
     package = "owo-colors",
@@ -177,6 +157,7 @@ crate.spec(
     version = "0.2.37",
 )
 crate.spec(
+    features = ["span-locations"],
     package = "proc-macro2",
     version = "1.0.105",
 )
@@ -405,6 +386,32 @@ crate.spec(
 crate.spec(
     package = "url",
     version = "2.5.8",
+)
+
+##### Syntax                                                                                                    [ Toolchain, Rust, Crates, Syntax ]
+crate.spec(
+    package = "tree-sitter",
+    version = "0.25.6",
+)
+crate.spec(
+    package = "tree-sitter-python",
+    version = "0.25.0",
+)
+crate.spec(
+    package = "tree-sitter-bash",
+    version = "0.25.1",
+)
+crate.annotation(
+    crate = "tree-sitter",
+    gen_build_script = "on",
+)
+crate.annotation(
+    crate = "tree-sitter-python",
+    gen_build_script = "on",
+)
+crate.annotation(
+    crate = "tree-sitter-bash",
+    gen_build_script = "on",
 )
 crate.from_specs()
 use_repo(crate, "crates")

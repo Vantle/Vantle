@@ -37,6 +37,7 @@ rust_library(
     visibility = ["//:__pkg__"],
     deps = [
         "//system/graph:similarity",
+        "//system/graph:symbolic",
     ],
 )
 
@@ -47,7 +48,10 @@ rust_library(
     deps = [
         "@crates//:miette",
         "@crates//:owo-colors",
-        "@crates//:syntect",
+        "@crates//:proc-macro2",
+        "@crates//:syn",
+        "@crates//:tree-sitter",
+        "@crates//:tree-sitter-python",
     ],
 )
 
@@ -56,12 +60,10 @@ rust_library(
     srcs = ["diagnostic.rs"],
     visibility = ["//visibility:public"],
     deps = [
-        "//Molten/system/graph/symbolic:highlighter",
         "//component/observation:module",
         "//system:highlight",
         "@crates//:ctor",
         "@crates//:miette",
-        "@crates//:syntect",
     ],
 )
 

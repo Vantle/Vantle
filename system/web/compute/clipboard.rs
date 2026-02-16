@@ -1,3 +1,4 @@
+use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 use web_sys::Document;
 
@@ -28,20 +29,27 @@ pub fn initialize(document: &Document) {
         let block_clone = block.clone();
         let button_clone = button.clone();
         let callback = Closure::<dyn FnMut()>::new(move || {
-            let Some(pre) = block_clone.query_selector("pre").ok().flatten() else {
-                return;
-            };
-
-            let Some(text) = pre.text_content() else {
-                return;
+            let trimmed = {
+                let mut content = String::new();
+                let children = block_clone.child_nodes();
+                for i in 0..children.length() {
+                    if let Some(child) = children.item(i) {
+                        let excluded = child
+                            .dyn_ref::<web_sys::Element>()
+                            .is_some_and(|e| e.class_list().contains("copy-button"));
+                        if !excluded && let Some(text) = child.text_content() {
+                            content.push_str(&text);
+                        }
+                    }
+                }
+                content
             };
 
             let Some(window) = web_sys::window() else {
                 return;
             };
-            let clipboard = window.navigator().clipboard();
 
-            let _ = clipboard.write_text(&text);
+            let _ = window.navigator().clipboard().write_text(&trimmed);
 
             button_clone.set_text_content(Some("Copied!"));
             let restore = button_clone.clone();
@@ -49,12 +57,10 @@ pub fn initialize(document: &Document) {
                 restore.set_text_content(Some("Copy"));
             });
 
-            let _ = web_sys::window().map(|w| {
-                let _ = w.set_timeout_with_callback_and_timeout_and_arguments_0(
-                    timeout.as_ref().unchecked_ref(),
-                    2000,
-                );
-            });
+            let _ = window.set_timeout_with_callback_and_timeout_and_arguments_0(
+                timeout.as_ref().unchecked_ref(),
+                2000,
+            );
             timeout.forget();
         });
 

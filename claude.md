@@ -70,7 +70,7 @@ pub enum Error {
 - Early returns over nesting; combinators over if-else
 - Small, focused functions with one responsibility
 - `#[expect(...)]` at system boundaries only, never `#[allow(clippy::...)]`
-- Run `rustfmt --edition 2024` and fix all clippy warnings before building
+- Run `bazel run //:format.rust` and fix all clippy warnings before building
 
 **API Changes**:
 
@@ -98,7 +98,7 @@ Apply to: zoom, spacing, sizes, aspect ratios, animation timing.
 bazel build //...                              # build all
 bazel test //...                               # test all
 bazel run //Molten/system/forge:command lava   # interactive runtime
-rustfmt --edition 2024 $(find . -name "*.rs")  # format
+bazel run //:format.rust                       # format
 ```
 
 ---
@@ -128,18 +128,3 @@ rust_library(name = "wave", srcs = ["wave.rs"])
 rust_library(name = "module", srcs = ["vantle.rs"], crate_name = "vantle")
 ```
 
----
-
-## Structure
-
-```txt
-Vantle/
-├── Molten/
-│   ├── system/      # Core: forge, graph, hypergraph, query
-│   ├── component/   # Reusable: arena, graph, hypergraph
-│   └── test/        # Test suites
-├── component/       # Platform components
-├── system/          # Platform systems
-├── test/            # Platform tests
-└── platform/        # Platform definitions
-```

@@ -74,10 +74,11 @@ await init();
       <p>The <code>#[trace]</code> macro instruments functions for observation.</p>
       <section>
         <h3 id="usage">Usage</h3>
-        <div class="code-block" data-language="rust"><pre><code class="language-rust"><span class="syntax-source syntax-rust"><span class="syntax-meta syntax-annotation syntax-rust"><span class="syntax-punctuation syntax-definition syntax-annotation syntax-rust">#</span><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">[</span><span class="syntax-variable syntax-annotation syntax-rust">trace</span><span class="syntax-meta syntax-annotation syntax-parameters syntax-rust"><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span></span></span><span class="syntax-meta syntax-annotation syntax-parameters syntax-rust"><span class="syntax-meta syntax-group syntax-rust">channels <span class="syntax-keyword syntax-operator syntax-rust">=</span> [core]</span></span><span class="syntax-meta syntax-annotation syntax-parameters syntax-rust"><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span></span><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">]</span></span>
-<span class="syntax-meta syntax-function syntax-rust"><span class="syntax-meta syntax-function syntax-rust"><span class="syntax-storage syntax-type syntax-function syntax-rust">fn</span> </span><span class="syntax-entity syntax-name syntax-function syntax-rust">process</span></span><span class="syntax-meta syntax-function syntax-rust"><span class="syntax-meta syntax-function syntax-parameters syntax-rust"><span class="syntax-punctuation syntax-section syntax-parameters syntax-begin syntax-rust">(</span></span><span class="syntax-meta syntax-function syntax-rust"><span class="syntax-meta syntax-function syntax-parameters syntax-rust"><span class="syntax-punctuation syntax-section syntax-parameters syntax-end syntax-rust">)</span></span></span></span><span class="syntax-meta syntax-function syntax-rust"> </span><span class="syntax-meta syntax-function syntax-rust"><span class="syntax-meta syntax-block syntax-rust"><span class="syntax-punctuation syntax-section syntax-block syntax-begin syntax-rust">{</span>
-    <span class="syntax-support syntax-function syntax-rust">evaluate</span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-begin syntax-rust">(</span></span><span class="syntax-meta syntax-group syntax-rust"><span class="syntax-punctuation syntax-section syntax-group syntax-end syntax-rust">)</span></span><span class="syntax-punctuation syntax-terminator syntax-rust">;</span>
-</span><span class="syntax-meta syntax-block syntax-rust"><span class="syntax-punctuation syntax-section syntax-block syntax-end syntax-rust">}</span></span></span></span></code></pre></div>
+        <div class="code-block" data-language="rust"><span class="node-function"><span class="node-attributes"><span class="syntax-macro"># [trace (channels = [core])]</span>
+</span><span class="syntax-keyword">fn</span> <span class="syntax-entity">process</span><span class="node-parameters"><span class="syntax-punctuation">(</span><span class="syntax-punctuation">)</span></span><span class="node-block"> {
+<span class="node-statement">    <span class="node-expression"><span class="node-expression"><span class="syntax-variable">evaluate</span></span><span class="syntax-punctuation">(</span><span class="syntax-punctuation">)</span></span><span class="syntax-punctuation">;</span>
+</span>}
+</span></span></div>
       </section>
       <section>
         <h3 id="channels">Channels</h3>
@@ -89,12 +90,6 @@ await init();
         </ul>
       </section>
     </section>
-    <hr>
-    <section>
-      <h2 id="structure">Structure</h2>
-      <pre><code>component/observation/     Streaming layer and span types
-system/observation/        Trace initialization and encoding</code></pre>
-    </section>
     <footer>
       <p>© 2025 Vantle · <a href="https://vantle.org">@robert.vanderzee</a></p>
     </footer>
@@ -105,7 +100,6 @@ system/observation/        Trace initialization and encoding</code></pre>
     <a href="#trace" data-depth="1">Trace</a>
     <a href="#usage" data-depth="2">Usage</a>
     <a href="#channels" data-depth="2">Channels</a>
-    <a href="#structure" data-depth="1">Structure</a>
   </aside>
 </div>
 </body>

@@ -1,7 +1,7 @@
 ---
 name: quality
 description: Run a comprehensive code quality review. Checks security, performance, maintainability, project conventions (CLAUDE.md), architecture, and testing. Runs rustfmt and bazel test. Use when user asks for 'review', 'check', 'validate', 'quality', 'lint', or before committing. (project)
-allowed-tools: Read, Glob, Grep, Bash(rustfmt:*), Bash(bazel build:*), Bash(bazel test:*), Bash(git status:*), Bash(find:*), Bash(xargs:*)
+allowed-tools: Read, Glob, Grep, Bash(bazel run:*), Bash(bazel build:*), Bash(bazel test:*), Bash(git status:*), Bash(find:*), Bash(xargs:*)
 ---
 
 # Code Quality Review
@@ -21,7 +21,7 @@ Expert code reviewer. Comprehensive multi-pass review covering conventions, secu
 Identify target files (user-specified or git status), then run automated checks:
 
 ```bash
-find . -name "*.rs" -not -path "*/bazel-*" -print0 | xargs -0 rustfmt --edition 2024 --check
+bazel run //:format.rust -- --check $(find . -name "*.rs" -not -path "*/bazel-*")
 bazel test //...
 ```
 

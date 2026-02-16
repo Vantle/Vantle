@@ -35,7 +35,7 @@ impl Source {
         Ok(Source {
             cursor: Cursor::new(content.as_bytes().into()),
             source: NamedSource::new(path.display().to_string(), content)
-                .with_language(system::language::molten()),
+                .with_language(language::molten()),
         })
     }
 
@@ -47,7 +47,7 @@ impl Source {
         Source {
             cursor: Cursor::new(string.as_ref().as_bytes().into()),
             source: NamedSource::new("stdin", string.as_ref().to_string())
-                .with_language(system::language::molten()),
+                .with_language(language::molten()),
         }
     }
 }

@@ -15,13 +15,18 @@ package(default_visibility = [
 rust_library(
     name = "highlight",
     srcs = ["highlight.rs"],
-    compile_data = ["//Molten/resource/system/graph:data"],
     visibility = ["//visibility:public"],
     deps = [
         "//component/web:element",
-        "//component/web:error",
+        "//system/graph/symbolic:constructor",
+        "//system/web/highlight:bash",
+        "//system/web/highlight:escape",
+        "//system/web/highlight:json",
+        "//system/web/highlight:molten",
+        "//system/web/highlight:rust",
+        "//system/web/highlight:starlark",
+        "//system/web/highlight:walker",
         "@crates//:miette",
-        "@crates//:syntect",
     ],
 )
 
@@ -37,6 +42,7 @@ rust_library(
         "//component/web:span",
         "//component/web:style",
         "//system/web:highlight",
+        "//system/web/highlight:escape",
         "@crates//:clap",
         "@crates//:miette",
         "@crates//:tracing",

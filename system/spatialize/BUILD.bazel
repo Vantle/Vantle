@@ -33,6 +33,7 @@ generate(
     destination = "system/spatialize/index.html",
     deps = [
         "//component/web:element",
+        "//component/web:span",
         "//system/document:vantle",
     ],
 )

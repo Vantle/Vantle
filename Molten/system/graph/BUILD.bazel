@@ -22,9 +22,9 @@ rust_library(
     srcs = ["symbolic.rs"],
     deps = [
         "//Molten/system/graph/symbolic:constructor",
-        "//Molten/system/graph/symbolic:highlighter",
         "//Molten/system/graph/symbolic:renderer",
         "//Molten/system/graph/symbolic:translator",
+        "//Molten/system/graph/symbolic:traversal",
     ],
 )
 

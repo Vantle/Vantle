@@ -49,7 +49,7 @@ fn main() -> miette::Result<()> {
             .section("Quick Start", |s| {
                 s.subsection("Requirements", |ss| {
                     ss.paragraph(|p| {
-                        p.link("https://bazel.build/", "Bazel").text(" >= 9.0.0")
+                        p.link("https://bazel.build/", "Bazel").text(" \u{2265} 9.0.0")
                     })
                 })
                 .subsection("Build", |ss| ss.shell("bazel build //..."))

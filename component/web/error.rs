@@ -15,7 +15,10 @@ pub enum Error {
     },
 
     #[error("failed to highlight '{language}' code")]
-    #[diagnostic(code(web::highlight), help("ensure syntect supports this language"))]
+    #[diagnostic(
+        code(web::highlight),
+        help("ensure a constructor exists for this language")
+    )]
     Highlight { language: String },
 
     #[error("failed to render HTML")]

@@ -1,5 +1,14 @@
-use element::Language;
+use element::{Element, Language};
+use span::Fragment;
 use vantle::Composition;
+
+fn code(value: &str) -> Element {
+    Element::Span(vec![Fragment::Code(value.into())])
+}
+
+fn text(value: &str) -> Element {
+    Element::Text(value.into())
+}
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
@@ -24,9 +33,9 @@ fn main() -> miette::Result<()> {
                     .literal("use render::{Assembler, Context};\n\nlet context = Assembler::new()\n    .surface(surface)\n    .adapter(adapter)\n    .size(width, height)\n    .assemble()\n    .await?;", Language::Rust)
                     .table(|t| {
                         t.header(["Field", "Description"])
-                            .row(["surface", "wgpu surface for presentation"])
-                            .row(["adapter", "wgpu adapter for device creation"])
-                            .row(["size", "Initial viewport dimensions"])
+                            .markup([code("surface"), text("wgpu surface for presentation")])
+                            .markup([code("adapter"), text("wgpu adapter for device creation")])
+                            .markup([code("size"), text("Initial viewport dimensions")])
                     })
                 })
                 .subsection("Pipelines", |ss| {

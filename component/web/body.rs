@@ -82,6 +82,19 @@ impl Body {
     }
 
     #[must_use]
+    pub fn highlight(mut self, html: &str, language: Language) -> Self {
+        self.elements.push(Element::Tag {
+            name: "div".into(),
+            attributes: vec![
+                ("class".into(), "code-block".into()),
+                ("data-language".into(), language.name().into()),
+            ],
+            children: vec![Element::Raw(html.into())],
+        });
+        self
+    }
+
+    #[must_use]
     pub fn inject(mut self, name: &str) -> Self {
         self.elements.push(Element::Inject { name: name.into() });
         self
@@ -122,7 +135,7 @@ impl Body {
                     .map(|cell| Element::Tag {
                         name: "td".into(),
                         attributes: Vec::new(),
-                        children: vec![Element::Text(cell)],
+                        children: vec![cell],
                     })
                     .collect::<Vec<_>>();
                 Element::Tag {

@@ -4,7 +4,6 @@ use std::path::PathBuf;
 
 use clap::Parser;
 use element::{Element, Language, Source};
-use highlight::Highlighter;
 use observe::trace;
 use page::Page;
 use span::Fragment;
@@ -51,7 +50,6 @@ pub fn render<S: std::hash::BuildHasher>(
     let mut renderer = Renderer {
         html: String::new(),
         data,
-        highlighter: Highlighter::new(),
         headings: Vec::new(),
     };
 
@@ -273,7 +271,6 @@ fn render_media(html: &mut String, media: &Media) {
 struct Renderer<'a, S: std::hash::BuildHasher> {
     html: String,
     data: &'a HashMap<String, String, S>,
-    highlighter: Highlighter,
     headings: Vec<(u8, String, String)>,
 }
 
@@ -410,7 +407,7 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
             Source::Inline(text) => text,
         };
 
-        let highlighted = self.highlighter.highlight(text, language)?;
+        let highlighted = highlight::highlight(text, language)?;
         write!(
             self.html,
             "<div class=\"code-block\" data-language=\"{}\">{}</div>",
@@ -490,11 +487,6 @@ fn slugify(text: &str) -> String {
         .collect::<String>()
 }
 
-#[trace(channels = [document])]
 fn escape(text: &str) -> String {
-    text.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
-        .replace('\'', "&#39;")
+    escape::escape(text)
 }

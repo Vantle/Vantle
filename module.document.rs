@@ -7,7 +7,7 @@ fn main() -> miette::Result<()> {
         c.title("Module")
             .element("a", |a| {
                 a.class("subtitle")
-                    .attribute("href", "MODULE.bazel")
+                    .attribute("href", "./MODULE.bazel")
                     .text("Bazel module definition")
             })
             .code("MODULE.bazel", Language::Starlark)

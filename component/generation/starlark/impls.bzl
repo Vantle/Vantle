@@ -46,8 +46,8 @@ def generate_file(ctx, template, cases, language, generator, lang):
         Generated test file
     """
     test_name = ctx.label.name
-    if test_name.endswith("_generation"):
-        test_name = test_name[:-len("_generation")]
+    if test_name.endswith(".generation"):
+        test_name = test_name[:-len(".generation")]
     output_name = "{}.generated.{}".format(test_name, lang.extension)
     output = ctx.actions.declare_file(output_name)
 

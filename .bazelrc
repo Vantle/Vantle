@@ -6,8 +6,8 @@ common --experimental_profile_include_target_label
 common --experimental_profile_include_primary_output
 common --keep_going
 
-######### Windows                                                                                                                           [ Platform, Windows ]
-##### Compatibility                                                                                                          [ Platform, Windows, Compatibility ]
+########## Hermetic                                                                                                                         [ Platform, Hermetic ]
+common --@toolchains_llvm_bootstrapped//config:experimental_stub_libgcc_s=True
 
 #################################################################################################################################################################
 ##### Interface                                                                                                                                     [ Interface ]
@@ -25,7 +25,7 @@ common --bes_results_url=https://vantle.buildbuddy.io/invocation/
 common --bes_backend=grpcs://vantle.buildbuddy.io
 common --bes_upload_mode=fully_async
 common --remote_cache=grpcs://vantle.buildbuddy.io
-common --remote_timeout=10m
+common --remote_timeout=15m
 common --remote_cache_compression
 common --experimental_remote_cache_compression_threshold=100
 common --build_metadata=REPO_URL=https://github.com/Vantle/Vantle.git
@@ -33,9 +33,8 @@ common --build_metadata=module=vantle
 
 ##### Execution                                                                                                                              [ Remote, Execution ]
 common:remote --remote_executor=grpcs://vantle.buildbuddy.io
-common:remote --extra_execution_platforms=@toolchains_buildbuddy//platforms:linux_x86_64
-common:remote --platforms=@toolchains_buildbuddy//platforms:linux_x86_64
-common:remote --extra_toolchains=@toolchains_buildbuddy//toolchains/cc:ubuntu_gcc_x86_64
+common:remote --extra_execution_platforms=//:buildbuddy
+common:remote --platforms=//:buildbuddy
 common:remote --jobs=256
 common:remote --build_metadata=ROLE=CI
 

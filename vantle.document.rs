@@ -2,9 +2,14 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
+    let root = arguments.root();
     vantle::page(&arguments, "Vantle", "vantle", "readme", |c| {
         c.title("Vantle")
-            .subtitle("Platform for everything")
+            .element("a", |a| {
+                a.class("subtitle")
+                    .attribute("href", "https://github.com/Vantle/Vantle")
+                    .text("Platform for everything")
+            })
             .rule()
             .paragraph(|p| {
                 p.bold("Vantle")
@@ -17,7 +22,7 @@ fn main() -> miette::Result<()> {
                         .paragraph(|p| {
                             p.text("An AI frontend language designed for continual learning algorithms. Build hypergraphs through polymorphic relations, enabling declarative computation with concepts, orthogonalities, and transformations evaluated with temporal semantics.")
                         })
-                        .paragraph(|p| p.link("Molten/", "more →"))
+                        .paragraph(|p| p.link(&format!("{root}Molten/"), "more \u{2192}"))
                 })
                 .subsection("Generation", |ss| {
                     ss.aside(|a| a.italic("Code generation framework for Rust"))
@@ -26,7 +31,7 @@ fn main() -> miette::Result<()> {
                                 .bold("autotest")
                                 .text(" system eliminates boilerplate while enabling data-driven testing with parameter shadowing and tag organization.")
                         })
-                        .paragraph(|p| p.link("system/generation/", "more →"))
+                        .paragraph(|p| p.link(&format!("{root}system/generation/"), "more \u{2192}"))
                 })
                 .subsection("Observation", |ss| {
                     ss.aside(|a| a.italic("Trace streaming and recording"))
@@ -35,14 +40,14 @@ fn main() -> miette::Result<()> {
                                 .code("#[trace]")
                                 .text(" macro instruments functions with channel-based filtering for selective observation to files or remote peers.")
                         })
-                        .paragraph(|p| p.link("system/observation/", "more →"))
+                        .paragraph(|p| p.link(&format!("{root}system/observation/"), "more \u{2192}"))
                 })
                 .subsection("Spatialize", |ss| {
                     ss.aside(|a| a.italic("GPU rendering infrastructure"))
                         .paragraph(|p| {
                             p.text("Render with wgpu using assembler-pattern context creation and frame-based draw submission. Golden ratio scaling utilities ensure harmonious visual proportions throughout.")
                         })
-                        .paragraph(|p| p.link("system/spatialize/", "more →"))
+                        .paragraph(|p| p.link(&format!("{root}system/spatialize/"), "more \u{2192}"))
                 })
             })
             .rule()

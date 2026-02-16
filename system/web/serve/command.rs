@@ -72,10 +72,10 @@ async fn journal(request: Request, next: Next) -> axum::response::Response {
     let response = next.run(request).await;
     let status = response.status().as_u16();
     let duration = elapsed(start.elapsed());
-    let path = uri.path();
-    match uri.query() {
-        Some(query) => info!("{status} {method} {path}?{query} ({duration})"),
-        None => info!("{status} {method} {path} ({duration})"),
+    if let Some(query) = uri.query() {
+        info!("{status} {method} {}?{query} ({duration})", uri.path());
+    } else {
+        info!("{status} {method} {} ({duration})", uri.path());
     }
     response
 }

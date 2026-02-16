@@ -22,7 +22,7 @@ def generate(src, destination, name = None, data = [], deps = [], compile_data =
 
     Produces two targets:
       - {name}              - rust_binary that generates the file
-      - document_{name}     - the generated file (via ctx.actions.run)
+      - document.{name}     - the generated file (via ctx.actions.run)
 
     Args:
         src: Rust source file
@@ -47,7 +47,7 @@ def generate(src, destination, name = None, data = [], deps = [], compile_data =
     )
 
     document_generate(
-        name = "document_" + name,
+        name = "document." + name,
         binary = ":" + name,
         destination = destination,
         data = data,

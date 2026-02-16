@@ -54,41 +54,35 @@ macro_rules! event {
         $crate::event!($($field)*)
     }};
     ($($key:ident = $value:expr),* $(,)?) => {{ $(let _ = &$value;)* }};
-    ($fmt:literal $(, $args:expr)* $(,)?) => {{ $(let _ = &$args;)* }};
-    ($($arg:tt)*) => {{}};
+    ($($arg:tt)*) => {{ let _ = format_args!($($arg)*); }};
 }
 
 #[macro_export]
 macro_rules! trace {
     ($($key:ident = $value:expr),* $(,)?) => {{ $(let _ = &$value;)* }};
-    ($fmt:literal $(, $args:expr)* $(,)?) => {{ $(let _ = &$args;)* }};
-    ($($arg:tt)*) => {{}};
+    ($($arg:tt)*) => {{ let _ = format_args!($($arg)*); }};
 }
 
 #[macro_export]
 macro_rules! debug {
     ($($key:ident = $value:expr),* $(,)?) => {{ $(let _ = &$value;)* }};
-    ($fmt:literal $(, $args:expr)* $(,)?) => {{ $(let _ = &$args;)* }};
-    ($($arg:tt)*) => {{}};
+    ($($arg:tt)*) => {{ let _ = format_args!($($arg)*); }};
 }
 
 #[macro_export]
 macro_rules! info {
     ($($key:ident = $value:expr),* $(,)?) => {{ $(let _ = &$value;)* }};
-    ($fmt:literal $(, $args:expr)* $(,)?) => {{ $(let _ = &$args;)* }};
-    ($($arg:tt)*) => {{}};
+    ($($arg:tt)*) => {{ let _ = format_args!($($arg)*); }};
 }
 
 #[macro_export]
 macro_rules! warn {
     ($($key:ident = $value:expr),* $(,)?) => {{ $(let _ = &$value;)* }};
-    ($fmt:literal $(, $args:expr)* $(,)?) => {{ $(let _ = &$args;)* }};
-    ($($arg:tt)*) => {{}};
+    ($($arg:tt)*) => {{ let _ = format_args!($($arg)*); }};
 }
 
 #[macro_export]
 macro_rules! error {
     ($($key:ident = $value:expr),* $(,)?) => {{ $(let _ = &$value;)* }};
-    ($fmt:literal $(, $args:expr)* $(,)?) => {{ $(let _ = &$args;)* }};
-    ($($arg:tt)*) => {{}};
+    ($($arg:tt)*) => {{ let _ = format_args!($($arg)*); }};
 }

@@ -461,6 +461,12 @@ img {
   font-weight: 400;
   letter-spacing: -0.01em;
   margin-bottom: var(--scale-1);
+  display: block;
+}
+
+a.subtitle:hover {
+  color: var(--text);
+  text-decoration: none;
 }
 
 ul, ol {
@@ -495,6 +501,22 @@ footer {
   color: var(--text-secondary);
   font-size: var(--scale-n1);
   letter-spacing: 0.02em;
+}
+
+.footer-icon {
+  display: inline-block;
+  color: var(--text-secondary);
+  margin-top: var(--scale-n1);
+  transition: color 0.2s;
+}
+
+.footer-icon:hover {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.footer-icon svg {
+  display: block;
 }
 
 .copy-button {

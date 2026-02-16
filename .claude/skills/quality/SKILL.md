@@ -1,7 +1,7 @@
 ---
 name: quality
 description: Run a comprehensive code quality review. Checks security, performance, maintainability, project conventions (CLAUDE.md), architecture, and testing. Runs rustfmt and bazel test. Use when user asks for 'review', 'check', 'validate', 'quality', 'lint', or before committing. (project)
-allowed-tools: Read, Glob, Grep, Bash(bazel run:*), Bash(bazel build:*), Bash(bazel test:*), Bash(git status:*), Bash(find:*), Bash(xargs:*)
+allowed-tools: Read, Glob, Grep, Bash(bazel run:*), Bash(bazel build:*), Bash(bazel test:*), Bash(git status:*), Bash(rustfmt:*), Bash(find:*), Bash(xargs:*)
 ---
 
 # Code Quality Review

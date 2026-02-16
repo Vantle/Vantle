@@ -1,7 +1,7 @@
 """
 Document generation rule definitions.
 
-Public document_generate rule for creating files from Rust document binaries.
+Public document.generate rule for creating files from Rust document binaries.
 """
 
 load(":impls.bzl", "generate_impl")

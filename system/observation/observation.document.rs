@@ -3,6 +3,7 @@ use vantle::Composition;
 
 fn main() -> miette::Result<()> {
     let arguments = render::Arguments::parse();
+    let root = arguments.root();
     vantle::page(&arguments, "Observation", "vantle", "observation", |c| {
         c.title("Observation")
             .subtitle("Trace streaming and recording for Vantle")
@@ -39,7 +40,7 @@ fn main() -> miette::Result<()> {
                 })
                 .paragraph(|p| {
                     p.text("Each application decides where to send its traces. See ")
-                        .link("../../Molten/#forge", "Forge")
+                        .link(&format!("{root}Molten/#forge"), "Forge")
                         .text(" for an example of configuring trace destinations.")
                 })
             })

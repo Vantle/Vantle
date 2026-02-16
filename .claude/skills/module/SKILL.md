@@ -1,7 +1,7 @@
 ---
 name: module
 description: Create a new Vantle module with the correct directory, Rust source, and BUILD.bazel following all CLAUDE.md conventions. Use when user says 'new module', 'create module', 'add module', or wants to add a new component/system.
-allowed-tools: Read, Glob, Grep, Bash(ls:*), Bash(mkdir:*), Write, Edit
+allowed-tools: Read, Glob, Grep, Bash(ls:*), Bash(mkdir:*), Bash(bazel build:*), Write, Edit
 disable-model-invocation: true
 ---
 

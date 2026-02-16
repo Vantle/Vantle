@@ -17,35 +17,42 @@ module(
 ########## Bazel                                                                                                                             [ Toolchain, Bazel ]
 bazel_dep(name = "stardoc", version = "0.8.1")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
-bazel_dep(name = "toolchains_llvm", version = "1.6.0")
+bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "rules_cc", version = "0.2.16")
+bazel_dep(name = "apple_support", version = "2.2.0")
+bazel_dep(name = "toolchains_llvm_bootstrapped", version = "0.5.7")
 
 bazel_dep(name = "buildozer", version = "8.2.1", dev_dependency = True)
 
 buildozer_binary = use_extension("@buildozer//:buildozer_binary.bzl", "buildozer_binary")
 use_repo(buildozer_binary, "buildozer_binary")
 
-########## Toolchain                                                                                                                                [ Toolchain ]
-########## BuildBuddy                                                                                                                   [ Toolchain, BuildBuddy ]
-bazel_dep(name = "toolchains_buildbuddy", version = "0.0.4")
-
-buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbuddy")
-buildbuddy.platform(
-    buildbuddy_container_image = "UBUNTU24_04_IMAGE",
-)
-use_repo(buildbuddy, "buildbuddy_toolchain")
-
 ########## LLVM                                                                                                                               [ Toolchain, LLVM ]
-llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
-llvm.toolchain(
-    name = "llvm_toolchain",
-    llvm_version = "19.1.7",
-)
-llvm.toolchain(
-    name = "llvm_toolchain_linux",
-    llvm_version = "19.1.7",
-    stdlib = {"linux-x86_64": "stdc++"},
-)
-use_repo(llvm, "llvm_toolchain", "llvm_toolchain_linux")
+##### OSX SDK                                                                                                                            [ Toolchain, LLVM, OSX ]
+
+osx = use_extension("@toolchains_llvm_bootstrapped//extensions:osx.bzl", "osx")
+osx.framework(name = "AppKit")
+osx.framework(name = "ApplicationServices")
+osx.framework(name = "Carbon")
+osx.framework(name = "CFNetwork")
+osx.framework(name = "ColorSync")
+osx.framework(name = "CoreFoundation")
+osx.framework(name = "CoreGraphics")
+osx.framework(name = "CoreImage")
+osx.framework(name = "CoreServices")
+osx.framework(name = "CoreText")
+osx.framework(name = "CoreVideo")
+osx.framework(name = "FontServices")
+osx.framework(name = "Foundation")
+osx.framework(name = "ImageIO")
+osx.framework(name = "IOKit")
+osx.framework(name = "IOSurface")
+osx.framework(name = "Kernel")
+osx.framework(name = "Metal")
+osx.framework(name = "OSLog")
+osx.framework(name = "QuartzCore")
+osx.framework(name = "Security")
+osx.framework(name = "SystemConfiguration")
 
 ##### Compilation                                                                                                                      [ Toolchain, Compilation ]
 ########## Java                                                                                                                               [ Toolchain, Java ]
@@ -83,15 +90,8 @@ rust.toolchain(
 )
 use_repo(rust, "rust_toolchains")
 
-git_override(
-    module_name = "rules_rust",
-    commit = "504413cebab8aa7539fb09f75ffd4069c62fd808",
-    remote = "https://github.com/robbie-vanderzee/rules_rust.git",
-)
-
 register_toolchains(
-    "@llvm_toolchain//:all",
-    "@llvm_toolchain_linux//:all",
+    "@toolchains_llvm_bootstrapped//toolchain:all",
     "@rust_toolchains//:all",
     "//system/protobuf:toolchain",
     "@buildifier_prebuilt_toolchains//:buildifier_linux_amd64_toolchain",

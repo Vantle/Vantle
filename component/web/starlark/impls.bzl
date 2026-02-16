@@ -1,7 +1,7 @@
 """
 Implementation for document generation rules.
 
-Private implementations for the document_generate and publish rules.
+Private implementations for the document.generate and publish rules.
 """
 
 load(":types.bzl", "DocumentInfo")
@@ -10,7 +10,7 @@ _EXTENSIONS = [".js", ".wasm"]
 
 def generate_impl(ctx):
     """
-    Implementation for document_generate rule.
+    Implementation for document.generate rule.
 
     Runs the document binary to produce a file.
 

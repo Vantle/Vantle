@@ -10,13 +10,30 @@ load("//component/web/starlark:defs.bzl", "collection", "drift", "generate", "se
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
 
-##### Configuration                                                                                                                               [ Configuration ]
+#################################################################################################################################################################
+########## Configuration                                                                                                                         [ Configuration ]
 string_flag(
     name = "symlink_prefix",
     build_setting_default = "bazel-",
 )
 
-##### Module                                                                                                                                           [ Module ]
+##### Remote                                                                                                                              [ Configuration, Remote ]
+platform(
+    name = "buildbuddy",
+    constraint_values = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+        "@toolchains_llvm_bootstrapped//constraints/libc:gnu.2.39",
+    ],
+    exec_properties = {
+        "container-image": "docker://ubuntu:24.04",
+        "Arch": "amd64",
+        "OSFamily": "Linux",
+    },
+)
+
+#################################################################################################################################################################
+########## Module                                                                                                                                       [ Module ]
 rust_library(
     name = "component",
     srcs = ["component.rs"],
@@ -72,33 +89,40 @@ rust_library(
     ],
 )
 
-##### Analysis                                                                                                                                       [ Analysis ]
+#################################################################################################################################################################
+########## Tool                                                                                                                                           [ Tool ]
+##### Analysis                                                                                                                                  [ Tool, Analysis ]
 alias(
     name = "analysis.rust",
     actual = "@rules_rust//tools/rust_analyzer:gen_rust_project",
 )
 
-##### Format                                                                                                                                             [ Format ]
+##### Format                                                                                                                                      [ Tool, Format ]
 alias(
     name = "format.rust",
     actual = "@rules_rust//tools/upstream_wrapper:rustfmt",
 )
 
-########## Validation                                                                                                                              [ Validation ]
+buildifier(
+    name = "format.bazel",
+    lint_mode = "fix",
+    mode = "fix",
+)
+
+##### Validation                                                                                                                              [ Tool, Validation ]
 alias(
     name = "validate.bazel",
     actual = "//:validate.bazel.buildifier",
 )
 
-########## Build                                                                                                                            [ Validation, Build ]
-##### Buildifier                                                                                                                [ Validation, Build, Buildifier ]
 buildifier(
     name = "validate.bazel.buildifier",
     lint_mode = "warn",
     mode = "fix",
 )
 
-##### Documentation                                                                                                                              [ Documentation ]
+#################################################################################################################################################################
+########## Documentation                                                                                                                         [ Documentation ]
 generate(
     src = "vantle.document.rs",
     destination = "index.html",
@@ -132,7 +156,7 @@ generate(
 )
 
 generate(
-    name = "bazel_module",
+    name = "bzlmod",
     src = "module.document.rs",
     data = ["//:MODULE.bazel"],
     destination = "module.html",
@@ -146,20 +170,20 @@ collection(
     name = "generate.documentation",
     generator = "//system/document:publish",
     pages = [
-        ":document_vantle",
-        ":document_info",
-        ":document_notice",
-        ":document_license",
-        ":document_bazel_module",
-        "//Molten:document_molten",
-        "//Molten:document_info",
-        "//Molten:document_notice",
-        "//Molten:document_license",
-        "//system/generation:document_generation",
-        "//system/observation:document_observation",
-        "//system/spatialize:document_spatialize",
-        "//Molten/system/spatialize:document_spatialize",
-        "//system/document:document_stylesheet",
+        ":document.vantle",
+        ":document.info",
+        ":document.notice",
+        ":document.license",
+        ":document.bzlmod",
+        "//Molten:document.molten",
+        "//Molten:document.info",
+        "//Molten:document.notice",
+        "//Molten:document.license",
+        "//system/generation:document.generation",
+        "//system/observation:document.observation",
+        "//system/spatialize:document.spatialize",
+        "//Molten/system/spatialize:document.spatialize",
+        "//system/document:document.stylesheet",
     ],
     static = {
         "//system/web/compute:module": "resource/system/document",
@@ -170,20 +194,20 @@ drift(
     name = "verify.documentation",
     generator = "//system/document:publish",
     pages = [
-        ":document_vantle",
-        ":document_info",
-        ":document_notice",
-        ":document_license",
-        ":document_bazel_module",
-        "//Molten:document_molten",
-        "//Molten:document_info",
-        "//Molten:document_notice",
-        "//Molten:document_license",
-        "//system/generation:document_generation",
-        "//system/observation:document_observation",
-        "//system/spatialize:document_spatialize",
-        "//Molten/system/spatialize:document_spatialize",
-        "//system/document:document_stylesheet",
+        ":document.vantle",
+        ":document.info",
+        ":document.notice",
+        ":document.license",
+        ":document.bzlmod",
+        "//Molten:document.molten",
+        "//Molten:document.info",
+        "//Molten:document.notice",
+        "//Molten:document.license",
+        "//system/generation:document.generation",
+        "//system/observation:document.observation",
+        "//system/spatialize:document.spatialize",
+        "//Molten/system/spatialize:document.spatialize",
+        "//system/document:document.stylesheet",
     ],
     static = {
         "//system/web/compute:module": "resource/system/document",

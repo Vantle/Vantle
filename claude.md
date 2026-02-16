@@ -29,7 +29,7 @@ When you see an abstraction opportunity, take it. Prefer composition over repeti
 | No abbreviations | `configuration` not `cfg`, `specification` not `spec` |
 | Singular directories | `test/resource` not `tests/resources` |
 
-Exceptions: Underscore re-exports are acceptable only when wrapping or exposing external APIs (e.g., `pub use tracing_subscriber;`). Naming conventions may be violated when compliance is impossible (e.g., `returns/` when `return` is a reserved keyword).
+Exceptions: Underscore re-exports are acceptable only when wrapping or exposing external APIs (e.g., `pub use tracing_subscriber;`). Naming conventions may be violated when compliance is impossible (e.g., `returns/` when `return` is a reserved keyword). Standard Rust trait method names (`is_empty`, `*_mut`, `as_*`, `into_*`, `from_*`, `try_*`) follow Rust stdlib conventions. CSS property builder methods may use underscores to mirror CSS names (e.g., `max_width`).
 
 ---
 

@@ -41,9 +41,11 @@ def autotest_template(name, src, language, library, deps = [], **kwargs):
         **kwargs: Passed to library rule
     """
 
-    library_name = "{}_library".format(name)
+    library_name = "{}.library".format(name)
+    crate_name = "{}_library".format(name)
     library(
         name = library_name,
+        crate_name = crate_name,
         srcs = [src],
         deps = deps,
         testonly = True,
@@ -126,7 +128,7 @@ def autotest(name, template, cases, language, generator = "//system/generation:g
     if not cases:
         fail("autotest requires 'cases' for '{}'".format(name))
 
-    generate_target = "{}_generation".format(name)
+    generate_target = "{}.generation".format(name)
 
     generate(
         name = generate_target,

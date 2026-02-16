@@ -26,7 +26,7 @@ Skip `.template.rs` files (test templates have different rules).
 
 Scan identifiers in `pub fn`, `pub struct`, `pub enum`, `pub trait`, `pub type`, and `pub use` declarations.
 
-**Underscore identifiers** — Flag any public identifier containing `_` (except re-exports of external crates like `tracing_subscriber`).
+**Underscore identifiers** — Flag any public identifier containing `_` (except re-exports of external crates like `tracing_subscriber`, standard Rust trait methods matching `is_*`, `as_*`, `into_*`, `from_*`, `try_*`, `*_mut`, and CSS property builder methods mirroring CSS names like `max_width`).
 
 **Abbreviations** — Flag common abbreviations:
 - `cfg` (should be `configuration`)

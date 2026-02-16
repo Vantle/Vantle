@@ -1,7 +1,7 @@
 ---
 name: commit
 description: Create a commit following Vantle's release message standards. Analyzes staged changes and generates a structured commit message with component sections linking to Readme.md files. Use when user says 'commit', 'release', 'save changes', or is ready to commit staged work.
-allowed-tools: Read, Glob, Grep, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*)
+allowed-tools: Read, Glob, Grep, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*), Bash(git stash:*)
 ---
 
 # Vantle Commit Standards

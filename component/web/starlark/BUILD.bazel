@@ -12,47 +12,32 @@ package(default_visibility = [
 
 ##### Module                                                                                                                                           [ Module ]
 bzl_library(
-    name = "types",
-    srcs = ["types.bzl"],
-)
-
-bzl_library(
     name = "impls",
     srcs = ["impls.bzl"],
-    deps = [":types"],
+    deps = ["//component/generation/starlark:action"],
 )
 
 bzl_library(
-    name = "rule",
-    srcs = ["rule.bzl"],
-    deps = [
-        ":impls",
-        ":types",
-    ],
+    name = "distribute",
+    srcs = ["distribute.bzl"],
 )
 
 bzl_library(
-    name = "collection",
-    srcs = ["collection.bzl"],
+    name = "publish",
+    srcs = ["publish.bzl"],
     deps = [":impls"],
-)
-
-bzl_library(
-    name = "drift",
-    srcs = ["drift.bzl"],
-    deps = [":impls"],
-)
-
-bzl_library(
-    name = "macro",
-    srcs = ["macro.bzl"],
-    deps = [":rule"],
 )
 
 bzl_library(
     name = "aspect",
     srcs = ["aspect.bzl"],
-    deps = [":types"],
+    deps = ["//component/generation/starlark:action"],
+)
+
+bzl_library(
+    name = "verify",
+    srcs = ["verify.bzl"],
+    deps = [":impls"],
 )
 
 bzl_library(
@@ -62,10 +47,11 @@ bzl_library(
         "//visibility:public",
     ],
     deps = [
+        ":distribute",
+        ":publish",
         ":aspect",
-        ":collection",
-        ":drift",
-        ":macro",
+        ":verify",
+        "//component/generation/starlark:web",
     ],
 )
 

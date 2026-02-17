@@ -49,7 +49,7 @@ Exceptions: Underscore re-exports are acceptable only when wrapping or exposing 
 
 ## Code Quality
 
-*Miette enables rich diagnostics; self-documenting code reduces maintenance.*
+*Miette enables rich diagnostics; self-documenting code reduces maintenance. Run `/quality` for comprehensive review.*
 
 **Errors** — Always use `miette` with context, codes, and suggestions:
 

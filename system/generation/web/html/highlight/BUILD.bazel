@@ -1,0 +1,85 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//system/generation/web:__pkg__",
+    "//system/generation/web:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "escape",
+    srcs = ["escape.rs"],
+    visibility = ["//visibility:public"],
+)
+
+rust_library(
+    name = "walker",
+    srcs = ["walker.rs"],
+    deps = [
+        ":escape",
+        "@crates//:tree-sitter",
+    ],
+)
+
+rust_library(
+    name = "rust",
+    srcs = ["rust.rs"],
+    deps = [
+        ":escape",
+        "@crates//:miette",
+        "@crates//:quote",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "molten",
+    srcs = ["molten.rs"],
+    aliases = {
+        "//Molten/system/graph/symbolic:traversal": "token",
+    },
+    deps = [
+        ":escape",
+        "//Molten:component",
+        "//Molten/system/graph/symbolic:traversal",
+        "@crates//:miette",
+    ],
+)
+
+rust_library(
+    name = "json",
+    srcs = ["json.rs"],
+    aliases = {
+        "//Molten/system/graph/symbolic:traversal": "token",
+    },
+    deps = [
+        ":escape",
+        "//Molten/system/graph/symbolic:traversal",
+        "//system/graph/symbolic:traversal",
+        "@crates//:miette",
+        "@crates//:serde_json",
+    ],
+)
+
+rust_library(
+    name = "starlark",
+    srcs = ["starlark.rs"],
+    deps = [
+        "@crates//:tree-sitter",
+    ],
+)
+
+rust_library(
+    name = "bash",
+    srcs = ["bash.rs"],
+    deps = [
+        "@crates//:tree-sitter",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

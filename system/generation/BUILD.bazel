@@ -5,7 +5,7 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 
 ##### Documentation                                                                                                                                 [ Documentation ]
-load("//component/web/starlark:defs.bzl", "generate")
+load("//component/web/starlark:defs.bzl", "document")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -37,6 +37,7 @@ rust_binary(
         "//:component",
         "//:system",
         "//component/observation:module",
+        "//system:command",
         "//system:diagnostic",
         "//system/bazel:symlink",
         "//system/generation:rust",
@@ -48,12 +49,28 @@ rust_binary(
     ],
 )
 
-generate(
-    src = "generation.document.rs",
+rust_binary(
+    name = "source",
+    srcs = ["source.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//component/observation:module",
+        "//component/web:error",
+        "//system:command",
+        "//system/observation/trace:module",
+        "@crates//:clap",
+        "@crates//:miette",
+        "@crates//:tracing",
+    ],
+)
+
+document(
+    srcs = ["generation.document.rs"],
     destination = "system/generation/index.html",
     visibility = ["//visibility:public"],
     deps = [
         "//component/web:element",
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )

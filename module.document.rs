@@ -1,9 +1,9 @@
 use element::Language;
-use vantle::Composition;
+use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Module", "vantle", "module", |c| {
+    let arguments = html::Arguments::parse();
+    style::page(&arguments, "Module", "vantle", "module", |c| {
         c.title("Module")
             .element("a", |a| {
                 a.class("subtitle")

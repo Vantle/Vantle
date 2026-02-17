@@ -7,7 +7,7 @@ load("@rules_rust//rust:defs.bzl", "rust_library", "rust_proc_macro")
 load("@rules_rust_prost//:defs.bzl", "rust_prost_library")
 
 ##### Documentation                                                                                                                             [ Documentation ]
-load("//component/web/starlark:defs.bzl", "generate")
+load("//component/web/starlark:defs.bzl", "document")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
@@ -88,11 +88,11 @@ rust_library(
     ],
 )
 
-generate(
-    src = "observation.document.rs",
+document(
+    srcs = ["observation.document.rs"],
     destination = "system/observation/index.html",
     deps = [
         "//component/web:element",
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )

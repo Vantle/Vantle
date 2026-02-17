@@ -7,10 +7,8 @@ load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
     "//component:__pkg__",
-    "//system/document:__pkg__",
-    "//system/document:__subpackages__",
-    "//system/web:__pkg__",
-    "//system/web:__subpackages__",
+    "//system/generation/web:__pkg__",
+    "//system/generation/web:__subpackages__",
 ])
 
 ##### Module                                                                                                                                           [ Module ]
@@ -82,6 +80,7 @@ rust_binary(
     srcs = ["validate.rs"],
     visibility = ["//visibility:public"],
     deps = [
+        "//system:command",
         "//system/bazel:symlink",
         "@crates//:clap",
         "@crates//:miette",

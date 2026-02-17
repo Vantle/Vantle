@@ -1,9 +1,9 @@
 use element::Language;
-use vantle::Composition;
+use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Molten", "molten", "readme", |c| {
+    let arguments = html::Arguments::parse();
+    style::page(&arguments, "Molten", "molten", "readme", |c| {
         c.title("Molten")
             .subtitle("Computational expression over hypergraphs")
             .rule()

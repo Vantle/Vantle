@@ -1,9 +1,9 @@
-use vantle::Composition;
+use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = render::Arguments::parse();
+    let arguments = html::Arguments::parse();
     let root = arguments.root();
-    vantle::page(&arguments, "Vantle", "vantle", "readme", |c| {
+    style::page(&arguments, "Vantle", "vantle", "readme", |c| {
         c.title("Vantle")
             .element("a", |a| {
                 a.class("subtitle")

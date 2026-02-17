@@ -59,7 +59,7 @@ struct Arguments {
 }
 
 #[derive(clap::Args)]
-struct Sink {
+struct Address {
     #[arg(
         long,
         help = "Stream observation data to address (e.g., file:///tmp/trace.jsonl)"
@@ -70,17 +70,26 @@ struct Sink {
 #[derive(Subcommand)]
 enum Command {
     #[command(about = "Lava runtime for Molten")]
-    Lava(Sink),
+    Lava(Address),
 }
 
 fn main() -> Result<()> {
-    let Command::Lava(sink) = Arguments::parse().command;
-    trace::initialize(sink.address.as_deref(), |channels| {
-        channels.iter().any(|c| c.name == "core")
-    })?;
-    let result = lava();
-    trace::flush();
-    result
+    command::execute(
+        |arguments: &Arguments| {
+            let Command::Lava(ref address) = arguments.command;
+            command::activate(trace::initialize(address.address.as_deref(), |channels| {
+                trace::channel::Channel::matches(channels, &["core"])
+            }))
+        },
+        |arguments| {
+            let Command::Lava(_address) = arguments.command;
+            lava()
+        },
+        |result| {
+            trace::flush();
+            result
+        },
+    )
 }
 
 #[trace(channels = [core])]

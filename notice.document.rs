@@ -1,8 +1,8 @@
-use vantle::Composition;
+use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Notice", "vantle", "notice", |c| {
+    let arguments = html::Arguments::parse();
+    style::page(&arguments, "Notice", "vantle", "notice", |c| {
         c.title("Notice")
             .rule()
             .paragraph(|p| p.text("Copyright 2025 Vantle"))

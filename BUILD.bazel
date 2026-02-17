@@ -5,7 +5,7 @@
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@rules_rust//rust:defs.bzl", "rust_library")
-load("//component/web/starlark:defs.bzl", "collection", "drift", "generate", "serve")
+load("//component/web/starlark:defs.bzl", "distribute", "document", "publish", "verify")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
@@ -15,21 +15,6 @@ package(default_visibility = ["//visibility:public"])
 string_flag(
     name = "symlink_prefix",
     build_setting_default = "bazel-",
-)
-
-##### Remote                                                                                                                              [ Configuration, Remote ]
-platform(
-    name = "buildbuddy",
-    constraint_values = [
-        "@platforms//cpu:x86_64",
-        "@platforms//os:linux",
-        "@toolchains_llvm_bootstrapped//constraints/libc:gnu.2.39",
-    ],
-    exec_properties = {
-        "container-image": "docker://ubuntu:24.04",
-        "Arch": "amd64",
-        "OSFamily": "Linux",
-    },
 )
 
 #################################################################################################################################################################
@@ -54,7 +39,6 @@ rust_library(
         "//system:language",
         "//system:observation",
         "//system:resource",
-        "//system:web",
     ],
 )
 
@@ -123,53 +107,52 @@ buildifier(
 
 #################################################################################################################################################################
 ########## Documentation                                                                                                                         [ Documentation ]
-generate(
-    src = "vantle.document.rs",
+document(
+    srcs = ["vantle.document.rs"],
     destination = "index.html",
     deps = [
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )
 
-generate(
-    src = "info.document.rs",
+document(
+    srcs = ["info.document.rs"],
     destination = "info.html",
     deps = [
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )
 
-generate(
-    src = "notice.document.rs",
+document(
+    srcs = ["notice.document.rs"],
     destination = "notice.html",
     deps = [
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )
 
-generate(
-    src = "license.document.rs",
+document(
+    srcs = ["license.document.rs"],
     destination = "license.html",
     deps = [
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )
 
-generate(
+document(
     name = "bzlmod",
-    src = "module.document.rs",
+    srcs = ["module.document.rs"],
     data = ["//:MODULE.bazel"],
     destination = "module.html",
     deps = [
         "//component/web:element",
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )
 
-collection(
-    name = "generate.documentation",
-    generator = "//system/document:publish",
-    pages = [
+publish(
+    name = "publish.documentation",
+    srcs = [
         ":document.vantle",
         ":document.info",
         ":document.notice",
@@ -180,20 +163,20 @@ collection(
         "//Molten:document.notice",
         "//Molten:document.license",
         "//system/generation:document.generation",
+        "//system/generation/web:document.generator",
+        "//system/generation/rust:document.autotest",
         "//system/observation:document.observation",
         "//system/spatialize:document.spatialize",
         "//Molten/system/spatialize:document.spatialize",
-        "//system/document:document.stylesheet",
+        "//system/documentation:document.stylesheet",
+        "//system/generation/web/assembly:document.compute.js",
+        "//system/generation/web/assembly:document.compute.wasm",
     ],
-    static = {
-        "//system/web/compute:module": "resource/system/document",
-    },
 )
 
-drift(
+verify(
     name = "verify.documentation",
-    generator = "//system/document:publish",
-    pages = [
+    srcs = [
         ":document.vantle",
         ":document.info",
         ":document.notice",
@@ -204,17 +187,17 @@ drift(
         "//Molten:document.notice",
         "//Molten:document.license",
         "//system/generation:document.generation",
+        "//system/generation/web:document.generator",
+        "//system/generation/rust:document.autotest",
         "//system/observation:document.observation",
         "//system/spatialize:document.spatialize",
         "//Molten/system/spatialize:document.spatialize",
-        "//system/document:document.stylesheet",
+        "//system/documentation:document.stylesheet",
+        "//system/generation/web/assembly:document.compute.js",
+        "//system/generation/web/assembly:document.compute.wasm",
     ],
-    static = {
-        "//system/web/compute:module": "resource/system/document",
-    },
 )
 
-serve(
-    name = "serve.documentation",
-    server = "//system/web/serve:command",
+distribute(
+    name = "distribute.documentation",
 )

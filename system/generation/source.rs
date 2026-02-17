@@ -24,6 +24,21 @@ struct Arguments {
     verify: bool,
 }
 
+fn main() -> miette::Result<()> {
+    command::execute(
+        |_| {
+            command::activate(trace::initialize(None, |channels| {
+                trace::channel::Channel::matches(channels, &["document"])
+            }))
+        },
+        |arguments| run(&arguments),
+        |result| {
+            trace::flush();
+            result
+        },
+    )
+}
+
 #[trace(channels = [document])]
 fn run(arguments: &Arguments) -> miette::Result<()> {
     let workspace = &arguments.workspace;
@@ -87,15 +102,6 @@ fn run(arguments: &Arguments) -> miette::Result<()> {
     }
 
     Ok(())
-}
-
-fn main() -> miette::Result<()> {
-    trace::initialize(None, |channels| {
-        channels.iter().any(|c| c.name == "document")
-    })?;
-    let result = run(&Arguments::parse());
-    trace::flush();
-    result
 }
 
 #[trace(channels = [document])]

@@ -12,32 +12,22 @@ package(default_visibility = [
 
 ##### Module                                                                                                                                           [ Module ]
 bzl_library(
-    name = "types",
-    srcs = ["types.bzl"],
+    name = "action",
+    srcs = ["action.bzl"],
+    visibility = ["//visibility:public"],
 )
 
 bzl_library(
-    name = "impls",
-    srcs = ["impls.bzl"],
-    deps = [":types"],
+    name = "autotest",
+    srcs = ["autotest.bzl"],
+    deps = [":action"],
 )
 
 bzl_library(
-    name = "rule",
-    srcs = ["rule.bzl"],
-    deps = [
-        ":impls",
-        ":types",
-    ],
-)
-
-bzl_library(
-    name = "macro",
-    srcs = ["macro.bzl"],
-    deps = [
-        ":rule",
-        ":types",
-    ],
+    name = "web",
+    srcs = ["web.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [":action"],
 )
 
 bzl_library(
@@ -46,7 +36,11 @@ bzl_library(
     visibility = [
         "//visibility:public",
     ],
-    deps = [":macro"],
+    deps = [
+        ":action",
+        ":autotest",
+        ":web",
+    ],
 )
 
 ##### Documentation                                                                                                                                 [ Documentation ]

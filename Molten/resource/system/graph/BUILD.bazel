@@ -7,8 +7,8 @@
 package(default_visibility = [
     "//Molten:__pkg__",
     "//Molten:__subpackages__",
-    "//system/web:__pkg__",
-    "//system/web/compute:__pkg__",
+    "//system/generation/web:__pkg__",
+    "//system/generation/web/assembly:__pkg__",
 ])
 
 ##### Module                                                                                                                                           [ Module ]

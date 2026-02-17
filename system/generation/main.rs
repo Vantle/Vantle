@@ -2,8 +2,10 @@ use clap::{Parser, ValueEnum};
 use component::generation::rust::error::Error;
 use component::generation::rust::schema::Cases;
 use miette::{Context, IntoDiagnostic};
-use observe::trace;
 use std::{fs, path::PathBuf};
+
+command::output!("Write generated test source to this path");
+command::prefix!();
 
 #[derive(Debug, Clone, ValueEnum)]
 #[clap(rename_all = "kebab-case")]
@@ -21,35 +23,34 @@ struct Arguments {
     cases: PathBuf,
     #[arg(long, required = true)]
     language: Language,
-    #[arg(long, required = true)]
-    output: PathBuf,
-    #[arg(long, required = true)]
-    prefix: String,
+    #[command(flatten)]
+    output: Output,
+    #[command(flatten)]
+    prefix: Prefix,
 }
 
 fn main() -> miette::Result<()> {
-    trace::initialize(None, |channels| {
-        channels.iter().any(|c| c.name == "generation")
-    })?;
-    let result = run();
-    trace::flush();
-    result
+    command::execute(
+        |_| {
+            command::activate(trace::initialize(None, |channels| {
+                trace::channel::Channel::matches(channels, &["generation"])
+            }))
+        },
+        |arguments| match generate(arguments) {
+            Ok(()) => Ok(()),
+            Err(report) => {
+                tracing::error!("{report}");
+                Err(report)
+            }
+        },
+        |result| {
+            trace::flush();
+            result
+        },
+    )
 }
 
-#[trace(channels = [generation])]
-fn run() -> miette::Result<()> {
-    match generate() {
-        Ok(()) => Ok(()),
-        Err(report) => {
-            tracing::error!("{report}");
-            Err(report)
-        }
-    }
-}
-
-fn generate() -> miette::Result<()> {
-    let arguments = Arguments::parse();
-
+fn generate(arguments: Arguments) -> miette::Result<()> {
     let template = fs::read_to_string(&arguments.template)
         .into_diagnostic()
         .wrap_err(format!(
@@ -74,7 +75,7 @@ fn generate() -> miette::Result<()> {
         }
     };
 
-    if let Some(parent) = arguments.output.parent() {
+    if let Some(parent) = arguments.output.path.parent() {
         fs::create_dir_all(parent)
             .into_diagnostic()
             .wrap_err(format!(
@@ -83,14 +84,14 @@ fn generate() -> miette::Result<()> {
             ))?;
     }
 
-    fs::write(&arguments.output, &output)
+    fs::write(&arguments.output.path, &output)
         .into_diagnostic()
         .wrap_err(format!(
             "📁 failed to write output: {}\n\n💡 check that you have write permissions to the output directory",
-            arguments.output.display()
+            arguments.output.path.display()
         ))?;
 
-    let resolved = symlink::resolve(&arguments.output, &arguments.prefix)?;
+    let resolved = symlink::resolve(&arguments.output.path, &arguments.prefix.value)?;
     tracing::info!("generated: {}", resolved.display());
     Ok(())
 }

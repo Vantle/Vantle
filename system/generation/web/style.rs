@@ -50,7 +50,7 @@ fn dark(properties: style::Properties) -> style::Properties {
 
 #[trace(channels = [document])]
 pub fn page(
-    arguments: &render::Arguments,
+    arguments: &html::Arguments,
     title: &str,
     context: &str,
     identifier: &str,
@@ -58,7 +58,7 @@ pub fn page(
 ) -> miette::Result<()> {
     let root = arguments.root();
     let favicon = format!("{root}resource/favicon.ico");
-    render::generate(
+    html::generate(
         arguments,
         Page::new()
             .title(&match (context, title) {
@@ -160,9 +160,36 @@ pub fn page(
                                             })
                                     })
                             })
-                            .element("a", |a| {
-                                a.attribute("href", &format!("{root}system/generation/"))
-                                    .text("Generation")
+                            .element("div", |dd| {
+                                dd.class("nav-dropdown")
+                                    .element("a", |a| {
+                                        a.attribute(
+                                            "href",
+                                            &format!("{root}system/generation/"),
+                                        )
+                                        .text("Generation")
+                                    })
+                                    .element("div", |m| {
+                                        m.class("nav-dropdown-menu")
+                                            .element("a", |a| {
+                                                a.attribute(
+                                                    "href",
+                                                    &format!(
+                                                        "{root}system/generation/web/"
+                                                    ),
+                                                )
+                                                .text("Web")
+                                            })
+                                            .element("a", |a| {
+                                                a.attribute(
+                                                    "href",
+                                                    &format!(
+                                                        "{root}system/generation/rust/"
+                                                    ),
+                                                )
+                                                .text("Autotest")
+                                            })
+                                    })
                             })
                             .element("a", |a| {
                                 a.attribute("href", &format!("{root}system/observation/"))
@@ -213,6 +240,26 @@ fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Body {
                 ("License", format!("{root}Molten/license.html"), "license"),
             ],
         ),
+        "generation" => (
+            vec![
+                (
+                    "Generation",
+                    format!("{root}system/generation/"),
+                    "generation",
+                ),
+                ("Web", format!("{root}system/generation/web/"), "web"),
+                (
+                    "Autotest",
+                    format!("{root}system/generation/rust/"),
+                    "autotest",
+                ),
+            ],
+            vec![
+                ("Info", format!("{root}info.html"), "info"),
+                ("Notice", format!("{root}notice.html"), "notice"),
+                ("License", format!("{root}license.html"), "license"),
+            ],
+        ),
         _ => (
             vec![
                 ("Vantle", format!("{root}index.html"), "readme"),
@@ -241,6 +288,10 @@ fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Body {
             }
         })
     });
+
+    if legal.is_empty() {
+        return body;
+    }
 
     let body = body.element("div", |d| d.class("sidebar-label").text("Legal"));
 
@@ -549,11 +600,24 @@ pub fn theme() -> Style {
                 .background("transparent")
                 .border("none")
                 .cursor("pointer")
-                .font_size("var(--scale-1)")
-                .color("var(--text-secondary)")
-                .padding("var(--scale-n2)")
+                .padding("0")
+                .align_items("center")
+                .justify_content("center")
+                .custom("align-self", "center")
+                .height("var(--scale-2)")
+                .width("var(--scale-2)")
+                .custom("flex-direction", "column")
+                .gap("3px")
         })
-        .rule(".hamburger:hover", |r| r.color("var(--text)"))
+        .rule(".hamburger span", |r| {
+            r.display("block")
+                .width("16px")
+                .height("2px")
+                .background("var(--text-secondary)")
+                .border_radius("1px")
+                .transition("background-color 0.3s ease")
+        })
+        .rule(".hamburger:hover span", |r| r.background("var(--text)"))
         .rule("table", |r| {
             r.width("100%")
                 .border_collapse("collapse")
@@ -716,7 +780,7 @@ pub fn theme() -> Style {
             })
             .rule(".sidebar.open", |r| r.display("block"))
             .rule(".layout", |r| r.custom("grid-template-columns", "1fr"))
-            .rule(".hamburger", |r| r.display("block"))
+            .rule(".hamburger", |r| r.display("flex"))
         })
         .media("max-width: 768px", |m| {
             m.rule("main", |r| r.padding("var(--scale-0) var(--scale-n1)"))

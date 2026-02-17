@@ -19,7 +19,11 @@ pub fn initialize(document: &Document) {
     };
     let _ = button.set_attribute("class", "hamburger");
     let _ = button.set_attribute("aria-label", "Toggle navigation");
-    button.set_text_content(Some("\u{2630}"));
+    for _ in 0..3 {
+        if let Ok(bar) = document.create_element("span") {
+            let _ = button.append_child(&bar);
+        }
+    }
 
     let sidebar_clone = sidebar.clone();
     let toggle = Closure::<dyn FnMut()>::new(move || {
@@ -57,8 +61,8 @@ pub fn initialize(document: &Document) {
     let _ = document.add_event_listener_with_callback("keydown", escape.as_ref().unchecked_ref());
     escape.forget();
 
-    if let Some(first_child) = nav.first_child() {
-        let _ = nav.insert_before(&button, Some(&first_child));
+    if let Ok(Some(logo)) = nav.query_selector(".nav-logo") {
+        let _ = nav.insert_before(&button, logo.next_sibling().as_ref());
     } else {
         let _ = nav.append_child(&button);
     }

@@ -3,7 +3,7 @@
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
 load("@rules_rust//rust:defs.bzl", "rust_library")
-load("//component/web/starlark:defs.bzl", "generate")
+load("//component/web/starlark:defs.bzl", "document")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
@@ -46,8 +46,8 @@ rust_library(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
-generate(
-    src = "molten.document.rs",
+document(
+    srcs = ["molten.document.rs"],
     data = [
         "//Molten/test/resource/system/graph/module/join/symbolic:data",
         "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean/symbolic:data",
@@ -55,30 +55,30 @@ generate(
     destination = "Molten/index.html",
     deps = [
         "//component/web:element",
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )
 
-generate(
-    src = "info.document.rs",
+document(
+    srcs = ["info.document.rs"],
     destination = "Molten/info.html",
     deps = [
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )
 
-generate(
-    src = "notice.document.rs",
+document(
+    srcs = ["notice.document.rs"],
     destination = "Molten/notice.html",
     deps = [
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )
 
-generate(
-    src = "license.document.rs",
+document(
+    srcs = ["license.document.rs"],
     destination = "Molten/license.html",
     deps = [
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )

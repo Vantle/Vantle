@@ -33,8 +33,8 @@ common --build_metadata=module=vantle
 
 ##### Execution                                                                                                                              [ Remote, Execution ]
 common:remote --remote_executor=grpcs://vantle.buildbuddy.io
-common:remote --extra_execution_platforms=//:buildbuddy
-common:remote --platforms=//:buildbuddy
+common:remote --extra_execution_platforms=//platform/bazel/buildbuddy:rbe
+common:remote --platforms=//platform/bazel/buildbuddy:rbe
 common:remote --jobs=256
 common:remote --build_metadata=ROLE=CI
 
@@ -103,6 +103,11 @@ common:observe:level:error --//platform/observation:level=error
 test --//platform/observation:mode=transparent
 test --//platform/observation:format=chrome
 test --//platform/observation:level=debug
+
+#################################################################################################################################################################
+##### Windows                                                                                                                              [ Platform, Windows ]
+common:windows --color=auto
+common:windows --curses=auto
 
 #################################################################################################################################################################
 ##### Import

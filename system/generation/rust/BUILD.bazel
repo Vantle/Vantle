@@ -4,6 +4,9 @@
 ##### External                                                                                                                               [ Import, External ]
 load("@rules_rust//rust:defs.bzl", "rust_library")
 
+##### Documentation                                                                                                                                 [ Documentation ]
+load("//component/web/starlark:defs.bzl", "document")
+
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
     "//system:__pkg__",
@@ -48,3 +51,9 @@ rust_library(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+document(
+    srcs = ["autotest.document.rs"],
+    destination = "system/generation/rust/index.html",
+    visibility = ["//visibility:public"],
+    deps = ["//system/generation/web:style"],
+)

@@ -1,14 +1,14 @@
 """
 W3C validation aspect using the Nu HTML Checker.
 
-Validates HTML and CSS outputs from DocumentInfo targets during the build.
+Validates HTML and CSS outputs from GenerationInfo targets during the build.
 """
 
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
-load(":types.bzl", "DocumentInfo")
+load("//component/generation/starlark:action.bzl", "GenerationInfo")
 
 def _validate_impl(target, ctx):
-    info = target[DocumentInfo]
+    info = target[GenerationInfo]
     path = info.output.path
 
     if path.endswith(".html"):
@@ -67,7 +67,7 @@ def _validate_impl(target, ctx):
 
 validate = aspect(
     implementation = _validate_impl,
-    required_providers = [DocumentInfo],
+    required_providers = [GenerationInfo],
     toolchains = ["@bazel_tools//tools/jdk:runtime_toolchain_type"],
     attrs = {
         "_validator": attr.label(

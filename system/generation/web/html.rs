@@ -1,6 +1,5 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
-use std::path::PathBuf;
 
 use clap::Parser;
 use element::{Element, Language, Source};
@@ -9,14 +8,16 @@ use page::Page;
 use span::Fragment;
 use style::{Keyframe, Media, Properties, Style};
 
+command::output!("Write generated document to this path");
+
 #[derive(Parser)]
 #[command(
     name = "document",
     about = "Generate a document from a Rust DSL page definition"
 )]
 pub struct Arguments {
-    #[arg(long)]
-    output: PathBuf,
+    #[command(flatten)]
+    output: Output,
 
     #[arg(long)]
     destination: String,
@@ -51,6 +52,7 @@ pub fn render<S: std::hash::BuildHasher>(
         html: String::new(),
         data,
         headings: Vec::new(),
+        identifiers: HashSet::new(),
     };
 
     renderer
@@ -156,12 +158,12 @@ pub fn css(style: &Style) -> String {
 pub fn generate(arguments: &Arguments, page: Page) -> miette::Result<()> {
     let data = load(&arguments.data)?;
     let html = render(&page, &data)?;
-    emit(&arguments.output, &html)
+    emit(&arguments.output.path, &html)
 }
 
 #[trace(channels = [document])]
 pub fn stylesheet(arguments: &Arguments, style: &Style) -> miette::Result<()> {
-    emit(&arguments.output, &css(style))
+    emit(&arguments.output.path, &css(style))
 }
 
 #[trace(channels = [document])]
@@ -272,6 +274,7 @@ struct Renderer<'a, S: std::hash::BuildHasher> {
     html: String,
     data: &'a HashMap<String, String, S>,
     headings: Vec<(u8, String, String)>,
+    identifiers: HashSet<String>,
 }
 
 impl<S: std::hash::BuildHasher> Renderer<'_, S> {
@@ -350,10 +353,23 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
                 let id = if let Some((_, value)) = existing {
                     value.clone()
                 } else {
-                    let id = slugify(&text);
+                    let base = slugify(&text);
+                    let id = if self.identifiers.contains(&base) {
+                        let mut suffix = 2;
+                        loop {
+                            let candidate = format!("{base}-{suffix}");
+                            if !self.identifiers.contains(&candidate) {
+                                break candidate;
+                            }
+                            suffix += 1;
+                        }
+                    } else {
+                        base
+                    };
                     write!(self.html, " id=\"{}\"", escape(&id)).unwrap();
                     id
                 };
+                self.identifiers.insert(id.clone());
                 self.headings.push((heading, id, text));
             }
         }

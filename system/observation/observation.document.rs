@@ -1,10 +1,10 @@
 use element::Language;
-use vantle::Composition;
+use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = render::Arguments::parse();
+    let arguments = html::Arguments::parse();
     let root = arguments.root();
-    vantle::page(&arguments, "Observation", "vantle", "observation", |c| {
+    style::page(&arguments, "Observation", "vantle", "observation", |c| {
         c.title("Observation")
             .subtitle("Trace streaming and recording for Vantle")
             .rule()

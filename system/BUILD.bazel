@@ -90,12 +90,12 @@ rust_library(
 )
 
 rust_library(
-    name = "web",
-    srcs = ["web.rs"],
+    name = "command",
+    srcs = ["command.rs"],
     visibility = ["//visibility:public"],
     deps = [
-        "//system/web:highlight",
-        "//system/web:render",
+        "@crates//:clap",
+        "@crates//:miette",
     ],
 )
 

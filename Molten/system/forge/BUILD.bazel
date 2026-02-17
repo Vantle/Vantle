@@ -25,6 +25,7 @@ rust_binary(
         "//Molten/system/graph/symbolic/constructor:error",
         "//Molten/system/hypergraph:evaluate",
         "//component/observation:module",
+        "//system:command",
         "//system:diagnostic",
         "//system/observation/trace:module",
         "@crates//:clap",

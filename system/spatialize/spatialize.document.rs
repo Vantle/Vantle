@@ -1,6 +1,6 @@
 use element::{Element, Language};
 use span::Fragment;
-use vantle::Composition;
+use style::Composition;
 
 fn code(value: &str) -> Element {
     Element::Span(vec![Fragment::Code(value.into())])
@@ -11,8 +11,8 @@ fn text(value: &str) -> Element {
 }
 
 fn main() -> miette::Result<()> {
-    let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Spatialize", "vantle", "spatialize", |c| {
+    let arguments = html::Arguments::parse();
+    style::page(&arguments, "Spatialize", "vantle", "spatialize", |c| {
         c.title("Spatialize")
             .subtitle("GPU rendering infrastructure for Vantle")
             .rule()

@@ -1,79 +1,61 @@
-use element::Language;
-use vantle::Composition;
+use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = render::Arguments::parse();
-    vantle::page(&arguments, "Generation", "vantle", "generation", |c| {
+    let arguments = html::Arguments::parse();
+    let root = arguments.root();
+    style::page(&arguments, "Generation", "generation", "generation", |c| {
         c.title("Generation")
-            .subtitle("Code generation framework for Rust")
+            .subtitle("Code generation framework")
             .rule()
             .paragraph(|p| {
-                p.text("This document describes the ")
+                p.text("The ")
                     .bold("Generation")
-                    .text(" framework, a code generation system for Rust projects built on Bazel.")
+                    .text(" framework produces files from structured inputs. Each generator targets a specific output format and integrates with Bazel for incremental, cacheable builds.")
             })
             .rule()
-            .section("Autotest", |s| {
-                s.paragraph(|p| {
-                    p.text("Autotest is an implementation of the Generation framework that provides JSON-driven test generation, eliminating boilerplate and enabling data-driven testing.")
-                })
-                .subsection("Template", |ss| {
-                    ss.paragraph(|p| {
-                        p.text("Write functions in a ")
-                            .code(".template.rs")
-                            .text(" file:")
+            .section("Generators", |s| {
+                s.subsection("Web", |ss| {
+                    ss.aside(|a| {
+                        a.italic("HTML, CSS, syntax highlighting, and WebAssembly from Rust DSL")
                     })
-                    .literal("use component::graph::state::particle::Particle;\n\nfn disjoint(candidate: Particle<String>, basis: Particle<String>) -> Option<Particle<String>> {\n    candidate.disjoint(&basis).map(|_| candidate.clone())\n}", Language::Rust)
-                })
-                .subsection("Cases", |ss| {
-                    ss.paragraph(|p| {
-                        p.text("Define test data in ")
-                            .code("cases.json")
-                            .text(":")
+                    .paragraph(|p| {
+                        p.text("Author documentation pages as ")
+                            .code(".document.rs")
+                            .text(" files using the ")
+                            .code("Composition")
+                            .text(" trait. The web generator renders complete HTML with automatic table-of-contents, syntax-highlighted code blocks, golden-ratio styling, and optional WASM interactivity.")
                     })
-                    .literal("{\n  \"functions\": [\n    {\n      \"function\": \"disjoint\",\n      \"tags\": [\"particle\", \"disjoint\"],\n      \"parameters\": {\n        \"candidate\": [[\"a\", 1]],\n        \"basis\": [[\"b\", 1]]\n      },\n      \"returns\": { \"()\": [[\"a\", 1]] },\n      \"cases\": [\n        {\n          \"tags\": [\"empty\"],\n          \"parameters\": { \"basis\": [] },\n          \"returns\": { \"()\": [[\"a\", 1]] }\n        }\n      ]\n    }\n  ]\n}", Language::Json)
-                })
-                .subsection("Build", |ss| {
-                    ss.paragraph(|p| p.text("Use Bazel rules to generate and run tests:"))
-                        .literal("rust_autotest_template(\n    name = \"template\",\n    src = \"function.template.rs\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)\n\nrust_autotest(\n    name = \"function\",\n    template = \":template\",\n    cases = \":cases.json\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)", Language::Starlark)
-                })
-                .subsection("Features", |ss| {
-                    ss.element("ul", |ul| {
-                        ul.element("li", |li| {
-                            li.span(|s| {
-                                s.bold("Parameter shadowing")
-                                    .text(": Function-level defaults with case-level overrides")
-                            })
-                        })
-                        .element("li", |li| {
-                            li.span(|s| {
-                                s.bold("Tag organization").text(": Filter tests by tags")
-                            })
-                        })
-                        .element("li", |li| {
-                            li.span(|s| {
-                                s.bold("Schema validation")
-                                    .text(": Parameters match function signatures")
-                            })
-                        })
-                        .element("li", |li| {
-                            li.span(|s| {
-                                s.bold("Rich diagnostics")
-                                    .text(": Error reporting via miette")
-                            })
-                        })
+                    .paragraph(|p| {
+                        p.link(&format!("{root}system/generation/web/"), "more \u{2192}")
                     })
                 })
-            })
-            .rule()
-            .section("Structure", |s| {
-                s.element("pre", |p| {
-                    p.element("code", |c| {
-                        c.text(
-                            "component/generation/     Schema and types\nsystem/generation/        Generator binary",
+                .subsection("Autotest", |ss| {
+                    ss.aside(|a| {
+                        a.italic("JSON-driven test generation for Rust")
+                    })
+                    .paragraph(|p| {
+                        p.text("Eliminate test boilerplate by generating Rust test functions from templates and JSON case definitions. Write the logic once, define test data declaratively, and produce exhaustive test suites with parameter shadowing and tag organization.")
+                    })
+                    .paragraph(|p| {
+                        p.link(
+                            &format!("{root}system/generation/rust/"),
+                            "more \u{2192}",
                         )
                     })
                 })
+            })
+            .rule()
+            .section("Source", |s| {
+                s.paragraph(|p| {
+                    p.text("Deploys generated files to the workspace via a manifest-driven copy. Supports verification mode to detect drift between generated output and committed source.")
+                })
+                .shell("bazel run //:generate.documentation")
+            })
+            .rule()
+            .aside(|a| {
+                a.italic("These docs were generated with this framework \u{2014} authored as ")
+                    .code(".document.rs")
+                    .italic(" files and rendered to HTML by the web generator.")
             })
     })
 }

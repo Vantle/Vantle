@@ -530,20 +530,26 @@ impl Visitor {
                 self.emit_expr(&r.expr);
             }
             Expr::Block(block) => {
+                let indent = self.leading();
+                let outer = &indent[..indent.len().saturating_sub(4)];
                 self.plain(" {\n");
                 for stmt in &block.block.stmts {
-                    self.emit_statement(stmt, "");
+                    self.emit_statement(stmt, &indent);
                 }
+                self.output.push_str(outer);
                 self.plain("}");
             }
             Expr::If(expr_if) => {
+                let indent = self.leading();
+                let outer = &indent[..indent.len().saturating_sub(4)];
                 self.keyword("if");
                 self.plain(" ");
                 self.emit_expr(&expr_if.cond);
                 self.plain(" {\n");
                 for stmt in &expr_if.then_branch.stmts {
-                    self.emit_statement(stmt, "");
+                    self.emit_statement(stmt, &indent);
                 }
+                self.output.push_str(outer);
                 self.plain("}");
                 if let Some((_, else_branch)) = &expr_if.else_branch {
                     self.plain(" ");
@@ -553,12 +559,14 @@ impl Visitor {
                 }
             }
             Expr::Match(m) => {
+                let indent = self.leading();
+                let outer = &indent[..indent.len().saturating_sub(4)];
                 self.keyword("match");
                 self.plain(" ");
                 self.emit_expr(&m.expr);
                 self.plain(" {\n");
                 for arm in &m.arms {
-                    self.plain("    ");
+                    self.output.push_str(&indent);
                     self.emit_pat(&arm.pat);
                     self.plain(" ");
                     self.operator("=>");
@@ -566,6 +574,7 @@ impl Visitor {
                     self.emit_expr(&arm.body);
                     self.plain(",\n");
                 }
+                self.output.push_str(outer);
                 self.plain("}");
             }
             Expr::Closure(c) => {
@@ -590,16 +599,29 @@ impl Visitor {
                 }
                 self.punctuation("|");
                 self.plain(" ");
-                self.emit_expr(&c.body);
+                if let Expr::Block(block) = &*c.body {
+                    let indent = self.leading();
+                    let outer = &indent[..indent.len().saturating_sub(4)];
+                    self.plain("{\n");
+                    for stmt in &block.block.stmts {
+                        self.emit_statement(stmt, &indent);
+                    }
+                    self.output.push_str(outer);
+                    self.plain("}");
+                } else {
+                    self.emit_expr(&c.body);
+                }
             }
             Expr::Struct(s) => {
+                let indent = self.leading();
+                let outer = &indent[..indent.len().saturating_sub(4)];
                 self.emit_path(&s.path);
                 self.plain(" {\n");
                 for (i, field) in s.fields.iter().enumerate() {
                     if i > 0 {
                         self.plain(",\n");
                     }
-                    self.plain("    ");
+                    self.output.push_str(&indent);
                     if field.colon_token.is_some() {
                         self.variable(&field.member.to_token_stream().to_string());
                         self.punctuation(":");
@@ -607,7 +629,9 @@ impl Visitor {
                     }
                     self.emit_expr(&field.expr);
                 }
-                self.plain("\n}");
+                self.output.push('\n');
+                self.output.push_str(outer);
+                self.plain("}");
             }
             Expr::Field(f) => {
                 self.emit_expr(&f.base);

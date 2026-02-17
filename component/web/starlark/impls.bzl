@@ -1,60 +1,14 @@
 """
-Implementation for document generation rules.
+Implementation for document publishing rules.
 
-Private implementations for the document.generate and publish rules.
+Private implementations for the publish and verify rules.
 """
 
-load(":types.bzl", "DocumentInfo")
-
-_EXTENSIONS = [".js", ".wasm"]
-
-def generate_impl(ctx):
-    """
-    Implementation for document.generate rule.
-
-    Runs the document binary to produce a file.
-
-    Args:
-        ctx: Rule context
-
-    Returns:
-        Providers: DefaultInfo, DocumentInfo
-    """
-    output = ctx.actions.declare_file(ctx.attr.destination.replace("/", "_"))
-
-    arguments = [
-        "--output",
-        output.path,
-        "--destination",
-        ctx.attr.destination,
-    ]
-    inputs = []
-
-    for dep in ctx.attr.data:
-        for file in dep.files.to_list():
-            arguments.extend(["--data", file.path])
-            inputs.append(file)
-
-    ctx.actions.run(
-        executable = ctx.executable.binary,
-        arguments = arguments,
-        inputs = inputs,
-        outputs = [output],
-        mnemonic = "Document",
-        progress_message = "Generating: %s" % ctx.attr.destination,
-    )
-
-    return [
-        DefaultInfo(files = depset([output])),
-        DocumentInfo(
-            output = output,
-            destination = ctx.attr.destination,
-        ),
-    ]
+load("//component/generation/starlark:action.bzl", "GenerationInfo")
 
 def publish_impl(ctx, verify = False):
     """
-    Aggregates DocumentInfo from page targets into a manifest and launches the publisher.
+    Aggregates GenerationInfo from source targets into a manifest and launches the publisher.
 
     Args:
         ctx: Rule context
@@ -66,23 +20,13 @@ def publish_impl(ctx, verify = False):
     outputs = []
     lines = []
 
-    for page in ctx.attr.pages:
-        if DocumentInfo in page:
-            info = page[DocumentInfo]
-            outputs.append(info.output)
-            lines.append("{source}\t{destination}".format(
-                source = info.output.short_path,
-                destination = info.destination,
-            ))
-
-    for label, destination in ctx.attr.static.items():
-        for file in label.files.to_list():
-            if any([file.basename.endswith(extension) for extension in _EXTENSIONS]):
-                outputs.append(file)
-                lines.append("{source}\t{destination}".format(
-                    source = file.short_path,
-                    destination = destination + "/" + file.basename,
-                ))
+    for src in ctx.attr.srcs:
+        info = src[GenerationInfo]
+        outputs.append(info.output)
+        lines.append("{source}\t{destination}".format(
+            source = info.output.short_path,
+            destination = info.destination,
+        ))
 
     manifest = ctx.actions.declare_file(ctx.label.name + ".manifest")
     ctx.actions.write(
@@ -95,7 +39,7 @@ def publish_impl(ctx, verify = False):
     ctx.actions.write(
         output = launcher,
         content = "#!/usr/bin/env bash\nRUNFILES=\"${{RUNFILES_DIR:-$0.runfiles}}/_main\"\nexec \"$RUNFILES/{binary}\" --runfiles \"$RUNFILES\" --workspace \"$BUILD_WORKSPACE_DIRECTORY\" --manifest \"$RUNFILES/{manifest}\"{suffix} \"$@\"\n".format(
-            binary = ctx.executable.generator.short_path,
+            binary = ctx.executable._generator.short_path,
             manifest = manifest.short_path,
             suffix = suffix,
         ),
@@ -103,7 +47,7 @@ def publish_impl(ctx, verify = False):
     )
 
     runfiles = ctx.runfiles(files = outputs + [manifest])
-    runfiles = runfiles.merge(ctx.attr.generator[DefaultInfo].default_runfiles)
+    runfiles = runfiles.merge(ctx.attr._generator[DefaultInfo].default_runfiles)
 
     return [
         DefaultInfo(
@@ -113,16 +57,14 @@ def publish_impl(ctx, verify = False):
     ]
 
 PUBLISH_ATTRS = {
-    "pages": attr.label_list(
-        doc = "Document targets providing DocumentInfo",
-    ),
-    "static": attr.label_keyed_string_dict(
-        doc = "Static files to copy: label -> workspace-relative destination directory",
-    ),
-    "generator": attr.label(
+    "srcs": attr.label_list(
         mandatory = True,
+        providers = [GenerationInfo],
+        doc = "Targets providing GenerationInfo (documents, assets, stylesheets)",
+    ),
+    "_generator": attr.label(
+        default = "//system/generation:source",
         executable = True,
         cfg = "exec",
-        doc = "Publish runner binary (system/document:publish)",
     ),
 }

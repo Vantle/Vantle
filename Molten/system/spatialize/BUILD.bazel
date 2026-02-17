@@ -1,5 +1,5 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
-load("//component/web/starlark:defs.bzl", "generate")
+load("//component/web/starlark:defs.bzl", "document")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -220,12 +220,12 @@ rust_binary(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
-generate(
-    src = "spatialize.document.rs",
+document(
+    srcs = ["spatialize.document.rs"],
     destination = "Molten/system/spatialize/index.html",
     deps = [
         "//component/web:element",
         "//component/web:span",
-        "//system/document:vantle",
+        "//system/generation/web:style",
     ],
 )

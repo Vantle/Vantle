@@ -5,47 +5,23 @@
 load("@rules_rust//rust:defs.bzl", "rust_library")
 
 ##### Visibility                                                                                                                                       [ Module ]
-package(default_visibility = [
-    "//system:__pkg__",
-    "//system/document:__pkg__",
-    "//system/document:__subpackages__",
-])
+package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
     name = "highlight",
     srcs = ["highlight.rs"],
-    visibility = ["//visibility:public"],
     deps = [
         "//component/web:element",
+        "//system/generation/web/html/highlight:bash",
+        "//system/generation/web/html/highlight:escape",
+        "//system/generation/web/html/highlight:json",
+        "//system/generation/web/html/highlight:molten",
+        "//system/generation/web/html/highlight:rust",
+        "//system/generation/web/html/highlight:starlark",
+        "//system/generation/web/html/highlight:walker",
         "//system/graph/symbolic:constructor",
-        "//system/web/highlight:bash",
-        "//system/web/highlight:escape",
-        "//system/web/highlight:json",
-        "//system/web/highlight:molten",
-        "//system/web/highlight:rust",
-        "//system/web/highlight:starlark",
-        "//system/web/highlight:walker",
         "@crates//:miette",
-    ],
-)
-
-rust_library(
-    name = "render",
-    srcs = ["render.rs"],
-    proc_macro_deps = ["//system/observation:macro"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//component/web:element",
-        "//component/web:error",
-        "//component/web:page",
-        "//component/web:span",
-        "//component/web:style",
-        "//system/web:highlight",
-        "//system/web/highlight:escape",
-        "@crates//:clap",
-        "@crates//:miette",
-        "@crates//:tracing",
     ],
 )
 

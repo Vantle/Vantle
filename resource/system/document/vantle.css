@@ -395,13 +395,27 @@ nav {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: var(--scale-1);
-  color: var(--text-secondary);
-  padding: var(--scale-n2);
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  height: var(--scale-2);
+  width: var(--scale-2);
+  flex-direction: column;
+  gap: 3px;
 }
 
-.hamburger:hover {
-  color: var(--text);
+.hamburger span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: var(--text-secondary);
+  border-radius: 1px;
+  transition: background-color 0.3s ease;
+}
+
+.hamburger:hover span {
+  background: var(--text);
 }
 
 table {
@@ -672,7 +686,7 @@ html[data-theme="light"] {
     grid-template-columns: 1fr;
   }
   .hamburger {
-    display: block;
+    display: flex;
   }
 }
 

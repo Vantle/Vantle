@@ -4,82 +4,54 @@
 ##### External                                                                                                                               [ Import, External ]
 load("@rules_rust//rust:defs.bzl", "rust_library")
 
+##### Documentation                                                                                                                                 [ Documentation ]
+load("//component/web/starlark:defs.bzl", "document")
+
 ##### Visibility                                                                                                                                       [ Module ]
-package(default_visibility = [
-    "//system/web:__pkg__",
-    "//system/web:__subpackages__",
-])
+package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
-    name = "escape",
-    srcs = ["escape.rs"],
-    visibility = ["//visibility:public"],
-)
-
-rust_library(
-    name = "walker",
-    srcs = ["walker.rs"],
+    name = "html",
+    srcs = ["html.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
     deps = [
-        ":escape",
-        "@crates//:tree-sitter",
-    ],
-)
-
-rust_library(
-    name = "rust",
-    srcs = ["rust.rs"],
-    deps = [
-        ":escape",
+        "//component/web:element",
+        "//component/web:error",
+        "//component/web:page",
+        "//component/web:span",
+        "//component/web:style",
+        "//system:command",
+        "//system/generation/web/html:highlight",
+        "//system/generation/web/html/highlight:escape",
+        "@crates//:clap",
         "@crates//:miette",
-        "@crates//:quote",
-        "@crates//:syn",
+        "@crates//:tracing",
     ],
 )
 
 rust_library(
-    name = "molten",
-    srcs = ["molten.rs"],
-    aliases = {
-        "//Molten/system/graph/symbolic:traversal": "token",
-    },
+    name = "style",
+    srcs = ["style.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
     deps = [
-        ":escape",
-        "//Molten:component",
-        "//Molten/system/graph/symbolic:traversal",
+        "//component/design:palette",
+        "//component/design:proportion",
+        "//component/web:body",
+        "//component/web:element",
+        "//component/web:page",
+        "//component/web:span",
+        "//component/web:style",
+        "//system/generation/web:html",
         "@crates//:miette",
-    ],
-)
-
-rust_library(
-    name = "json",
-    srcs = ["json.rs"],
-    aliases = {
-        "//Molten/system/graph/symbolic:traversal": "token",
-    },
-    deps = [
-        ":escape",
-        "//Molten/system/graph/symbolic:traversal",
-        "//system/graph/symbolic:traversal",
-        "@crates//:miette",
-        "@crates//:serde_json",
-    ],
-)
-
-rust_library(
-    name = "starlark",
-    srcs = ["starlark.rs"],
-    deps = [
-        "@crates//:tree-sitter",
-    ],
-)
-
-rust_library(
-    name = "bash",
-    srcs = ["bash.rs"],
-    deps = [
-        "@crates//:tree-sitter",
+        "@crates//:tracing",
     ],
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+document(
+    name = "generator",
+    srcs = ["web.document.rs"],
+    destination = "system/generation/web/index.html",
+    deps = ["//system/generation/web:style"],
+)

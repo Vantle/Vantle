@@ -104,8 +104,16 @@ async fn shutdown() {
 }
 
 fn main() -> Result<()> {
-    trace::initialize(None, |channels| channels.iter().any(|c| c.name == "serve"))?;
-    let result = runtime::global()?.block_on(run(Arguments::parse()));
-    trace::flush();
-    result
+    command::execute(
+        |_| {
+            command::activate(trace::initialize(None, |channels| {
+                trace::channel::Channel::matches(channels, &["serve"])
+            }))
+        },
+        |arguments| runtime::global()?.block_on(run(arguments)),
+        |result| {
+            trace::flush();
+            result
+        },
+    )
 }

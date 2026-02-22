@@ -36,19 +36,16 @@ impl Identifier {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
+)]
 pub enum Level {
     Trace,
     Debug,
+    #[default]
     Info,
     Warn,
     Error,
-}
-
-impl Default for Level {
-    fn default() -> Self {
-        Self::Info
-    }
 }
 
 impl From<tracing::Level> for Level {

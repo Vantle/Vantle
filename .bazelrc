@@ -61,6 +61,7 @@ common --@rules_rust//rust/settings:clippy_flag=-Aclippy::missing_docs_in_privat
 common --@rules_rust//rust/settings:clippy_flag=-Aclippy::similar_names
 common --@rules_rust//rust/settings:clippy_flag=-Aclippy::too_many_lines
 common --@rules_rust//rust/settings:clippy_flag=-Aclippy::needless_pass_by_value
+common --@rules_rust//rust/settings:clippy_flag=-Aunused-assignments
 
 #################################################################################################################################################################
 ########## Execution                                                                                                                                  [ Execute ]

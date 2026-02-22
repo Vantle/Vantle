@@ -30,7 +30,7 @@ fn render(
                 *exceeded = true;
                 let text = arena
                     .alias(attribute)
-                    .map_or_else(|_| value.to_string(), |index| index.to_string());
+                    .map_or_else(|_| value.clone(), |index| index.to_string());
                 output.push_str(&text);
             } else {
                 output.push_str(value);

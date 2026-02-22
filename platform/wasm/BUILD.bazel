@@ -1,0 +1,17 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust_wasm_bindgen//:defs.bzl", "rust_wasm_bindgen_toolchain")
+
+#################################################################################################################################################################
+########## Module                                                                                                                                       [ Module ]
+rust_wasm_bindgen_toolchain(
+    name = "toolchain_implementation",
+    wasm_bindgen_cli = "@crates//:wasm-bindgen-cli__wasm-bindgen",
+)
+
+toolchain(
+    name = "toolchain",
+    toolchain = ":toolchain_implementation",
+    toolchain_type = "@rules_rust_wasm_bindgen//:toolchain_type",
+)

@@ -18,11 +18,11 @@ module(
 bazel_dep(name = "stardoc", version = "0.8.1")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "platforms", version = "1.0.0")
-bazel_dep(name = "rules_cc", version = "0.2.16")
+bazel_dep(name = "rules_cc", version = "0.2.17")
 bazel_dep(name = "apple_support", version = "2.2.0")
-bazel_dep(name = "toolchains_llvm_bootstrapped", version = "0.5.7")
+bazel_dep(name = "toolchains_llvm_bootstrapped", version = "0.5.9")
 
-bazel_dep(name = "buildozer", version = "8.2.1", dev_dependency = True)
+bazel_dep(name = "buildozer", version = "8.5.1", dev_dependency = True)
 
 buildozer_binary = use_extension("@buildozer//:buildozer_binary.bzl", "buildozer_binary")
 use_repo(buildozer_binary, "buildozer_binary")
@@ -56,20 +56,20 @@ osx.framework(name = "SystemConfiguration")
 
 ##### Compilation                                                                                                                      [ Toolchain, Compilation ]
 ########## Java                                                                                                                               [ Toolchain, Java ]
-bazel_dep(name = "rules_java", version = "9.4.0")
+bazel_dep(name = "rules_java", version = "9.5.0")
 
 ########## Python                                                                                                                           [ Toolchain, Python ]
-bazel_dep(name = "rules_python", version = "1.8.3")
+bazel_dep(name = "rules_python", version = "1.8.4")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(
-    python_version = "3.13",
+    python_version = "3.14",
 )
 
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 pip.parse(
     hub_name = "pypi",
-    python_version = "3.13",
+    python_version = "3.14",
     requirements_lock = "//:requirements.txt",
 )
 use_repo(pip, "pypi")
@@ -86,14 +86,15 @@ rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
     edition = "2024",
     extra_target_triples = ["wasm32-unknown-unknown"],
-    versions = ["1.90.0"],
+    versions = ["1.93.1"],
 )
 use_repo(rust, "rust_toolchains")
 
 register_toolchains(
     "@toolchains_llvm_bootstrapped//toolchain:all",
     "@rust_toolchains//:all",
-    "//system/protobuf:toolchain",
+    "//platform/protobuf:toolchain",
+    "//platform/wasm:toolchain",
     "@buildifier_prebuilt_toolchains//:buildifier_linux_amd64_toolchain",
     "@buildifier_prebuilt_toolchains//:buildozer_linux_amd64_toolchain",
     "@buildifier_prebuilt_toolchains//:buildifier_darwin_arm64_toolchain",
@@ -107,7 +108,7 @@ crate = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
 crate.spec(
     features = ["derive"],
     package = "clap",
-    version = "4.5.54",
+    version = "4.5.60",
 )
 crate.spec(
     package = "cached",
@@ -123,12 +124,12 @@ crate.spec(
 )
 crate.spec(
     package = "flate2",
-    version = "1.1.5",
+    version = "1.1.9",
 )
 crate.spec(
     features = ["derive"],
     package = "bytemuck",
-    version = "1.24.0",
+    version = "1.25.0",
 )
 crate.spec(
     package = "itertools",
@@ -146,11 +147,11 @@ crate.spec(
 crate.spec(
     features = ["editor"],
     package = "inquire",
-    version = "0.9.1",
+    version = "0.9.3",
 )
 crate.spec(
     package = "inquire-derive",
-    version = "0.9.1",
+    version = "0.9.3",
 )
 crate.spec(
     package = "prettyplease",
@@ -159,11 +160,11 @@ crate.spec(
 crate.spec(
     features = ["span-locations"],
     package = "proc-macro2",
-    version = "1.0.105",
+    version = "1.0.106",
 )
 crate.spec(
     package = "quote",
-    version = "1.0.43",
+    version = "1.0.44",
 )
 crate.spec(
     features = [
@@ -192,7 +193,7 @@ crate.spec(
         "extra-traits",
     ],
     package = "syn",
-    version = "2.0.112",
+    version = "2.0.117",
 )
 crate.spec(
     package = "winit",
@@ -218,7 +219,7 @@ crate.spec(
 )
 crate.spec(
     package = "thiserror",
-    version = "2.0.17",
+    version = "2.0.18",
 )
 crate.spec(
     features = [
@@ -272,11 +273,11 @@ crate.spec(
 ##### Web Assembly                                                                                                   [ Toolchain, Rust, Crates, Wasm ]
 crate.spec(
     package = "wasm-bindgen",
-    version = "=0.2.105",
+    version = "=0.2.111",
 )
 crate.spec(
     package = "wasm-bindgen-futures",
-    version = "=0.4.55",
+    version = "=0.4.61",
 )
 crate.spec(
     features = [
@@ -308,30 +309,38 @@ crate.spec(
         "Window",
     ],
     package = "web-sys",
-    version = "=0.3.82",
+    version = "=0.3.88",
 )
 crate.spec(
     package = "js-sys",
-    version = "=0.3.82",
+    version = "=0.3.88",
+)
+crate.spec(
+    package = "wasm-bindgen-cli",
+    version = "=0.2.111",
+)
+crate.annotation(
+    crate = "wasm-bindgen-cli",
+    gen_binaries = ["wasm-bindgen"],
 )
 
 ##### Prost Toolchain                                                                                              [ Toolchain, Rust, Crates, Prost ]
 crate.spec(
     package = "prost",
-    version = "0.14.1",
+    version = "0.14.3",
 )
 crate.spec(
     package = "prost-types",
-    version = "0.14.1",
+    version = "0.14.3",
 )
 crate.spec(
     features = ["transport"],
     package = "tonic",
-    version = "0.14.2",
+    version = "0.14.5",
 )
 crate.spec(
     package = "tonic-prost",
-    version = "0.14.2",
+    version = "0.14.5",
 )
 crate.spec(
     package = "protoc-gen-prost",
@@ -357,7 +366,7 @@ crate.spec(
 )
 crate.spec(
     package = "futures-core",
-    version = "0.3.31",
+    version = "0.3.32",
 )
 crate.spec(
     features = [
@@ -389,7 +398,7 @@ crate.spec(
 )
 crate.spec(
     package = "sha2",
-    version = "0.10",
+    version = "0.10.9",
 )
 
 ##### Document                                                                                                  [ Toolchain, Rust, Crates, Document ]
@@ -401,7 +410,7 @@ crate.spec(
 ##### Syntax                                                                                                    [ Toolchain, Rust, Crates, Syntax ]
 crate.spec(
     package = "tree-sitter",
-    version = "0.25.6",
+    version = "0.26.5",
 )
 crate.spec(
     package = "tree-sitter-python",
@@ -433,8 +442,8 @@ vnu = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archiv
 vnu(
     name = "vnu",
     build_file_content = """exports_files(["package/build/dist/vnu.jar"])""",
-    sha256 = "a28e107f00d1d2dceb5a6857e90db36c92b4e387d0480dec70bae5cbc46d16eb",
-    urls = ["https://registry.npmjs.org/vnu-jar/-/vnu-jar-26.2.6.tgz"],
+    sha256 = "bd68ba6cda589513a1ba273405708d2a63865cb51f614946819236d42cc34301",
+    urls = ["https://registry.npmjs.org/vnu-jar/-/vnu-jar-26.2.20.tgz"],
 )
 
 ##### Bazel                                                                                                                                 [ Validation, Bazel ]

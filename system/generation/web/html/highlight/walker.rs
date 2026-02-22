@@ -52,7 +52,8 @@ fn traverse(
         return;
     }
 
-    for i in 0..node.child_count() {
+    #[expect(clippy::cast_possible_truncation)]
+    for i in 0..node.child_count() as u32 {
         if let Some(child) = node.child(i) {
             traverse(child, source, output, position, classify);
         }

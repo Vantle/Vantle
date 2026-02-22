@@ -20,9 +20,15 @@ pub fn resolve(sandbox: &Path, prefix: &str) -> miette::Result<PathBuf> {
     let index = display.find("/bin/").ok_or_else(|| Error::Segment {
         path: display.clone(),
     })?;
-    Ok(PathBuf::from(format!(
-        "{}bin/{}",
-        prefix,
-        &display[index + 5..]
-    )))
+    let suffix = &display[index + 5..];
+    let result = PathBuf::from(format!("{prefix}bin/{suffix}"));
+    for component in result.components() {
+        if matches!(component, std::path::Component::ParentDir) {
+            return Err(Error::Segment {
+                path: display.clone(),
+            }
+            .into());
+        }
+    }
+    Ok(result)
 }

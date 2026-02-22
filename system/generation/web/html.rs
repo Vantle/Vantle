@@ -95,7 +95,8 @@ pub fn render<S: std::hash::BuildHasher>(
     if let Some(ref wasm) = page.wasm {
         write!(
             renderer.html,
-            "<script type=\"module\">\nimport init from '{wasm}';\nawait init();\n</script>\n"
+            "<script type=\"module\">\nimport init from '{}';\nawait init();\n</script>\n",
+            escape(wasm)
         )
         .unwrap();
     }
@@ -135,7 +136,9 @@ pub fn render<S: std::hash::BuildHasher>(
             }
             write!(outline, "{pad}</aside>").unwrap();
 
-            renderer.html = renderer.html.replace(placeholder, &outline);
+            renderer
+                .html
+                .replace_range(position..position + placeholder.len(), &outline);
         }
     }
 
@@ -355,19 +358,7 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
                 let id = if let Some((_, value)) = existing {
                     value.clone()
                 } else {
-                    let base = slugify(&text);
-                    let id = if self.identifiers.contains(&base) {
-                        let mut suffix = 2;
-                        loop {
-                            let candidate = format!("{base}-{suffix}");
-                            if !self.identifiers.contains(&candidate) {
-                                break candidate;
-                            }
-                            suffix += 1;
-                        }
-                    } else {
-                        base
-                    };
+                    let id = deduplicate(slugify(&text), &self.identifiers);
                     write!(self.html, " id=\"{}\"", escape(&id)).unwrap();
                     id
                 };
@@ -454,22 +445,15 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
                 }
                 pulldown_cmark::Event::End(pulldown_cmark::TagEnd::Heading(_)) => {
                     if let Some((depth, text)) = heading.take() {
-                        let base = slugify(&text);
-                        let id = if self.identifiers.contains(&base) {
-                            let mut suffix = 2;
-                            loop {
-                                let candidate = format!("{base}-{suffix}");
-                                if !self.identifiers.contains(&candidate) {
-                                    break candidate;
-                                }
-                                suffix += 1;
-                            }
-                        } else {
-                            base
-                        };
+                        let id = deduplicate(slugify(&text), &self.identifiers);
                         self.identifiers.insert(id.clone());
                         self.headings.push((depth, id.clone(), text.clone()));
-                        writeln!(self.html, "<h{depth} id=\"{id}\">{text}</h{depth}>").unwrap();
+                        writeln!(
+                            self.html,
+                            "<h{depth} id=\"{id}\">{}</h{depth}>",
+                            escape(&text)
+                        )
+                        .unwrap();
                     }
                 }
                 pulldown_cmark::Event::Text(text) => {
@@ -559,10 +543,31 @@ fn extract_text(elements: &[Element]) -> String {
 }
 
 fn slugify(text: &str) -> String {
-    text.to_lowercase()
-        .chars()
-        .map(|c| if c.is_alphanumeric() { c } else { '-' })
-        .collect::<String>()
+    let mut output = String::with_capacity(text.len());
+    for c in text.chars() {
+        if c.is_alphanumeric() {
+            for lower in c.to_lowercase() {
+                output.push(lower);
+            }
+        } else {
+            output.push('-');
+        }
+    }
+    output
+}
+
+fn deduplicate(base: String, identifiers: &HashSet<String>) -> String {
+    if !identifiers.contains(&base) {
+        return base;
+    }
+    let mut suffix = 2;
+    loop {
+        let candidate = format!("{base}-{suffix}");
+        if !identifiers.contains(&candidate) {
+            return candidate;
+        }
+        suffix += 1;
+    }
 }
 
 fn escape(text: &str) -> String {

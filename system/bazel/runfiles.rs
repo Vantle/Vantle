@@ -27,14 +27,20 @@ pub enum Error {
     Lookup { suffix: String },
 }
 
-pub fn discover() -> miette::Result<PathBuf> {
-    let executable = std::env::current_exe().map_err(|_| Error::Executable)?;
-    let name = executable
+fn executable() -> miette::Result<(PathBuf, String)> {
+    let path = std::env::current_exe().map_err(|_| Error::Executable)?;
+    let name = path
         .file_name()
         .ok_or(Error::Executable)?
-        .to_string_lossy();
+        .to_string_lossy()
+        .into_owned();
+    Ok((path, name))
+}
 
-    let runfiles = executable
+pub fn discover() -> miette::Result<PathBuf> {
+    let (path, name) = executable()?;
+
+    let runfiles = path
         .with_file_name(format!("{name}.runfiles"))
         .join("_main");
     if runfiles.exists() {
@@ -48,20 +54,13 @@ pub fn discover() -> miette::Result<PathBuf> {
         }
     }
 
-    Err(Error::Missing {
-        executable: name.into_owned(),
-    }
-    .into())
+    Err(Error::Missing { executable: name }.into())
 }
 
 pub fn find(suffix: &str) -> miette::Result<PathBuf> {
-    let executable = std::env::current_exe().map_err(|_| Error::Executable)?;
-    let name = executable
-        .file_name()
-        .ok_or(Error::Executable)?
-        .to_string_lossy();
+    let (path, name) = executable()?;
 
-    let manifest = executable.with_file_name(format!("{name}.runfiles_manifest"));
+    let manifest = path.with_file_name(format!("{name}.runfiles_manifest"));
     if let Ok(content) = std::fs::read_to_string(&manifest) {
         for line in content.lines() {
             let mut parts = line.splitn(2, ' ');

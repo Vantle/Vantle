@@ -79,7 +79,10 @@ pub fn activate(document: &Document) {
             }
         }
 
-        let selector = format!(".outline a[href=\"#{}\"]", ids_clone[active_index]);
+        let escaped = ids_clone[active_index]
+            .replace('\\', "\\\\")
+            .replace('"', "\\\"");
+        let selector = format!(".outline a[href=\"#{escaped}\"]");
         if let Ok(Some(active)) = document_clone.query_selector(&selector) {
             let _ = active.class_list().add_1("active");
         }
@@ -90,7 +93,8 @@ pub fn activate(document: &Document) {
     callback.forget();
 
     if let Some(first_id) = ids.first() {
-        let selector = format!(".outline a[href=\"#{first_id}\"]");
+        let escaped = first_id.replace('\\', "\\\\").replace('"', "\\\"");
+        let selector = format!(".outline a[href=\"#{escaped}\"]");
         if let Ok(Some(active)) = document.query_selector(&selector) {
             let _ = active.class_list().add_1("active");
         }

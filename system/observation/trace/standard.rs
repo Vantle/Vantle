@@ -1,6 +1,5 @@
 pub use channel;
 pub use error;
-pub use tracing;
 
 use channel::Channel;
 use filter::Filter;

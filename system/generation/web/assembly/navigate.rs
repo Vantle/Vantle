@@ -51,7 +51,28 @@ fn navigate(document: &Document, href: &str) {
     fetch_and_swap(document, href, true);
 }
 
+fn same_origin(href: &str) -> bool {
+    if href.starts_with('/') || href.starts_with('.') || href.starts_with('#') {
+        return true;
+    }
+    if href.starts_with("http://") || href.starts_with("https://") {
+        let Some(window) = web_sys::window() else {
+            return false;
+        };
+        let origin = window.location().origin().unwrap_or_default();
+        return href.starts_with(&origin);
+    }
+    !href.contains("://")
+}
+
 fn fetch_and_swap(document: &Document, href: &str, push: bool) {
+    if !same_origin(href) {
+        if let Some(window) = web_sys::window() {
+            let _ = window.location().set_href(href);
+        }
+        return;
+    }
+
     let document = document.clone();
     let href = href.to_owned();
 

@@ -2,14 +2,6 @@ use element::{Element, Language};
 use span::Fragment;
 use style::Composition;
 
-fn code(value: &str) -> Element {
-    Element::Span(vec![Fragment::Code(value.into())])
-}
-
-fn text(value: &str) -> Element {
-    Element::Text(value.into())
-}
-
 fn main() -> miette::Result<()> {
     let arguments = html::Arguments::parse();
     style::page(&arguments, "Spatialize", "vantle", "spatialize", |c| {
@@ -33,9 +25,18 @@ fn main() -> miette::Result<()> {
                     .literal("use render::{Assembler, Context};\n\nlet context = Assembler::new()\n    .surface(surface)\n    .adapter(adapter)\n    .size(width, height)\n    .assemble()\n    .await?;", Language::Rust)
                     .table(|t| {
                         t.header(["Field", "Description"])
-                            .markup([code("surface"), text("wgpu surface for presentation")])
-                            .markup([code("adapter"), text("wgpu adapter for device creation")])
-                            .markup([code("size"), text("Initial viewport dimensions")])
+                            .markup([
+                                Element::Span(vec![Fragment::Code("surface".into())]),
+                                Element::Text("wgpu surface for presentation".into()),
+                            ])
+                            .markup([
+                                Element::Span(vec![Fragment::Code("adapter".into())]),
+                                Element::Text("wgpu adapter for device creation".into()),
+                            ])
+                            .markup([
+                                Element::Span(vec![Fragment::Code("size".into())]),
+                                Element::Text("Initial viewport dimensions".into()),
+                            ])
                     })
                 })
                 .subsection("Pipelines", |ss| {

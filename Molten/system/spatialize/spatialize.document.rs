@@ -2,14 +2,6 @@ use element::Element;
 use span::Fragment;
 use style::Composition;
 
-fn code(value: &str) -> Element {
-    Element::Span(vec![Fragment::Code(value.into())])
-}
-
-fn text(value: &str) -> Element {
-    Element::Text(value.into())
-}
-
 fn main() -> miette::Result<()> {
     let arguments = html::Arguments::parse();
     style::page(&arguments, "Spatialize", "molten", "spatialize", |c| {
@@ -34,8 +26,16 @@ fn main() -> miette::Result<()> {
                 s.paragraph(|p| p.text("Toggle between visualization modes:"))
                     .table(|t| {
                         t.header(["Pane", "Description", "Key"])
-                            .markup([text("Relation"), text("Edge and node relationships"), code("Tab")])
-                            .markup([text("Inference"), text("Derivation and inference paths"), code("Tab")])
+                            .markup([
+                                Element::Text("Relation".into()),
+                                Element::Text("Edge and node relationships".into()),
+                                Element::Span(vec![Fragment::Code("Tab".into())]),
+                            ])
+                            .markup([
+                                Element::Text("Inference".into()),
+                                Element::Text("Derivation and inference paths".into()),
+                                Element::Span(vec![Fragment::Code("Tab".into())]),
+                            ])
                     })
             })
             .rule()
@@ -44,7 +44,10 @@ fn main() -> miette::Result<()> {
                     ss.table(|t| {
                         t.header(["Action", "Control"])
                             .row(["Pan", "Left click + drag"])
-                            .markup([text("Rotate"), text("Middle click + drag / Control + drag")])
+                            .markup([
+                                Element::Text("Rotate".into()),
+                                Element::Text("Middle click + drag / Control + drag".into()),
+                            ])
                             .row(["Zoom", "Scroll wheel / pinch"])
                             .row(["Select", "Right click"])
                     })
@@ -52,10 +55,22 @@ fn main() -> miette::Result<()> {
                 .subsection("View", |ss| {
                     ss.table(|t| {
                         t.header(["Action", "Control"])
-                            .markup([text("Toggle pane"), code("Tab")])
-                            .markup([text("Relation pane"), code("R")])
-                            .markup([text("Inference pane"), code("I")])
-                            .markup([text("Deselect"), code("Escape")])
+                            .markup([
+                                Element::Text("Toggle pane".into()),
+                                Element::Span(vec![Fragment::Code("Tab".into())]),
+                            ])
+                            .markup([
+                                Element::Text("Relation pane".into()),
+                                Element::Span(vec![Fragment::Code("R".into())]),
+                            ])
+                            .markup([
+                                Element::Text("Inference pane".into()),
+                                Element::Span(vec![Fragment::Code("I".into())]),
+                            ])
+                            .markup([
+                                Element::Text("Deselect".into()),
+                                Element::Span(vec![Fragment::Code("Escape".into())]),
+                            ])
                     })
                 })
             })

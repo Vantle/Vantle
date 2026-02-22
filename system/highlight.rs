@@ -134,7 +134,9 @@ fn classify_rust(source: &str) -> Vec<Vec<Classified>> {
     };
 
     let line_count = source.lines().count().max(1);
-    let mut lines: Vec<Vec<Classified>> = (0..line_count).map(|_| Vec::new()).collect();
+    let mut lines = (0..line_count)
+        .map(|_| Vec::new())
+        .collect::<Vec<Vec<Classified>>>();
     let mut collector = RustCollector { lines: &mut lines };
 
     for item in &ast.items {
@@ -849,7 +851,10 @@ impl RustCollector<'_> {
 }
 
 fn classify_molten(source: &str) -> Vec<Vec<Classified>> {
-    source.lines().map(classify_molten_line).collect()
+    source
+        .lines()
+        .map(classify_molten_line)
+        .collect::<Vec<Vec<Classified>>>()
 }
 
 fn classify_molten_line(line: &str) -> Vec<Classified> {
@@ -897,7 +902,9 @@ fn classify_molten_line(line: &str) -> Vec<Classified> {
 
 fn classify_starlark(source: &str) -> Vec<Vec<Classified>> {
     let line_count = source.lines().count().max(1);
-    let mut lines: Vec<Vec<Classified>> = (0..line_count).map(|_| Vec::new()).collect();
+    let mut lines = (0..line_count)
+        .map(|_| Vec::new())
+        .collect::<Vec<Vec<Classified>>>();
 
     let mut parser = tree_sitter::Parser::new();
     if parser
@@ -935,13 +942,19 @@ fn classify_terminal(
                     });
                 }
             } else {
+                let lengths = source
+                    .lines()
+                    .skip(start.row)
+                    .take(end.row - start.row + 1)
+                    .map(str::len)
+                    .collect::<Vec<_>>();
                 for row in start.row..=end.row {
                     if let Some(line) = lines.get_mut(row) {
                         let first = if row == start.row { start.column } else { 0 };
                         let last = if row == end.row {
                             end.column
                         } else {
-                            source.lines().nth(row).map_or(0, str::len)
+                            lengths.get(row - start.row).copied().unwrap_or(0)
                         };
                         if first < last {
                             line.push(Classified {

@@ -1,6 +1,5 @@
 pub use channel;
 pub use error;
-pub use tracing;
 
 use assemble::Assemble;
 use channel::Channel;
@@ -100,7 +99,9 @@ async fn relay(
             received = receiver.recv() => {
                 match received {
                     Some(update) => {
-                        let _ = peer.send(update);
+                        if let Err(e) = peer.send(update) {
+                            tracing::warn!("failed to relay trace update: {e}");
+                        }
                     }
                     None => break,
                 }

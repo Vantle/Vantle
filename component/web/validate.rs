@@ -12,13 +12,19 @@ struct Arguments {
     source: PathBuf,
 
     #[arg(long)]
-    report: PathBuf,
-
-    #[arg(long)]
     output: PathBuf,
 
     #[arg(long)]
     prefix: String,
+
+    #[arg(long)]
+    java: PathBuf,
+
+    #[arg(long)]
+    validator: PathBuf,
+
+    #[arg(long)]
+    kind: String,
 }
 
 #[derive(serde::Deserialize)]
@@ -96,6 +102,16 @@ enum Error {
     #[error("unrecognized file extension for {path}")]
     #[diagnostic(code(w3c::extension), help("supported extensions are .html and .css"))]
     Extension { path: String },
+
+    #[error("failed to run validator")]
+    #[diagnostic(
+        code(w3c::checker),
+        help("check that the Java runtime and vnu.jar are available")
+    )]
+    Checker {
+        #[source]
+        source: std::io::Error,
+    },
 }
 
 fn offset(content: &str, line: usize, column: usize) -> usize {
@@ -149,11 +165,17 @@ fn main() -> miette::Result<()> {
         source,
     })?;
 
-    let json = std::fs::read_to_string(&arguments.report).map_err(|source| Error::Read {
-        path: arguments.report.display().to_string(),
-        source,
-    })?;
+    let checker = std::process::Command::new(&arguments.java)
+        .arg("-jar")
+        .arg(&arguments.validator)
+        .arg("--format")
+        .arg("json")
+        .arg(format!("--{}", arguments.kind))
+        .arg(&arguments.source)
+        .output()
+        .map_err(|source| Error::Checker { source })?;
 
+    let json = String::from_utf8_lossy(&checker.stderr);
     let report = serde_json::from_str::<Report>(&json).map_err(|source| Error::Parse { source })?;
 
     let errors = report
@@ -180,11 +202,12 @@ fn main() -> miette::Result<()> {
         .ok_or_else(|| Error::Extension {
             path: arguments.source.display().to_string(),
         })?;
-    let source = NamedSource::new(&destination, content).with_language(language);
+    let source =
+        std::sync::Arc::new(NamedSource::new(&destination, content).with_language(language));
 
     for (error, s) in errors.iter().zip(spans) {
         let diagnostic = Error::Validation {
-            html: source.clone(),
+            html: (*source).clone(),
             span: s,
             message: error.text.clone().unwrap_or_default(),
             help: "see https://validator.w3.org for W3C validation rules".into(),

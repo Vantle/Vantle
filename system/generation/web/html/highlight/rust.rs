@@ -47,7 +47,12 @@ impl Visitor {
     }
 
     fn literal(&mut self, class: &str, word: &str) {
-        write!(self.output, "<span class=\"syntax-{class}\">{word}</span>").unwrap();
+        write!(
+            self.output,
+            "<span class=\"syntax-{class}\">{}</span>",
+            escape::escape(word)
+        )
+        .unwrap();
     }
 
     fn keyword(&mut self, word: &str) {

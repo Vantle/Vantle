@@ -5,7 +5,6 @@ Validates HTML, CSS, and SVG outputs from ValidationInfo targets during the buil
 """
 
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
-load("//component/generation/starlark:action.bzl", "action")
 
 ValidationInfo = provider(
     doc = "Declares that a target should be validated",
@@ -34,41 +33,37 @@ def _validate_impl(target, ctx):
     info = target[ValidationInfo]
     output = info.output
     kind = info.kind.capitalize()
-    flags = "--%s " % info.kind
 
-    json = ctx.actions.declare_file(target.label.name + ".validation.json")
     report = ctx.actions.declare_file(target.label.name + ".validation")
     validator = ctx.file._validator
     runtime = ctx.toolchains["@bazel_tools//tools/jdk:runtime_toolchain_type"].java_runtime
     renderer = ctx.executable._renderer
+    prefix = ctx.attr._symlink_prefix[BuildSettingInfo].value
 
-    ctx.actions.run_shell(
+    ctx.actions.run(
+        executable = renderer,
+        arguments = [
+            "--source",
+            output.path,
+            "--java",
+            runtime.java_executable_exec_path,
+            "--validator",
+            validator.path,
+            "--kind",
+            info.kind,
+            "--prefix",
+            prefix,
+            "--output",
+            report.path,
+        ],
         inputs = depset(
             [output, validator],
             transitive = [runtime.files],
         ),
-        outputs = [json],
-        command = "{java} -jar {validator} --format json {flags}{input} > {json} 2>&1; true".format(
-            java = runtime.java_executable_exec_path,
-            validator = validator.path,
-            flags = flags,
-            input = output.path,
-            json = json.path,
-        ),
-        mnemonic = "Check" + kind,
-        progress_message = "Checking: %s" % output.short_path,
+        outputs = [report],
+        mnemonic = "Validate" + kind,
+        progress_message = "Validating: %s" % output.short_path,
     )
-
-    prefix = ctx.attr._symlink_prefix[BuildSettingInfo].value
-
-    action(ctx, renderer, [
-        "--source",
-        output.path,
-        "--report",
-        json.path,
-        "--prefix",
-        prefix,
-    ], [output, json], report, mnemonic = "Validate" + kind)
 
     return [OutputGroupInfo(validation = depset([report]))]
 

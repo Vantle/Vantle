@@ -20,7 +20,7 @@ bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "rules_cc", version = "0.2.17")
 bazel_dep(name = "apple_support", version = "2.2.0")
-bazel_dep(name = "toolchains_llvm_bootstrapped", version = "0.5.9")
+bazel_dep(name = "llvm", version = "0.6.0")
 
 bazel_dep(name = "buildozer", version = "8.5.1", dev_dependency = True)
 
@@ -30,7 +30,7 @@ use_repo(buildozer_binary, "buildozer_binary")
 ########## LLVM                                                                                                                               [ Toolchain, LLVM ]
 ##### OSX SDK                                                                                                                            [ Toolchain, LLVM, OSX ]
 
-osx = use_extension("@toolchains_llvm_bootstrapped//extensions:osx.bzl", "osx")
+osx = use_extension("@llvm//extensions:osx.bzl", "osx")
 osx.framework(name = "AppKit")
 osx.framework(name = "ApplicationServices")
 osx.framework(name = "Carbon")
@@ -53,6 +53,10 @@ osx.framework(name = "OSLog")
 osx.framework(name = "QuartzCore")
 osx.framework(name = "Security")
 osx.framework(name = "SystemConfiguration")
+
+##### MinGW                                                                                                                        [ Toolchain, LLVM, MinGW ]
+mingw = use_extension("@llvm//runtimes/mingw/extension:mingw.bzl", "mingw")
+use_repo(mingw, "mingw")
 
 ##### Compilation                                                                                                                      [ Toolchain, Compilation ]
 ########## Java                                                                                                                               [ Toolchain, Java ]
@@ -86,12 +90,63 @@ rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
     edition = "2024",
     extra_target_triples = ["wasm32-unknown-unknown"],
+    sha256s = {
+        "cargo-1.93.1-aarch64-apple-darwin.tar.xz": "ecd50b093656061366c5af1184af10d883f21bddb482a9c2142fe860c0f671b2",
+        "cargo-1.93.1-aarch64-pc-windows-msvc.tar.xz": "c671620614da9312a6e1b015aa8c4f21d1f7727d57a62028e28c961daf0d8fb4",
+        "cargo-1.93.1-aarch64-unknown-linux-gnu.tar.xz": "0788df66f965bff56643661d30d42a52bf77423185a8081ef81aebc2ba7d6f05",
+        "cargo-1.93.1-powerpc64le-unknown-linux-gnu.tar.xz": "dfb289980f39772f0728f60b84094bc9f1f74175a985ac3d2cf48ef5125be821",
+        "cargo-1.93.1-s390x-unknown-linux-gnu.tar.xz": "7cb83b6cadfd12a44bff0cb6bb9e6d64c9f249699afecaadcf58db7c2fd7ecd2",
+        "cargo-1.93.1-x86_64-apple-darwin.tar.xz": "2ee02e5a4f3822c4fb66a43d2955cedd84209b687c871a6dbdce30e4386bd53b",
+        "cargo-1.93.1-x86_64-pc-windows-msvc.tar.xz": "c692d568c988f7ea7788a22a6b8eea13d6ed6e767788e13adc9ac006b1bf83cb",
+        "cargo-1.93.1-x86_64-unknown-freebsd.tar.xz": "fff82ab19e15a10552e7a37d8d10d3ca11222352a2bf63f93a7c4b3b75f9ea64",
+        "cargo-1.93.1-x86_64-unknown-linux-gnu.tar.xz": "dbf12e8fd2a245a6bdd9f6c8df267cb2c25b0c56866ee91d8321337df0a00ddb",
+        "clippy-1.93.1-aarch64-apple-darwin.tar.xz": "33d57654b0f19360cc4deecbaf248586f89ce9d345df2d54ee8d5541cf7c9f95",
+        "clippy-1.93.1-aarch64-pc-windows-msvc.tar.xz": "0703c65fac249eebf8b32dfc72399b741458ea843593358e721e4a8d72422ecf",
+        "clippy-1.93.1-aarch64-unknown-linux-gnu.tar.xz": "7bd258012c517baf62f14674c84fc513224b4d8161fea129f7ad1ae44ee6895b",
+        "clippy-1.93.1-powerpc64le-unknown-linux-gnu.tar.xz": "0c2c79cd6203daa170b8cb54866552e326f6c22312692b07de634b6a695a7e3f",
+        "clippy-1.93.1-s390x-unknown-linux-gnu.tar.xz": "57ac9f680627a462b77a603de197167c6c42fe95aacacd08b39e8fa2bcd86be2",
+        "clippy-1.93.1-x86_64-apple-darwin.tar.xz": "024c9f65506e40945eeed921b8ed812d5e8132f5ece4dfd872a4815cbf7084e1",
+        "clippy-1.93.1-x86_64-pc-windows-msvc.tar.xz": "11b06b21189589f2ee2554b4dcbc3f9524f8e469ceb5219d8ba1a9f7ade3141d",
+        "clippy-1.93.1-x86_64-unknown-freebsd.tar.xz": "48aa6ef5991d4e03ffad244379d60703d58297f5cbdd8a49482abba6051fc79d",
+        "clippy-1.93.1-x86_64-unknown-linux-gnu.tar.xz": "60c0ce83ecc1700de724404a928c30d096c178a610c6707d4f06cee25284cc02",
+        "llvm-tools-1.93.1-aarch64-apple-darwin.tar.xz": "d61834568e6e591db13ad235e09c3c65e2f10c099c29bfd8eec018f6c9f55462",
+        "llvm-tools-1.93.1-aarch64-pc-windows-msvc.tar.xz": "c7f48f70aeabd0898f4fd8ab36518f2401c27afe17aba9a0d5fb3173622e43e6",
+        "llvm-tools-1.93.1-aarch64-unknown-linux-gnu.tar.xz": "a4fbdc88e2ebeb403870ccf13c874efa74ac858b77d50a9c8a821a851a21132b",
+        "llvm-tools-1.93.1-powerpc64le-unknown-linux-gnu.tar.xz": "abfb0b1b8d2702ac609d7fb46850d38bd128830e79e41b75458aa5b775acf15f",
+        "llvm-tools-1.93.1-s390x-unknown-linux-gnu.tar.xz": "3aa561f98fe0644c020dbb39a8f83048f1ae51039d6c7e04342ac234e01ec48a",
+        "llvm-tools-1.93.1-x86_64-apple-darwin.tar.xz": "17f3dacb64eaf4d7ce9285d3325dcdd146c167d85eddbb8d965903475767cdfe",
+        "llvm-tools-1.93.1-x86_64-pc-windows-msvc.tar.xz": "c0be7fe3c37a62db3c1e845ebf711afce414bc21ad9ae6b88eed97e160bec1ac",
+        "llvm-tools-1.93.1-x86_64-unknown-freebsd.tar.xz": "ada18c030bf6c00fd2b50dcf842db52a6dbd39972ef16268e275bf8abe2f1695",
+        "llvm-tools-1.93.1-x86_64-unknown-linux-gnu.tar.xz": "f32c5405d7765ffd18554e01f59eff1db32e22813a529425f4ad8903722b594e",
+        "rust-std-1.93.1-aarch64-apple-darwin.tar.xz": "dd278e6eb993ddffb190442ca11ed1e118c1edaf04114910e3c8c652f6423f65",
+        "rust-std-1.93.1-aarch64-pc-windows-msvc.tar.xz": "7640bf12cbb9e3bbd91df7a99f31b5178fc6db4f8f1ee180fea19784b19e6811",
+        "rust-std-1.93.1-aarch64-unknown-linux-gnu.tar.xz": "56f2cd66ad7167dd6924ff095063ffddfe731812a1909b9200bb0ee21982fc47",
+        "rust-std-1.93.1-powerpc64le-unknown-linux-gnu.tar.xz": "bf40e395e76521c32877b47f52bc066a69cc0da4ed3cbda976fe00eb77f51e29",
+        "rust-std-1.93.1-s390x-unknown-linux-gnu.tar.xz": "735f3a737e7fd36053b9b41ced9276c33a9802b2a097d83fba8f1580a6869aa1",
+        "rust-std-1.93.1-wasm32-unknown-unknown.tar.xz": "82bcf1e75ad071548bb97f11676b332dd260807572414553a06ee5d88d20a63e",
+        "rust-std-1.93.1-x86_64-apple-darwin.tar.xz": "f378a2bdca73a20f3b87cc1937bbf153a85fa8fb8c06073728ebeece03441f96",
+        "rust-std-1.93.1-x86_64-pc-windows-msvc.tar.xz": "44033314fb62651a71d527b77c2f4cc0e89120d5cb64090a852ec841f0850f92",
+        "rust-std-1.93.1-x86_64-unknown-freebsd.tar.xz": "6cece0dd6494f10b604ca92bc62de42cbb5e515c6ec20d43f16d1d11ea1650e5",
+        "rust-std-1.93.1-x86_64-unknown-linux-gnu.tar.xz": "82c4e41268f1741e4eb68796aeb6ca5042406ae858dd56144155c4ef8d87d8b6",
+        "rustc-1.93.1-aarch64-apple-darwin.tar.xz": "d103a0ee04c121b30cf061c7ad1456daaebd7ff0a7ea5fdb64acf92d86cb25fd",
+        "rustc-1.93.1-aarch64-pc-windows-msvc.tar.xz": "3f96f2b591340009f5b2d8831c99c1d7cfb48c28f60c040de4b4508f311fe0ea",
+        "rustc-1.93.1-aarch64-unknown-linux-gnu.tar.xz": "7c48ea79360f88145866ebee8dfe1c8971f008c69efe41d69c03ac72ad7ee0a7",
+        "rustc-1.93.1-powerpc64le-unknown-linux-gnu.tar.xz": "bd2f61ed3a2c374b7b89286b22f13d147d3b80b76584288f4fa80f805b6f317e",
+        "rustc-1.93.1-s390x-unknown-linux-gnu.tar.xz": "39c3ebb2df0f30d5de236964646c654277218f2dfda4690798425d00d8a4a32a",
+        "rustc-1.93.1-x86_64-apple-darwin.tar.xz": "a01c41b79eac82ae9666b3e2487c14740b5fdde0b1d1d1f4c8932f1923bee3d6",
+        "rustc-1.93.1-x86_64-pc-windows-msvc.tar.xz": "15b3bf2a6896e70f1366aa10da369e5b2bdc4fea18e4e4246e6988391f81b4c2",
+        "rustc-1.93.1-x86_64-unknown-freebsd.tar.xz": "4401562eaf11e3631a273e42112526475bd2d5fa0a51b55f675a4630759da70d",
+        "rustc-1.93.1-x86_64-unknown-linux-gnu.tar.xz": "b9db2636f5a101c4cdaf46a26f8a0c8e4b5767ecdb02ae9c7ccc3ead577732bc",
+        "rust-src-1.93.1.tar.xz": "7ade6b2ef03a3b7a614d54df6637a97d18144690bd49daab63bd4b22e0e6bac0",
+        "rust-analyzer-1.93.1-aarch64-apple-darwin.tar.xz": "62e29fb21a2bd3e1c3bf77864d2606a70b201c8b774bc18068c19351e70bbc35",
+        "rust-analyzer-1.93.1-x86_64-unknown-linux-gnu.tar.xz": "d131d9e16fea7c42fbd32645be04e0d8efb1234b8fc39d85658f5e289c5624d9",
+    },
     versions = ["1.93.1"],
 )
 use_repo(rust, "rust_toolchains")
 
 register_toolchains(
-    "@toolchains_llvm_bootstrapped//toolchain:all",
+    "@llvm//toolchain:all",
     "@rust_toolchains//:all",
     "//platform/protobuf:toolchain",
     "//platform/wasm:toolchain",

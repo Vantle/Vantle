@@ -9,19 +9,22 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 filegroup(
-    name = "logo",
-    srcs = ["logo.png"],
+    name = "logos",
+    srcs = [
+        "favicon.ico",
+        "logo.png",
+    ],
 )
 
 copy(
-    name = "favicon",
+    name = "favicon.copy",
     src = "favicon.ico",
     path = "resource/favicon.ico",
 )
 
 copy(
     name = "logo.copy",
-    src = ":logo",
+    src = "logo.png",
     path = "resource/logo.png",
 )
 

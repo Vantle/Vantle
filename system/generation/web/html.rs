@@ -75,7 +75,7 @@ pub fn render<S: std::hash::BuildHasher>(
     if let Some(ref path) = page.favicon {
         writeln!(
             renderer.html,
-            "<link rel=\"icon\" href=\"{}\">",
+            "<link rel=\"icon\" type=\"image/x-icon\" href=\"{}\">",
             escape(path)
         )
         .unwrap();

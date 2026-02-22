@@ -7,7 +7,7 @@ common --experimental_profile_include_primary_output
 common --keep_going
 
 ########## Hermetic                                                                                                                         [ Platform, Hermetic ]
-common --@toolchains_llvm_bootstrapped//config:experimental_stub_libgcc_s=True
+common --@llvm//config:experimental_stub_libgcc_s=True
 
 #################################################################################################################################################################
 ##### Interface                                                                                                                                     [ Interface ]
@@ -16,7 +16,7 @@ common --verbose_failures --explain=.build/bazel/result/trace.log
 #################################################################################################################################################################
 ########## Build                                                                                                                                        [ Build ]
 common --symlink_prefix=.build/bazel/result/ --//:symlink_prefix=.build/bazel/result/
-common --show_timestamps --enable_runfiles --color=yes --curses=yes
+common --show_timestamps --enable_runfiles --color=yes --curses=auto
 common --sandbox_default_allow_network=false
 common --lockfile_mode=update
 

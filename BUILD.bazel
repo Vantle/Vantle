@@ -103,13 +103,6 @@ buildifier(
     mode = "fix",
 )
 
-##### Validation                                                                                                                              [ Tool, Validation ]
-buildifier(
-    name = "validate.bazel",
-    lint_mode = "warn",
-    mode = "check",
-)
-
 #################################################################################################################################################################
 ########## Documentation                                                                                                                         [ Documentation ]
 document(
@@ -179,7 +172,7 @@ folder(
         "//Molten:notice.document",
         "//Molten/resource:logo.copy",
         "//Molten/system/spatialize:spatialize.document",
-        "//resource:favicon",
+        "//resource:favicon.copy",
         "//resource:logo.copy",
         "//system/documentation:stylesheet.document",
         "//system/generation:generation.document",

@@ -28,6 +28,13 @@ jobs:
 
       - uses: actions/configure-pages@v5
 
+      - name: Resolve symlinks
+        run: |
+          cd .build/bazel/result/bin
+          rsync -rL documentation/ resolved/
+          rm -rf documentation
+          mv resolved documentation
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .build/bazel/result/bin/documentation

@@ -12,13 +12,23 @@ package(default_visibility = [
 
 ##### Module                                                                                                                                           [ Module ]
 filegroup(
-    name = "logo",
-    srcs = ["logo.png"],
+    name = "logos",
+    srcs = [
+        "favicon.ico",
+        "logo.png",
+    ],
+)
+
+copy(
+    name = "favicon.copy",
+    src = "favicon.ico",
+    path = "Molten/resource/favicon.ico",
+    visibility = ["//visibility:public"],
 )
 
 copy(
     name = "logo.copy",
-    src = ":logo",
+    src = "logo.png",
     path = "Molten/resource/logo.png",
     visibility = ["//visibility:public"],
 )

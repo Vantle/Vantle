@@ -3,30 +3,24 @@ Document generation macros.
 
 Public API:
 - document: Build a file from a Rust DSL source file
-
-Example:
-    document(
-        srcs = ["molten.document.rs"],
-        destination = "Molten/index.html",
-        deps = ["//system/generation/web:style"],
-        data = ["//Molten/test/resource:data"],
-    )
 """
 
 load("@rules_rust//rust:defs.bzl", "rust_binary")
+load("//component/web/starlark:aspect.bzl", "validation")
 load(":action.bzl", "generate")
 
 def document(srcs, destination, name = None, data = [], deps = [], compile_data = [], **kwargs):
     """
     Build a file from a Rust DSL source file.
 
-    Produces two targets:
-      - {name}              - rust_binary that generates the file
-      - document.{name}     - the generated file (via generate rule)
+    Produces three targets:
+      - {name}.binary       - rust_binary that generates the file
+      - {name}              - the generated file (via generate rule)
+      - {name}.validation   - validation marker (aspect attaches here)
 
     Args:
         srcs: Rust source files
-        destination: Workspace-relative output path (e.g., "Molten/Readme.html")
+        destination: Workspace-relative output path (e.g., "Molten/index.html")
         name: Target name (derived from first src if omitted)
         data: Runtime data files (code injection, WASM)
         deps: Additional compile deps (page-to-page deps)
@@ -34,12 +28,13 @@ def document(srcs, destination, name = None, data = [], deps = [], compile_data 
         **kwargs: Standard Bazel attrs (visibility, tags, testonly)
     """
     if name == None:
-        src = srcs[0]
-        name = src.removesuffix(".document.rs") if src.endswith(".document.rs") else src.removesuffix(".rs")
+        name = srcs[0].removesuffix(".rs")
     standard = ["//component:web", "//system/generation/web:html", "@crates//:miette"]
 
+    binary = name + ".binary"
     rust_binary(
-        name = name,
+        name = binary,
+        crate_name = binary.replace(".", "_"),
         srcs = srcs,
         compile_data = compile_data,
         deps = standard + deps,
@@ -48,11 +43,19 @@ def document(srcs, destination, name = None, data = [], deps = [], compile_data 
     )
 
     generate(
-        name = "document." + name,
-        generator = ":" + name,
-        arguments = ["--destination", destination],
+        name = name,
+        generator = ":" + name + ".binary",
+        parameters = {"destination": destination},
         data = data,
         output = destination.replace("/", "_"),
-        destination = destination,
+        sink = destination,
+        **{k: kwargs[k] for k in ["visibility", "tags"] if k in kwargs}
+    )
+
+    kind = "css" if destination.endswith(".css") else "html"
+    validation(
+        name = name + ".validation",
+        src = ":" + name,
+        kind = kind,
         **{k: kwargs[k] for k in ["visibility", "tags"] if k in kwargs}
     )

@@ -16,6 +16,9 @@ pub enum Element {
     Inject {
         name: String,
     },
+    Markdown {
+        name: String,
+    },
 }
 
 pub enum Source {

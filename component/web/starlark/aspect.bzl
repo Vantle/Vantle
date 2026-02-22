@@ -1,24 +1,40 @@
 """
 W3C validation aspect using the Nu HTML Checker.
 
-Validates HTML and CSS outputs from GenerationInfo targets during the build.
+Validates HTML and CSS outputs from ValidationInfo targets during the build.
 """
 
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
-load("//component/generation/starlark:action.bzl", "GenerationInfo")
+load("//component/generation/starlark:action.bzl", "action")
+
+ValidationInfo = provider(
+    doc = "Declares that a target should be validated",
+    fields = {
+        "output": "File to validate",
+        "kind": "Validation kind: 'html' or 'css'",
+    },
+)
+
+def _validation_impl(ctx):
+    source = ctx.attr.src[DefaultInfo].files.to_list()[0]
+    return [
+        DefaultInfo(files = depset([source])),
+        ValidationInfo(output = source, kind = ctx.attr.kind),
+    ]
+
+validation = rule(
+    implementation = _validation_impl,
+    attrs = {
+        "src": attr.label(mandatory = True),
+        "kind": attr.string(mandatory = True, values = ["html", "css"]),
+    },
+)
 
 def _validate_impl(target, ctx):
-    info = target[GenerationInfo]
-    path = info.output.path
-
-    if path.endswith(".html"):
-        kind = "Html"
-        flags = ""
-    elif path.endswith(".css"):
-        kind = "Css"
-        flags = "--css "
-    else:
-        return [OutputGroupInfo(validation = depset())]
+    info = target[ValidationInfo]
+    output = info.output
+    kind = info.kind.capitalize()
+    flags = "--%s " % info.kind
 
     json = ctx.actions.declare_file(target.label.name + ".validation.json")
     report = ctx.actions.declare_file(target.label.name + ".validation")
@@ -28,7 +44,7 @@ def _validate_impl(target, ctx):
 
     ctx.actions.run_shell(
         inputs = depset(
-            [info.output, validator],
+            [output, validator],
             transitive = [runtime.files],
         ),
         outputs = [json],
@@ -36,38 +52,29 @@ def _validate_impl(target, ctx):
             java = runtime.java_executable_exec_path,
             validator = validator.path,
             flags = flags,
-            input = info.output.path,
+            input = output.path,
             json = json.path,
         ),
         mnemonic = "Check" + kind,
-        progress_message = "Checking: %s" % info.destination,
+        progress_message = "Checking: %s" % output.short_path,
     )
 
     prefix = ctx.attr._symlink_prefix[BuildSettingInfo].value
 
-    ctx.actions.run(
-        executable = renderer,
-        arguments = [
-            "--source",
-            info.output.path,
-            "--report",
-            json.path,
-            "--output",
-            report.path,
-            "--prefix",
-            prefix,
-        ],
-        inputs = [info.output, json],
-        outputs = [report],
-        mnemonic = "Validate" + kind,
-        progress_message = "Validating: %s" % info.destination,
-    )
+    action(ctx, renderer, [
+        "--source",
+        output.path,
+        "--report",
+        json.path,
+        "--prefix",
+        prefix,
+    ], [output, json], report, mnemonic = "Validate" + kind)
 
     return [OutputGroupInfo(validation = depset([report]))]
 
 validate = aspect(
     implementation = _validate_impl,
-    required_providers = [GenerationInfo],
+    required_providers = [ValidationInfo],
     toolchains = ["@bazel_tools//tools/jdk:runtime_toolchain_type"],
     attrs = {
         "_validator": attr.label(

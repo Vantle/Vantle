@@ -28,28 +28,27 @@ Key files:
 
 ### 1. Discover
 
-Find documentation sources:
-- Use Glob `**/*.document.rs` to find page generation sources
-- Use Glob `**/index.html` to find generated output
-- Note which components have documentation
+Documentation sources and build targets:
+- Source files: `**/*.document.rs` — each generates one HTML page
+- Build targets: each source has a `document()` rule in its `BUILD.bazel`
+- Full site: `bazel build //:documentation` assembles all pages into a folder
+- Output: `.build/bazel/result/bin/documentation/`
+- Local preview: `bazel run //:distribute.documentation` serves at `http://127.0.0.1:3000`
 
 ### 2. Analyze
 
-For each documentation page, evaluate both the `.document.rs` source and the generated `.html` output:
+For each documentation page, evaluate the `.document.rs` source and its rendered output:
 
 **Accuracy**: Content matches implementation, paths exist, code examples compile, versions current
 **Beauty**: Consistent use of the rendering framework, proper section hierarchy, visual coherence
 **Helpfulness**: Clear explanations, practical examples, complete coverage, working links
 **Efficiency**: Concise writing, scannable sections, no redundancy
 
-### 3. Validate
+To inspect rendered output:
+- Build: `bazel build //:documentation`
+- Read: `.build/bazel/result/bin/documentation/{destination path}`
 
-- Use `ls` to verify referenced paths exist
-- Check that bazel targets are valid
-- Ensure code examples match the current API
-- Verify internal links resolve to real pages
-
-### 4. Report
+### 3. Report
 
 ```markdown
 ## Documentation Review

@@ -27,7 +27,10 @@ bzl_library(
     name = "web",
     srcs = ["web.bzl"],
     visibility = ["//visibility:public"],
-    deps = [":action"],
+    deps = [
+        ":action",
+        "//component/web/starlark:aspect",
+    ],
 )
 
 bzl_library(

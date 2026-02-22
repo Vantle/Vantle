@@ -101,6 +101,12 @@ impl Body {
     }
 
     #[must_use]
+    pub fn markdown(mut self, name: &str) -> Self {
+        self.elements.push(Element::Markdown { name: name.into() });
+        self
+    }
+
+    #[must_use]
     pub fn table(mut self, f: impl FnOnce(Table) -> Table) -> Self {
         let table = f(Table::new());
         let mut rows = Vec::new();

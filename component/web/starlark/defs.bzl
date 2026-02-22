@@ -1,17 +1,16 @@
 """
 Public API for document generation.
 
-Exports: document, publish, verify, distribute, validate
+Exports: copy, distribute, document, folder, validate, validation
 """
 
 load("//component/generation/starlark:web.bzl", _document = "document")
-load(":distribute.bzl", _distribute = "distribute")
-load(":publish.bzl", _publish = "publish")
-load(":aspect.bzl", _validate = "validate")
-load(":verify.bzl", _verify = "verify")
+load(":aspect.bzl", _validate = "validate", _validation = "validation")
+load(":distribute.bzl", _copy = "copy", _distribute = "distribute", _folder = "folder")
 
-document = _document
-publish = _publish
-verify = _verify
+copy = _copy
 distribute = _distribute
+document = _document
+folder = _folder
 validate = _validate
+validation = _validation

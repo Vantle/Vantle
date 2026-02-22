@@ -279,12 +279,6 @@ fn main() -> miette::Result<()> {
                     })
                     .literal("publish(\n    name = \"publish.documentation\",\n    srcs = [\n        \":document.vantle\",\n        \"//system/documentation:document.stylesheet\",\n        \"//system/generation/web/assembly:document.compute.js\",\n    ],\n)", Language::Starlark)
                 })
-                .subsection("verify", |ss| {
-                    ss.paragraph(|p| {
-                        p.text("Checks that generated files match what is checked into the repository. Fails with a drift report if any files differ.")
-                    })
-                    .literal("verify(\n    name = \"verify.documentation\",\n    srcs = [\":document.vantle\"],\n)", Language::Starlark)
-                })
                 .subsection("distribute", |ss| {
                     ss.paragraph(|p| {
                         p.text("Serves the workspace directory over HTTP for local preview.")

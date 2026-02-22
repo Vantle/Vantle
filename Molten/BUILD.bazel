@@ -69,6 +69,7 @@ document(
 
 document(
     srcs = ["notice.document.rs"],
+    data = ["//:NOTICE.md"],
     destination = "Molten/notice.html",
     deps = [
         "//system/generation/web:style",
@@ -77,6 +78,7 @@ document(
 
 document(
     srcs = ["license.document.rs"],
+    data = ["//:LICENSE.md"],
     destination = "Molten/license.html",
     deps = [
         "//system/generation/web:style",

@@ -2,6 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
+load("//component/web/starlark:defs.bzl", "copy")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
@@ -10,6 +11,18 @@ package(default_visibility = ["//visibility:public"])
 filegroup(
     name = "logo",
     srcs = ["logo.png"],
+)
+
+copy(
+    name = "favicon",
+    src = "favicon.ico",
+    path = "resource/favicon.ico",
+)
+
+copy(
+    name = "logo.copy",
+    src = ":logo",
+    path = "resource/logo.png",
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

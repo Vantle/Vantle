@@ -387,6 +387,16 @@ crate.spec(
     package = "url",
     version = "2.5.8",
 )
+crate.spec(
+    package = "sha2",
+    version = "0.10",
+)
+
+##### Document                                                                                                  [ Toolchain, Rust, Crates, Document ]
+crate.spec(
+    package = "pulldown-cmark",
+    version = "0.13.0",
+)
 
 ##### Syntax                                                                                                    [ Toolchain, Rust, Crates, Syntax ]
 crate.spec(

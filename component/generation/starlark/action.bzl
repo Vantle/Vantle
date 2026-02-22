@@ -1,32 +1,27 @@
 """
-Shared generation rule and provider.
+Shared generation rule.
 
 Public API:
-- GenerationInfo: Provider for generated file metadata
+- SinkInfo: Provider carrying workspace-relative output path
 - action: Helper to execute a generator binary
 - generate: Rule to run a generator binary and produce an output file
 """
 
-load("@rules_rust_wasm_bindgen//:defs.bzl", "RustWasmBindgenInfo")
-
-GenerationInfo = provider(
-    doc = "Metadata about a generated file",
-    fields = {
-        "output": "The generated output file",
-        "destination": "Intended destination path",
-    },
+SinkInfo = provider(
+    doc = "Declares a workspace-relative output path for distribution",
+    fields = {"path": "Workspace-relative output path"},
 )
 
 def action(ctx, generator, arguments, inputs, output, mnemonic = "Generate"):
     """
-    Execute a generator binary to produce an output file.
+    Execute a generator binary with CLI arguments.
 
-    Appends --output <path> to arguments automatically.
+    Appends --output automatically.
 
     Args:
         ctx: Rule context
         generator: Generator executable
-        arguments: CLI arguments (before --output)
+        arguments: Flat list of CLI arguments (e.g., ["--flag", "value"])
         inputs: Input files for the action
         output: Declared output file
         mnemonic: Action mnemonic for build logs
@@ -41,20 +36,13 @@ def action(ctx, generator, arguments, inputs, output, mnemonic = "Generate"):
     )
 
 def _generate_impl(ctx):
-    """
-    Implementation for the generic generate rule.
-
-    Args:
-        ctx: Rule context
-
-    Returns:
-        Providers: DefaultInfo, GenerationInfo
-    """
     output = ctx.actions.declare_file(ctx.attr.output)
 
-    arguments = list(ctx.attr.arguments)
-    inputs = []
+    arguments = []
+    for key, value in ctx.attr.parameters.items():
+        arguments.extend(["--" + key, value])
 
+    inputs = []
     for src in ctx.attr.srcs:
         for file in src.files.to_list():
             inputs.append(file)
@@ -66,96 +54,23 @@ def _generate_impl(ctx):
 
     action(ctx, ctx.executable.generator, arguments, inputs, output)
 
-    return [
-        DefaultInfo(files = depset([output])),
-        GenerationInfo(
-            output = output,
-            destination = ctx.attr.destination if hasattr(ctx.attr, "destination") else output.basename,
-        ),
-    ]
+    providers = [DefaultInfo(files = depset([output]))]
+    if ctx.attr.sink:
+        providers.append(SinkInfo(path = ctx.attr.sink))
+    return providers
 
 generate = rule(
     implementation = _generate_impl,
-    provides = [DefaultInfo, GenerationInfo],
     attrs = {
         "generator": attr.label(
             mandatory = True,
             executable = True,
             cfg = "exec",
-            doc = "Generator binary to execute",
         ),
-        "arguments": attr.string_list(
-            doc = "CLI arguments passed before --output",
-        ),
-        "srcs": attr.label_list(
-            allow_files = True,
-            doc = "Input files (available as action inputs, referenced by arguments)",
-        ),
-        "data": attr.label_list(
-            allow_files = True,
-            doc = "Runtime data files (each passed as --data <path>)",
-        ),
-        "output": attr.string(
-            mandatory = True,
-            doc = "Output filename",
-        ),
-        "destination": attr.string(
-            doc = "Intended destination path (for publish manifests)",
-        ),
-    },
-    doc = "Run a generator binary to produce an output file",
-)
-
-def _asset_impl(ctx):
-    source = ctx.file.src
-    output = ctx.actions.declare_file(ctx.attr.destination.replace("/", "_"))
-    ctx.actions.symlink(output = output, target_file = source)
-    return [
-        DefaultInfo(files = depset([output])),
-        GenerationInfo(
-            output = output,
-            destination = ctx.attr.destination,
-        ),
-    ]
-
-asset = rule(
-    implementation = _asset_impl,
-    provides = [DefaultInfo, GenerationInfo],
-    attrs = {
-        "src": attr.label(
-            mandatory = True,
-            allow_single_file = True,
-            doc = "Source file to wrap with a destination",
-        ),
-        "destination": attr.string(
-            mandatory = True,
-            doc = "Workspace-relative destination path",
-        ),
-    },
-    doc = "Wrap an existing file with GenerationInfo for publish manifests",
-)
-
-def _bindgen_impl(ctx):
-    info = ctx.attr.src[RustWasmBindgenInfo]
-    source = info.js.to_list()[0] if ctx.attr.kind == "js" else info.wasm
-    destination = ctx.attr.directory + "/" + source.basename
-    output = ctx.actions.declare_file(destination.replace("/", "_"))
-    ctx.actions.symlink(output = output, target_file = source)
-    return [
-        DefaultInfo(files = depset([output])),
-        GenerationInfo(output = output, destination = destination),
-    ]
-
-_bindgen = rule(
-    implementation = _bindgen_impl,
-    provides = [DefaultInfo, GenerationInfo],
-    attrs = {
-        "src": attr.label(mandatory = True, providers = [RustWasmBindgenInfo]),
-        "kind": attr.string(mandatory = True, values = ["js", "wasm"]),
-        "directory": attr.string(mandatory = True),
+        "parameters": attr.string_dict(),
+        "srcs": attr.label_list(allow_files = True),
+        "data": attr.label_list(allow_files = True),
+        "output": attr.string(mandatory = True),
+        "sink": attr.string(),
     },
 )
-
-def bindgen(name, src, directory, **kwargs):
-    _bindgen(name = name + ".js", src = src, kind = "js", directory = directory, **kwargs)
-    _bindgen(name = name + ".wasm", src = src, kind = "wasm", directory = directory, **kwargs)

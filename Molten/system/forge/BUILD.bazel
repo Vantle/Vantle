@@ -32,7 +32,6 @@ rust_binary(
         "@crates//:ctor",
         "@crates//:inquire",
         "@crates//:miette",
-        "@crates//:serde_json",
         "@crates//:thiserror",
         "@crates//:tracing",
     ],

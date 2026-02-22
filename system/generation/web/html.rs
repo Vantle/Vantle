@@ -8,28 +8,26 @@ use page::Page;
 use span::Fragment;
 use style::{Keyframe, Media, Properties, Style};
 
-command::output!("Write generated document to this path");
-
 #[derive(Parser)]
 #[command(
     name = "document",
     about = "Generate a document from a Rust DSL page definition"
 )]
 pub struct Arguments {
-    #[command(flatten)]
-    output: Output,
+    #[arg(long)]
+    pub output: std::path::PathBuf,
 
     #[arg(long)]
-    destination: String,
+    pub destination: String,
 
     #[arg(long)]
-    data: Vec<String>,
+    pub data: Vec<String>,
 }
 
 impl Arguments {
     #[must_use]
     pub fn parse() -> Self {
-        <Self as Parser>::parse()
+        <Self as clap::Parser>::parse()
     }
 
     #[must_use]
@@ -158,12 +156,12 @@ pub fn css(style: &Style) -> String {
 pub fn generate(arguments: &Arguments, page: Page) -> miette::Result<()> {
     let data = load(&arguments.data)?;
     let html = render(&page, &data)?;
-    emit(&arguments.output.path, &html)
+    emit(&arguments.output, &html)
 }
 
 #[trace(channels = [document])]
 pub fn stylesheet(arguments: &Arguments, style: &Style) -> miette::Result<()> {
-    emit(&arguments.output.path, &css(style))
+    emit(&arguments.output, &css(style))
 }
 
 #[trace(channels = [document])]
@@ -297,6 +295,9 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
             Element::Inject { name } => {
                 render_inject(&mut self.html, name, self.data)?;
             }
+            Element::Markdown { name } => {
+                self.markdown(name)?;
+            }
         }
         Ok(())
     }
@@ -325,6 +326,7 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
             Element::Raw(raw) => self.html.push_str(raw),
             Element::Code { source, language } => self.code(source, *language)?,
             Element::Inject { name } => render_inject(&mut self.html, name, self.data)?,
+            Element::Markdown { name } => self.markdown(name)?,
         }
         Ok(())
     }
@@ -431,6 +433,66 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
             highlighted
         )
         .unwrap();
+
+        Ok(())
+    }
+
+    #[trace(channels = [document])]
+    fn markdown(&mut self, name: &str) -> miette::Result<()> {
+        let source = self.data.get(name).ok_or_else(|| {
+            let available = self.data.keys().cloned().collect::<Vec<_>>();
+            error::Error::source(name, &available)
+        })?;
+
+        let mut heading: Option<(u8, String)> = None;
+
+        for event in pulldown_cmark::Parser::new(source) {
+            match event {
+                pulldown_cmark::Event::Start(pulldown_cmark::Tag::Heading { level, .. }) => {
+                    let depth = level as u8;
+                    heading = Some((depth, String::new()));
+                }
+                pulldown_cmark::Event::End(pulldown_cmark::TagEnd::Heading(_)) => {
+                    if let Some((depth, text)) = heading.take() {
+                        let base = slugify(&text);
+                        let id = if self.identifiers.contains(&base) {
+                            let mut suffix = 2;
+                            loop {
+                                let candidate = format!("{base}-{suffix}");
+                                if !self.identifiers.contains(&candidate) {
+                                    break candidate;
+                                }
+                                suffix += 1;
+                            }
+                        } else {
+                            base
+                        };
+                        self.identifiers.insert(id.clone());
+                        self.headings.push((depth, id.clone(), text.clone()));
+                        writeln!(self.html, "<h{depth} id=\"{id}\">{text}</h{depth}>").unwrap();
+                    }
+                }
+                pulldown_cmark::Event::Text(text) => {
+                    if let Some((_, ref mut heading_text)) = heading {
+                        heading_text.push_str(&text);
+                    } else {
+                        self.html.push_str(&escape(&text));
+                    }
+                }
+                pulldown_cmark::Event::Code(code) => {
+                    if let Some((_, ref mut heading_text)) = heading {
+                        heading_text.push_str(&code);
+                    } else {
+                        write!(self.html, "<code>{}</code>", escape(&code)).unwrap();
+                    }
+                }
+                _ => {
+                    if heading.is_none() {
+                        pulldown_cmark::html::push_html(&mut self.html, std::iter::once(event));
+                    }
+                }
+            }
+        }
 
         Ok(())
     }

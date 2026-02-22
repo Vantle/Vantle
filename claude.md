@@ -3,7 +3,7 @@
 **Vantle** implements **Molten**, a computational expression language over hypergraphs.
 
 Rust 2021 | Bazel 9+ | Autotest testing
-Docs: @Molten/index.html | Deps: @MODULE.bazel
+Docs: @.build/bazel/result/bin/documentation/Molten/index.html | Deps: @MODULE.bazel
 
 > **Evolve these instructions.** When you discover a pattern, convention, or insight during our work that would make this file or any skill more precise, complete, or effective — propose a specific edit with a one-line rationale. Suggest additions for recurring decisions not yet captured, refinements where existing rules proved ambiguous, and removals where rules became obsolete. Intentional and surgical edits; never rewrite wholesale.
 

@@ -5,6 +5,9 @@
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_shared_library")
 load("@rules_rust_wasm_bindgen//:defs.bzl", "rust_wasm_bindgen")
 
+##### Distribution                                                                                                                             [ Distribution ]
+load("//component/web/starlark:defs.bzl", "copy")
+
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
 
@@ -41,7 +44,6 @@ rust_library(
     name = "outline",
     srcs = ["outline.rs"],
     deps = [
-        "@crates//:js-sys",
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",
     ],
@@ -89,11 +91,18 @@ rust_wasm_bindgen(
     wasm_file = ":binary",
 )
 
-##### Documentation                                                                                                                             [ Documentation ]
-load("//component/generation/starlark:defs.bzl", "bindgen")
-
-bindgen(
-    name = "document.compute",
+copy(
+    name = "compute.js.copy",
     src = ":compute",
-    directory = "resource/system/document",
+    filename = "compute.js",
+    path = "resource/system/document/compute.js",
 )
+
+copy(
+    name = "compute.wasm.copy",
+    src = ":compute",
+    filename = "compute_bg.wasm",
+    path = "resource/system/document/compute_bg.wasm",
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

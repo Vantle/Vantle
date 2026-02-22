@@ -11,9 +11,9 @@ The API may change — this guide describes the content patterns, not the exact 
 ### Pipeline
 
 1. `.document.rs` source defines page content via builder closures
-2. `bazel run` compiles and executes the generator
-3. Generator renders HTML with nav, sidebar, content, and auto-generated TOC
-4. `publish` tool copies generated files to the workspace
+2. `document()` Bazel rule compiles the generator and produces HTML
+3. `folder()` rule assembles all pages at their destination paths
+4. CI deploys the folder to GitHub Pages; locally use `bazel run //:distribute.documentation`
 
 ### Template
 

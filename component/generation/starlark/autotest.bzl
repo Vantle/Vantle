@@ -24,7 +24,7 @@ Example:
 
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
-load(":action.bzl", "GenerationInfo", "action")
+load(":action.bzl", "action")
 
 #############################################################################
 # PROVIDERS
@@ -170,13 +170,7 @@ def _autotest_generate_impl(ctx):
         prefix,
     ], [template_file, cases], output, mnemonic = "Generator")
 
-    return [
-        DefaultInfo(files = depset([output])),
-        GenerationInfo(
-            output = output,
-            destination = output.basename,
-        ),
-    ]
+    return [DefaultInfo(files = depset([output]))]
 
 _autotest_generate = rule(
     implementation = _autotest_generate_impl,

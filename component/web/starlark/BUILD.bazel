@@ -12,32 +12,17 @@ package(default_visibility = [
 
 ##### Module                                                                                                                                           [ Module ]
 bzl_library(
-    name = "impls",
-    srcs = ["impls.bzl"],
+    name = "aspect",
+    srcs = ["aspect.bzl"],
+    visibility = ["//visibility:public"],
     deps = ["//component/generation/starlark:action"],
 )
 
 bzl_library(
     name = "distribute",
     srcs = ["distribute.bzl"],
-)
-
-bzl_library(
-    name = "publish",
-    srcs = ["publish.bzl"],
-    deps = [":impls"],
-)
-
-bzl_library(
-    name = "aspect",
-    srcs = ["aspect.bzl"],
+    visibility = ["//visibility:public"],
     deps = ["//component/generation/starlark:action"],
-)
-
-bzl_library(
-    name = "verify",
-    srcs = ["verify.bzl"],
-    deps = [":impls"],
 )
 
 bzl_library(
@@ -47,10 +32,8 @@ bzl_library(
         "//visibility:public",
     ],
     deps = [
-        ":distribute",
-        ":publish",
         ":aspect",
-        ":verify",
+        ":distribute",
         "//component/generation/starlark:web",
     ],
 )

@@ -1,5 +1,5 @@
 use std::net::{IpAddr, SocketAddr};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
 use axum::Router;
@@ -44,13 +44,27 @@ pub enum Error {
 #[command(about = "Serve static files over HTTP")]
 struct Arguments {
     #[arg(long, default_value = ".")]
-    directory: PathBuf,
+    input: PathBuf,
 
     #[arg(long, default_value = "127.0.0.1")]
     address: IpAddr,
 
     #[arg(long, default_value_t = 3000)]
     port: u16,
+}
+
+fn parse() -> Result<Arguments> {
+    let executable = std::env::current_exe().map_err(|source| Error::Run { source })?;
+    let name = executable.file_name().unwrap_or_default().to_string_lossy();
+    let argfile = executable.with_file_name(format!("{name}.args"));
+    match std::fs::read_to_string(&argfile) {
+        Ok(content) => {
+            let args = std::iter::once(String::new())
+                .chain(content.lines().filter(|l| !l.is_empty()).map(String::from));
+            Ok(Arguments::parse_from(args))
+        }
+        Err(_) => Ok(Arguments::parse()),
+    }
 }
 
 fn elapsed(duration: Duration) -> String {
@@ -82,9 +96,14 @@ async fn journal(request: Request, next: Next) -> axum::response::Response {
 
 #[trace(channels = [serve])]
 async fn run(arguments: Arguments) -> Result<()> {
+    let executable = std::env::current_exe().map_err(|source| Error::Run { source })?;
+    let input = executable
+        .parent()
+        .unwrap_or(Path::new("."))
+        .join(&arguments.input);
     let address = SocketAddr::new(arguments.address, arguments.port);
     let application = Router::new()
-        .fallback_service(ServeDir::new(&arguments.directory))
+        .fallback_service(ServeDir::new(&input))
         .layer(axum::middleware::from_fn(journal))
         .layer(TraceLayer::new_for_http());
     let listener = tokio::net::TcpListener::bind(address)
@@ -104,7 +123,8 @@ async fn shutdown() {
 }
 
 fn main() -> Result<()> {
-    command::execute(
+    command::dispatch(
+        parse()?,
         |_| {
             command::activate(trace::initialize(None, |channels| {
                 trace::channel::Channel::matches(channels, &["serve"])

@@ -2,6 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
+load("//component/web/starlark:defs.bzl", "copy")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -10,8 +11,16 @@ package(default_visibility = [
 ])
 
 ##### Module                                                                                                                                           [ Module ]
-exports_files([
-    "logo.png",
-])
+filegroup(
+    name = "logo",
+    srcs = ["logo.png"],
+)
+
+copy(
+    name = "logo.copy",
+    src = ":logo",
+    path = "Molten/resource/logo.png",
+    visibility = ["//visibility:public"],
+)
 
 ##### Documentation                                                                                                                             [ Documentation ]

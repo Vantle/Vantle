@@ -31,13 +31,6 @@ pub enum Error {
         help("check write permissions and directory existence")
     )]
     Output { path: String },
-
-    #[error("generated files have drifted from repository: {files}")]
-    #[diagnostic(
-        code(web::drift),
-        help("run 'bazel run //:generate.documentation' to update")
-    )]
-    Drift { files: String },
 }
 
 impl Error {

@@ -26,6 +26,7 @@ rust_library(
         "//system/generation/web/html/highlight:escape",
         "@crates//:clap",
         "@crates//:miette",
+        "@crates//:pulldown-cmark",
         "@crates//:tracing",
     ],
 )
@@ -50,7 +51,6 @@ rust_library(
 
 ##### Documentation                                                                                                                             [ Documentation ]
 document(
-    name = "generator",
     srcs = ["web.document.rs"],
     destination = "system/generation/web/index.html",
     deps = ["//system/generation/web:style"],

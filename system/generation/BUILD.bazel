@@ -49,22 +49,6 @@ rust_binary(
     ],
 )
 
-rust_binary(
-    name = "source",
-    srcs = ["source.rs"],
-    proc_macro_deps = ["//system/observation:macro"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//component/observation:module",
-        "//component/web:error",
-        "//system:command",
-        "//system/observation/trace:module",
-        "@crates//:clap",
-        "@crates//:miette",
-        "@crates//:tracing",
-    ],
-)
-
 document(
     srcs = ["generation.document.rs"],
     destination = "system/generation/index.html",

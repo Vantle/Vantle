@@ -5,7 +5,7 @@
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@rules_rust//rust:defs.bzl", "rust_library")
-load("//component/web/starlark:defs.bzl", "distribute", "document", "publish", "verify")
+load("//component/web/starlark:defs.bzl", "copy", "distribute", "document", "folder")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
@@ -125,6 +125,7 @@ document(
 
 document(
     srcs = ["notice.document.rs"],
+    data = ["//:NOTICE.md"],
     destination = "notice.html",
     deps = [
         "//system/generation/web:style",
@@ -133,6 +134,7 @@ document(
 
 document(
     srcs = ["license.document.rs"],
+    data = ["//:LICENSE.md"],
     destination = "license.html",
     deps = [
         "//system/generation/web:style",
@@ -140,7 +142,6 @@ document(
 )
 
 document(
-    name = "bzlmod",
     srcs = ["module.document.rs"],
     data = ["//:MODULE.bazel"],
     destination = "module.html",
@@ -150,54 +151,43 @@ document(
     ],
 )
 
-publish(
-    name = "publish.documentation",
-    srcs = [
-        ":document.vantle",
-        ":document.info",
-        ":document.notice",
-        ":document.license",
-        ":document.bzlmod",
-        "//Molten:document.molten",
-        "//Molten:document.info",
-        "//Molten:document.notice",
-        "//Molten:document.license",
-        "//system/generation:document.generation",
-        "//system/generation/web:document.generator",
-        "//system/generation/rust:document.autotest",
-        "//system/observation:document.observation",
-        "//system/spatialize:document.spatialize",
-        "//Molten/system/spatialize:document.spatialize",
-        "//system/documentation:document.stylesheet",
-        "//system/generation/web/assembly:document.compute.js",
-        "//system/generation/web/assembly:document.compute.wasm",
-    ],
+#################################################################################################################################################################
+########## Distribution                                                                                                                             [ Distribution ]
+copy(
+    name = "domain",
+    src = "CNAME",
+    path = "CNAME",
 )
 
-verify(
-    name = "verify.documentation",
+folder(
+    name = "documentation",
     srcs = [
-        ":document.vantle",
-        ":document.info",
-        ":document.notice",
-        ":document.license",
-        ":document.bzlmod",
-        "//Molten:document.molten",
-        "//Molten:document.info",
-        "//Molten:document.notice",
-        "//Molten:document.license",
-        "//system/generation:document.generation",
-        "//system/generation/web:document.generator",
-        "//system/generation/rust:document.autotest",
-        "//system/observation:document.observation",
-        "//system/spatialize:document.spatialize",
-        "//Molten/system/spatialize:document.spatialize",
-        "//system/documentation:document.stylesheet",
-        "//system/generation/web/assembly:document.compute.js",
-        "//system/generation/web/assembly:document.compute.wasm",
+        ":domain",
+        ":info.document",
+        ":license.document",
+        ":module.document",
+        ":notice.document",
+        ":vantle.document",
+        "//Molten:info.document",
+        "//Molten:license.document",
+        "//Molten:molten.document",
+        "//Molten:notice.document",
+        "//Molten/resource:logo.copy",
+        "//Molten/system/spatialize:spatialize.document",
+        "//resource:favicon",
+        "//resource:logo.copy",
+        "//system/documentation:stylesheet.document",
+        "//system/generation:generation.document",
+        "//system/generation/rust:autotest.document",
+        "//system/generation/web:web.document",
+        "//system/generation/web/assembly:compute.js.copy",
+        "//system/generation/web/assembly:compute.wasm.copy",
+        "//system/observation:observation.document",
+        "//system/spatialize:spatialize.document",
     ],
 )
 
 distribute(
     name = "distribute.documentation",
+    folder = ":documentation",
 )

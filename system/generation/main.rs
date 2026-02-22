@@ -4,9 +4,6 @@ use component::generation::rust::schema::Cases;
 use miette::{Context, IntoDiagnostic};
 use std::{fs, path::PathBuf};
 
-command::output!("Write generated test source to this path");
-command::prefix!();
-
 #[derive(Debug, Clone, ValueEnum)]
 #[clap(rename_all = "kebab-case")]
 enum Language {
@@ -17,16 +14,16 @@ enum Language {
 #[command(name = "generator")]
 #[command(about = "Generate test files from templates using case data")]
 struct Arguments {
-    #[arg(long, required = true)]
+    #[arg(long)]
     template: PathBuf,
-    #[arg(long, required = true)]
+    #[arg(long)]
     cases: PathBuf,
-    #[arg(long, required = true)]
+    #[arg(long)]
     language: Language,
-    #[command(flatten)]
-    output: Output,
-    #[command(flatten)]
-    prefix: Prefix,
+    #[arg(long)]
+    output: PathBuf,
+    #[arg(long)]
+    prefix: String,
 }
 
 fn main() -> miette::Result<()> {
@@ -54,14 +51,14 @@ fn generate(arguments: Arguments) -> miette::Result<()> {
     let template = fs::read_to_string(&arguments.template)
         .into_diagnostic()
         .wrap_err(format!(
-            "📁 failed to read template: {}\n\n💡 check that the file exists and you have read permissions",
+            "failed to read template: {}",
             arguments.template.display()
         ))?;
 
     let cases = fs::read_to_string(&arguments.cases)
         .into_diagnostic()
         .wrap_err(format!(
-            "📁 failed to read cases: {}\n\n💡 check that the file exists and you have read permissions",
+            "failed to read cases: {}",
             arguments.cases.display()
         ))?;
 
@@ -75,23 +72,23 @@ fn generate(arguments: Arguments) -> miette::Result<()> {
         }
     };
 
-    if let Some(parent) = arguments.output.path.parent() {
+    if let Some(parent) = arguments.output.parent() {
         fs::create_dir_all(parent)
             .into_diagnostic()
             .wrap_err(format!(
-                "📁 failed to create output directory: {}\n\n💡 check that you have write permissions to the parent directory",
+                "failed to create output directory: {}",
                 parent.display()
             ))?;
     }
 
-    fs::write(&arguments.output.path, &output)
+    fs::write(&arguments.output, &output)
         .into_diagnostic()
         .wrap_err(format!(
-            "📁 failed to write output: {}\n\n💡 check that you have write permissions to the output directory",
-            arguments.output.path.display()
+            "failed to write output: {}",
+            arguments.output.display()
         ))?;
 
-    let resolved = symlink::resolve(&arguments.output.path, &arguments.prefix.value)?;
+    let resolved = symlink::resolve(&arguments.output, &arguments.prefix)?;
     tracing::info!("generated: {}", resolved.display());
     Ok(())
 }

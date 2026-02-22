@@ -5,9 +5,6 @@ use miette::{Diagnostic, NamedSource, SourceSpan};
 use thiserror::Error;
 use tracing::{error, error_span};
 
-command::output!("Write validation results to this path");
-command::prefix!();
-
 #[derive(Parser)]
 #[command(name = "validate", about = "Render W3C validation results")]
 struct Arguments {
@@ -17,11 +14,11 @@ struct Arguments {
     #[arg(long)]
     report: PathBuf,
 
-    #[command(flatten)]
-    output: Output,
+    #[arg(long)]
+    output: PathBuf,
 
-    #[command(flatten)]
-    prefix: Prefix,
+    #[arg(long)]
+    prefix: String,
 }
 
 #[derive(serde::Deserialize)]
@@ -143,7 +140,7 @@ fn main() -> miette::Result<()> {
     }))?;
 
     let arguments = Arguments::parse();
-    let destination = symlink::resolve(&arguments.source, &arguments.prefix.value)?;
+    let destination = symlink::resolve(&arguments.source, &arguments.prefix)?;
     let destination = destination.display().to_string();
     let _span = error_span!("validate", destination = %destination).entered();
 
@@ -166,12 +163,12 @@ fn main() -> miette::Result<()> {
         .collect::<Vec<_>>();
 
     if errors.is_empty() {
-        std::fs::write(&arguments.output.path, format!("VALID: {destination}\n")).map_err(
-            |source| Error::Write {
-                path: arguments.output.path.display().to_string(),
+        std::fs::write(&arguments.output, format!("VALID: {destination}\n")).map_err(|source| {
+            Error::Write {
+                path: arguments.output.display().to_string(),
                 source,
-            },
-        )?;
+            }
+        })?;
         return Ok(());
     }
 

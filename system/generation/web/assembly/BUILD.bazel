@@ -25,6 +25,10 @@ rust_library(
 rust_library(
     name = "theme",
     srcs = ["theme.rs"],
+    compile_data = [
+        "//resource/system/document:sun",
+        "//resource/system/document:moon",
+    ],
     deps = [
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",

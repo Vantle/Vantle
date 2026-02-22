@@ -62,9 +62,12 @@ fn storage() -> Option<web_sys::Storage> {
     web_sys::window()?.local_storage().ok()?
 }
 
+const SUN: &str = include_str!("../../../../resource/system/document/sun.svg");
+const MOON: &str = include_str!("../../../../resource/system/document/moon.svg");
+
 fn update(html: &web_sys::Element, toggle: &web_sys::Element, prefers: bool) {
     let current = html.get_attribute("data-theme");
     let dark = current.as_deref() == Some("dark") || (current.is_none() && prefers);
 
-    toggle.set_text_content(Some(if dark { "\u{2600}" } else { "\u{263e}" }));
+    toggle.set_inner_html(if dark { SUN } else { MOON });
 }

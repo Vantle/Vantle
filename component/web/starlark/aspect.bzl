@@ -1,7 +1,7 @@
 """
 W3C validation aspect using the Nu HTML Checker.
 
-Validates HTML and CSS outputs from ValidationInfo targets during the build.
+Validates HTML, CSS, and SVG outputs from ValidationInfo targets during the build.
 """
 
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
@@ -11,7 +11,7 @@ ValidationInfo = provider(
     doc = "Declares that a target should be validated",
     fields = {
         "output": "File to validate",
-        "kind": "Validation kind: 'html' or 'css'",
+        "kind": "Validation kind: 'html', 'css', or 'svg'",
     },
 )
 
@@ -26,7 +26,7 @@ validation = rule(
     implementation = _validation_impl,
     attrs = {
         "src": attr.label(mandatory = True),
-        "kind": attr.string(mandatory = True, values = ["html", "css"]),
+        "kind": attr.string(mandatory = True, values = ["html", "css", "svg"]),
     },
 )
 

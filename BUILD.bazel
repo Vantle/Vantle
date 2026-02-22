@@ -10,6 +10,16 @@ load("//component/web/starlark:defs.bzl", "copy", "distribute", "document", "fol
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
 
+##### Notice                                                                                                                                           [ Notice ]
+filegroup(
+    name = "notice",
+    srcs = [
+        "LICENSE.md",
+        "NOTICE.md",
+        "README.md",
+    ],
+)
+
 #################################################################################################################################################################
 ########## Configuration                                                                                                                         [ Configuration ]
 string_flag(
@@ -94,15 +104,10 @@ buildifier(
 )
 
 ##### Validation                                                                                                                              [ Tool, Validation ]
-alias(
-    name = "validate.bazel",
-    actual = "//:validate.bazel.buildifier",
-)
-
 buildifier(
-    name = "validate.bazel.buildifier",
+    name = "validate.bazel",
     lint_mode = "warn",
-    mode = "fix",
+    mode = "check",
 )
 
 #################################################################################################################################################################

@@ -87,6 +87,12 @@ rust_autotest(
 
 Standard deps are auto-included by the macro: `miette`, `serde`, `serde_json`, `//:module`, `//system:diagnostic`, `//system/generation/runtime:runtime`.
 
+## Banned Patterns
+
+| Pattern | Alternative |
+|---------|-------------|
+| `exports_files()` | Use `filegroup(name = "...", srcs = ["..."])` |
+
 ## Visibility
 
 | Scope | Pattern |

@@ -9,7 +9,8 @@ pub fn activate(document: &Document) {
         return;
     };
 
-    let Ok(headings) = main.query_selector_all("h2[id], h3[id], h4[id]") else {
+    let Ok(headings) = main.query_selector_all("h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]")
+    else {
         return;
     };
 

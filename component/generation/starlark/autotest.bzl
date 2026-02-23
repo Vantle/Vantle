@@ -144,8 +144,6 @@ def _autotest_generate_impl(ctx):
         fail("Template target '{}' must provide TemplateInfo. Use autotest_template or rust_autotest_template to create template targets.".format(ctx.attr.template.label))
 
     cases = ctx.file.cases
-    prefix = ctx.attr._symlink_prefix[BuildSettingInfo].value
-
     if language not in LANGUAGES:
         fail("Unsupported language '{}' from template '{}'. Supported languages are: {}".format(
             language,
@@ -158,6 +156,7 @@ def _autotest_generate_impl(ctx):
     if test_name.endswith(".generation"):
         test_name = test_name[:-len(".generation")]
     output = ctx.actions.declare_file("{}.generated.{}".format(test_name, lang.extension))
+    link = ctx.attr._symlink_prefix[BuildSettingInfo].value + "bin/" + output.short_path
 
     action(ctx, ctx.executable.generator, [
         "--template",
@@ -166,9 +165,7 @@ def _autotest_generate_impl(ctx):
         cases.path,
         "--language",
         language,
-        "--prefix",
-        prefix,
-    ], [template_file, cases], output, mnemonic = "Generator")
+    ], [template_file, cases], output, mnemonic = "Generator", link = link)
 
     return [DefaultInfo(files = depset([output]))]
 

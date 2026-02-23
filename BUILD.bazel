@@ -57,6 +57,7 @@ rust_library(
     srcs = ["platform.rs"],
     deps = [
         "//platform:build",
+        "//platform:command",
         "//platform:run",
         "//platform:test",
     ],

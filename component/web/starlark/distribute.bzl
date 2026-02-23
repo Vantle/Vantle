@@ -51,7 +51,7 @@ def _distribute_impl(ctx):
     executable = ctx.actions.declare_file(ctx.label.name)
     ctx.actions.symlink(output = executable, target_file = ctx.executable._server, is_executable = True)
 
-    argfile = ctx.actions.declare_file(ctx.label.name + ".args")
+    argfile = ctx.actions.declare_file("arguments")
     ctx.actions.write(output = argfile, content = "--input\n" + ctx.attr.folder.label.name + "\n")
 
     runfiles = ctx.runfiles(files = ctx.attr.folder[DefaultInfo].files.to_list() + [argfile])

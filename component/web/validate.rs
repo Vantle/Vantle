@@ -15,7 +15,7 @@ struct Arguments {
     output: PathBuf,
 
     #[arg(long)]
-    prefix: String,
+    link: String,
 
     #[arg(long)]
     java: PathBuf,
@@ -156,8 +156,7 @@ fn main() -> miette::Result<()> {
     }))?;
 
     let arguments = Arguments::parse();
-    let destination = symlink::resolve(&arguments.source, &arguments.prefix)?;
-    let destination = destination.display().to_string();
+    let destination = arguments.link.clone();
     let _span = error_span!("validate", destination = %destination).entered();
 
     let content = std::fs::read_to_string(&arguments.source).map_err(|source| Error::Read {

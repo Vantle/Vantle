@@ -14,7 +14,12 @@ where
     F: FnOnce(A) -> miette::Result<()>,
     D: FnOnce(miette::Result<()>) -> miette::Result<()>,
 {
-    dispatch(A::parse(), activation, run, deactivation)
+    dispatch(
+        A::parse_from(command::arguments()?),
+        activation,
+        run,
+        deactivation,
+    )
 }
 
 pub fn dispatch<A, I, F, D>(

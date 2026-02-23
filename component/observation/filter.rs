@@ -36,14 +36,16 @@ where
         let mut visitor = Visitor::default();
         attrs.record(&mut visitor);
 
-        let channels = match visitor.channels() {
-            Ok(c) => c,
-            Err(e) => {
-                tracing::warn!("{:?}", miette::Report::new(e));
-                return;
-            }
+        let dominated = match visitor.channels {
+            None => true,
+            Some(_) => match visitor.channels() {
+                Ok(c) => (self.predicate)(&c),
+                Err(e) => {
+                    tracing::warn!("{:?}", miette::Report::new(e));
+                    return;
+                }
+            },
         };
-        let dominated = (self.predicate)(&channels);
 
         if let Some(span) = ctx.span(id) {
             span.extensions_mut().insert(Dominated(dominated));

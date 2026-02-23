@@ -1,13 +1,11 @@
 use std::net::{IpAddr, SocketAddr};
-use std::path::{Path, PathBuf};
-use std::time::{Duration, Instant};
+use std::path::PathBuf;
 
 use axum::Router;
-use axum::extract::Request;
-use axum::middleware::Next;
 use clap::Parser;
 use miette::{Diagnostic, Result};
 use observe::trace;
+use platform::run;
 use record::info;
 use thiserror::Error;
 use tower_http::services::ServeDir;
@@ -25,7 +23,7 @@ pub enum Error {
 
     #[error("server error")]
     #[diagnostic(code(serve::run), help("check file permissions in served directory"))]
-    Run {
+    Serve {
         #[source]
         source: std::io::Error,
     },
@@ -53,58 +51,13 @@ struct Arguments {
     port: u16,
 }
 
-fn parse() -> Result<Arguments> {
-    let executable = std::env::current_exe().map_err(|source| Error::Run { source })?;
-    let name = executable.file_name().unwrap_or_default().to_string_lossy();
-    let argfile = executable.with_file_name(format!("{name}.args"));
-    match std::fs::read_to_string(&argfile) {
-        Ok(content) => {
-            let args = std::iter::once(String::new())
-                .chain(content.lines().filter(|l| !l.is_empty()).map(String::from));
-            Ok(Arguments::parse_from(args))
-        }
-        Err(_) => Ok(Arguments::parse()),
-    }
-}
-
-fn elapsed(duration: Duration) -> String {
-    let microseconds = duration.as_micros();
-    if microseconds < 1_000 {
-        format!("{microseconds}us")
-    } else if microseconds < 1_000_000 {
-        format!("{:.1}ms", duration.as_secs_f64() * 1_000.0)
-    } else {
-        format!("{:.2}s", duration.as_secs_f64())
-    }
-}
-
-#[trace(channels = [serve])]
-async fn journal(request: Request, next: Next) -> axum::response::Response {
-    let method = request.method().clone();
-    let uri = request.uri().clone();
-    let start = Instant::now();
-    let response = next.run(request).await;
-    let status = response.status().as_u16();
-    let duration = elapsed(start.elapsed());
-    if let Some(query) = uri.query() {
-        info!("{status} {method} {}?{query} ({duration})", uri.path());
-    } else {
-        info!("{status} {method} {} ({duration})", uri.path());
-    }
-    response
-}
-
 #[trace(channels = [serve])]
 async fn run(arguments: Arguments) -> Result<()> {
-    let executable = std::env::current_exe().map_err(|source| Error::Run { source })?;
-    let input = executable
-        .parent()
-        .unwrap_or(Path::new("."))
-        .join(&arguments.input);
+    let input =
+        run::directory().map_or_else(|| arguments.input.clone(), |d| d.join(&arguments.input));
     let address = SocketAddr::new(arguments.address, arguments.port);
     let application = Router::new()
         .fallback_service(ServeDir::new(&input))
-        .layer(axum::middleware::from_fn(journal))
         .layer(TraceLayer::new_for_http());
     let listener = tokio::net::TcpListener::bind(address)
         .await
@@ -113,7 +66,7 @@ async fn run(arguments: Arguments) -> Result<()> {
     axum::serve(listener, application)
         .with_graceful_shutdown(shutdown())
         .await
-        .map_err(|source| Error::Run { source })?;
+        .map_err(|source| Error::Serve { source })?;
     Ok(())
 }
 
@@ -123,8 +76,7 @@ async fn shutdown() {
 }
 
 fn main() -> Result<()> {
-    command::dispatch(
-        parse()?,
+    command::execute(
         |_| {
             command::activate(trace::initialize(None, |channels| {
                 trace::channel::Channel::matches(channels, &["serve"])

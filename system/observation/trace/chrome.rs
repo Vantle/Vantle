@@ -7,7 +7,6 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 use trace::Sink;
 use tracing_chrome::{ChromeLayerBuilder, FlushGuard};
-use tracing_subscriber::fmt::time::FormatTime;
 use tracing_subscriber::prelude::*;
 
 static GUARD: Mutex<Option<FlushGuard>> = Mutex::new(None);
@@ -37,19 +36,17 @@ where
             details: e.to_string(),
         })?;
 
-    let mut timestamp = String::new();
-    tracing_subscriber::fmt::time::SystemTime
-        .format_time(&mut tracing_subscriber::fmt::format::Writer::new(
-            &mut timestamp,
-        ))
-        .ok();
-    eprintln!(
-        "\x1b[2m{timestamp}\x1b[0m \x1b[32m INFO\x1b[0m trace: {}",
-        path.display()
-    );
-    trace::store(&GUARD, guard);
     trace::store(&PATH, path);
+    trace::store(&GUARD, guard);
+    preamble();
     Ok(())
+}
+
+fn preamble() {
+    if let Some(path) = path() {
+        let _span = tracing::info_span!("initialize").entered();
+        tracing::info!("{path}");
+    }
 }
 
 #[must_use]
@@ -60,5 +57,13 @@ pub fn path() -> Option<String> {
 }
 
 pub fn flush() {
+    postamble();
     trace::clear(&GUARD);
+}
+
+fn postamble() {
+    if let Some(path) = path() {
+        let _span = tracing::info_span!("flush").entered();
+        tracing::info!("{path}");
+    }
 }

@@ -38,7 +38,7 @@ def _validate_impl(target, ctx):
     validator = ctx.file._validator
     runtime = ctx.toolchains["@bazel_tools//tools/jdk:runtime_toolchain_type"].java_runtime
     renderer = ctx.executable._renderer
-    prefix = ctx.attr._symlink_prefix[BuildSettingInfo].value
+    link = ctx.attr._symlink_prefix[BuildSettingInfo].value + "bin/" + output.short_path
 
     ctx.actions.run(
         executable = renderer,
@@ -51,8 +51,8 @@ def _validate_impl(target, ctx):
             validator.path,
             "--kind",
             info.kind,
-            "--prefix",
-            prefix,
+            "--link",
+            link,
             "--output",
             report.path,
         ],
@@ -62,7 +62,7 @@ def _validate_impl(target, ctx):
         ),
         outputs = [report],
         mnemonic = "Validate" + kind,
-        progress_message = "Validating: %s" % output.short_path,
+        progress_message = "Validating: %s" % link,
     )
 
     return [OutputGroupInfo(validation = depset([report]))]

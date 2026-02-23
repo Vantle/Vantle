@@ -12,7 +12,7 @@ SinkInfo = provider(
     fields = {"path": "Workspace-relative output path"},
 )
 
-def action(ctx, generator, arguments, inputs, output, mnemonic = "Generate"):
+def action(ctx, generator, arguments, inputs, output, mnemonic = "Generate", link = None):
     """
     Execute a generator binary with CLI arguments.
 
@@ -25,6 +25,7 @@ def action(ctx, generator, arguments, inputs, output, mnemonic = "Generate"):
         inputs: Input files for the action
         output: Declared output file
         mnemonic: Action mnemonic for build logs
+        link: Clickable symlink path for progress message
     """
     ctx.actions.run(
         executable = generator,
@@ -32,7 +33,7 @@ def action(ctx, generator, arguments, inputs, output, mnemonic = "Generate"):
         inputs = inputs,
         outputs = [output],
         mnemonic = mnemonic,
-        progress_message = "Generating: %s" % output.basename,
+        progress_message = "Generating: %s" % (link or output.basename),
     )
 
 def _generate_impl(ctx):

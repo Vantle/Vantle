@@ -81,7 +81,6 @@ rust_binary(
     visibility = ["//visibility:public"],
     deps = [
         "//system:command",
-        "//system/bazel:symlink",
         "@crates//:clap",
         "@crates//:miette",
         "@crates//:serde",

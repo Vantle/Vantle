@@ -23,7 +23,6 @@ where
                 path: path.to_string_lossy().into_owned(),
                 source,
             })?;
-            trace::store(&PATH, path);
             tracing_subscriber::registry()
                 .with(filter)
                 .with(
@@ -35,7 +34,10 @@ where
                 .try_init()
                 .map_err(|e| error::Error::Subscriber {
                     details: e.to_string(),
-                })
+                })?;
+            trace::store(&PATH, path);
+            preamble();
+            Ok(())
         }
         Sink::Stdout => tracing_subscriber::registry()
             .with(filter)
@@ -51,6 +53,13 @@ where
     }
 }
 
+fn preamble() {
+    if let Some(path) = path() {
+        let _span = tracing::info_span!("initialize").entered();
+        tracing::info!("{path}");
+    }
+}
+
 #[inline]
 #[must_use]
 pub fn path() -> Option<String> {
@@ -59,4 +68,13 @@ pub fn path() -> Option<String> {
         .and_then(|g| g.as_ref().map(|p| p.to_string_lossy().into_owned()))
 }
 
-pub fn flush() {}
+pub fn flush() {
+    postamble();
+}
+
+fn postamble() {
+    if let Some(path) = path() {
+        let _span = tracing::info_span!("flush").entered();
+        tracing::info!("{path}");
+    }
+}

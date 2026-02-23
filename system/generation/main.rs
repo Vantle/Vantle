@@ -22,8 +22,6 @@ struct Arguments {
     language: Language,
     #[arg(long)]
     output: PathBuf,
-    #[arg(long)]
-    prefix: String,
 }
 
 fn main() -> miette::Result<()> {
@@ -88,7 +86,5 @@ fn generate(arguments: Arguments) -> miette::Result<()> {
             arguments.output.display()
         ))?;
 
-    let resolved = symlink::resolve(&arguments.output, &arguments.prefix)?;
-    tracing::info!("generated: {}", resolved.display());
     Ok(())
 }

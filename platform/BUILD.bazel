@@ -13,6 +13,16 @@ rust_library(
 )
 
 rust_library(
+    name = "command",
+    srcs = ["command.rs"],
+    deps = [
+        "//platform:run",
+        "@crates//:miette",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
     name = "run",
     srcs = ["run.rs"],
 )

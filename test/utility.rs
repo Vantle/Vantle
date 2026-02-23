@@ -18,7 +18,10 @@ where
 }
 
 pub fn write<P: AsRef<Path>>(filename: &str, content: &str, directory: Option<P>) {
-    let directory = directory.map_or_else(platform::test::output, |d| d.as_ref().to_path_buf());
+    let directory = directory.map_or_else(
+        || platform::test::output().expect("TEST_UNDECLARED_OUTPUTS_DIR"),
+        |d| d.as_ref().to_path_buf(),
+    );
     let path = directory.join(filename);
 
     if let Some(parent) = path.parent() {

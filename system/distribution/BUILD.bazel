@@ -13,6 +13,7 @@ rust_binary(
     srcs = ["command.rs"],
     proc_macro_deps = ["//system/observation:macro"],
     deps = [
+        "//:platform",
         "//component/observation:module",
         "//system:command",
         "//system/concurrent:error",

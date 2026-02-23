@@ -39,7 +39,6 @@ rust_binary(
         "//component/observation:module",
         "//system:command",
         "//system:diagnostic",
-        "//system/bazel:symlink",
         "//system/generation:rust",
         "//system/observation/trace:module",
         "@crates//:clap",

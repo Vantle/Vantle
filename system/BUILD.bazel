@@ -94,6 +94,7 @@ rust_library(
     srcs = ["command.rs"],
     visibility = ["//visibility:public"],
     deps = [
+        "//platform:command",
         "@crates//:clap",
         "@crates//:miette",
     ],

@@ -56,8 +56,9 @@ rust_library(
     name = "platform",
     srcs = ["platform.rs"],
     deps = [
-        "@crates//:miette",
-        "@crates//:thiserror",
+        "//platform:build",
+        "//platform:run",
+        "//platform:test",
     ],
 )
 

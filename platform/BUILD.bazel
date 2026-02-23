@@ -1,6 +1,25 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "build",
+    srcs = ["build.rs"],
+)
+
+rust_library(
+    name = "run",
+    srcs = ["run.rs"],
+)
+
+rust_library(
+    name = "test",
+    srcs = ["test.rs"],
+)
 
 ##### Documentation                                                                                                                             [ Documentation ]

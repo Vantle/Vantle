@@ -30,7 +30,7 @@ pub fn resolve(address: Option<&str>) -> error::Result<Sink> {
 
 #[must_use]
 pub fn default() -> PathBuf {
-    platform::directory().join("trace.json")
+    platform::run::directory().join("trace.jsonl")
 }
 
 #[inline]

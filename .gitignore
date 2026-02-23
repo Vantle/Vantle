@@ -6,7 +6,6 @@
 
 .DS_Store
 
-trace.json
 rust-project.json
 
 user.bazelrc

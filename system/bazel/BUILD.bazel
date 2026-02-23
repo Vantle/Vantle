@@ -21,14 +21,4 @@ rust_library(
     ],
 )
 
-rust_library(
-    name = "runfiles",
-    srcs = ["runfiles.rs"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "@crates//:miette",
-        "@crates//:thiserror",
-    ],
-)
-
 ##### Documentation                                                                                                                             [ Documentation ]

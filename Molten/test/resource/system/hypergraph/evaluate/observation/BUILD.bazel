@@ -31,8 +31,6 @@ rust_autotest_template(
         "//Molten:component",
         "//Molten:system",
         "//Molten/system/hypergraph:evaluate",
-        "//component:assemble",
-        "//component/observation:collector",
         "//component/observation:layer",
         "//component/observation:stream",
     ],

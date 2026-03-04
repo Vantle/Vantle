@@ -3,7 +3,7 @@
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
 load("@rules_proto//proto:defs.bzl", "proto_library")
-load("@rules_rust//rust:defs.bzl", "rust_library", "rust_proc_macro")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_proc_macro")
 load("@rules_rust_prost//:defs.bzl", "rust_prost_library")
 
 ##### Documentation                                                                                                                             [ Documentation ]
@@ -25,6 +25,14 @@ rust_prost_library(
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
+    name = "argument",
+    srcs = ["argument.rs"],
+    deps = [
+        "@crates//:clap",
+    ],
+)
+
+rust_library(
     name = "error",
     srcs = ["error.rs"],
     deps = [
@@ -36,11 +44,50 @@ rust_library(
 )
 
 rust_library(
+    name = "endpoint",
+    srcs = ["endpoint.rs"],
+    deps = [
+        "//component/observation:expression",
+        "//component/observation/expression:parse",
+        "//system/observation/trace:error",
+        "@crates//:tracing",
+        "@crates//:url",
+    ],
+)
+
+rust_library(
     name = "trace",
     srcs = ["trace.rs"],
     deps = [
+        ":endpoint",
+        "//component/observation:channel",
+        "//component/observation:filter",
+        "//component/observation:layer",
+        "//component/observation:stream",
+        "//component/observation:expression",
+        "//system/observation/trace:error",
+        "//system/observation/trace/layer:chrome",
+        "//system/observation/trace/layer:grpc",
+        "//system/observation/trace/layer:log",
+        "@crates//:tokio",
+        "@crates//:tokio-util",
+        "@crates//:tracing",
+        "@crates//:tracing-chrome",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_library(
+    name = "http",
+    srcs = ["http.rs"],
+    deps = [
         "//:platform",
         "//system/observation/trace:error",
+        "@crates//:axum",
+        "@crates//:tokio",
+        "@crates//:tokio-util",
+        "@crates//:tower-http",
+        "@crates//:tracing",
         "@crates//:url",
     ],
 )
@@ -88,6 +135,20 @@ rust_library(
     ],
 )
 
+##### Binary                                                                                                                                           [ Binary ]
+rust_binary(
+    name = "command",
+    srcs = ["command.rs"],
+    deps = [
+        "//system:command",
+        "//system:observation",
+        "@crates//:clap",
+        "@crates//:miette",
+        "@crates//:tokio",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]
 document(
     srcs = ["observation.document.rs"],
     destination = "system/observation/index.html",

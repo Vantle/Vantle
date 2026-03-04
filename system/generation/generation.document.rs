@@ -1,10 +1,10 @@
 use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = html::Arguments::parse();
-    let root = arguments.root();
-    style::page(&arguments, "Generation", "generation", "generation", |c| {
-        c.title("Generation")
+    html::execute(|arguments| {
+        let root = arguments.root();
+        style::page(arguments, "Generation", "generation", "generation", |c| {
+            c.title("Generation")
             .subtitle("Code generation framework")
             .rule()
             .paragraph(|p| {
@@ -57,5 +57,6 @@ fn main() -> miette::Result<()> {
                     .code(".document.rs")
                     .italic(" files and rendered to HTML by the web generator.")
             })
+        })
     })
 }

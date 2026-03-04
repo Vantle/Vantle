@@ -3,9 +3,9 @@ use span::Fragment;
 use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = html::Arguments::parse();
-    style::page(&arguments, "Spatialize", "molten", "spatialize", |c| {
-        c.title("Spatialize")
+    html::execute(|arguments| {
+        style::page(arguments, "Spatialize", "molten", "spatialize", |c| {
+            c.title("Spatialize")
             .subtitle("Interactive hypergraph visualization for Molten")
             .rule()
             .paragraph(|p| {
@@ -93,5 +93,6 @@ fn main() -> miette::Result<()> {
                     })
                 })
             })
+        })
     })
 }

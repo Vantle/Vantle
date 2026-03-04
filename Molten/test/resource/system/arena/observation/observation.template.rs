@@ -1,36 +1,13 @@
-use assemble::Assemble;
-use collector::tracing_subscriber::Registry;
-use collector::tracing_subscriber::layer::SubscriberExt;
 use component::arena::Valued;
 use layer::Streamer;
-use stream::{Event, Field, Update, Value};
+use stream::{Event, Updates};
 use system::arena::{Aliased, Allocatable, Indexed};
 
 fn capture<F: FnOnce() -> R, R>(emit: F) -> (R, Vec<Event>) {
-    let (streamer, mut receiver) =
-        Streamer::assembler(|channels| channels.iter().any(|c| c.name == "arena")).assemble();
-    let subscriber = Registry::default().with(streamer);
-    let result = collector::tracing::subscriber::with_default(subscriber, emit);
-    let mut events = Vec::new();
-    while let Ok(update) = receiver.try_recv() {
-        if let Update::Event(event) = update {
-            events.push(event);
-        }
-    }
+    let sink = Streamer::assembler(stream::predicate("arena")).open();
+    let result = emit();
+    let events = sink.close().events().collect::<Vec<_>>();
     (result, events)
-}
-
-fn field(fields: &[Field], name: &str) -> Option<String> {
-    fields
-        .iter()
-        .find(|f| f.name == name)
-        .map(|f| match &f.value {
-            Value::Signed(v) => v.to_string(),
-            Value::Unsigned(v) => v.to_string(),
-            Value::Boolean(v) => v.to_string(),
-            Value::Text(v) => v.clone(),
-            Value::Serialized(v) => String::from_utf8_lossy(v).to_string(),
-        })
 }
 
 fn channels(event: &Event) -> Vec<String> {
@@ -50,8 +27,12 @@ fn allocate(existing: bool) -> (usize, Vec<String>, Option<String>, Option<Strin
 
     let event = events.first();
     let chs = event.map(channels).unwrap_or_default();
-    let captured = event.and_then(|e| field(&e.fields, "id"));
-    let state = event.and_then(|e| field(&e.fields, "state"));
+    let captured = event
+        .and_then(|e| stream::field(&e.fields, "id"))
+        .map(ToString::to_string);
+    let state = event
+        .and_then(|e| stream::field(&e.fields, "state"))
+        .map(ToString::to_string);
     (id, chs, captured, state)
 }
 
@@ -67,7 +48,9 @@ fn value(valid: bool) -> (Vec<String>, Option<String>, bool) {
 
     let event = events.first();
     let chs = event.map(channels).unwrap_or_default();
-    let captured = event.and_then(|e| field(&e.fields, "id"));
+    let captured = event
+        .and_then(|e| stream::field(&e.fields, "id"))
+        .map(ToString::to_string);
     (chs, captured, found)
 }
 
@@ -83,6 +66,8 @@ fn alias(valid: bool) -> (Vec<String>, Option<String>, bool) {
 
     let event = events.first();
     let chs = event.map(channels).unwrap_or_default();
-    let captured = event.and_then(|e| field(&e.fields, "id"));
+    let captured = event
+        .and_then(|e| stream::field(&e.fields, "id"))
+        .map(ToString::to_string);
     (chs, captured, found)
 }

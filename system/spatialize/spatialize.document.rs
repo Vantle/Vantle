@@ -3,9 +3,9 @@ use span::Fragment;
 use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = html::Arguments::parse();
-    style::page(&arguments, "Spatialize", "vantle", "spatialize", |c| {
-        c.title("Spatialize")
+    html::execute(|arguments| {
+        style::page(arguments, "Spatialize", "vantle", "spatialize", |c| {
+            c.title("Spatialize")
             .subtitle("GPU rendering infrastructure for Vantle")
             .rule()
             .paragraph(|p| {
@@ -54,5 +54,6 @@ fn main() -> miette::Result<()> {
                     })
                 })
             })
+        })
     })
 }

@@ -1,10 +1,10 @@
 use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = html::Arguments::parse();
-    let root = arguments.root();
-    style::page(&arguments, "Vantle", "vantle", "readme", |c| {
-        c.title("Vantle")
+    html::execute(|arguments| {
+        let root = arguments.root();
+        style::page(arguments, "Vantle", "vantle", "readme", |c| {
+            c.title("Vantle")
             .element("a", |a| {
                 a.class("subtitle")
                     .attribute("href", "https://github.com/Vantle/Vantle")
@@ -60,5 +60,6 @@ fn main() -> miette::Result<()> {
                 .subsection("Build", |ss| ss.shell("bazel build //..."))
                 .subsection("Test", |ss| ss.shell("bazel test //..."))
             })
+        })
     })
 }

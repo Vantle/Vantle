@@ -4,13 +4,12 @@ W3C validation aspect using the Nu HTML Checker.
 Validates HTML, CSS, and SVG outputs from ValidationInfo targets during the build.
 """
 
-load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
-
 ValidationInfo = provider(
     doc = "Declares that a target should be validated",
     fields = {
         "output": "File to validate",
         "kind": "Validation kind: 'html', 'css', or 'svg'",
+        "origin": "Display path for clickable console links",
     },
 )
 
@@ -18,7 +17,7 @@ def _validation_impl(ctx):
     source = ctx.attr.src[DefaultInfo].files.to_list()[0]
     return [
         DefaultInfo(files = depset([source])),
-        ValidationInfo(output = source, kind = ctx.attr.kind),
+        ValidationInfo(output = source, kind = ctx.attr.kind, origin = source.short_path),
     ]
 
 validation = rule(
@@ -38,7 +37,6 @@ def _validate_impl(target, ctx):
     validator = ctx.file._validator
     runtime = ctx.toolchains["@bazel_tools//tools/jdk:runtime_toolchain_type"].java_runtime
     renderer = ctx.executable._renderer
-    link = ctx.attr._symlink_prefix[BuildSettingInfo].value + "bin/" + output.short_path
 
     ctx.actions.run(
         executable = renderer,
@@ -51,8 +49,8 @@ def _validate_impl(target, ctx):
             validator.path,
             "--kind",
             info.kind,
-            "--link",
-            link,
+            "--origin",
+            info.origin,
             "--output",
             report.path,
         ],
@@ -62,7 +60,7 @@ def _validate_impl(target, ctx):
         ),
         outputs = [report],
         mnemonic = "Validate" + kind,
-        progress_message = "Validating: %s" % link,
+        progress_message = "Validating: %s" % info.origin,
     )
 
     return [OutputGroupInfo(validation = depset([report]))]
@@ -80,10 +78,6 @@ validate = aspect(
             default = "//component/web:validate",
             executable = True,
             cfg = "exec",
-        ),
-        "_symlink_prefix": attr.label(
-            default = "//:symlink_prefix",
-            providers = [BuildSettingInfo],
         ),
     },
 )

@@ -14,22 +14,30 @@ use style::{Keyframe, Media, Properties, Style};
     about = "Generate a document from a Rust DSL page definition"
 )]
 pub struct Arguments {
-    #[arg(long)]
+    #[arg(long, help = "Output file path")]
     pub output: std::path::PathBuf,
 
-    #[arg(long)]
+    #[arg(long, help = "Workspace-relative destination path")]
     pub destination: String,
 
-    #[arg(long)]
+    #[arg(long, help = "Data files to inject into the document")]
     pub data: Vec<String>,
+
+    #[command(flatten)]
+    pub observation: observation::argument::Argument,
+}
+
+pub fn execute<F>(run: F) -> miette::Result<()>
+where
+    F: FnOnce(&Arguments) -> miette::Result<()>,
+{
+    command::execute(
+        |arguments: &Arguments| observation::initialize(&arguments.observation.sink),
+        |arguments| run(&arguments),
+    )
 }
 
 impl Arguments {
-    #[must_use]
-    pub fn parse() -> Self {
-        <Self as clap::Parser>::parse()
-    }
-
     #[must_use]
     pub fn root(&self) -> String {
         let depth = self.destination.chars().filter(|&c| c == '/').count();
@@ -170,13 +178,15 @@ pub fn stylesheet(arguments: &Arguments, style: &Style) -> miette::Result<()> {
 #[trace(channels = [document])]
 fn emit(path: &std::path::Path, content: &str) -> miette::Result<()> {
     if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent).map_err(|_| error::Error::Output {
+        std::fs::create_dir_all(parent).map_err(|source| error::Error::Output {
             path: parent.display().to_string(),
+            source,
         })?;
     }
 
-    std::fs::write(path, content).map_err(|_| error::Error::Output {
+    std::fs::write(path, content).map_err(|source| error::Error::Output {
         path: path.display().to_string(),
+        source,
     })?;
 
     Ok(())
@@ -184,8 +194,7 @@ fn emit(path: &std::path::Path, content: &str) -> miette::Result<()> {
 
 #[trace(channels = [document])]
 fn load(paths: &[String]) -> miette::Result<HashMap<String, String>> {
-    let mut data = HashMap::new();
-    for path in paths {
+    paths.iter().try_fold(HashMap::new(), |mut data, path| {
         let content = std::fs::read_to_string(path).map_err(|_| {
             let available = data.keys().cloned().collect::<Vec<_>>();
             error::Error::source(path, &available)
@@ -196,8 +205,8 @@ fn load(paths: &[String]) -> miette::Result<HashMap<String, String>> {
             .to_string_lossy()
             .into_owned();
         data.insert(name, content);
-    }
-    Ok(data)
+        Ok(data)
+    })
 }
 
 #[trace(channels = [document])]
@@ -483,9 +492,7 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
 }
 
 fn indent(html: &mut String, depth: usize) {
-    for _ in 0..depth {
-        html.push_str("  ");
-    }
+    html.push_str(&" ".repeat(depth * 2));
 }
 
 #[trace(channels = [document])]
@@ -543,17 +550,17 @@ fn extract_text(elements: &[Element]) -> String {
 }
 
 fn slugify(text: &str) -> String {
-    let mut output = String::with_capacity(text.len());
-    for c in text.chars() {
-        if c.is_alphanumeric() {
-            for lower in c.to_lowercase() {
-                output.push(lower);
+    text.chars()
+        .fold(String::with_capacity(text.len()), |mut output, c| {
+            if c.is_alphanumeric() {
+                output.extend(c.to_lowercase());
+            } else if !output.ends_with('-') && !output.is_empty() {
+                output.push('-');
             }
-        } else {
-            output.push('-');
-        }
-    }
-    output
+            output
+        })
+        .trim_end_matches('-')
+        .to_string()
 }
 
 fn deduplicate(base: String, identifiers: &HashSet<String>) -> String {

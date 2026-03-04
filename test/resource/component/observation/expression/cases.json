@@ -1,0 +1,163 @@
+{
+  "functions": [
+    {
+      "function": "parse",
+      "tags": ["expression", "parse"],
+      "cases": [
+        {
+          "tags": ["single"],
+          "parameters": {"input": "core"},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["or"],
+          "parameters": {"input": "core,http"},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["and"],
+          "parameters": {"input": "core.http"},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["not"],
+          "parameters": {"input": "!debug"},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["grouped"],
+          "parameters": {"input": "(core,http).!debug"},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["nested"],
+          "parameters": {"input": "!(core.http)"},
+          "returns": {"()": true}
+        }
+      ]
+    },
+    {
+      "function": "evaluate",
+      "tags": ["expression", "evaluate"],
+      "cases": [
+        {
+          "tags": ["single", "match"],
+          "parameters": {"input": "core", "channels": ["core"]},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["single", "nomatch"],
+          "parameters": {"input": "core", "channels": ["http"]},
+          "returns": {"()": false}
+        },
+        {
+          "tags": ["or", "first"],
+          "parameters": {"input": "core,http", "channels": ["core"]},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["or", "second"],
+          "parameters": {"input": "core,http", "channels": ["http"]},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["or", "neither"],
+          "parameters": {"input": "core,http", "channels": ["debug"]},
+          "returns": {"()": false}
+        },
+        {
+          "tags": ["and", "both"],
+          "parameters": {"input": "core.http", "channels": ["core", "http"]},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["and", "partial"],
+          "parameters": {"input": "core.http", "channels": ["core"]},
+          "returns": {"()": false}
+        },
+        {
+          "tags": ["not", "absent"],
+          "parameters": {"input": "!debug", "channels": ["core"]},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["not", "present"],
+          "parameters": {"input": "!debug", "channels": ["debug"]},
+          "returns": {"()": false}
+        },
+        {
+          "tags": ["grouped", "match"],
+          "parameters": {"input": "(core,http).!debug", "channels": ["core"]},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["grouped", "excluded"],
+          "parameters": {"input": "(core,http).!debug", "channels": ["core", "debug"]},
+          "returns": {"()": false}
+        },
+        {
+          "tags": ["empty", "channels"],
+          "parameters": {"input": "core", "channels": []},
+          "returns": {"()": false}
+        },
+        {
+          "tags": ["multiple", "channels"],
+          "parameters": {"input": "core", "channels": ["core", "http", "debug"]},
+          "returns": {"()": true}
+        }
+      ]
+    },
+    {
+      "function": "reject",
+      "tags": ["expression", "error"],
+      "cases": [
+        {
+          "tags": ["unbalanced"],
+          "parameters": {"input": "(core"},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["trailing", "dot"],
+          "parameters": {"input": "core."},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["trailing", "comma"],
+          "parameters": {"input": "core,"},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["trailing", "not"],
+          "parameters": {"input": "!"},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["invalid", "character"],
+          "parameters": {"input": "core@http"},
+          "returns": {"()": true}
+        }
+      ]
+    },
+    {
+      "function": "any",
+      "tags": ["expression", "any"],
+      "cases": [
+        {
+          "tags": ["empty"],
+          "parameters": {"input": ""},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["whitespace"],
+          "parameters": {"input": "  "},
+          "returns": {"()": true}
+        },
+        {
+          "tags": ["nonempty"],
+          "parameters": {"input": "core"},
+          "returns": {"()": false}
+        }
+      ]
+    }
+  ]
+}

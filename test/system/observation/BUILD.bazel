@@ -16,8 +16,6 @@ rust_autotest(
     cases = "//test/resource/system/observation/level:cases",
     template = "//test/resource/system/observation/level:template",
     deps = [
-        "//component:assemble",
-        "//component/observation:collector",
         "//component/observation:layer",
         "//component/observation:stream",
         "//system:observation",
@@ -30,8 +28,6 @@ rust_autotest(
     cases = "//test/resource/system/observation/span:cases",
     template = "//test/resource/system/observation/span:template",
     deps = [
-        "//component:assemble",
-        "//component/observation:collector",
         "//component/observation:layer",
         "//component/observation:stream",
         "//system:observation",
@@ -44,13 +40,10 @@ rust_autotest(
     cases = "//test/resource/system/observation/hierarchy:cases",
     template = "//test/resource/system/observation/hierarchy:template",
     deps = [
-        "//component:assemble",
-        "//component/observation:collector",
         "//component/observation:layer",
         "//component/observation:stream",
         "//system:observation",
         "@crates//:tracing",
-        "@crates//:tracing-subscriber",
     ],
 )
 
@@ -59,14 +52,11 @@ rust_autotest(
     cases = "//test/resource/system/observation/filtering:cases",
     template = "//test/resource/system/observation/filtering:template",
     deps = [
-        "//component:assemble",
         "//component/observation:channel",
-        "//component/observation:collector",
         "//component/observation:layer",
         "//component/observation:stream",
         "//system:observation",
         "@crates//:tracing",
-        "@crates//:tracing-subscriber",
     ],
 )
 

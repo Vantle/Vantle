@@ -9,21 +9,39 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
-    name = "error",
-    srcs = ["error.rs"],
+    name = "log",
+    srcs = ["log.rs"],
     deps = [
-        "@crates//:miette",
-        "@crates//:thiserror",
+        "//system/observation/trace:error",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
     ],
 )
 
 rust_library(
-    name = "runtime",
-    srcs = ["runtime.rs"],
+    name = "chrome",
+    srcs = ["chrome.rs"],
     deps = [
-        ":error",
+        "//system/observation/trace:error",
+        "@crates//:tracing",
+        "@crates//:tracing-chrome",
+        "@crates//:tracing-subscriber",
+    ],
+)
+
+rust_library(
+    name = "grpc",
+    srcs = ["grpc.rs"],
+    deps = [
+        "//component:assemble",
+        "//component/observation:layer",
+        "//component/observation:stream",
+        "//system/observation:peer",
+        "//system/observation/trace:error",
         "@crates//:tokio",
         "@crates//:tokio-util",
+        "@crates//:tracing",
+        "@crates//:url",
     ],
 )
 

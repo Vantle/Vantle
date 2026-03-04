@@ -207,6 +207,54 @@ pub fn timestamp() -> u64 {
         .unwrap_or(0)
 }
 
+pub trait Updates: Iterator<Item = Update> + Sized {
+    fn events(self) -> impl Iterator<Item = Event> {
+        self.filter_map(|u| match u {
+            Update::Event(e) => Some(e),
+            _ => None,
+        })
+    }
+
+    fn spans(self) -> impl Iterator<Item = Span> {
+        self.filter_map(|u| match u {
+            Update::Span(s) => Some(s),
+            _ => None,
+        })
+    }
+
+    fn snapshots(self) -> impl Iterator<Item = Snapshot> {
+        self.filter_map(|u| match u {
+            Update::Snapshot(s) => Some(s),
+            _ => None,
+        })
+    }
+}
+
+impl<I: Iterator<Item = Update>> Updates for I {}
+
+#[must_use]
+pub fn predicate(name: &str) -> Predicate {
+    let name = name.to_string();
+    Arc::new(move |channels: &[_]| channels.iter().any(|c| c.name == name))
+}
+
+#[must_use]
+pub fn field<'a>(fields: &'a [Field], name: &str) -> Option<&'a Value> {
+    fields.iter().find(|f| f.name == name).map(|f| &f.value)
+}
+
+impl std::fmt::Display for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Signed(v) => write!(f, "{v}"),
+            Self::Unsigned(v) => write!(f, "{v}"),
+            Self::Boolean(v) => write!(f, "{v}"),
+            Self::Text(v) => write!(f, "{v}"),
+            Self::Serialized(v) => write!(f, "{v:?}"),
+        }
+    }
+}
+
 #[inline]
 #[must_use]
 pub fn generate() -> u64 {

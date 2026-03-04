@@ -8,11 +8,6 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
-    name = "build",
-    srcs = ["build.rs"],
-)
-
-rust_library(
     name = "command",
     srcs = ["command.rs"],
     deps = [

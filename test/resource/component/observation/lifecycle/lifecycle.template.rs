@@ -1,23 +1,6 @@
-use assemble::Assemble;
-use collector::tracing_subscriber::Registry;
-use collector::tracing_subscriber::layer::SubscriberExt;
 use layer::Streamer;
 use observation::observe::trace;
-use stream::{Lifecycle, Span, Update};
-
-fn spans<F: FnOnce()>(emit: F) -> Vec<Span> {
-    let (streamer, mut receiver) =
-        Streamer::assembler(|channels| channels.iter().any(|c| c.name == "test")).assemble();
-    let subscriber = Registry::default().with(streamer);
-    collector::tracing::subscriber::with_default(subscriber, emit);
-    let mut captured = Vec::new();
-    while let Ok(update) = receiver.try_recv() {
-        if let Update::Span(span) = update {
-            captured.push(span);
-        }
-    }
-    captured
-}
+use stream::{Lifecycle, Updates};
 
 #[trace(channels = [test])]
 fn instrumented() {}
@@ -31,11 +14,13 @@ fn outer() {
 fn inner() {}
 
 fn lifecycle(scenario: usize) -> (usize, usize, usize) {
-    let captured = spans(|| match scenario {
+    let sink = Streamer::assembler(stream::predicate("test")).open();
+    match scenario {
         0 => instrumented(),
         1 => outer(),
         _ => {}
-    });
+    }
+    let captured = sink.close().spans().collect::<Vec<_>>();
     let begins = captured
         .iter()
         .filter(|s| matches!(s.lifecycle, Lifecycle::Begin(_)))
@@ -48,11 +33,13 @@ fn lifecycle(scenario: usize) -> (usize, usize, usize) {
 }
 
 fn hierarchy(scenario: usize) -> (usize, bool) {
-    let captured = spans(|| match scenario {
+    let sink = Streamer::assembler(stream::predicate("test")).open();
+    match scenario {
         0 => instrumented(),
         1 => outer(),
         _ => {}
-    });
+    }
+    let captured = sink.close().spans().collect::<Vec<_>>();
     let roots = captured
         .iter()
         .filter(|s| matches!(s.lifecycle, Lifecycle::Begin(_)))

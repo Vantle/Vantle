@@ -1,6 +1,6 @@
 use dashmap::DashMap;
+use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, OnceLock};
 use tokio::sync::mpsc;
 use tracing::Subscriber;
 use tracing::span::Attributes;
@@ -13,6 +13,8 @@ use channel::Channel;
 use stream::{
     Begin, End, Event, Identifier, Level, Lifecycle, Metadata, Predicate, Span, Update, generate,
 };
+use tracing_subscriber::Registry;
+use tracing_subscriber::layer::SubscriberExt;
 use visitor::Visitor;
 
 const CAPACITY: usize = 65536;
@@ -34,15 +36,12 @@ struct State {
 pub type Sender = mpsc::Sender<Update>;
 pub type Receiver = mpsc::Receiver<Update>;
 
-pub struct Assembler<F> {
-    predicate: F,
+pub struct Assembler {
+    predicate: Predicate,
     capacity: usize,
 }
 
-impl<F> Assembler<F>
-where
-    F: Fn(&[Channel]) -> bool + Send + Sync + 'static,
-{
+impl Assembler {
     #[must_use]
     pub fn capacity(mut self, capacity: usize) -> Self {
         self.capacity = capacity;
@@ -50,17 +49,44 @@ where
     }
 }
 
-impl<F> Assemble for Assembler<F>
-where
-    F: Fn(&[Channel]) -> bool + Send + Sync + 'static,
-{
+impl Assembler {
+    #[must_use]
+    pub fn open(self) -> Sink {
+        let (streamer, receiver) = self.assemble();
+        let subscriber = Registry::default().with(streamer);
+        let guard = tracing::subscriber::set_default(subscriber);
+        Sink { guard, receiver }
+    }
+}
+
+pub struct Sink {
+    guard: tracing::subscriber::DefaultGuard,
+    receiver: Receiver,
+}
+
+impl Sink {
+    pub fn close(self) -> impl Iterator<Item = Update> {
+        drop(self.guard);
+        let mut receiver = self.receiver;
+        std::iter::from_fn(move || receiver.try_recv().ok())
+    }
+
+    pub fn interrupt(mut self) -> impl Iterator<Item = Update> {
+        self.receiver.close();
+        drop(self.guard);
+        let mut receiver = self.receiver;
+        std::iter::from_fn(move || receiver.try_recv().ok())
+    }
+}
+
+impl Assemble for Assembler {
     type Output = (Streamer, Receiver);
 
     fn assemble(self) -> Self::Output {
         let (sender, receiver) = mpsc::channel(self.capacity);
         let streamer = Streamer {
             sender,
-            predicate: Arc::new(self.predicate),
+            predicate: self.predicate,
             spans: DashMap::new(),
             trace: OnceLock::new(),
             dropped: AtomicU64::new(0),
@@ -80,10 +106,7 @@ pub struct Streamer {
 
 impl Streamer {
     #[must_use]
-    pub fn assembler<F>(predicate: F) -> Assembler<F>
-    where
-        F: Fn(&[Channel]) -> bool + Send + Sync + 'static,
-    {
+    pub fn assembler(predicate: Predicate) -> Assembler {
         Assembler {
             predicate,
             capacity: CAPACITY,
@@ -197,16 +220,15 @@ where
             return;
         }
 
-        let dominated = ctx
-            .event_span(event)
-            .is_some_and(|span| self.spans.contains_key(&span.id()));
+        let span = ctx.event_span(event);
+        let dominated = span
+            .as_ref()
+            .is_some_and(|s| self.spans.contains_key(&s.id()));
         if !dominated {
             return;
         }
 
-        let parent = ctx
-            .event_span(event)
-            .map(|span| self.spans.get(&span.id()).map_or(0, |state| state.id.span));
+        let parent = span.map(|s| self.spans.get(&s.id()).map_or(0, |state| state.id.span));
 
         let observation = Event::now(parent, metadata(meta), vec![], collector.fields);
         self.emit(Update::Event(observation));

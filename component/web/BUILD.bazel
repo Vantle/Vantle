@@ -81,13 +81,13 @@ rust_binary(
     visibility = ["//visibility:public"],
     deps = [
         "//system:command",
+        "//system:observation",
         "@crates//:clap",
         "@crates//:miette",
         "@crates//:serde",
         "@crates//:serde_json",
         "@crates//:thiserror",
         "@crates//:tracing",
-        "@crates//:tracing-subscriber",
     ],
 )
 

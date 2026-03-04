@@ -1,23 +1,6 @@
-use assemble::Assemble;
-use collector::tracing_subscriber::Registry;
-use collector::tracing_subscriber::layer::SubscriberExt;
 use layer::Streamer;
 use observation::observe::trace;
-use stream::{Lifecycle, Span, Update};
-
-fn spans<F: FnOnce()>(emit: F) -> Vec<Span> {
-    let (streamer, mut receiver) =
-        Streamer::assembler(|channels| channels.iter().any(|c| c.name == "test")).assemble();
-    let subscriber = Registry::default().with(streamer);
-    collector::tracing::subscriber::with_default(subscriber, emit);
-    let mut captured = Vec::new();
-    while let Ok(update) = receiver.try_recv() {
-        if let Update::Span(span) = update {
-            captured.push(span);
-        }
-    }
-    captured
-}
+use stream::{Lifecycle, Updates};
 
 #[trace(channels = [test])]
 fn outer(depth: usize) -> usize {
@@ -30,9 +13,9 @@ fn inner(depth: usize) -> usize {
 }
 
 fn nested(depth: usize) -> (usize, usize) {
-    let captured = spans(|| {
-        let _ = outer(depth);
-    });
+    let sink = Streamer::assembler(stream::predicate("test")).open();
+    let _ = outer(depth);
+    let captured = sink.close().spans().collect::<Vec<_>>();
 
     let begins = captured
         .iter()
@@ -48,9 +31,9 @@ fn nested(depth: usize) -> (usize, usize) {
 }
 
 fn ancestry(depth: usize) -> Vec<bool> {
-    let captured = spans(|| {
-        let _ = outer(depth);
-    });
+    let sink = Streamer::assembler(stream::predicate("test")).open();
+    let _ = outer(depth);
+    let captured = sink.close().spans().collect::<Vec<_>>();
 
     captured
         .iter()
@@ -67,9 +50,9 @@ fn ancestry(depth: usize) -> Vec<bool> {
 }
 
 fn consistent(depth: usize) -> bool {
-    let captured = spans(|| {
-        let _ = outer(depth);
-    });
+    let sink = Streamer::assembler(stream::predicate("test")).open();
+    let _ = outer(depth);
+    let captured = sink.close().spans().collect::<Vec<_>>();
 
     let begins: Vec<_> = captured
         .iter()

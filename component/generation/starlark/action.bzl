@@ -12,11 +12,12 @@ SinkInfo = provider(
     fields = {"path": "Workspace-relative output path"},
 )
 
-def action(ctx, generator, arguments, inputs, output, mnemonic = "Generate", link = None):
+def action(ctx, generator, arguments, inputs, output, sink = None, mnemonic = "Generate"):
     """
     Execute a generator binary with CLI arguments.
 
-    Appends --output automatically.
+    Appends --output automatically. When sink is provided, appends --sink
+    and includes the sink file in outputs.
 
     Args:
         ctx: Rule context
@@ -24,20 +25,26 @@ def action(ctx, generator, arguments, inputs, output, mnemonic = "Generate", lin
         arguments: Flat list of CLI arguments (e.g., ["--flag", "value"])
         inputs: Input files for the action
         output: Declared output file
+        sink: Optional declared sink output file
         mnemonic: Action mnemonic for build logs
-        link: Clickable symlink path for progress message
     """
+    outputs = [output]
+    if sink:
+        arguments = arguments + ["--sink", sink.path]
+        outputs.append(sink)
+
     ctx.actions.run(
         executable = generator,
         arguments = arguments + ["--output", output.path],
         inputs = inputs,
-        outputs = [output],
+        outputs = outputs,
         mnemonic = mnemonic,
-        progress_message = "Generating: %s" % (link or output.basename),
+        progress_message = "Generating: %s" % output.basename,
     )
 
 def _generate_impl(ctx):
-    output = ctx.actions.declare_file(ctx.attr.output)
+    output = ctx.outputs.output
+    observation = ctx.actions.declare_file(output.basename + ".trace.jsonl")
 
     arguments = []
     for key, value in ctx.attr.parameters.items():
@@ -53,9 +60,12 @@ def _generate_impl(ctx):
             arguments.extend(["--data", file.path])
             inputs.append(file)
 
-    action(ctx, ctx.executable.generator, arguments, inputs, output)
+    action(ctx, ctx.executable.generator, arguments, inputs, output, sink = observation)
 
-    providers = [DefaultInfo(files = depset([output]))]
+    providers = [
+        DefaultInfo(files = depset([output])),
+        OutputGroupInfo(observation = depset([observation])),
+    ]
     if ctx.attr.sink:
         providers.append(SinkInfo(path = ctx.attr.sink))
     return providers
@@ -71,7 +81,7 @@ generate = rule(
         "parameters": attr.string_dict(),
         "srcs": attr.label_list(allow_files = True),
         "data": attr.label_list(allow_files = True),
-        "output": attr.string(mandatory = True),
+        "output": attr.output(mandatory = True),
         "sink": attr.string(),
     },
 )

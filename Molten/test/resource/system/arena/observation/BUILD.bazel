@@ -30,8 +30,6 @@ rust_autotest_template(
     deps = [
         "//Molten:component",
         "//Molten:system",
-        "//component:assemble",
-        "//component/observation:collector",
         "//component/observation:layer",
         "//component/observation:stream",
     ],

@@ -1,25 +1,37 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_template")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = [
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
 
 ##### Module                                                                                                                                           [ Module ]
-config_setting(
-    name = "standard",
-    flag_values = {"//platform/observation:format": "standard"},
+filegroup(
+    name = "cases",
+    srcs = ["cases.json"],
 )
 
-config_setting(
-    name = "chrome",
-    flag_values = {"//platform/observation:format": "chrome"},
+filegroup(
+    name = "data",
+    srcs = [
+        "expression.template.rs",
+        ":cases",
+    ],
 )
 
-config_setting(
-    name = "stream",
-    flag_values = {"//platform/observation:format": "stream"},
+rust_autotest_template(
+    name = "template",
+    src = "expression.template.rs",
+    deps = [
+        "//component/observation:channel",
+        "//component/observation:expression",
+        "//component/observation/expression:parse",
+    ],
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

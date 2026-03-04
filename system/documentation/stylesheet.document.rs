@@ -1,4 +1,3 @@
 fn main() -> miette::Result<()> {
-    let arguments = html::Arguments::parse();
-    html::stylesheet(&arguments, &style::theme())
+    html::execute(|arguments| html::stylesheet(arguments, &style::theme()))
 }

@@ -29,6 +29,7 @@ pub fn arguments() -> Result<Vec<String>> {
     match std::fs::read_to_string(&path) {
         Ok(content) => Ok(std::iter::once(String::new())
             .chain(content.lines().filter(|l| !l.is_empty()).map(String::from))
+            .chain(std::env::args().skip(1))
             .collect::<Vec<_>>()),
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
             Ok(std::env::args().collect::<Vec<_>>())

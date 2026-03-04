@@ -1,30 +1,50 @@
 use std::path::PathBuf;
 
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use thiserror::Error;
 use tracing::{error, error_span};
 
+#[derive(Debug, Clone, ValueEnum)]
+enum Kind {
+    Html,
+    Css,
+    Svg,
+}
+
+impl std::fmt::Display for Kind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Html => write!(f, "html"),
+            Self::Css => write!(f, "css"),
+            Self::Svg => write!(f, "svg"),
+        }
+    }
+}
+
 #[derive(Parser)]
 #[command(name = "validate", about = "Render W3C validation results")]
 struct Arguments {
-    #[arg(long)]
+    #[arg(long, help = "Source file to validate")]
     source: PathBuf,
 
-    #[arg(long)]
+    #[arg(long, help = "Output file for validation results")]
     output: PathBuf,
 
-    #[arg(long)]
-    link: String,
+    #[arg(long, help = "Origin identifier for error reporting")]
+    origin: String,
 
-    #[arg(long)]
+    #[arg(long, help = "Path to Java runtime")]
     java: PathBuf,
 
-    #[arg(long)]
+    #[arg(long, help = "Path to vnu.jar validator")]
     validator: PathBuf,
 
-    #[arg(long)]
-    kind: String,
+    #[arg(long, help = "File type to validate")]
+    kind: Kind,
+
+    #[command(flatten)]
+    observation: observation::argument::Argument,
 }
 
 #[derive(serde::Deserialize)]
@@ -91,12 +111,12 @@ enum Error {
         help: String,
     },
 
-    #[error("{count} W3C validation {noun} in {destination}")]
+    #[error("{count} W3C validation {noun} in {origin}")]
     #[diagnostic(code(w3c::failed), help("see individual errors above for details"))]
     Failed {
         count: usize,
         noun: String,
-        destination: String,
+        origin: String,
     },
 
     #[error("unrecognized file extension for {path}")]
@@ -142,8 +162,13 @@ fn span(content: &str, message: &Message) -> Option<SourceSpan> {
 }
 
 fn main() -> miette::Result<()> {
-    tracing_subscriber::fmt::init();
+    command::execute(
+        |arguments: &Arguments| observation::initialize(&arguments.observation.sink),
+        run,
+    )
+}
 
+fn run(arguments: Arguments) -> miette::Result<()> {
     miette::set_hook(Box::new(|_| {
         Box::new(
             miette::MietteHandlerOpts::new()
@@ -155,9 +180,8 @@ fn main() -> miette::Result<()> {
         )
     }))?;
 
-    let arguments = Arguments::parse();
-    let destination = arguments.link.clone();
-    let _span = error_span!("validate", destination = %destination).entered();
+    let origin = arguments.origin.clone();
+    let _span = error_span!("validate", origin = %origin).entered();
 
     let content = std::fs::read_to_string(&arguments.source).map_err(|source| Error::Read {
         path: arguments.source.display().to_string(),
@@ -169,7 +193,7 @@ fn main() -> miette::Result<()> {
         .arg(&arguments.validator)
         .arg("--format")
         .arg("json")
-        .arg(format!("--{}", arguments.kind))
+        .arg(format!("--{}", &arguments.kind))
         .arg(&arguments.source)
         .output()
         .map_err(|source| Error::Checker { source })?;
@@ -184,7 +208,7 @@ fn main() -> miette::Result<()> {
         .collect::<Vec<_>>();
 
     if errors.is_empty() {
-        std::fs::write(&arguments.output, format!("VALID: {destination}\n")).map_err(|source| {
+        std::fs::write(&arguments.output, format!("VALID: {origin}\n")).map_err(|source| {
             Error::Write {
                 path: arguments.output.display().to_string(),
                 source,
@@ -201,8 +225,7 @@ fn main() -> miette::Result<()> {
         .ok_or_else(|| Error::Extension {
             path: arguments.source.display().to_string(),
         })?;
-    let source =
-        std::sync::Arc::new(NamedSource::new(&destination, content).with_language(language));
+    let source = std::sync::Arc::new(NamedSource::new(&origin, content).with_language(language));
 
     for (error, s) in errors.iter().zip(spans) {
         let diagnostic = Error::Validation {
@@ -218,6 +241,6 @@ fn main() -> miette::Result<()> {
     Err(Error::Failed {
         count: errors.len(),
         noun: if errors.len() == 1 { "error" } else { "errors" }.into(),
-        destination,
+        origin,
     })?
 }

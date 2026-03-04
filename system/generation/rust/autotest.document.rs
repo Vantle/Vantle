@@ -2,9 +2,9 @@ use style::Composition;
 use web::element::Language;
 
 fn main() -> miette::Result<()> {
-    let arguments = html::Arguments::parse();
-    style::page(&arguments, "Autotest", "generation", "autotest", |c| {
-        c.title("Autotest")
+    html::execute(|arguments| {
+        style::page(arguments, "Autotest", "generation", "autotest", |c| {
+            c.title("Autotest")
             .subtitle("JSON-driven test generation for Rust")
             .rule()
             .paragraph(|p| {
@@ -142,5 +142,6 @@ fn main() -> miette::Result<()> {
                     })
                 })
             })
+        })
     })
 }

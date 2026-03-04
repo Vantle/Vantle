@@ -1,12 +1,9 @@
-use std::sync::Arc;
-
 use tracing::Subscriber;
 use tracing::span::Attributes;
 use tracing_subscriber::Layer;
 use tracing_subscriber::layer::Context;
 use tracing_subscriber::registry::LookupSpan;
 
-use channel::Channel;
 use stream::Predicate;
 use visitor::Visitor;
 
@@ -16,13 +13,8 @@ pub struct Filter {
 
 impl Filter {
     #[must_use]
-    pub fn new<F>(predicate: F) -> Self
-    where
-        F: Fn(&[Channel]) -> bool + Send + Sync + 'static,
-    {
-        Self {
-            predicate: Arc::new(predicate),
-        }
+    pub fn new(predicate: Predicate) -> Self {
+        Self { predicate }
     }
 }
 
@@ -55,6 +47,6 @@ where
     fn event_enabled(&self, event: &tracing::Event<'_>, ctx: Context<'_, S>) -> bool {
         ctx.event_span(event)
             .and_then(|span| span.extensions().get::<Dominated>().map(|d| d.0))
-            .unwrap_or(false)
+            .unwrap_or(true)
     }
 }

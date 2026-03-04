@@ -14,33 +14,25 @@ enum Language {
 #[command(name = "generator")]
 #[command(about = "Generate test files from templates using case data")]
 struct Arguments {
-    #[arg(long)]
+    #[arg(long, help = "Path to template file")]
     template: PathBuf,
-    #[arg(long)]
+    #[arg(long, help = "Path to test cases JSON file")]
     cases: PathBuf,
-    #[arg(long)]
+    #[arg(long, help = "Target language for generation")]
     language: Language,
-    #[arg(long)]
+    #[arg(long, help = "Output file path")]
     output: PathBuf,
 }
 
 fn main() -> miette::Result<()> {
     command::execute(
-        |_| {
-            command::activate(trace::initialize(None, |channels| {
-                trace::channel::Channel::matches(channels, &["generation"])
-            }))
-        },
+        |_| observation::initialize(&[]),
         |arguments| match generate(arguments) {
             Ok(()) => Ok(()),
             Err(report) => {
                 tracing::error!("{report}");
                 Err(report)
             }
-        },
-        |result| {
-            trace::flush();
-            result
         },
     )
 }

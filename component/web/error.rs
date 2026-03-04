@@ -30,7 +30,11 @@ pub enum Error {
         code(web::output),
         help("check write permissions and directory existence")
     )]
-    Output { path: String },
+    Output {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
 }
 
 impl Error {

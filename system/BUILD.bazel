@@ -21,13 +21,20 @@ rust_library(
 rust_library(
     name = "observation",
     srcs = ["observation.rs"],
+    visibility = ["//visibility:public"],
     proc_macro_deps = [
         "//system/observation:macro",
     ],
-    visibility = ["//visibility:public"],
     deps = [
+        "//component/observation:channel",
         "//component/observation:module",
-        "//system/observation/trace:module",
+        "//system/observation:argument",
+        "//system/observation:endpoint",
+        "//system/observation:http",
+        "//system/observation:trace",
+        "//system/observation/trace:error",
+        "@crates//:miette",
+        "@crates//:tokio-util",
     ],
 )
 
@@ -97,6 +104,7 @@ rust_library(
         "//platform:command",
         "@crates//:clap",
         "@crates//:miette",
+        "@crates//:tokio",
     ],
 )
 

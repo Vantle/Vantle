@@ -2,10 +2,10 @@ use element::Language;
 use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = html::Arguments::parse();
-    let root = arguments.root();
-    style::page(&arguments, "Observation", "vantle", "observation", |c| {
-        c.title("Observation")
+    html::execute(|arguments| {
+        let root = arguments.root();
+        style::page(arguments, "Observation", "vantle", "observation", |c| {
+            c.title("Observation")
             .subtitle("Trace streaming and recording for Vantle")
             .rule()
             .paragraph(|p| {
@@ -25,7 +25,9 @@ fn main() -> miette::Result<()> {
                         li.span(|s| {
                             s.bold("Files")
                                 .text(": Local recording via ")
-                                .code("file://")
+                                .code("log://")
+                                .text(" and ")
+                                .code("chrome://")
                                 .text(" URIs")
                         })
                     })
@@ -59,7 +61,7 @@ fn main() -> miette::Result<()> {
                 })
                 .subsection("Channels", |ss| {
                     ss.paragraph(|p| {
-                        p.text("Channels filter which spans to observe. Common channels include:")
+                        p.text("Channels filter which spans to emit. Common channels include:")
                     })
                     .element("ul", |ul| {
                         ul.element("li", |li| {
@@ -82,5 +84,6 @@ fn main() -> miette::Result<()> {
                     })
                 })
             })
+        })
     })
 }

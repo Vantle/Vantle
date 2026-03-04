@@ -9,43 +9,22 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
-    name = "trace",
-    srcs = ["template.rs"],
-    crate_name = "configuration",
-    rustc_flags = ["--cfg=trace"],
-    deps = ["@crates//:tracing"],
+    name = "token",
+    srcs = ["token.rs"],
+    deps = [
+        "//component/observation:expression",
+        "@crates//:miette",
+    ],
 )
 
 rust_library(
-    name = "debug",
-    srcs = ["template.rs"],
-    crate_name = "configuration",
-    rustc_flags = ["--cfg=debug"],
-    deps = ["@crates//:tracing"],
-)
-
-rust_library(
-    name = "info",
-    srcs = ["template.rs"],
-    crate_name = "configuration",
-    rustc_flags = ["--cfg=info"],
-    deps = ["@crates//:tracing"],
-)
-
-rust_library(
-    name = "warn",
-    srcs = ["template.rs"],
-    crate_name = "configuration",
-    rustc_flags = ["--cfg=warn"],
-    deps = ["@crates//:tracing"],
-)
-
-rust_library(
-    name = "error",
-    srcs = ["template.rs"],
-    crate_name = "configuration",
-    rustc_flags = ["--cfg=error"],
-    deps = ["@crates//:tracing"],
+    name = "parse",
+    srcs = ["parse.rs"],
+    deps = [
+        "//component/observation:expression",
+        "//component/observation/expression:token",
+        "@crates//:miette",
+    ],
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

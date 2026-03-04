@@ -72,6 +72,8 @@ pub enum Error {
 - `#[expect(...)]` at system boundaries only, never `#[allow(clippy::...)]`
 - Run `bazel run //:format.rust` and fix all clippy warnings before building
 
+**Configuration** — CLI arguments are the only interface. No environment variables.
+
 **API Changes**:
 
 - Always clean break — no backward compatibility shims, aliases, or deprecation paths

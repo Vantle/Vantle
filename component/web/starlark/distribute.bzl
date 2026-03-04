@@ -52,7 +52,7 @@ def _distribute_impl(ctx):
     ctx.actions.symlink(output = executable, target_file = ctx.executable._server, is_executable = True)
 
     argfile = ctx.actions.declare_file("arguments")
-    ctx.actions.write(output = argfile, content = "--input\n" + ctx.attr.folder.label.name + "\n")
+    ctx.actions.write(output = argfile, content = "--sink\nhttp://127.0.0.1:3000/" + ctx.attr.folder.label.name + "\n--sink\nlog:///dev/stdout?ansi=true\n")
 
     runfiles = ctx.runfiles(files = ctx.attr.folder[DefaultInfo].files.to_list() + [argfile])
     runfiles = runfiles.merge(ctx.attr._server[DefaultInfo].default_runfiles)
@@ -65,7 +65,7 @@ distribute = rule(
     attrs = {
         "folder": attr.label(mandatory = True),
         "_server": attr.label(
-            default = "//system/distribution:command",
+            default = "//system/observation:command",
             executable = True,
             cfg = "exec",
         ),

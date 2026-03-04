@@ -2,9 +2,9 @@ use style::Composition;
 use web::element::Language;
 
 fn main() -> miette::Result<()> {
-    let arguments = html::Arguments::parse();
-    style::page(&arguments, "Web", "generation", "web", |c| {
-        c.title("Web")
+    html::execute(|arguments| {
+        style::page(arguments, "Web", "generation", "web", |c| {
+            c.title("Web")
             .subtitle("Web file generation by output format")
             .rule()
             .paragraph(|p| {
@@ -24,7 +24,7 @@ fn main() -> miette::Result<()> {
                         .code("Composition")
                         .text(" trait, which provides semantic methods for document structure:")
                 })
-                .literal("use style::Composition;\n\nfn main() -> miette::Result<()> {\n    let arguments = html::Arguments::parse();\n    style::page(&arguments, \"Title\", \"context\", \"page\", |c| {\n        c.title(\"Title\")\n            .section(\"Overview\", |s| {\n                s.paragraph(|p| p.text(\"Content here.\"))\n            })\n    })\n}", Language::Rust)
+                .literal("use style::Composition;\n\nfn main() -> miette::Result<()> {\n    html::execute(|arguments| {\n        style::page(arguments, \"Title\", \"context\", \"page\", |c| {\n            c.title(\"Title\")\n                .section(\"Overview\", |s| {\n                    s.paragraph(|p| p.text(\"Content here.\"))\n                })\n        })\n    })\n}", Language::Rust)
                 .subsection("Composition", |ss| {
                     ss.paragraph(|p| {
                         p.text("The ")
@@ -286,5 +286,6 @@ fn main() -> miette::Result<()> {
                     .literal("distribute(\n    name = \"distribute.documentation\",\n)", Language::Starlark)
                 })
             })
+        })
     })
 }

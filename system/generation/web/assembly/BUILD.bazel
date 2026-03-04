@@ -48,6 +48,7 @@ rust_library(
     name = "outline",
     srcs = ["outline.rs"],
     deps = [
+        "@crates//:js-sys",
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",
     ],

@@ -2,9 +2,9 @@ use element::Language;
 use style::Composition;
 
 fn main() -> miette::Result<()> {
-    let arguments = html::Arguments::parse();
-    style::page(&arguments, "Molten", "molten", "readme", |c| {
-        c.title("Molten")
+    html::execute(|arguments| {
+        style::page(arguments, "Molten", "molten", "readme", |c| {
+            c.title("Molten")
             .subtitle("Computational expression over hypergraphs")
             .rule()
             .paragraph(|p| {
@@ -288,11 +288,11 @@ fn main() -> miette::Result<()> {
                                 .text(" worlds to the previous graphs, but still evolve any existing state.")
                         })
                 })
-                .subsection("Observation", |ss| {
+                .subsection("Sink", |ss| {
                     ss.paragraph(|p| p.text("Stream execution traces to a file:"))
-                        .shell("bazel run //Molten/system/forge:command lava -- --address file:///tmp/trace.jsonl")
+                        .shell("bazel run //Molten/system/forge:command lava -- --sink log:///tmp/trace.jsonl")
                         .paragraph(|p| p.text("Or to a running peer (others may source or sink from or to your evaluation):"))
-                        .shell("bazel run //Molten/system/forge:command lava -- --address grpc://127.0.0.1:50051")
+                        .shell("bazel run //Molten/system/forge:command lava -- --sink grpc://127.0.0.1:50051")
                         .paragraph(|p| {
                             p.text("Functions decorated with ")
                                 .code("#[trace(channels = [core])]")
@@ -300,5 +300,6 @@ fn main() -> miette::Result<()> {
                         })
                 })
             })
+        })
     })
 }

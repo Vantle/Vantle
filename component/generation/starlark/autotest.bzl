@@ -22,7 +22,6 @@ Example:
     )
 """
 
-load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 load(":action.bzl", "action")
 
@@ -156,7 +155,6 @@ def _autotest_generate_impl(ctx):
     if test_name.endswith(".generation"):
         test_name = test_name[:-len(".generation")]
     output = ctx.actions.declare_file("{}.generated.{}".format(test_name, lang.extension))
-    link = ctx.attr._symlink_prefix[BuildSettingInfo].value + "bin/" + output.short_path
 
     action(ctx, ctx.executable.generator, [
         "--template",
@@ -165,7 +163,7 @@ def _autotest_generate_impl(ctx):
         cases.path,
         "--language",
         language,
-    ], [template_file, cases], output, mnemonic = "Generator", link = link)
+    ], [template_file, cases], output, mnemonic = "Generator")
 
     return [DefaultInfo(files = depset([output]))]
 
@@ -190,10 +188,6 @@ _autotest_generate = rule(
         ),
         "deps": attr.label_list(
             doc = "Build dependencies (typically includes template)",
-        ),
-        "_symlink_prefix": attr.label(
-            default = "//:symlink_prefix",
-            providers = [BuildSettingInfo],
         ),
     },
     doc = "Generates test code from a template and test cases",

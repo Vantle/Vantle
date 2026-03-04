@@ -1,15 +1,12 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use assemble::Assemble;
-use collector::tracing_subscriber::Registry;
-use collector::tracing_subscriber::layer::SubscriberExt;
 use component::graph::relation::Edge as Relation;
 use component::graph::relation::Related;
 use component::graph::state::particle::Particle;
 use component::graph::state::wave::Wave;
 use component::hypergraph::{Hypergraph, Label, Meta};
 use layer::Streamer;
-use stream::{Event, Field, Update, Value};
+use stream::{Event, Updates};
 use system::hypergraph::evaluate::Evaluate;
 
 fn empty() -> Hypergraph<usize> {
@@ -32,30 +29,13 @@ fn capture<F: FnOnce() -> R, R>(channels: &[&str], emit: F) -> (R, Vec<Event>) {
         .iter()
         .map(|s| (*s).to_string())
         .collect::<Vec<_>>();
-    let (streamer, mut receiver) =
-        Streamer::assembler(move |chs| chs.iter().any(|c| filter.contains(&c.name))).assemble();
-    let subscriber = Registry::default().with(streamer);
-    let result = collector::tracing::subscriber::with_default(subscriber, emit);
-    let mut events = Vec::new();
-    while let Ok(update) = receiver.try_recv() {
-        if let Update::Event(event) = update {
-            events.push(event);
-        }
-    }
+    let predicate = std::sync::Arc::new(move |chs: &[stream::channel::Channel]| {
+        chs.iter().any(|c| filter.contains(&c.name))
+    });
+    let sink = Streamer::assembler(predicate).open();
+    let result = emit();
+    let events = sink.close().events().collect::<Vec<_>>();
     (result, events)
-}
-
-fn field(fields: &[Field], name: &str) -> Option<String> {
-    fields
-        .iter()
-        .find(|f| f.name == name)
-        .map(|f| match &f.value {
-            Value::Signed(v) => v.to_string(),
-            Value::Unsigned(v) => v.to_string(),
-            Value::Boolean(v) => v.to_string(),
-            Value::Text(v) => v.clone(),
-            Value::Serialized(v) => String::from_utf8_lossy(v).to_string(),
-        })
 }
 
 fn channels(event: &Event) -> Vec<String> {
@@ -75,7 +55,9 @@ fn focus() -> (Vec<String>, Vec<String>, Option<String>) {
     let event = events.first();
     let chs = event.map(channels).unwrap_or_default();
     let flds = event.map(names).unwrap_or_default();
-    let captured = event.and_then(|e| field(&e.fields, "label"));
+    let captured = event
+        .and_then(|e| stream::field(&e.fields, "label"))
+        .map(ToString::to_string);
     let _ = label;
     (chs, flds, captured)
 }
@@ -151,7 +133,9 @@ fn translate(existing: bool) -> (Vec<String>, Vec<String>, Option<String>) {
     let event = events.last();
     let chs = event.map(channels).unwrap_or_default();
     let flds = event.map(names).unwrap_or_default();
-    let state = event.and_then(|e| field(&e.fields, "state"));
+    let state = event
+        .and_then(|e| stream::field(&e.fields, "state"))
+        .map(ToString::to_string);
     (chs, flds, state)
 }
 
@@ -179,7 +163,9 @@ fn infer(populated: bool) -> (Vec<String>, Vec<String>, Option<String>) {
     let event = events.first();
     let chs = event.map(channels).unwrap_or_default();
     let flds = event.map(names).unwrap_or_default();
-    let count = event.and_then(|e| field(&e.fields, "count"));
+    let count = event
+        .and_then(|e| stream::field(&e.fields, "count"))
+        .map(ToString::to_string);
     (chs, flds, count)
 }
 
@@ -207,6 +193,8 @@ fn fixed(populated: bool) -> (Vec<String>, Vec<String>, Option<String>) {
     let event = events.last();
     let chs = event.map(channels).unwrap_or_default();
     let flds = event.map(names).unwrap_or_default();
-    let iterations = event.and_then(|e| field(&e.fields, "iterations"));
+    let iterations = event
+        .and_then(|e| stream::field(&e.fields, "iterations"))
+        .map(ToString::to_string);
     (chs, flds, iterations)
 }

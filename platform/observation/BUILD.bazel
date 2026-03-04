@@ -17,28 +17,6 @@ string_flag(
     ],
 )
 
-string_flag(
-    name = "level",
-    build_setting_default = "info",
-    values = [
-        "trace",
-        "debug",
-        "info",
-        "warn",
-        "error",
-    ],
-)
-
-string_flag(
-    name = "format",
-    build_setting_default = "chrome",
-    values = [
-        "standard",
-        "chrome",
-        "stream",
-    ],
-)
-
 config_setting(
     name = "transparent",
     flag_values = {"//platform/observation:mode": "transparent"},

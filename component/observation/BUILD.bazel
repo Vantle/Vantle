@@ -48,7 +48,6 @@ rust_library(
     name = "filter",
     srcs = ["filter.rs"],
     deps = [
-        ":channel",
         ":stream",
         ":visitor",
         "@crates//:miette",
@@ -119,6 +118,17 @@ rust_library(
     ],
 )
 
+rust_library(
+    name = "expression",
+    srcs = ["expression.rs"],
+    deps = [
+        ":channel",
+        ":stream",
+        "@crates//:miette",
+        "@crates//:thiserror",
+    ],
+)
+
 alias(
     name = "module",
     actual = select({
@@ -127,15 +137,5 @@ alias(
     }),
 )
 
-alias(
-    name = "configuration",
-    actual = select({
-        "//platform/observation/level:trace": "//component/observation/configuration:trace",
-        "//platform/observation/level:debug": "//component/observation/configuration:debug",
-        "//platform/observation/level:warn": "//component/observation/configuration:warn",
-        "//platform/observation/level:error": "//component/observation/configuration:error",
-        "//conditions:default": "//component/observation/configuration:info",
-    }),
-)
 
 ##### Documentation                                                                                                                             [ Documentation ]

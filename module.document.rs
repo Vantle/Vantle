@@ -1,4 +1,5 @@
-use element::Language;
+use body::Chain;
+use extraction::Query;
 use style::Composition;
 
 fn main() -> miette::Result<()> {
@@ -10,7 +11,7 @@ fn main() -> miette::Result<()> {
                         .attribute("href", "./MODULE.bazel")
                         .text("Bazel module definition")
                 })
-                .code("MODULE.bazel", Language::Starlark)
+                .extract(module_source::EXTRACTIONS.one())
         })
     })
 }

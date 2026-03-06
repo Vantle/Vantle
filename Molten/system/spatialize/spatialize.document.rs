@@ -1,3 +1,4 @@
+use body::Chain;
 use element::Element;
 use span::Fragment;
 use style::Composition;
@@ -83,14 +84,6 @@ fn main() -> miette::Result<()> {
                     ul.element("li", |li| li.text("Repulsion between nodes"))
                         .element("li", |li| li.text("Attraction along edges"))
                         .element("li", |li| li.text("Boundary constraints"))
-                })
-            })
-            .rule()
-            .section("Structure", |s| {
-                s.element("pre", |p| {
-                    p.element("code", |c| {
-                        c.text("Molten/system/spatialize/\n  command.rs        Application entry point\n  pane.rs           Visualization pane modes\n  view.rs           View state and transformations\n  layout.rs         Force-directed simulation\n  scene.rs          Scene graph management\n  render.rs         Render submission\n  mouse.rs          Input state tracking\n  palette.rs        Color definitions")
-                    })
                 })
             })
         })

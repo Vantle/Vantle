@@ -3,6 +3,7 @@
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
 load("@rules_rust//rust:defs.bzl", "rust_library")
+load("//component/generation/starlark:defs.bzl", "extract")
 load("//component/web/starlark:defs.bzl", "document")
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -48,15 +49,23 @@ rust_library(
 ##### Documentation                                                                                                                             [ Documentation ]
 document(
     srcs = ["molten.document.rs"],
-    data = [
-        "//Molten/test/resource/system/graph/module/join/symbolic:data",
-        "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean/symbolic:data",
-    ],
     destination = "Molten/index.html",
     deps = [
-        "//component/web:element",
+        "//:module.version",
+        "//Molten/test/resource/system/graph/module/citizen/symbolic:citizen",
+        "//Molten/test/resource/system/graph/module/join/symbolic:join",
+        "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean/symbolic:boolean",
+        "//component/web:extraction",
         "//system/generation/web:style",
     ],
+)
+
+extract(
+    name = "info.document.rule",
+    language = "starlark",
+    query = "(call function: (identifier) @fn (#eq? @fn \"document\")) @capture",
+    source = "BUILD.bazel",
+    visibility = ["//visibility:public"],
 )
 
 document(

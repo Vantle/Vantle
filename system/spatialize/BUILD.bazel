@@ -33,6 +33,7 @@ document(
     destination = "system/spatialize/index.html",
     deps = [
         "//component/web:element",
+        "//component/web:language",
         "//component/web:span",
         "//system/generation/web:style",
     ],

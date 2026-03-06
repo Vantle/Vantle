@@ -29,7 +29,7 @@ def document(srcs, destination, name = None, data = [], deps = [], compile_data 
     """
     if name == None:
         name = srcs[0].removesuffix(".rs")
-    standard = ["//component:web", "//system/generation/web:html", "@crates//:miette"]
+    standard = ["//component:web", "//component/web:body", "//system/generation/web:html", "@crates//:miette"]
 
     binary = name + ".binary"
     rust_binary(

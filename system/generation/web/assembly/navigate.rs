@@ -21,7 +21,11 @@ pub fn initialize(document: &Document) {
             return;
         };
 
-        if href.starts_with("http://") || href.starts_with("https://") || href.starts_with('#') {
+        if href.starts_with("http://")
+            || href.starts_with("https://")
+            || href.starts_with('#')
+            || (!href.to_ascii_lowercase().ends_with(".html") && !href.ends_with('/'))
+        {
             return;
         }
 

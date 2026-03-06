@@ -55,5 +55,11 @@ document(
     srcs = ["autotest.document.rs"],
     destination = "system/generation/rust/index.html",
     visibility = ["//visibility:public"],
-    deps = ["//system/generation/web:style"],
+    deps = [
+        "//Molten/test/resource/system/graph/state/particle:cases.document",
+        "//Molten/test/resource/system/graph/state/particle:disjoint",
+        "//component/web:extraction",
+        "//component/web:language",
+        "//system/generation/web:style",
+    ],
 )

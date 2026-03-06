@@ -1,6 +1,8 @@
 use body::Body;
 use element::Element;
 
+pub type Result = miette::Result<Page>;
+
 pub struct Page {
     pub title: String,
     pub favicon: Option<String>,
@@ -69,11 +71,10 @@ impl Page {
         self
     }
 
-    #[must_use]
-    pub fn body(mut self, f: impl FnOnce(Body) -> Body) -> Self {
-        let body = f(Body::new());
+    pub fn body(mut self, f: impl FnOnce(Body) -> body::Result) -> Result {
+        let body = f(Body::new())?;
         self.body = body.elements;
-        self
+        Ok(self)
     }
 
     #[must_use]

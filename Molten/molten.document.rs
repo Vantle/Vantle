@@ -1,4 +1,5 @@
-use element::Language;
+use body::Chain;
+use extraction::Query;
 use style::Composition;
 
 fn main() -> miette::Result<()> {
@@ -80,60 +81,50 @@ fn main() -> miette::Result<()> {
                 })
                 .subsection("Textual", |ss| {
                     ss.element("ul", |ul| {
-                        ul.element("li", |li| {
-                            li.span(|s| {
-                                s.bold("Orderless")
-                                    .text(" Molten does not march through the source left-to-right. Each orthogonality advances ")
-                                    .italic("only")
-                                    .text(" when the rule in front of it is enabled. Rules are ordered based upon ")
-                                    .code(",")
-                                    .text(" ")
-                                    .code("()")
-                                    .text(", and ")
-                                    .code("[]")
-                                    .text(" semantics.")
-                            })
-                        })
-                        .element("li", |li| {
-                            li.span(|s| {
-                                s.text("A ")
-                                    .bold("dot")
-                                    .text(" ")
-                                    .code(".")
-                                    .text(" simply groups concepts ")
-                                    .italic("with")
-                                    .text(" one another inside the same orthogonality.")
-                            })
-                        })
-                        .element("li", |li| {
-                            li.span(|s| {
-                                s.text("A ")
-                                    .bold("comma")
-                                    .text(" ")
-                                    .code(",")
-                                    .text(" clones the current orthogonality ")
-                                    .bold("once for every extra branch")
-                                    .text(", so you can have any number of orthogonalities running in parallel. They move forward independently until another rule brings them back together.")
-                            })
-                        })
-                        .element("li", |li| {
-                            li.span(|s| {
-                                s.text("A ")
-                                    .bold("bracket")
-                                    .text(" ")
-                                    .code("[\u{2026}]")
-                                    .text(" blocks its arriving orthogonality(ies) until they already hold every listed concept. Once satisfied it removes those concepts, inserts the ones that follow the bracket, and lets the orthogonality(ies) proceed.")
-                            })
-                        })
-                        .element("li", |li| {
-                            li.span(|s| {
-                                s.text("A ")
-                                    .bold("parentheses")
-                                    .text(" ")
-                                    .code("()")
-                                    .text(" groups items within a partition; they have no effect on state by themselves.")
-                            })
-                        })
+                        ul.element("li", |li| li.span(|s| {
+                            s.bold("Orderless")
+                                .text(" Molten does not march through the source left-to-right. Each orthogonality advances ")
+                                .italic("only")
+                                .text(" when the rule in front of it is enabled. Rules are ordered based upon ")
+                                .code(",")
+                                .text(" ")
+                                .code("()")
+                                .text(", and ")
+                                .code("[]")
+                                .text(" semantics.")
+                        }))
+                        .element("li", |li| li.span(|s| {
+                            s.text("A ")
+                                .bold("dot")
+                                .text(" ")
+                                .code(".")
+                                .text(" simply groups concepts ")
+                                .italic("with")
+                                .text(" one another inside the same orthogonality.")
+                        }))
+                        .element("li", |li| li.span(|s| {
+                            s.text("A ")
+                                .bold("comma")
+                                .text(" ")
+                                .code(",")
+                                .text(" clones the current orthogonality ")
+                                .bold("once for every extra branch")
+                                .text(", so you can have any number of orthogonalities running in parallel. They move forward independently until another rule brings them back together.")
+                        }))
+                        .element("li", |li| li.span(|s| {
+                            s.text("A ")
+                                .bold("bracket")
+                                .text(" ")
+                                .code("[\u{2026}]")
+                                .text(" blocks its arriving orthogonality(ies) until they already hold every listed concept. Once satisfied it removes those concepts, inserts the ones that follow the bracket, and lets the orthogonality(ies) proceed.")
+                        }))
+                        .element("li", |li| li.span(|s| {
+                            s.text("A ")
+                                .bold("parentheses")
+                                .text(" ")
+                                .code("()")
+                                .text(" groups items within a partition; they have no effect on state by themselves.")
+                        }))
                     })
                 })
             })
@@ -189,41 +180,37 @@ fn main() -> miette::Result<()> {
                                 .text(".")
                         })
                         .element("ul", |ul| {
-                            ul.element("li", |li| {
-                                li.span(|s| {
-                                    s.code("C")
-                                        .text(" is considered a ")
-                                        .code("derivation")
-                                        .text(" of ")
-                                        .code("A")
-                                        .text(" and ")
-                                        .code("B")
-                                        .text(", but not ")
-                                        .code("A")
-                                        .text(" and ")
-                                        .code("B")
-                                        .text(" themselves. As a result, the originating ")
-                                        .code("atoms")
-                                        .text(" are preserved in the transformation.")
-                                })
-                            })
-                            .element("li", |li| {
-                                li.span(|s| {
-                                    s.text("If ")
-                                        .code("C")
-                                        .text(" were instead provided, ")
-                                        .code("C.D")
-                                        .text(", it would be considered a ")
-                                        .code("measure")
-                                        .text(" of ")
-                                        .code("C")
-                                        .text(", as such it is ")
-                                        .italic("consumed")
-                                        .text(" yielding just ")
-                                        .code("E")
-                                        .text(".")
-                                })
-                            })
+                            ul.element("li", |li| li.span(|s| {
+                                s.code("C")
+                                    .text(" is considered a ")
+                                    .code("derivation")
+                                    .text(" of ")
+                                    .code("A")
+                                    .text(" and ")
+                                    .code("B")
+                                    .text(", but not ")
+                                    .code("A")
+                                    .text(" and ")
+                                    .code("B")
+                                    .text(" themselves. As a result, the originating ")
+                                    .code("atoms")
+                                    .text(" are preserved in the transformation.")
+                            }))
+                            .element("li", |li| li.span(|s| {
+                                s.text("If ")
+                                    .code("C")
+                                    .text(" were instead provided, ")
+                                    .code("C.D")
+                                    .text(", it would be considered a ")
+                                    .code("measure")
+                                    .text(" of ")
+                                    .code("C")
+                                    .text(", as such it is ")
+                                    .italic("consumed")
+                                    .text(" yielding just ")
+                                    .code("E")
+                                    .text(".")
+                            }))
                         })
                         .heading(4, "Recursive derivations")
                         .paragraph(|p| {
@@ -248,10 +235,7 @@ fn main() -> miette::Result<()> {
             })
             .rule()
             .section("Examples", |s| {
-                s.literal(
-                    "Human.Male, \nEarth.Location.America,\n[Human.Male, Earth.Location.America] American.Citizen.Male",
-                    Language::Molten,
-                )
+                s.extract(citizen::EXTRACTIONS.one())
                 .paragraph(|p| {
                     p.text("Note that this function is an ")
                         .italic("infinite generator")
@@ -267,16 +251,14 @@ fn main() -> miette::Result<()> {
                         .code("American.Citizen.Male")
                         .text(".")
                 })
-                .subsection("Boolean Logic", |ss| {
-                    ss.code("boolean.magma", Language::Molten)
-                })
-                .subsection("Joins", |ss| ss.code("join.magma", Language::Molten))
+                .subsection("Boolean Logic", |ss| ss.extract(boolean::EXTRACTIONS.one()))
+                .subsection("Joins", |ss| ss.extract(join::EXTRACTIONS.one()))
             })
             .rule()
             .section("Forge", |s| {
                 s.paragraph(|p| {
                     p.text("Forge ")
-                        .code("1.0.0")
+                        .code(module_version::EXTRACTIONS.one().content)
                         .text(" supports temporal runtime for Molten.")
                 })
                 .subsection("Invoke", |ss| {

@@ -19,6 +19,17 @@ pub fn initialize(document: &Document) {
             continue;
         }
 
+        let toolbar = if let Some(existing) = block.query_selector(".code-toolbar").ok().flatten() {
+            existing
+        } else {
+            let Ok(created) = document.create_element("div") else {
+                continue;
+            };
+            let _ = created.set_attribute("class", "code-toolbar");
+            let _ = block.append_child(&created);
+            created
+        };
+
         let Ok(button) = document.create_element("button") else {
             continue;
         };
@@ -36,7 +47,7 @@ pub fn initialize(document: &Document) {
                     if let Some(child) = children.item(i) {
                         let excluded = child
                             .dyn_ref::<web_sys::Element>()
-                            .is_some_and(|e| e.class_list().contains("copy-button"));
+                            .is_some_and(|e| e.class_list().contains("code-toolbar"));
                         if !excluded && let Some(text) = child.text_content() {
                             content.push_str(&text);
                         }
@@ -67,6 +78,6 @@ pub fn initialize(document: &Document) {
         let _ = button.add_event_listener_with_callback("click", callback.as_ref().unchecked_ref());
         callback.forget();
 
-        let _ = block.append_child(&button);
+        let _ = toolbar.append_child(&button);
     }
 }

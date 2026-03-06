@@ -13,6 +13,7 @@ rust_library(
     srcs = ["highlight.rs"],
     deps = [
         "//component/web:element",
+        "//component/web:language",
         "//system/generation/web/html/highlight:bash",
         "//system/generation/web/html/highlight:escape",
         "//system/generation/web/html/highlight:json",

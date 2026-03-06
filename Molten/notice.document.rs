@@ -1,3 +1,4 @@
+use body::Chain;
 use style::Composition;
 
 fn main() -> miette::Result<()> {

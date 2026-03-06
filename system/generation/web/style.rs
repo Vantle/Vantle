@@ -1,9 +1,10 @@
-use body::Body;
-use element::Language;
+use body::{Body, Chain};
 use observe::trace;
 use page::Page;
 use span::Span;
 use style::Style;
+
+type Result = body::Result;
 
 #[trace(channels = [document])]
 fn scale(k: i32) -> String {
@@ -54,7 +55,7 @@ pub fn page(
     title: &str,
     context: &str,
     identifier: &str,
-    f: impl FnOnce(Body) -> Body,
+    f: impl FnOnce(Body) -> Result,
 ) -> miette::Result<()> {
     let root = arguments.root();
     let favicon = format!("{root}resource/favicon.ico");
@@ -136,7 +137,7 @@ pub fn page(
                                                 )
                                                 .text("Spatialize")
                                             })
-                                            .element("hr", |h| h)
+                                            .element("hr", Ok)
                                             .element("a", |a| {
                                                 a.attribute(
                                                     "href",
@@ -205,20 +206,21 @@ pub fn page(
                     l.class("layout")
                         .element("aside", |a| sidebar(a, &root, context, identifier))
                         .element("main", |m| {
-                            f(m).element("footer", |footer| {
-                                footer.element("p", |p| {
-                                    p.span(|s| {
-                                        s.text("\u{00a9} 2025-2026 Vantle \u{00b7} ")
-                                            .link("https://vantle.org", "@robert.vanderzee")
+                            f(m)
+                                .element("footer", |footer| {
+                                    footer.element("p", |p| {
+                                        p.span(|s| {
+                                            s.text("\u{00a9} 2025-2026 Vantle \u{00b7} ")
+                                                .link("https://vantle.org", "@robert.vanderzee")
+                                        })
+                                    })
+                                    .element("a", |a| {
+                                        a.class("footer-icon")
+                                            .attribute("href", "https://github.com/Vantle/Vantle")
+                                            .attribute("aria-label", "GitHub")
+                                            .html("<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><path d=\"M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z\"/></svg>")
                                     })
                                 })
-                                .element("a", |a| {
-                                    a.class("footer-icon")
-                                        .attribute("href", "https://github.com/Vantle/Vantle")
-                                        .attribute("aria-label", "GitHub")
-                                        .html("<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><path d=\"M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z\"/></svg>")
-                                })
-                            })
                         })
                         .element("aside", |a| {
                             a.class("outline")
@@ -229,7 +231,7 @@ pub fn page(
     )
 }
 
-fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Body {
+fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Result {
     type Links<'a> = Vec<(&'a str, String, &'a str)>;
     let (primary, legal): (Links<'_>, Links<'_>) = match context {
         "molten" => (
@@ -273,12 +275,12 @@ fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Body {
         ),
     };
 
-    let body = body
+    let result = body
         .class("sidebar")
         .attribute("aria-label", "Page navigation")
         .element("div", |d| d.class("sidebar-label").text("Pages"));
 
-    let body = primary.into_iter().fold(body, |b, (text, href, id)| {
+    let result = primary.into_iter().fold(result, |b, (text, href, id)| {
         b.element("a", |a| {
             let a = a.attribute("href", &href).text(text);
             if id == identifier {
@@ -290,12 +292,12 @@ fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Body {
     });
 
     if legal.is_empty() {
-        return body;
+        return result;
     }
 
-    let body = body.element("div", |d| d.class("sidebar-label").text("Legal"));
+    let result = result.element("div", |d| d.class("sidebar-label").text("Legal"));
 
-    legal.into_iter().fold(body, |b, (text, href, id)| {
+    legal.into_iter().fold(result, |b, (text, href, id)| {
         b.element("a", |a| {
             let a = a.attribute("href", &href).text(text);
             if id == identifier {
@@ -702,21 +704,33 @@ pub fn theme() -> Style {
             r.color("var(--text)").text_decoration("none")
         })
         .rule(".footer-icon svg", |r| r.display("block"))
-        .rule(".copy-button", |r| {
+        .rule(".code-toolbar", |r| {
             r.position("absolute")
                 .top("8px")
                 .right("8px")
+                .display("flex")
+                .gap("4px")
+                .opacity("0")
+                .transition("opacity 0.2s")
+        })
+        .rule(".code-block:hover .code-toolbar", |r| r.opacity("1"))
+        .rule(".code-source, .copy-button", |r| {
+            r.custom("appearance", "none")
                 .background("var(--nav-background)")
                 .border("1px solid var(--border)")
                 .border_radius("4px")
                 .padding("2px 8px")
                 .color("var(--text-secondary)")
                 .cursor("pointer")
-                .font_size("var(--scale-0)")
-                .opacity("0")
-                .transition("opacity 0.2s")
+                .font_size("var(--scale-n0h)")
+                .font_family("inherit")
+                .line_height("1.5")
+                .text_decoration("none")
+                .display("inline-block")
         })
-        .rule(".code-block:hover .copy-button", |r| r.opacity("1"))
+        .rule(".code-source:hover, .copy-button:hover", |r| {
+            r.color("var(--text)").text_decoration("none")
+        })
         .rule(".theme-toggle", |r| {
             r.background("transparent")
                 .border("none")
@@ -804,50 +818,29 @@ pub fn theme() -> Style {
 }
 
 pub trait Composition {
-    #[must_use]
-    fn heading(self, level: u8, text: &str) -> Self;
-    #[must_use]
-    fn image(self, src: &str, alt: &str) -> Self;
-    #[must_use]
-    fn title(self, text: &str) -> Self;
-    #[must_use]
-    fn subtitle(self, text: &str) -> Self;
-    #[must_use]
-    fn rule(self) -> Self;
-    #[must_use]
-    fn paragraph(self, f: impl FnOnce(Span) -> Span) -> Self;
-    #[must_use]
-    fn section(self, title: &str, f: impl FnOnce(Body) -> Body) -> Self;
-    #[must_use]
-    fn subsection(self, title: &str, f: impl FnOnce(Body) -> Body) -> Self;
-    #[must_use]
-    fn term(self, word: &str, f: impl FnOnce(Span) -> Span) -> Self;
-    #[must_use]
-    fn aside(self, f: impl FnOnce(Span) -> Span) -> Self;
-    #[must_use]
-    fn navigation(self, f: impl FnOnce(Body) -> Body) -> Self;
-    #[must_use]
-    fn literal(self, source: &str, language: Language) -> Self;
-    #[must_use]
-    fn highlight(self, html: &str, language: Language) -> Self;
-    #[must_use]
-    fn shell(self, command: &str) -> Self;
-    #[must_use]
-    fn bold(self, text: &str) -> Self;
-    #[must_use]
-    fn link(self, href: &str, text: &str) -> Self;
-    #[must_use]
-    fn code(self, name: &str, language: Language) -> Self;
+    fn heading(self, level: u8, text: &str) -> Result;
+    fn image(self, src: &str, alt: &str) -> Result;
+    fn title(self, text: &str) -> Result;
+    fn subtitle(self, text: &str) -> Result;
+    fn rule(self) -> Result;
+    fn paragraph(self, f: impl FnOnce(Span) -> Span) -> Result;
+    fn section(self, title: &str, f: impl FnOnce(Body) -> Result) -> Result;
+    fn subsection(self, title: &str, f: impl FnOnce(Body) -> Result) -> Result;
+    fn term(self, word: &str, f: impl FnOnce(Span) -> Span) -> Result;
+    fn aside(self, f: impl FnOnce(Span) -> Span) -> Result;
+    fn navigation(self, f: impl FnOnce(Body) -> Result) -> Result;
+    fn bold(self, text: &str) -> Result;
+    fn link(self, href: &str, text: &str) -> Result;
 }
 
 impl Composition for Body {
     #[trace(channels = [document])]
-    fn heading(self, level: u8, text: &str) -> Self {
+    fn heading(self, level: u8, text: &str) -> Result {
         self.element(&format!("h{}", level.clamp(1, 6)), |e| e.text(text))
     }
 
     #[trace(channels = [document])]
-    fn image(self, src: &str, alt: &str) -> Self {
+    fn image(self, src: &str, alt: &str) -> Result {
         self.element("div", |d| {
             d.class("center")
                 .element("img", |e| e.attribute("src", src).attribute("alt", alt))
@@ -855,37 +848,37 @@ impl Composition for Body {
     }
 
     #[trace(channels = [document])]
-    fn title(self, text: &str) -> Self {
+    fn title(self, text: &str) -> Result {
         self.heading(1, text)
     }
 
     #[trace(channels = [document])]
-    fn subtitle(self, text: &str) -> Self {
+    fn subtitle(self, text: &str) -> Result {
         self.element("p", |p| p.class("subtitle").text(text))
     }
 
     #[trace(channels = [document])]
-    fn rule(self) -> Self {
-        self.element("hr", |e| e)
+    fn rule(self) -> Result {
+        self.element("hr", Ok)
     }
 
     #[trace(channels = [document])]
-    fn paragraph(self, f: impl FnOnce(Span) -> Span) -> Self {
+    fn paragraph(self, f: impl FnOnce(Span) -> Span) -> Result {
         self.element("p", |p| p.span(f))
     }
 
     #[trace(channels = [document])]
-    fn section(self, title: &str, f: impl FnOnce(Body) -> Body) -> Self {
-        self.element("section", |s| f(s.heading(2, title)))
+    fn section(self, title: &str, f: impl FnOnce(Body) -> Result) -> Result {
+        self.element("section", |s| f(s.heading(2, title)?))
     }
 
     #[trace(channels = [document])]
-    fn subsection(self, title: &str, f: impl FnOnce(Body) -> Body) -> Self {
-        self.element("section", |s| f(s.heading(3, title)))
+    fn subsection(self, title: &str, f: impl FnOnce(Body) -> Result) -> Result {
+        self.element("section", |s| f(s.heading(3, title)?))
     }
 
     #[trace(channels = [document])]
-    fn term(self, word: &str, f: impl FnOnce(Span) -> Span) -> Self {
+    fn term(self, word: &str, f: impl FnOnce(Span) -> Span) -> Result {
         self.element("dl", |dl| {
             dl.element("dt", |dt| dt.text(word))
                 .element("dd", |dd| dd.span(f))
@@ -893,42 +886,76 @@ impl Composition for Body {
     }
 
     #[trace(channels = [document])]
-    fn aside(self, f: impl FnOnce(Span) -> Span) -> Self {
+    fn aside(self, f: impl FnOnce(Span) -> Span) -> Result {
         self.element("blockquote", |bq| bq.element("p", |p| p.span(f)))
     }
 
     #[trace(channels = [document])]
-    fn navigation(self, f: impl FnOnce(Body) -> Body) -> Self {
+    fn navigation(self, f: impl FnOnce(Body) -> Result) -> Result {
         self.element("nav", f)
     }
 
     #[trace(channels = [document])]
-    fn literal(self, source: &str, language: Language) -> Self {
-        body::Body::literal(self, source, language)
-    }
-
-    #[trace(channels = [document])]
-    fn highlight(self, html: &str, language: Language) -> Self {
-        body::Body::highlight(self, html, language)
-    }
-
-    #[trace(channels = [document])]
-    fn shell(self, command: &str) -> Self {
-        self.literal(command, Language::Bash)
-    }
-
-    #[trace(channels = [document])]
-    fn bold(self, text: &str) -> Self {
+    fn bold(self, text: &str) -> Result {
         self.element("strong", |e| e.text(text))
     }
 
     #[trace(channels = [document])]
-    fn link(self, href: &str, text: &str) -> Self {
+    fn link(self, href: &str, text: &str) -> Result {
         self.element("a", |e| e.attribute("href", href).text(text))
     }
+}
 
-    #[trace(channels = [document])]
-    fn code(self, name: &str, language: Language) -> Self {
-        body::Body::code(self, name, language)
+impl Composition for Result {
+    fn heading(self, level: u8, text: &str) -> Result {
+        self?.heading(level, text)
+    }
+
+    fn image(self, src: &str, alt: &str) -> Result {
+        self?.image(src, alt)
+    }
+
+    fn title(self, text: &str) -> Result {
+        self?.title(text)
+    }
+
+    fn subtitle(self, text: &str) -> Result {
+        self?.subtitle(text)
+    }
+
+    fn rule(self) -> Result {
+        self?.rule()
+    }
+
+    fn paragraph(self, f: impl FnOnce(Span) -> Span) -> Result {
+        self?.paragraph(f)
+    }
+
+    fn section(self, title: &str, f: impl FnOnce(Body) -> Result) -> Result {
+        self?.section(title, f)
+    }
+
+    fn subsection(self, title: &str, f: impl FnOnce(Body) -> Result) -> Result {
+        self?.subsection(title, f)
+    }
+
+    fn term(self, word: &str, f: impl FnOnce(Span) -> Span) -> Result {
+        self?.term(word, f)
+    }
+
+    fn aside(self, f: impl FnOnce(Span) -> Span) -> Result {
+        self?.aside(f)
+    }
+
+    fn navigation(self, f: impl FnOnce(Body) -> Result) -> Result {
+        self?.navigation(f)
+    }
+
+    fn bold(self, text: &str) -> Result {
+        self?.bold(text)
+    }
+
+    fn link(self, href: &str, text: &str) -> Result {
+        self?.link(href, text)
     }
 }

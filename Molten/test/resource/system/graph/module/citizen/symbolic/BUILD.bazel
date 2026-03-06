@@ -14,16 +14,13 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 filegroup(
     name = "data",
-    srcs = [
-        "boolean.lava",
-        "boolean.magma",
-    ],
+    srcs = ["citizen.magma"],
 )
 
 extract(
-    name = "boolean",
+    name = "citizen",
     language = "molten",
-    source = "boolean.magma",
+    source = "citizen.magma",
     visibility = ["//visibility:public"],
 )
 

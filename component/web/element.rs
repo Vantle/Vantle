@@ -1,4 +1,12 @@
+use language::Language;
+
 use span::Fragment;
+
+pub struct Location {
+    pub source: String,
+    pub start: usize,
+    pub end: usize,
+}
 
 pub enum Element {
     Tag {
@@ -10,8 +18,12 @@ pub enum Element {
     Span(Vec<Fragment>),
     Raw(String),
     Code {
-        source: Source,
+        content: String,
         language: Language,
+        location: Option<Location>,
+    },
+    Shell {
+        command: String,
     },
     Inject {
         name: String,
@@ -19,50 +31,4 @@ pub enum Element {
     Markdown {
         name: String,
     },
-}
-
-pub enum Source {
-    File(String),
-    Inline(String),
-}
-
-#[derive(Debug, Clone, Copy)]
-pub enum Language {
-    Rust,
-    Molten,
-    Bash,
-    Python,
-    Starlark,
-    Toml,
-    Yaml,
-    Json,
-}
-
-impl Language {
-    #[must_use]
-    pub fn extension(self) -> &'static str {
-        match self {
-            Self::Rust => "rs",
-            Self::Molten => "magma",
-            Self::Bash => "sh",
-            Self::Python | Self::Starlark => "py",
-            Self::Toml => "toml",
-            Self::Yaml => "yaml",
-            Self::Json => "json",
-        }
-    }
-
-    #[must_use]
-    pub fn name(self) -> &'static str {
-        match self {
-            Self::Rust => "rust",
-            Self::Molten => "molten",
-            Self::Bash => "bash",
-            Self::Python => "python",
-            Self::Starlark => "starlark",
-            Self::Toml => "toml",
-            Self::Yaml => "yaml",
-            Self::Json => "json",
-        }
-    }
 }

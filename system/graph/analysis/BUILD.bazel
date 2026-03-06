@@ -2,29 +2,37 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("//component/generation/starlark:defs.bzl", "extract")
+load("@rules_rust//rust:defs.bzl", "rust_library")
 
 ##### Visibility                                                                                                                                       [ Module ]
-package(default_visibility = [
-    "//Molten:__pkg__",
-    "//Molten/test:__pkg__",
-    "//Molten/test:__subpackages__",
-])
+package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
-filegroup(
-    name = "data",
-    srcs = [
-        "boolean.lava",
-        "boolean.magma",
+rust_library(
+    name = "constructor",
+    srcs = ["constructor.rs"],
+    deps = [
+        "//component/web:language",
+        "//system/graph/analysis/extract:error",
+        "@crates//:miette",
+        "@crates//:tree-sitter",
+        "@crates//:tree-sitter-bash",
+        "@crates//:tree-sitter-json",
+        "@crates//:tree-sitter-python",
+        "@crates//:tree-sitter-rust",
     ],
 )
 
-extract(
-    name = "boolean",
-    language = "molten",
-    source = "boolean.magma",
-    visibility = ["//visibility:public"],
+rust_library(
+    name = "extract",
+    srcs = ["extract.rs"],
+    deps = [
+        ":constructor",
+        "//component/web:language",
+        "//system/graph/analysis/extract:error",
+        "@crates//:miette",
+        "@crates//:tree-sitter",
+    ],
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

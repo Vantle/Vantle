@@ -2,6 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
+load("//component/generation/starlark:defs.bzl", "extract")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -14,6 +15,13 @@ package(default_visibility = [
 filegroup(
     name = "data",
     srcs = ["join.magma"],
+)
+
+extract(
+    name = "join",
+    language = "molten",
+    source = "join.magma",
+    visibility = ["//visibility:public"],
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

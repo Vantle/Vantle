@@ -2,11 +2,9 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("//component/generation/starlark:defs.bzl", "extract")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
-    "//Molten:__pkg__",
     "//Molten/test:__pkg__",
     "//Molten/test:__subpackages__",
 ])
@@ -15,16 +13,8 @@ package(default_visibility = [
 filegroup(
     name = "data",
     srcs = [
-        "boolean.lava",
-        "boolean.magma",
+        "//Molten/test/resource/system/graph/module/citizen/symbolic:data",
     ],
-)
-
-extract(
-    name = "boolean",
-    language = "molten",
-    source = "boolean.magma",
-    visibility = ["//visibility:public"],
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

@@ -1,5 +1,7 @@
+use body::Chain;
+use extraction::Query;
+use language::Language;
 use style::Composition;
-use web::element::Language;
 
 fn main() -> miette::Result<()> {
     html::execute(|arguments| {
@@ -17,7 +19,7 @@ fn main() -> miette::Result<()> {
                         .code(".template.rs")
                         .text(" file. Each function becomes a test generator:")
                 })
-                .literal("use component::graph::state::particle::Particle;\n\nfn disjoint(candidate: Particle<String>, basis: Particle<String>) -> Option<Particle<String>> {\n    candidate.disjoint(&basis).map(|_| candidate.clone())\n}", Language::Rust)
+                .extract(disjoint::EXTRACTIONS.one())
             })
             .rule()
             .section("Cases", |s| {
@@ -26,7 +28,18 @@ fn main() -> miette::Result<()> {
                         .code("cases.json")
                         .text(". Each function specifies default parameters, expected returns, and individual cases that can override defaults:")
                 })
-                .literal("{\n  \"functions\": [\n    {\n      \"function\": \"disjoint\",\n      \"tags\": [\"particle\", \"disjoint\"],\n      \"parameters\": {\n        \"candidate\": [[\"a\", 1]],\n        \"basis\": [[\"b\", 1]]\n      },\n      \"returns\": { \"()\": [[\"a\", 1]] },\n      \"cases\": [\n        {\n          \"tags\": [\"empty\"],\n          \"parameters\": { \"basis\": [] },\n          \"returns\": { \"()\": [[\"a\", 1]] }\n        }\n      ]\n    }\n  ]\n}", Language::Json)
+                .extract(cases_document::EXTRACTIONS.one())
+            })
+            .rule()
+            .section("Execution", |s| {
+                s.paragraph(|p| {
+                    p.text("Each test run produces a ")
+                        .code("cases.execution.json")
+                        .text(" report. Functions are grouped with their cases, and mismatches surface as ")
+                        .code("unexpected")
+                        .text(" values:")
+                })
+                .code("{\n  \"source\": {\n    \"file\": \"particle.template.rs\",\n    \"cases\": \"cases.json\"\n  },\n  \"functions\": [\n    {\n      \"function\": \"disjoint\",\n      \"tags\": [\"complete\"],\n      \"cases\": [\n        {\n          \"parameters\": { \"candidate\": [[\"a\", 1]], \"basis\": [[\"b\", 2]] },\n          \"returns\": { \"()\": [[\"a\", 1]] },\n          \"unexpected\": null\n        }\n      ]\n    }\n  ]\n}", Language::Json)
             })
             .rule()
             .section("Macro", |s| {
@@ -39,7 +52,7 @@ fn main() -> miette::Result<()> {
                         .code("rust_test")
                         .text(".")
                 })
-                .literal("load(\"//component/generation/starlark:defs.bzl\", \"rust_autotest\", \"rust_autotest_template\")\n\nrust_autotest_template(\n    name = \"template\",\n    src = \"function.template.rs\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)\n\nrust_autotest(\n    name = \"function\",\n    template = \":template\",\n    cases = \":cases.json\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)", Language::Starlark)
+                .code("load(\"@vantle//component/generation/starlark:defs.bzl\", \"rust_autotest\", \"rust_autotest_template\")\n\nrust_autotest_template(\n    name = \"template\",\n    src = \"function.template.rs\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)\n\nrust_autotest(\n    name = \"function\",\n    template = \":template\",\n    cases = \":cases.json\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)", Language::Starlark)
                 .subsection("rust_autotest_template", |ss| {
                     ss.paragraph(|p| {
                         p.text("Validates template compilation and enables IDE support. Automatically adds ")
@@ -71,13 +84,7 @@ fn main() -> miette::Result<()> {
                 })
                 .subsection("rust_autotest", |ss| {
                     ss.paragraph(|p| {
-                        p.text("Generates and runs test functions. Standard dependencies (")
-                            .code("serde")
-                            .text(", ")
-                            .code("serde_json")
-                            .text(", ")
-                            .code("vantle")
-                            .text(") are auto-included.")
+                        p.text("Generates and runs test functions. Standard Vantle dependencies are auto-included; only add deps beyond the defaults.")
                     })
                     .element("table", |t| {
                         t.element("thead", |h| {

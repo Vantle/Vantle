@@ -1,6 +1,10 @@
-use element::{Element, Language, Source};
+use element::{Element, Location};
+use extraction::Extraction;
+use language::Language;
 use span::Span;
 use table::Table;
+
+pub type Result = miette::Result<Body>;
 
 pub struct Body {
     pub elements: Vec<Element>,
@@ -16,98 +20,87 @@ impl Body {
         }
     }
 
-    #[must_use]
-    pub fn element(mut self, tag: &str, f: impl FnOnce(Body) -> Body) -> Self {
-        let inner = f(Body::new());
+    pub fn element(mut self, tag: &str, f: impl FnOnce(Body) -> Result) -> Result {
+        let inner = f(Body::new())?;
         self.elements.push(Element::Tag {
             name: tag.into(),
             attributes: inner.pending,
             children: inner.elements,
         });
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn text(mut self, content: &str) -> Self {
+    pub fn text(mut self, content: &str) -> Result {
         self.elements.push(Element::Text(content.into()));
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn span(mut self, f: impl FnOnce(Span) -> Span) -> Self {
+    pub fn span(mut self, f: impl FnOnce(Span) -> Span) -> Result {
         let span = f(Span::new());
         self.elements.push(Element::Span(span.fragments));
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn html(mut self, raw: &str) -> Self {
+    pub fn html(mut self, raw: &str) -> Result {
         self.elements.push(Element::Raw(raw.into()));
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn class(mut self, name: &str) -> Self {
+    pub fn class(mut self, name: &str) -> Result {
         if let Some(existing) = self.pending.iter_mut().find(|(k, _)| k == "class") {
             existing.1.push(' ');
             existing.1.push_str(name);
         } else {
             self.pending.push(("class".into(), name.into()));
         }
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn attribute(mut self, name: &str, value: &str) -> Self {
+    pub fn attribute(mut self, name: &str, value: &str) -> Result {
         self.pending.push((name.into(), value.into()));
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn code(mut self, name: &str, language: Language) -> Self {
+    pub fn code(mut self, content: &str, language: Language) -> Result {
         self.elements.push(Element::Code {
-            source: Source::File(name.into()),
+            content: content.into(),
             language,
+            location: None,
         });
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn literal(mut self, source: &str, language: Language) -> Self {
+    pub fn extract(mut self, extraction: &Extraction) -> Result {
         self.elements.push(Element::Code {
-            source: Source::Inline(source.into()),
-            language,
+            content: extraction.content.into(),
+            language: extraction.language,
+            location: Some(Location {
+                source: extraction.name.into(),
+                start: extraction.start,
+                end: extraction.end,
+            }),
         });
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn highlight(mut self, html: &str, language: Language) -> Self {
-        self.elements.push(Element::Tag {
-            name: "div".into(),
-            attributes: vec![
-                ("class".into(), "code-block".into()),
-                ("data-language".into(), language.name().into()),
-            ],
-            children: vec![Element::Raw(html.into())],
+    pub fn shell(mut self, command: &str) -> Result {
+        self.elements.push(Element::Shell {
+            command: command.into(),
         });
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn inject(mut self, name: &str) -> Self {
+    pub fn inject(mut self, name: &str) -> Result {
         self.elements.push(Element::Inject { name: name.into() });
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn markdown(mut self, name: &str) -> Self {
+    pub fn markdown(mut self, name: &str) -> Result {
         self.elements.push(Element::Markdown { name: name.into() });
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn table(mut self, f: impl FnOnce(Table) -> Table) -> Self {
+    pub fn table(mut self, f: impl FnOnce(Table) -> Table) -> Result {
         let table = f(Table::new());
         let mut rows = Vec::new();
 
@@ -165,11 +158,10 @@ impl Body {
             attributes: Vec::new(),
             children: rows,
         });
-        self
+        Ok(self)
     }
 
-    #[must_use]
-    pub fn compose(self, f: impl FnOnce(Body) -> Body) -> Self {
+    pub fn compose(self, f: impl FnOnce(Body) -> Result) -> Result {
         f(self)
     }
 }
@@ -177,5 +169,75 @@ impl Body {
 impl Default for Body {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+pub trait Chain {
+    fn element(self, tag: &str, f: impl FnOnce(Body) -> Result) -> Result;
+    fn text(self, content: &str) -> Result;
+    fn span(self, f: impl FnOnce(Span) -> Span) -> Result;
+    fn html(self, raw: &str) -> Result;
+    fn class(self, name: &str) -> Result;
+    fn attribute(self, name: &str, value: &str) -> Result;
+    fn code(self, content: &str, language: Language) -> Result;
+    fn extract(self, extraction: &Extraction) -> Result;
+    fn shell(self, command: &str) -> Result;
+    fn inject(self, name: &str) -> Result;
+    fn markdown(self, name: &str) -> Result;
+    fn table(self, f: impl FnOnce(Table) -> Table) -> Result;
+    fn compose(self, f: impl FnOnce(Body) -> Result) -> Result;
+}
+
+impl Chain for Result {
+    fn element(self, tag: &str, f: impl FnOnce(Body) -> Result) -> Result {
+        self?.element(tag, f)
+    }
+
+    fn text(self, content: &str) -> Result {
+        self?.text(content)
+    }
+
+    fn span(self, f: impl FnOnce(Span) -> Span) -> Result {
+        self?.span(f)
+    }
+
+    fn html(self, raw: &str) -> Result {
+        self?.html(raw)
+    }
+
+    fn class(self, name: &str) -> Result {
+        self?.class(name)
+    }
+
+    fn attribute(self, name: &str, value: &str) -> Result {
+        self?.attribute(name, value)
+    }
+
+    fn code(self, content: &str, language: Language) -> Result {
+        self?.code(content, language)
+    }
+
+    fn extract(self, extraction: &Extraction) -> Result {
+        self?.extract(extraction)
+    }
+
+    fn shell(self, command: &str) -> Result {
+        self?.shell(command)
+    }
+
+    fn inject(self, name: &str) -> Result {
+        self?.inject(name)
+    }
+
+    fn markdown(self, name: &str) -> Result {
+        self?.markdown(name)
+    }
+
+    fn table(self, f: impl FnOnce(Table) -> Table) -> Result {
+        self?.table(f)
+    }
+
+    fn compose(self, f: impl FnOnce(Body) -> Result) -> Result {
+        self?.compose(f)
     }
 }

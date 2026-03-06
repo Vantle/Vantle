@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_template")
+load("@vantle//component/generation/starlark:defs.bzl", "extract", "rust_autotest_template")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -15,6 +15,7 @@ package(default_visibility = [
 filegroup(
     name = "cases",
     srcs = ["cases.json"],
+    visibility = ["//visibility:public"],
 )
 
 filegroup(
@@ -33,6 +34,22 @@ rust_autotest_template(
         "//Molten:system",
         "//Molten/system/graph/symbolic:constructor",
     ],
+)
+
+extract(
+    name = "disjoint",
+    language = "rust",
+    query = "(function_item name: (identifier) @name (#eq? @name \"disjoint\")) @capture",
+    source = "particle.template.rs",
+    visibility = ["//visibility:public"],
+)
+
+extract(
+    name = "cases.document",
+    language = "json",
+    query = "(document) @capture",
+    source = "cases.json",
+    visibility = ["//visibility:public"],
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

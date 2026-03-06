@@ -1,5 +1,7 @@
+use body::Chain;
+use extraction::Query;
+use language::Language;
 use style::Composition;
-use web::element::Language;
 
 fn main() -> miette::Result<()> {
     html::execute(|arguments| {
@@ -24,7 +26,7 @@ fn main() -> miette::Result<()> {
                         .code("Composition")
                         .text(" trait, which provides semantic methods for document structure:")
                 })
-                .literal("use style::Composition;\n\nfn main() -> miette::Result<()> {\n    html::execute(|arguments| {\n        style::page(arguments, \"Title\", \"context\", \"page\", |c| {\n            c.title(\"Title\")\n                .section(\"Overview\", |s| {\n                    s.paragraph(|p| p.text(\"Content here.\"))\n                })\n        })\n    })\n}", Language::Rust)
+                .code("use style::Composition;\n\nfn main() -> miette::Result<()> {\n    html::execute(|arguments| {\n        style::page(arguments, \"Title\", \"context\", \"page\", |c| {\n            c.title(\"Title\")\n                .section(\"Overview\", |s| {\n                    s.paragraph(|p| p.text(\"Content here.\"))\n                })\n        })\n    })\n}", Language::Rust)
                 .subsection("Composition", |ss| {
                     ss.paragraph(|p| {
                         p.text("The ")
@@ -58,9 +60,7 @@ fn main() -> miette::Result<()> {
                         })
                         .element("li", |li| {
                             li.span(|s| {
-                                s.code("literal")
-                                    .text(", ")
-                                    .code("highlight")
+                                s.code("code")
                                     .text(", ")
                                     .code("shell")
                                     .text(" \u{2014} code presentation")
@@ -221,7 +221,7 @@ fn main() -> miette::Result<()> {
                             .code("miette")
                             .text(") are injected automatically.")
                     })
-                    .literal("document(\n    srcs = [\"page.document.rs\"],\n    destination = \"path/index.html\",\n    deps = [\"//system/generation/web:style\"],\n)", Language::Starlark)
+                    .extract(info_document_rule::EXTRACTIONS.one())
                     .element("table", |t| {
                         t.element("thead", |h| {
                             h.element("tr", |r| {
@@ -267,23 +267,23 @@ fn main() -> miette::Result<()> {
                         })
                     })
                 })
-                .subsection("asset", |ss| {
+                .subsection("copy", |ss| {
                     ss.paragraph(|p| {
-                        p.text("Wraps an existing file with a destination path for inclusion in publish manifests. Uses a zero-cost symlink action.")
+                        p.text("Wraps an existing file with a destination path for inclusion in folder manifests. Uses a zero-cost symlink action.")
                     })
-                    .literal("asset(\n    name = \"document.compute.js\",\n    src = \":compute.js\",\n    destination = \"resource/system/document/compute.js\",\n)", Language::Starlark)
+                    .extract(copy_rule::EXTRACTIONS.one())
                 })
-                .subsection("publish", |ss| {
+                .subsection("folder", |ss| {
                     ss.paragraph(|p| {
-                        p.text("Aggregates document and asset targets into a manifest, then copies all generated files into the workspace.")
+                        p.text("Aggregates document and copy targets into a manifest, then copies all generated files into the workspace.")
                     })
-                    .literal("publish(\n    name = \"publish.documentation\",\n    srcs = [\n        \":document.vantle\",\n        \"//system/documentation:document.stylesheet\",\n        \"//system/generation/web/assembly:document.compute.js\",\n    ],\n)", Language::Starlark)
+                    .extract(folder_rule::EXTRACTIONS.one())
                 })
                 .subsection("distribute", |ss| {
                     ss.paragraph(|p| {
                         p.text("Serves the workspace directory over HTTP for local preview.")
                     })
-                    .literal("distribute(\n    name = \"distribute.documentation\",\n)", Language::Starlark)
+                    .extract(distribute_rule::EXTRACTIONS.one())
                 })
             })
         })

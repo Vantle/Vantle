@@ -2,6 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
+load("//component/generation/starlark:defs.bzl", "extract")
 load("//component/web/starlark:defs.bzl", "copy")
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -26,6 +27,14 @@ copy(
     name = "logo.copy",
     src = "logo.png",
     path = "resource/logo.png",
+)
+
+extract(
+    name = "copy.rule",
+    language = "starlark",
+    query = "(call function: (identifier) @fn (#eq? @fn \"copy\")) @capture",
+    source = "BUILD.bazel",
+    visibility = ["//visibility:public"],
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

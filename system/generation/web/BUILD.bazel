@@ -17,6 +17,7 @@ rust_library(
     proc_macro_deps = ["//system/observation:macro"],
     deps = [
         "//component/web:element",
+        "//component/web:language",
         "//component/web:error",
         "//component/web:page",
         "//component/web:span",
@@ -41,7 +42,6 @@ rust_library(
         "//component/design:palette",
         "//component/design:proportion",
         "//component/web:body",
-        "//component/web:element",
         "//component/web:page",
         "//component/web:span",
         "//component/web:style",
@@ -55,5 +55,13 @@ rust_library(
 document(
     srcs = ["web.document.rs"],
     destination = "system/generation/web/index.html",
-    deps = ["//system/generation/web:style"],
+    deps = [
+        "//:distribute.rule",
+        "//:folder.rule",
+        "//Molten:info.document.rule",
+        "//resource:copy.rule",
+        "//component/web:extraction",
+        "//component/web:language",
+        "//system/generation/web:style",
+    ],
 )

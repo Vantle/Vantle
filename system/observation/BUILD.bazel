@@ -155,7 +155,7 @@ document(
     srcs = ["observation.document.rs"],
     destination = "system/observation/index.html",
     deps = [
-        "//component/web:element",
+        "//component/web:language",
         "//system/generation/web:style",
     ],
 )

@@ -1,4 +1,5 @@
-use element::Language;
+use body::Chain;
+use language::Language;
 use style::Composition;
 
 fn main() -> miette::Result<()> {
@@ -54,10 +55,7 @@ fn main() -> miette::Result<()> {
                         .text(" macro instruments functions for observation.")
                 })
                 .subsection("Usage", |ss| {
-                    ss.literal(
-                        "#[trace(channels = [core])]\nfn process() {\n    evaluate();\n}",
-                        Language::Rust,
-                    )
+                    ss.code("#[trace(channels = [core])]\nfn process() {\n    evaluate();\n}", Language::Rust)
                 })
                 .subsection("Channels", |ss| {
                     ss.paragraph(|p| {
@@ -79,14 +77,6 @@ fn main() -> miette::Result<()> {
                         .element("li", |li| {
                             li.span(|s| s.code("query").text(": Graph queries"))
                         })
-                    })
-                })
-            })
-            .rule()
-            .section("Structure", |s| {
-                s.element("pre", |p| {
-                    p.element("code", |c| {
-                        c.text("component/observation/     Streaming layer and span types\nsystem/observation/        Trace initialization and encoding")
                     })
                 })
             })

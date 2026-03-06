@@ -4,6 +4,7 @@
 ##### External                                                                                                                               [ Import, External ]
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@rules_rust//rust:defs.bzl", "rust_library")
+load("//component/generation/starlark:defs.bzl", "extract")
 load("//component/web/starlark:defs.bzl", "copy", "distribute", "document", "folder")
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -105,6 +106,8 @@ document(
     srcs = ["vantle.document.rs"],
     destination = "index.html",
     deps = [
+        "//:module.bazel.version",
+        "//component/web:extraction",
         "//system/generation/web:style",
     ],
 )
@@ -135,12 +138,32 @@ document(
     ],
 )
 
+extract(
+    name = "module.source",
+    language = "starlark",
+    source = "MODULE.bazel",
+)
+
+extract(
+    name = "module.version",
+    language = "starlark",
+    query = "(call function: (identifier) @fn (#eq? @fn \"module\") arguments: (argument_list (keyword_argument name: (identifier) @key (#eq? @key \"version\") value: (string (string_content) @capture))))",
+    source = "MODULE.bazel",
+)
+
+extract(
+    name = "module.bazel.version",
+    language = "starlark",
+    query = "(call function: (identifier) @fn (#eq? @fn \"module\") arguments: (argument_list (keyword_argument name: (identifier) @key (#eq? @key \"bazel_compatibility\") value: (list (string (string_content) @capture)))))",
+    source = "MODULE.bazel",
+)
+
 document(
     srcs = ["module.document.rs"],
-    data = ["//:MODULE.bazel"],
     destination = "module.html",
     deps = [
-        "//component/web:element",
+        "//component/web:extraction",
+        "//:module.source",
         "//system/generation/web:style",
     ],
 )
@@ -178,10 +201,34 @@ folder(
         "//system/generation/web/assembly:compute.wasm.copy",
         "//system/observation:observation.document",
         "//system/spatialize:spatialize.document",
+        "//Molten/test/resource/system/graph/module/citizen/symbolic:citizen.source",
+        "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean/symbolic:boolean.source",
+        "//Molten/test/resource/system/graph/module/join/symbolic:join.source",
+        "//:module.source.source",
+        "//Molten/test/resource/system/graph/state/particle:disjoint.source",
+        "//Molten/test/resource/system/graph/state/particle:cases.document.source",
+        "//Molten:info.document.rule.source",
+        "//resource:copy.rule.source",
+        "//:folder.rule.source",
+        "//:distribute.rule.source",
     ],
 )
 
 distribute(
     name = "distribute.documentation",
     folder = ":documentation",
+)
+
+extract(
+    name = "folder.rule",
+    language = "starlark",
+    query = "(call function: (identifier) @fn (#eq? @fn \"folder\")) @capture",
+    source = "BUILD.bazel",
+)
+
+extract(
+    name = "distribute.rule",
+    language = "starlark",
+    query = "(call function: (identifier) @fn (#eq? @fn \"distribute\")) @capture",
+    source = "BUILD.bazel",
 )

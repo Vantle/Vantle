@@ -2,7 +2,8 @@ use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
 
 use clap::Parser;
-use element::{Element, Language, Source};
+use element::{Element, Location};
+use language::Language;
 use observe::trace;
 use page::Page;
 use span::Fragment;
@@ -56,6 +57,7 @@ pub fn render<S: std::hash::BuildHasher>(
 ) -> miette::Result<String> {
     let mut renderer = Renderer {
         html: String::new(),
+        root: page.root.clone().unwrap_or_default(),
         data,
         headings: Vec::new(),
         identifiers: HashSet::new(),
@@ -164,7 +166,8 @@ pub fn css(style: &Style) -> String {
 }
 
 #[trace(channels = [document])]
-pub fn generate(arguments: &Arguments, page: Page) -> miette::Result<()> {
+pub fn generate(arguments: &Arguments, page: page::Result) -> miette::Result<()> {
+    let page = page?;
     let data = load(&arguments.data)?;
     let html = render(&page, &data)?;
     emit(&arguments.output, &html)
@@ -282,6 +285,7 @@ fn render_media(html: &mut String, media: &Media) {
 
 struct Renderer<'a, S: std::hash::BuildHasher> {
     html: String,
+    root: String,
     data: &'a HashMap<String, String, S>,
     headings: Vec<(u8, String, String)>,
     identifiers: HashSet<String>,
@@ -299,9 +303,18 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
             Element::Text(text) => self.html.push_str(&escape(text)),
             Element::Span(fragments) => render_fragments(&mut self.html, fragments),
             Element::Raw(raw) => self.html.push_str(raw),
-            Element::Code { source, language } => {
+            Element::Code {
+                content,
+                language,
+                location,
+            } => {
                 indent(&mut self.html, depth);
-                self.code(source, *language)?;
+                self.code(content, *language, location.as_ref())?;
+                self.html.push('\n');
+            }
+            Element::Shell { command } => {
+                indent(&mut self.html, depth);
+                self.code(command, Language::Bash, None)?;
                 self.html.push('\n');
             }
             Element::Inject { name } => {
@@ -336,7 +349,12 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
             Element::Text(text) => self.html.push_str(&escape(text)),
             Element::Span(fragments) => render_fragments(&mut self.html, fragments),
             Element::Raw(raw) => self.html.push_str(raw),
-            Element::Code { source, language } => self.code(source, *language)?,
+            Element::Code {
+                content,
+                language,
+                location,
+            } => self.code(content, *language, location.as_ref())?,
+            Element::Shell { command } => self.code(command, Language::Bash, None)?,
             Element::Inject { name } => render_inject(&mut self.html, name, self.data)?,
             Element::Markdown { name } => self.markdown(name)?,
         }
@@ -394,9 +412,12 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
                 self.html.push('\n');
             }
             _ => {
-                let nested = children
-                    .iter()
-                    .any(|c| matches!(c, Element::Tag { .. } | Element::Code { .. }));
+                let nested = children.iter().any(|c| {
+                    matches!(
+                        c,
+                        Element::Tag { .. } | Element::Code { .. } | Element::Shell { .. }
+                    )
+                });
                 if nested && name != "pre" {
                     self.html.push('\n');
                     for child in children {
@@ -416,23 +437,26 @@ impl<S: std::hash::BuildHasher> Renderer<'_, S> {
     }
 
     #[trace(channels = [document])]
-    fn code(&mut self, source: &Source, language: Language) -> miette::Result<()> {
-        let text = match source {
-            Source::File(name) => self.data.get(name.as_str()).ok_or_else(|| {
-                let available = self.data.keys().cloned().collect::<Vec<_>>();
-                error::Error::source(name, &available)
-            })?,
-            Source::Inline(text) => text,
-        };
-
-        let highlighted = highlight::highlight(text, language)?;
-        write!(
-            self.html,
-            "<div class=\"code-block\" data-language=\"{}\">{}</div>",
-            language.name(),
-            highlighted
-        )
-        .unwrap();
+    fn code(
+        &mut self,
+        content: &str,
+        language: Language,
+        location: Option<&Location>,
+    ) -> miette::Result<()> {
+        let highlighted = highlight::highlight(content, language)?;
+        self.html.push_str("<div class=\"code-block\"");
+        write!(self.html, " data-language=\"{}\"", language.name()).unwrap();
+        self.html.push('>');
+        if let Some(location) = location {
+            let href = format!("{}{}", self.root, escape(&location.source));
+            write!(
+                self.html,
+                "<div class=\"code-toolbar\"><a class=\"code-source\" href=\"{href}\">Source</a></div>",
+            )
+            .unwrap();
+        }
+        self.html.push_str(&highlighted);
+        self.html.push_str("</div>");
 
         Ok(())
     }

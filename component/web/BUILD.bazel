@@ -13,11 +13,32 @@ package(default_visibility = [
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
+    name = "language",
+    srcs = ["language.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
     name = "element",
     srcs = ["element.rs"],
     visibility = ["//visibility:public"],
     deps = [
+        ":language",
         ":span",
+    ],
+)
+
+rust_library(
+    name = "extraction",
+    srcs = ["extraction.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":language",
+        "@crates//:miette",
     ],
 )
 
@@ -48,8 +69,11 @@ rust_library(
     visibility = ["//visibility:public"],
     deps = [
         ":element",
+        ":extraction",
+        ":language",
         ":span",
         ":table",
+        "@crates//:miette",
     ],
 )
 
@@ -60,6 +84,7 @@ rust_library(
     deps = [
         ":body",
         ":element",
+        "@crates//:miette",
     ],
 )
 

@@ -1,3 +1,5 @@
+use body::Chain;
+use extraction::Query;
 use style::Composition;
 
 fn main() -> miette::Result<()> {
@@ -54,7 +56,7 @@ fn main() -> miette::Result<()> {
             .section("Quick Start", |s| {
                 s.subsection("Requirements", |ss| {
                     ss.paragraph(|p| {
-                        p.link("https://bazel.build/", "Bazel").text(" \u{2265} 9.0.0")
+                        p.link("https://bazel.build/", "Bazel").text(&format!(" \u{2265} {}", module_bazel_version::EXTRACTIONS.one().content.trim_start_matches(">=")))
                     })
                 })
                 .subsection("Build", |ss| ss.shell("bazel build //..."))

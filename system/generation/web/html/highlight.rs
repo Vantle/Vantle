@@ -6,7 +6,7 @@ pub use rust;
 pub use starlark;
 pub use walker;
 
-use element::Language;
+use language::Language;
 
 pub fn highlight<T>(code: T, language: Language) -> miette::Result<String>
 where

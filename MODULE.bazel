@@ -424,6 +424,14 @@ crate.spec(
     package = "tree-sitter-bash",
     version = "0.25.1",
 )
+crate.spec(
+    package = "tree-sitter-rust",
+    version = "0.24.0",
+)
+crate.spec(
+    package = "tree-sitter-json",
+    version = "0.24.8",
+)
 crate.annotation(
     crate = "tree-sitter",
     gen_build_script = "on",
@@ -434,6 +442,14 @@ crate.annotation(
 )
 crate.annotation(
     crate = "tree-sitter-bash",
+    gen_build_script = "on",
+)
+crate.annotation(
+    crate = "tree-sitter-rust",
+    gen_build_script = "on",
+)
+crate.annotation(
+    crate = "tree-sitter-json",
     gen_build_script = "on",
 )
 crate.from_specs()

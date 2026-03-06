@@ -1,44 +1,72 @@
+use std::io::{Cursor, Read, Seek};
+
 use miette::{NamedSource, SourceSpan};
 
 use expression::{Error, Expression, Sourced};
-use token::{Located, Token, tokenize};
 
 pub fn parse(input: &str) -> Result<Expression, Sourced> {
     let trimmed = input.trim();
     if trimmed.is_empty() {
         return Ok(Expression::Any);
     }
-    let tokens = tokenize(trimmed).map_err(|error| Sourced {
-        error,
-        input: NamedSource::new("expression", input.to_string()),
-    })?;
-    let mut cursor = 0;
-    let result = sum(&tokens, &mut cursor).map_err(|error| Sourced {
-        error,
-        input: NamedSource::new("expression", input.to_string()),
-    })?;
-    if cursor < tokens.len() {
-        return Err(Sourced {
-            error: Error::Token {
+    let mut source = Cursor::new(trimmed.as_bytes().to_vec());
+    let result = sum(&mut source).map_err(|error| sourced(input, error))?;
+    let peeked = view::next(&mut source).map_err(|error| sourced(input, bridge(error)))?;
+    if !peeked.is_empty() {
+        return Err(sourced(
+            input,
+            Error::Token {
                 expected: "end of expression".to_string(),
-                span: tokens[cursor].span,
+                span: offset(peeked.initial(), 1),
             },
-            input: NamedSource::new("expression", input.to_string()),
-        });
+        ));
     }
     Ok(result)
 }
 
-fn sum(tokens: &[Located], cursor: &mut usize) -> Result<Expression, Error> {
-    let mut terms = vec![product(tokens, cursor)?];
+fn sourced(input: &str, error: Error) -> Sourced {
+    Sourced {
+        error,
+        input: NamedSource::new("expression", input.to_string()),
+    }
+}
 
-    while *cursor < tokens.len() {
-        if matches!(tokens[*cursor].token, Token::Comma) {
-            *cursor += 1;
-            terms.push(product(tokens, cursor)?);
-        } else {
-            break;
-        }
+fn offset(position: u64, length: usize) -> SourceSpan {
+    SourceSpan::new(usize::try_from(position).unwrap_or(0).into(), length)
+}
+
+fn bridge(_error: error::Error) -> Error {
+    Error::Token {
+        expected: "valid input".to_string(),
+        span: SourceSpan::new(0.into(), 0),
+    }
+}
+
+fn peek<Source: Read + Seek>(source: &mut Source) -> Result<Option<u8>, Error> {
+    consume::space(source.by_ref()).map_err(bridge)?;
+    let peeked = view::next(source.by_ref()).map_err(bridge)?;
+    if peeked.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(peeked.elements()[0]))
+    }
+}
+
+fn advance<Source: Read + Seek>(source: &mut Source) -> Result<(), Error> {
+    consume::next(source.by_ref()).map_err(bridge)?;
+    Ok(())
+}
+
+fn identifier<Source: Read + Seek>(source: &mut Source) -> Result<String, Error> {
+    consume::name(source.by_ref()).map_err(bridge)
+}
+
+fn sum<Source: Read + Seek>(source: &mut Source) -> Result<Expression, Error> {
+    let mut terms = vec![product(source)?];
+
+    while let Some(b',') = peek(source)? {
+        advance(source)?;
+        terms.push(product(source)?);
     }
 
     Ok(match terms.len() {
@@ -47,16 +75,12 @@ fn sum(tokens: &[Located], cursor: &mut usize) -> Result<Expression, Error> {
     })
 }
 
-fn product(tokens: &[Located], cursor: &mut usize) -> Result<Expression, Error> {
-    let mut factors = vec![unary(tokens, cursor)?];
+fn product<Source: Read + Seek>(source: &mut Source) -> Result<Expression, Error> {
+    let mut factors = vec![unary(source)?];
 
-    while *cursor < tokens.len() {
-        if matches!(tokens[*cursor].token, Token::Dot) {
-            *cursor += 1;
-            factors.push(unary(tokens, cursor)?);
-        } else {
-            break;
-        }
+    while let Some(b'.') = peek(source)? {
+        advance(source)?;
+        factors.push(unary(source)?);
     }
 
     Ok(match factors.len() {
@@ -65,67 +89,67 @@ fn product(tokens: &[Located], cursor: &mut usize) -> Result<Expression, Error> 
     })
 }
 
-fn unary(tokens: &[Located], cursor: &mut usize) -> Result<Expression, Error> {
-    if *cursor >= tokens.len() {
-        let span = tokens
-            .last()
-            .map_or(SourceSpan::new(0.into(), 0), |t| t.span);
-        return Err(Error::End {
-            expected: "identifier or !".to_string(),
-            span,
-        });
+fn unary<Source: Read + Seek>(source: &mut Source) -> Result<Expression, Error> {
+    match peek(source)? {
+        Some(b'!') => {
+            advance(source)?;
+            let operand = unary(source)?;
+            Ok(Expression::Not(Box::new(operand)))
+        }
+        Some(_) => atom(source),
+        None => {
+            let position = source.stream_position().unwrap_or(0);
+            Err(Error::End {
+                expected: "identifier or !".to_string(),
+                span: offset(position, 0),
+            })
+        }
     }
-
-    if matches!(tokens[*cursor].token, Token::Not) {
-        *cursor += 1;
-        let operand = unary(tokens, cursor)?;
-        return Ok(Expression::Not(Box::new(operand)));
-    }
-
-    atom(tokens, cursor)
 }
 
-fn atom(tokens: &[Located], cursor: &mut usize) -> Result<Expression, Error> {
-    if *cursor >= tokens.len() {
-        let span = tokens
-            .last()
-            .map_or(SourceSpan::new(0.into(), 0), |t| t.span);
-        return Err(Error::End {
-            expected: "identifier or (".to_string(),
-            span,
-        });
-    }
-
-    match &tokens[*cursor].token {
-        Token::Name(name) => {
-            let expression = Expression::Name(name.clone());
-            *cursor += 1;
-            Ok(expression)
-        }
-        Token::Open => {
-            *cursor += 1;
-            let expression = sum(tokens, cursor)?;
-            if *cursor >= tokens.len() {
-                let span = tokens
-                    .last()
-                    .map_or(SourceSpan::new(0.into(), 0), |t| t.span);
-                return Err(Error::End {
-                    expected: ")".to_string(),
-                    span,
-                });
+fn atom<Source: Read + Seek>(source: &mut Source) -> Result<Expression, Error> {
+    match peek(source)? {
+        Some(b'(') => {
+            advance(source)?;
+            let inner = sum(source)?;
+            match peek(source)? {
+                Some(b')') => {
+                    advance(source)?;
+                    Ok(inner)
+                }
+                Some(_) => {
+                    let position = source.stream_position().unwrap_or(0);
+                    Err(Error::Token {
+                        expected: ")".to_string(),
+                        span: offset(position, 1),
+                    })
+                }
+                None => {
+                    let position = source.stream_position().unwrap_or(0);
+                    Err(Error::End {
+                        expected: ")".to_string(),
+                        span: offset(position, 0),
+                    })
+                }
             }
-            if !matches!(tokens[*cursor].token, Token::Close) {
-                return Err(Error::Token {
-                    expected: ")".to_string(),
-                    span: tokens[*cursor].span,
-                });
-            }
-            *cursor += 1;
-            Ok(expression)
         }
-        _ => Err(Error::Token {
-            expected: "identifier or (".to_string(),
-            span: tokens[*cursor].span,
-        }),
+        Some(b) if b.is_ascii_alphabetic() => {
+            let name = identifier(source)?;
+            Ok(Expression::Name(name))
+        }
+        Some(_) => {
+            let position = source.stream_position().unwrap_or(0);
+            Err(Error::Token {
+                expected: "identifier or (".to_string(),
+                span: offset(position, 1),
+            })
+        }
+        None => {
+            let position = source.stream_position().unwrap_or(0);
+            Err(Error::End {
+                expected: "identifier or (".to_string(),
+                span: offset(position, 0),
+            })
+        }
     }
 }

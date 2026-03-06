@@ -9,11 +9,29 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
-    name = "token",
-    srcs = ["token.rs"],
+    name = "consume",
+    srcs = ["consume.rs"],
+    aliases = {
+        "//system/translator:consume": "translate",
+    },
     deps = [
-        "//component/observation:expression",
+        ":error",
+        "//component:translator",
+        "//component/translator:rule",
+        "//system/translator:consume",
+    ],
+)
+
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    aliases = {
+        "//system/translator:error": "translate",
+    },
+    deps = [
+        "//system/translator:error",
         "@crates//:miette",
+        "@crates//:thiserror",
     ],
 )
 
@@ -21,9 +39,25 @@ rust_library(
     name = "parse",
     srcs = ["parse.rs"],
     deps = [
+        ":consume",
+        ":error",
+        ":view",
+        "//component:translator",
         "//component/observation:expression",
-        "//component/observation/expression:token",
         "@crates//:miette",
+    ],
+)
+
+rust_library(
+    name = "view",
+    srcs = ["view.rs"],
+    aliases = {
+        "//system/translator:view": "translate",
+    },
+    deps = [
+        ":error",
+        "//component:translator",
+        "//system/translator:view",
     ],
 )
 

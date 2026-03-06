@@ -1,4 +1,5 @@
 use expression::Expression;
+use layer::Backpressure;
 use parse::parse;
 use tracing::level_filters::LevelFilter;
 use url::Url;
@@ -10,9 +11,15 @@ pub struct Stream {
 }
 
 pub enum Sink {
-    Log { stream: Stream, ansi: bool },
+    Log {
+        stream: Stream,
+        ansi: bool,
+    },
     Chrome(Stream),
-    Grpc(Stream),
+    Grpc {
+        stream: Stream,
+        backpressure: Backpressure,
+    },
     Http(Stream),
 }
 
@@ -20,7 +27,7 @@ pub enum Sink {
 pub fn stdout() -> Sink {
     Sink::Log {
         stream: Stream {
-            url: Url::parse("log:///dev/stdout").expect("static url"),
+            url: Url::parse("log://1").expect("static url"),
             level: LevelFilter::INFO,
             channels: Expression::Any,
         },
@@ -54,7 +61,10 @@ pub fn resolve(address: &str) -> error::Result<Sink> {
             stream,
         }),
         "chrome" => Ok(Sink::Chrome(stream)),
-        "grpc" => Ok(Sink::Grpc(stream)),
+        "grpc" => Ok(Sink::Grpc {
+            backpressure: backpressure(&stream.url),
+            stream,
+        }),
         "http" | "https" => Ok(Sink::Http(stream)),
         scheme => Err(error::Error::Scheme {
             scheme: scheme.to_string(),
@@ -97,4 +107,24 @@ fn channels(url: &Url) -> Result<Expression, expression::Sourced> {
     url.query_pairs()
         .find(|(k, _)| k == "channels")
         .map_or_else(|| Ok(Expression::Any), |(_, v)| parse(&v))
+}
+
+fn backpressure(url: &Url) -> Backpressure {
+    url.query_pairs().find(|(k, _)| k == "backpressure").map_or(
+        Backpressure::default(),
+        |(_, v)| {
+            let value = v.as_ref();
+            if value == "block" {
+                return Backpressure::Block;
+            }
+            if let Some(capacity) = value
+                .strip_prefix("drop(")
+                .and_then(|s| s.strip_suffix(')'))
+                .and_then(|s| s.parse::<usize>().ok())
+            {
+                return Backpressure::Drop(capacity);
+            }
+            Backpressure::default()
+        },
+    )
 }

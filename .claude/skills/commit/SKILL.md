@@ -103,7 +103,7 @@ EOF
 - File and network trace sinks
 
 [Molten] [Molten/Readme.md]: Forge observation integration:
-- --address flag for trace streaming
+- --sink flag for trace streaming
 - File and gRPC sink support
 ```
 

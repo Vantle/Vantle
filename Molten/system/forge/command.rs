@@ -73,7 +73,7 @@ fn main() -> Result<()> {
             let Command::Lava { ref observation } = arguments.command;
             observation::initialize(&observation.sink)
         },
-        |arguments| {
+        |arguments, _runtime| {
             let Command::Lava { .. } = arguments.command;
             lava()
         },

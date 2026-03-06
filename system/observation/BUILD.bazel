@@ -48,6 +48,7 @@ rust_library(
     srcs = ["endpoint.rs"],
     deps = [
         "//component/observation:expression",
+        "//component/observation:layer",
         "//component/observation/expression:parse",
         "//system/observation/trace:error",
         "@crates//:tracing",
@@ -141,6 +142,7 @@ rust_binary(
     srcs = ["command.rs"],
     deps = [
         "//system:command",
+        "//system:concurrent",
         "//system:observation",
         "@crates//:clap",
         "@crates//:miette",

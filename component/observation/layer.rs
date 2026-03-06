@@ -19,6 +19,18 @@ use visitor::Visitor;
 
 const CAPACITY: usize = 65536;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Backpressure {
+    Drop(usize),
+    Block,
+}
+
+impl Default for Backpressure {
+    fn default() -> Self {
+        Self::Drop(CAPACITY)
+    }
+}
+
 fn metadata(meta: &tracing::Metadata<'_>) -> Metadata {
     Metadata {
         target: meta.target().to_string(),
@@ -38,18 +50,16 @@ pub type Receiver = mpsc::Receiver<Update>;
 
 pub struct Assembler {
     predicate: Predicate,
-    capacity: usize,
+    backpressure: Backpressure,
 }
 
 impl Assembler {
     #[must_use]
-    pub fn capacity(mut self, capacity: usize) -> Self {
-        self.capacity = capacity;
+    pub fn backpressure(mut self, backpressure: Backpressure) -> Self {
+        self.backpressure = backpressure;
         self
     }
-}
 
-impl Assembler {
     #[must_use]
     pub fn open(self) -> Sink {
         let (streamer, receiver) = self.assemble();
@@ -83,10 +93,15 @@ impl Assemble for Assembler {
     type Output = (Streamer, Receiver);
 
     fn assemble(self) -> Self::Output {
-        let (sender, receiver) = mpsc::channel(self.capacity);
+        let capacity = match self.backpressure {
+            Backpressure::Drop(capacity) => capacity,
+            Backpressure::Block => CAPACITY,
+        };
+        let (sender, receiver) = mpsc::channel(capacity);
         let streamer = Streamer {
             sender,
             predicate: self.predicate,
+            backpressure: self.backpressure,
             spans: DashMap::new(),
             trace: OnceLock::new(),
             dropped: AtomicU64::new(0),
@@ -99,6 +114,7 @@ impl Assemble for Assembler {
 pub struct Streamer {
     sender: Sender,
     predicate: Predicate,
+    backpressure: Backpressure,
     spans: DashMap<tracing::span::Id, State>,
     trace: OnceLock<u64>,
     dropped: AtomicU64,
@@ -109,13 +125,22 @@ impl Streamer {
     pub fn assembler(predicate: Predicate) -> Assembler {
         Assembler {
             predicate,
-            capacity: CAPACITY,
+            backpressure: Backpressure::default(),
         }
     }
 
     fn emit(&self, update: Update) {
-        if self.sender.try_send(update).is_err() {
-            self.dropped.fetch_add(1, Ordering::Relaxed);
+        match self.backpressure {
+            Backpressure::Drop(_) => {
+                if self.sender.try_send(update).is_err() {
+                    self.dropped.fetch_add(1, Ordering::Relaxed);
+                }
+            }
+            Backpressure::Block => {
+                if self.sender.blocking_send(update).is_err() {
+                    self.dropped.fetch_add(1, Ordering::Relaxed);
+                }
+            }
         }
     }
 

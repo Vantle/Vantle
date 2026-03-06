@@ -68,10 +68,16 @@ fn main() -> miette::Result<()> {
                             li.span(|s| s.code("core").text(": Core runtime operations"))
                         })
                         .element("li", |li| {
-                            li.span(|s| s.code("analysis").text(": Analysis and evaluation"))
+                            li.span(|s| s.code("document").text(": Documentation generation"))
                         })
                         .element("li", |li| {
-                            li.span(|s| s.code("debug").text(": Debugging and diagnostics"))
+                            li.span(|s| s.code("hypergraph").text(": Hypergraph evaluation"))
+                        })
+                        .element("li", |li| {
+                            li.span(|s| s.code("matching").text(": Pattern matching"))
+                        })
+                        .element("li", |li| {
+                            li.span(|s| s.code("query").text(": Graph queries"))
                         })
                     })
                 })

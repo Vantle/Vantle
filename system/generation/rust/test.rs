@@ -3,27 +3,17 @@ use std::path::Path;
 
 use proc_macro2::Span;
 use serde_json::{Map, Value};
-use syn::{FnArg, Signature, Type};
-
-use quote::format_ident;
-use syn::Expr;
+use syn::{Expr, FnArg, Signature, Type};
 
 use component::generation::rust::error::Error;
 use component::generation::rust::schema::Case;
 use component::generation::rust::types::Callable;
 use literal::expression;
 
-type Counters = HashMap<String, usize>;
-
 #[derive(Debug, Clone)]
 struct Instance {
     parameters: HashMap<syn::Ident, Value>,
     returns: HashMap<String, Value>,
-}
-
-#[derive(Debug)]
-struct Test {
-    case: Instance,
 }
 
 pub struct Inputs<'a> {
@@ -32,15 +22,24 @@ pub struct Inputs<'a> {
     pub functions: &'a HashMap<String, Signature>,
 }
 
+pub struct Registration {
+    pub name: String,
+    pub tags: Vec<String>,
+    pub parameters: Value,
+    pub expected: Value,
+    pub statements: Vec<syn::Stmt>,
+    pub actuals: syn::Expr,
+    pub comparisons: Vec<syn::Stmt>,
+}
+
 pub fn build(
     case: &Case,
     target: &Callable,
     tags: &[String],
     inputs: &Inputs,
-    counters: &mut Counters,
     content: &str,
     path: &str,
-) -> Result<Vec<(String, syn::Item)>, Box<Error>> {
+) -> Result<Registration, Box<Error>> {
     let signature = inputs.functions.get(&target.qualified).ok_or_else(|| {
         let functions = inputs.functions.keys().cloned().collect::<Vec<String>>();
         let suggestion =
@@ -55,28 +54,38 @@ pub fn build(
         })
     })?;
 
-    let function = &target.name;
-    let module = &target.module;
+    let function = &target.qualified;
 
     let parameters = shadowed(inputs.parameters, &case.parameters);
     let returns = shadowed(inputs.returns, &case.returns);
 
     let tags = merge(tags, &case.tags);
 
-    let test = validate(signature, &parameters, &returns, content, path)?;
+    let validated = validate(signature, &parameters, &returns, content, path)?;
 
-    let name = identify(function, &tags, counters);
-
-    let item = generate(
-        &name,
+    let (statements, actuals, comparisons) = generate(
         function,
         signature,
-        &test.case.parameters,
-        &test.case.returns,
+        &validated.parameters,
+        &validated.returns,
         path,
     )?;
 
-    Ok(vec![(module.clone(), item)])
+    let name = target.qualified.replace("::", ".");
+    let serialized = serde_json::to_value(&parameters)
+        .expect("parameters are already Value and always serializable");
+    let returns =
+        serde_json::to_value(&returns).expect("returns are already Value and always serializable");
+
+    Ok(Registration {
+        name,
+        tags,
+        parameters: serialized,
+        expected: returns,
+        statements,
+        actuals,
+        comparisons,
+    })
 }
 
 fn validate(
@@ -85,12 +94,12 @@ fn validate(
     returns: &HashMap<String, Value>,
     content: &str,
     path: &str,
-) -> Result<Test, Box<Error>> {
+) -> Result<Instance, Box<Error>> {
     let expected = signature
         .inputs
         .iter()
         .filter_map(|input| match input {
-            FnArg::Typed(pat_type) => match &*pat_type.pat {
+            FnArg::Typed(typed) => match &*typed.pat {
                 syn::Pat::Ident(ident) => Some(ident.ident.clone()),
                 _ => None,
             },
@@ -167,22 +176,20 @@ fn validate(
         }));
     }
 
-    let case = Instance {
+    Ok(Instance {
         parameters: parameters
             .iter()
             .map(|(k, v)| (syn::Ident::new(k, Span::call_site()), v.clone()))
             .collect(),
         returns: returns.clone(),
-    };
-
-    Ok(Test { case })
+    })
 }
 
 fn shadow(target: &mut Value, patch: &Value) {
     match patch {
         Value::Object(rewrites) => {
             if !matches!(target, Value::Object(_)) {
-                *target = Value::Object(Map::new());
+                *target = Value::Object(Map::default());
             }
             if let Value::Object(object) = target {
                 for (key, overwrite) in rewrites {
@@ -227,30 +234,13 @@ fn merge(function: &[String], case: &[String]) -> Vec<String> {
     tags
 }
 
-fn identify(test: &str, tags: &[String], counters: &mut Counters) -> String {
-    let mut name = vec![test.to_string()];
-
-    if !tags.is_empty() {
-        name.extend(tags.iter().cloned());
-    }
-
-    let base = name.join("_");
-
-    let counter = counters.entry(base.clone()).or_insert(0);
-    let result = format!("{base}_{counter}");
-    *counter += 1;
-
-    result
-}
-
 fn generate(
-    name: &str,
     function: &str,
     signature: &Signature,
     parameters: &HashMap<syn::Ident, Value>,
     expected: &HashMap<String, Value>,
     path: impl AsRef<Path>,
-) -> Result<syn::Item, Box<Error>> {
+) -> Result<(Vec<syn::Stmt>, syn::Expr, Vec<syn::Stmt>), Box<Error>> {
     let mut code = Code::new();
 
     let arguments = parameterize(&mut code, signature, parameters, &path)?;
@@ -265,29 +255,24 @@ fn generate(
         syn::Ident::new("_result", Span::call_site())
     };
 
-    let expression: Expr = syn::parse_str(function).unwrap_or_else(|e| {
-        panic!(
-            "Failed to parse function name '{function}' as valid Rust expression: {e}. \
-             Ensure the function name is a valid Rust identifier or path."
-        )
-    });
+    let expression: Expr = syn::parse_str(function).map_err(|e| {
+        Box::new(Error::Untargetable {
+            name: format!(
+                "Failed to parse function name '{function}' as valid Rust expression: {e}. \
+                 Ensure the function name is a valid Rust identifier or path."
+            ),
+        })
+    })?;
 
     let statement: syn::Stmt = syn::parse_quote! {
         let #variable = #expression(#(#arguments),*);
     };
     code.push(statement);
 
-    assertion(&mut code, signature, parameters, expected, name, &path)?;
+    let actuals = recording(parameters, expected)?;
+    let comparisons = comparison(signature, parameters, expected, &path);
 
-    let identifier = format_ident!("{}", name);
-    let block = code.block();
-
-    let item: syn::ItemFn = syn::parse_quote! {
-        #[test]
-        fn #identifier() -> miette::Result<()> #block
-    };
-
-    Ok(syn::Item::Fn(item))
+    Ok((code.statements, actuals, comparisons))
 }
 
 struct Code {
@@ -303,21 +288,6 @@ impl Code {
 
     fn push(&mut self, statement: syn::Stmt) {
         self.statements.push(statement);
-    }
-
-    fn assert(&mut self, left: &syn::Expr, right: &syn::Expr, test: &str, name: &str) {
-        let statement: syn::Stmt = syn::parse_quote! {
-            assert(&#left, &#right, #test, #name);
-        };
-        self.statements.push(statement);
-    }
-
-    fn block(self) -> syn::Block {
-        let statements = self.statements;
-        syn::parse_quote!({
-            #(#statements)*
-            Ok(())
-        })
     }
 }
 
@@ -375,30 +345,19 @@ fn parameterize(
     Ok(arguments)
 }
 
-fn assertion(
-    code: &mut Code,
-    signature: &Signature,
+fn recording(
     parameters: &HashMap<syn::Ident, Value>,
     expected: &HashMap<String, Value>,
-    test: &str,
-    path: impl AsRef<Path>,
-) -> Result<(), Box<Error>> {
-    if let Some(returns) = expected.get(keyword::result().key) {
-        let literal = match &signature.output {
-            syn::ReturnType::Type(_, ty) => expression(ty.as_ref(), returns, &path),
-            syn::ReturnType::Default => syn::parse_quote! { () },
-        };
-        let variable = &keyword::result().variable;
-        let expression: syn::Expr = syn::parse_quote! { #variable };
-        code.assert(
-            &expression,
-            &literal,
-            test,
-            &keyword::result().variable.to_string(),
-        );
+) -> Result<syn::Expr, Box<Error>> {
+    let mut expr: syn::Expr = syn::parse_quote! { vantle::test::report::Actuals::default() };
+
+    if expected.contains_key(keyword::result().key) {
+        let key = keyword::result().key;
+        let variable = keyword::result().variable;
+        expr = syn::parse_quote! { #expr.record(#key, &#variable)? };
     }
 
-    for (parameter, result) in expected {
+    for parameter in expected.keys() {
         if parameter != keyword::result().key {
             let identifier = parameters
                 .keys()
@@ -406,39 +365,73 @@ fn assertion(
                 .ok_or_else(|| {
                     Box::new(Error::Missing {
                         field: format!("parameter identifier for '{parameter}'"),
-                        context: "assertion parameters".to_string(),
+                        context: "recording parameters".to_string(),
                     })
                 })?;
-
-            let ty = signature
-                .inputs
-                .iter()
-                .find_map(|arg| match arg {
-                    FnArg::Typed(t) => {
-                        let name = match &*t.pat {
-                            syn::Pat::Ident(ident) => ident.ident.to_string(),
-                            _ => return None,
-                        };
-                        if name == *parameter {
-                            Some(&*t.ty)
-                        } else {
-                            None
-                        }
-                    }
-                    FnArg::Receiver(_) => None,
-                })
-                .ok_or_else(|| {
-                    Box::new(Error::Missing {
-                        field: format!("type for parameter '{parameter}'"),
-                        context: "function signature".to_string(),
-                    })
-                })?;
-
-            let expected = expression(ty, result, &path);
-            let expression: syn::Expr = syn::parse_quote! { #identifier };
-            code.assert(&expression, &expected, test, parameter);
+            let key = parameter.as_str();
+            expr = syn::parse_quote! { #expr.record(#key, &#identifier)? };
         }
     }
 
-    Ok(())
+    Ok(expr)
+}
+
+fn comparison(
+    signature: &Signature,
+    parameters: &HashMap<syn::Ident, Value>,
+    expected: &HashMap<String, Value>,
+    path: impl AsRef<Path>,
+) -> Vec<syn::Stmt> {
+    let mut statements = Vec::new();
+
+    if let (Some(value), syn::ReturnType::Type(_, ty)) =
+        (expected.get(keyword::result().key), &signature.output)
+    {
+        let variable = keyword::result().variable;
+        let expectation = expression(ty.as_ref(), value, &path);
+        let key = keyword::result().key;
+        let stmt: syn::Stmt = syn::parse_quote! {
+            if !vantle::test::utility::equal(&#variable, &#expectation) {
+                return Err(Box::new(vantle::test::report::error::Error::mismatch(
+                    actuals.clone(),
+                    format!("expected {}: {:?}, got: {:?}", #key, #expectation, #variable),
+                )));
+            }
+        };
+        statements.push(stmt);
+    }
+
+    for (key, value) in expected {
+        if key == keyword::result().key {
+            continue;
+        }
+        if let Some((ident, _)) = parameters.iter().find(|(i, _)| i.to_string() == *key) {
+            let ty = signature.inputs.iter().find_map(|input| match input {
+                FnArg::Typed(pat) => match &*pat.pat {
+                    syn::Pat::Ident(i) if i.ident == *ident => Some(pat.ty.as_ref()),
+                    _ => None,
+                },
+                FnArg::Receiver(_) => None,
+            });
+            if let Some(ty) = ty {
+                let inner = match ty {
+                    Type::Reference(r) => r.elem.as_ref(),
+                    _ => ty,
+                };
+                let expectation = expression(inner, value, &path);
+                let label = key.as_str();
+                let stmt: syn::Stmt = syn::parse_quote! {
+                    if !vantle::test::utility::equal(&#ident, &#expectation) {
+                        return Err(Box::new(vantle::test::report::error::Error::mismatch(
+                            actuals.clone(),
+                            format!("expected {}: {:?}, got: {:?}", #label, #expectation, #ident),
+                        )));
+                    }
+                };
+                statements.push(stmt);
+            }
+        }
+    }
+
+    statements
 }

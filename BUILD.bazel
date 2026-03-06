@@ -35,6 +35,8 @@ rust_library(
     name = "system",
     srcs = ["system.rs"],
     deps = [
+        "//system:command",
+        "//system:concurrent",
         "//system:diagnostic",
         "//system:generation",
         "//system:graph",
@@ -58,6 +60,7 @@ rust_library(
     name = "test",
     srcs = ["test.rs"],
     deps = [
+        "//test:report",
         "//test:resource",
         "//test:utility",
     ],

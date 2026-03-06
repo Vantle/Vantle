@@ -97,11 +97,23 @@ rust_library(
 )
 
 rust_library(
+    name = "concurrent",
+    srcs = ["concurrent.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//system/concurrent:error",
+    ],
+)
+
+rust_library(
     name = "command",
     srcs = ["command.rs"],
     visibility = ["//visibility:public"],
     deps = [
+        "//component:assemble",
         "//platform:command",
+        "//system:concurrent",
+        "//system/concurrent:pool",
         "@crates//:clap",
         "@crates//:miette",
         "@crates//:tokio",

@@ -13,7 +13,7 @@ fn main() -> miette::Result<()> {
                     p.bold("Contact: ")
                         .link("mailto:connect@vantle.org", "connect@vantle.org")
                 })
-                .paragraph(|p| p.text("Copyright \u{00a9} 2025"))
+                .paragraph(|p| p.text("Copyright \u{00a9} 2025-2026"))
         })
     })
 }

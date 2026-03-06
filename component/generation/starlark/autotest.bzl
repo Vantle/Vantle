@@ -42,7 +42,7 @@ TemplateInfo = provider(
 # LANGUAGE CONFIGURATION
 #############################################################################
 
-def Language(extension, test, library, deps = [], flags = []):
+def Language(extension, test, library, deps = [], proc_macro_deps = [], flags = []):
     """
     Create a language configuration.
 
@@ -51,6 +51,7 @@ def Language(extension, test, library, deps = [], flags = []):
         test: Test rule function (e.g., rust_test)
         library: Library rule function (e.g., rust_library)
         deps: Standard dependencies
+        proc_macro_deps: Standard proc macro dependencies
         flags: Standard compiler flags
 
     Returns:
@@ -61,6 +62,7 @@ def Language(extension, test, library, deps = [], flags = []):
         test = test,
         library = library,
         deps = deps,
+        proc_macro_deps = proc_macro_deps,
         flags = flags,
     )
 
@@ -70,12 +72,19 @@ LANGUAGES = {
         test = rust_test,
         library = rust_library,
         deps = [
+            "@crates//:clap",
             "@crates//:miette",
             "@crates//:serde",
             "@crates//:serde_json",
             "//:module",
+            "//system:command",
+            "//system:concurrent",
             "//system:diagnostic",
+            "//system:observation",
             "//system/generation/runtime:runtime",
+        ],
+        proc_macro_deps = [
+            "//system/observation:macro",
         ],
     ),
 }
@@ -278,9 +287,14 @@ def autotest(name, template, cases, language, generator = "//system/generation:g
     if "timeout" not in kwargs:
         kwargs["timeout"] = "short"
 
+    proc_macro_deps = kwargs.pop("proc_macro_deps", [])
+    proc_macro_deps = depset(proc_macro_deps + target.proc_macro_deps).to_list()
+
     target.test(
         name = name,
         srcs = [":{}".format(generate_target)],
+        use_libtest_harness = False,
+        proc_macro_deps = proc_macro_deps,
         **kwargs
     )
 

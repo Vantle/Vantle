@@ -27,7 +27,7 @@ struct Arguments {
 fn main() -> miette::Result<()> {
     command::execute(
         |_| observation::initialize(&[]),
-        |arguments| match generate(arguments) {
+        |arguments, _runtime| match generate(arguments) {
             Ok(()) => Ok(()),
             Err(report) => {
                 tracing::error!("{report}");
@@ -56,10 +56,14 @@ fn generate(arguments: Arguments) -> miette::Result<()> {
         .map_err(|e| Error::deserialization("Cases", &arguments.cases, &cases, e))?;
 
     let output = match arguments.language {
-        Language::Rust => {
-            rust::generate(&template, &data, &cases, &arguments.cases.to_string_lossy())
-                .map_err(|e| miette::Report::new(*e))?
-        }
+        Language::Rust => rust::generate(
+            &template,
+            &data,
+            &cases,
+            &arguments.cases.to_string_lossy(),
+            &arguments.template.to_string_lossy(),
+        )
+        .map_err(|e| miette::Report::new(*e))?,
     };
 
     if let Some(parent) = arguments.output.parent() {

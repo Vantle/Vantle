@@ -12,6 +12,27 @@ package(default_visibility = [
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
+    name = "report",
+    srcs = ["report.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
+    deps = [
+        "//component/observation:channel",
+        "//component/observation:module",
+        "//platform:test",
+        "//system:concurrent",
+        "//system/observation:argument",
+        "//test/report:error",
+        "//test/report:execution",
+        "@crates//:clap",
+        "@crates//:derive_more",
+        "@crates//:miette",
+        "@crates//:serde",
+        "@crates//:serde_json",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
     name = "resource",
     srcs = ["resource.rs"],
     deps = [
@@ -23,13 +44,7 @@ rust_library(
     name = "utility",
     srcs = ["utility.rs"],
     deps = [
-        "//:platform",
-        "//component/observation:module",
-        "//system:diagnostic",
         "@crates//:miette",
-        "@crates//:pretty_assertions",
-        "@crates//:serde",
-        "@crates//:serde_json",
     ],
 )
 

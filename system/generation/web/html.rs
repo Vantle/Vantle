@@ -33,7 +33,7 @@ where
 {
     command::execute(
         |arguments: &Arguments| observation::initialize(&arguments.observation.sink),
-        |arguments| run(&arguments),
+        |arguments, _runtime| run(&arguments),
     )
 }
 

@@ -1,0 +1,25 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:thiserror",
+        "@crates//:tokio",
+    ],
+)
+
+rust_library(
+    name = "pool",
+    srcs = ["pool.rs"],
+    deps = [
+        "//component:assemble",
+        "//system:concurrent",
+        "//system/concurrent:error",
+        "@crates//:tokio",
+        "@crates//:tracing",
+    ],
+)

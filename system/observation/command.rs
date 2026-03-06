@@ -1,4 +1,5 @@
 use clap::Parser;
+use concurrent::Schedule;
 use miette::Result;
 
 #[derive(Parser)]
@@ -11,8 +12,8 @@ struct Arguments {
 fn main() -> Result<()> {
     command::execute(
         |arguments: &Arguments| observation::initialize(&arguments.observation.sink),
-        |_| {
-            tokio::runtime::Handle::current().block_on(async {
+        |_, runtime| {
+            runtime.block(async {
                 tokio::signal::ctrl_c().await.ok();
             });
             Ok(())

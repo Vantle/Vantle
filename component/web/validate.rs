@@ -164,7 +164,7 @@ fn span(content: &str, message: &Message) -> Option<SourceSpan> {
 fn main() -> miette::Result<()> {
     command::execute(
         |arguments: &Arguments| observation::initialize(&arguments.observation.sink),
-        run,
+        |arguments, _runtime| run(arguments),
     )
 }
 

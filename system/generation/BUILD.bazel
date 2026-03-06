@@ -23,6 +23,7 @@ rust_library(
         "//system/generation/rust:test",
         "//system/graph:similarity",
         "@crates//:prettyplease",
+        "@crates//:serde_json",
         "@crates//:syn",
     ],
 )

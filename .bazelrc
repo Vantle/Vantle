@@ -25,7 +25,7 @@ common --bes_results_url=https://vantle.buildbuddy.io/invocation/
 common --bes_backend=grpcs://vantle.buildbuddy.io
 common --bes_upload_mode=fully_async
 common --remote_cache=grpcs://vantle.buildbuddy.io
-common --remote_timeout=15m
+common --remote_timeout=38s
 common --remote_cache_compression
 common --experimental_remote_cache_compression_threshold=100
 common --build_metadata=REPO_URL=https://github.com/Vantle/Vantle.git
@@ -61,7 +61,6 @@ common --@rules_rust//rust/settings:clippy_flag=-Aclippy::missing_docs_in_privat
 common --@rules_rust//rust/settings:clippy_flag=-Aclippy::similar_names
 common --@rules_rust//rust/settings:clippy_flag=-Aclippy::too_many_lines
 common --@rules_rust//rust/settings:clippy_flag=-Aclippy::needless_pass_by_value
-common --@rules_rust//rust/settings:clippy_flag=-Aunused-assignments
 
 #################################################################################################################################################################
 ########## Execution                                                                                                                                  [ Execute ]

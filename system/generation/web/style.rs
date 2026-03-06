@@ -208,7 +208,7 @@ pub fn page(
                             f(m).element("footer", |footer| {
                                 footer.element("p", |p| {
                                     p.span(|s| {
-                                        s.text("\u{00a9} 2025 Vantle \u{00b7} ")
+                                        s.text("\u{00a9} 2025-2026 Vantle \u{00b7} ")
                                             .link("https://vantle.org", "@robert.vanderzee")
                                     })
                                 })

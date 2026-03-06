@@ -1,27 +1,20 @@
 pub use channel;
 pub use error;
-pub use grpc::Status;
 
 use endpoint::{Sink, Stream};
 use expression::Expression;
 use filter::Filter;
-use std::fs::File;
-use std::io::LineWriter;
+use std::io::{LineWriter, Write};
 use std::sync::Mutex;
 use tokio_util::sync::CancellationToken;
 use tracing_chrome::{ChromeLayer, FlushGuard};
 use tracing_subscriber::prelude::*;
 use tracing_subscriber::{Registry, fmt};
 
+type LogWriter = Mutex<LineWriter<Box<dyn Write + Send>>>;
+
 enum Output {
-    Log(
-        fmt::Layer<
-            Registry,
-            fmt::format::DefaultFields,
-            fmt::format::Format,
-            Mutex<LineWriter<File>>,
-        >,
-    ),
+    Log(fmt::Layer<Registry, fmt::format::DefaultFields, fmt::format::Format, LogWriter>),
     Chrome(ChromeLayer<Registry>),
     Grpc(layer::Streamer),
 }
@@ -135,10 +128,13 @@ impl tracing_subscriber::Layer<Registry> for Output {
     }
 }
 
+const SHUTDOWN: std::time::Duration = std::time::Duration::from_secs(5);
+
 pub struct Guard {
-    flush: Option<FlushGuard>,
+    flush: Vec<FlushGuard>,
     cancellation: Option<CancellationToken>,
     tasks: Vec<tokio::task::JoinHandle<()>>,
+    handle: tokio::runtime::Handle,
 }
 
 impl Guard {
@@ -152,21 +148,21 @@ impl Drop for Guard {
         if let Some(token) = self.cancellation.take() {
             token.cancel();
         }
-        if let Ok(runtime) = tokio::runtime::Handle::try_current() {
-            for task in self.tasks.drain(..) {
-                let _ = runtime.block_on(task);
-            }
+        for task in self.tasks.drain(..) {
+            let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                let _ = self.handle.block_on(tokio::time::timeout(SHUTDOWN, task));
+            }));
         }
-        self.flush.take();
-        grpc::flush();
+        self.flush.drain(..);
     }
 }
 
 pub fn initialize(sinks: Vec<Sink>, cancellation: CancellationToken) -> error::Result<Guard> {
     let mut guard = Guard {
-        flush: None,
+        flush: Vec::new(),
         cancellation: Some(cancellation.clone()),
         tasks: Vec::new(),
+        handle: tokio::runtime::Handle::current(),
     };
     let mut expressions = Vec::new();
 
@@ -184,8 +180,15 @@ pub fn initialize(sinks: Vec<Sink>, cancellation: CancellationToken) -> error::R
                     ansi,
                 } => {
                     expressions.push(channels.clone());
-                    let path = std::path::PathBuf::from(url.path());
-                    layers.push(Output::Log(log::file(&path, *ansi)?).with_filter(*level));
+                    let layer = match url.host_str() {
+                        Some("1") => log::stdout(*ansi),
+                        Some("2") => log::stderr(*ansi),
+                        _ => {
+                            let path = std::path::PathBuf::from(url.path());
+                            log::file(&path, *ansi)?
+                        }
+                    };
+                    layers.push(Output::Log(layer).with_filter(*level));
                 }
                 Sink::Chrome(Stream {
                     url,
@@ -195,16 +198,21 @@ pub fn initialize(sinks: Vec<Sink>, cancellation: CancellationToken) -> error::R
                     expressions.push(channels.clone());
                     let path = std::path::PathBuf::from(url.path());
                     let (tracer, flush) = chrome::layer(&path)?;
-                    guard.flush = Some(flush);
+                    guard.flush.push(flush);
                     layers.push(Output::Chrome(tracer).with_filter(*level));
                 }
-                Sink::Grpc(Stream {
-                    url,
-                    level,
-                    channels,
-                }) => {
+                Sink::Grpc {
+                    stream:
+                        Stream {
+                            url,
+                            level,
+                            channels,
+                        },
+                    backpressure,
+                } => {
                     expressions.push(channels.clone());
-                    let (streamer, receiver) = grpc::layer(channels.clone().predicate());
+                    let (streamer, receiver) =
+                        grpc::layer(channels.clone().predicate(), *backpressure);
                     layers.push(Output::Grpc(streamer).with_filter(*level));
                     endpoints.push((url.clone(), receiver));
                 }
@@ -225,7 +233,7 @@ pub fn initialize(sinks: Vec<Sink>, cancellation: CancellationToken) -> error::R
         })?;
 
     for (url, receiver) in endpoints {
-        grpc::spawn(url, receiver, cancellation.clone())?;
+        guard.track(grpc::spawn(url, receiver, cancellation.clone())?);
     }
 
     Ok(guard)

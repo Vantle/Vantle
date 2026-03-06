@@ -17,7 +17,7 @@ fn main() -> miette::Result<()> {
                         "connect.molten@vantle.org",
                     )
                 })
-                .paragraph(|p| p.text("Copyright \u{00a9} 2025"))
+                .paragraph(|p| p.text("Copyright \u{00a9} 2025-2026"))
         })
     })
 }

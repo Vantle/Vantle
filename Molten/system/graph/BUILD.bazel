@@ -23,7 +23,6 @@ rust_library(
     deps = [
         "//Molten/system/graph/symbolic:constructor",
         "//Molten/system/graph/symbolic:renderer",
-        "//Molten/system/graph/symbolic:translator",
         "//Molten/system/graph/symbolic:traversal",
     ],
 )

@@ -9,21 +9,12 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
-    name = "translator",
-    srcs = ["translator.rs"],
-    deps = [
-        "//Molten/component/graph/symbolic/translator:rule",
-        "@crates//:serde",
-    ],
-)
-
-rust_library(
     name = "constructor",
     srcs = ["constructor.rs"],
     deps = [
+        "//component/translator:source",
         "//system:language",
         "//system:resource",
-        "@crates//:miette",
     ],
 )
 

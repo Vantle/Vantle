@@ -1,4 +1,5 @@
 pub use rule;
+pub use source;
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -31,8 +32,13 @@ impl<Element: std::fmt::Debug> Translation<Element> {
     }
 
     #[must_use]
-    pub fn elements(&self) -> &Vec<Element> {
+    pub fn elements(&self) -> &[Element] {
         &self.elements
+    }
+
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.elements.is_empty()
     }
 
     #[must_use]

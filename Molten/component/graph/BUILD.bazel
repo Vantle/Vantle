@@ -22,7 +22,6 @@ rust_library(
     srcs = ["symbolic.rs"],
     deps = [
         "//Molten/component/graph/symbolic:constructor",
-        "//Molten/component/graph/symbolic:translator",
     ],
 )
 

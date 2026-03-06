@@ -1,8 +1,8 @@
 use observe::trace;
 
-use component::graph::symbolic::translator::Translation;
 use error::Error;
-use translator::view::Rules;
+use translate::Rules;
+use translator::Translation;
 
 pub type Result<T> = std::result::Result<T, Error>;
 

@@ -3,10 +3,10 @@ use record::debug;
 
 use assemble::Assemble;
 use component::graph::attribute::{Assembler, Attribute as Data, Category, Value};
-use component::graph::symbolic::translator::Translation;
 use constructor::{Control, State};
 use error::{Error, Sourced};
-use translator::view::Rules as ViewRules;
+use translate::Rules;
+use translator::Translation;
 
 pub use consume;
 pub use error;
@@ -313,43 +313,49 @@ impl Constructor<String> for constructor::Source {
 
     #[trace(channels = [core])]
     fn module(mut self) -> miette::Result<Data<String>, Sourced> {
-        self.cursor
+        self.0
+            .cursor
             .module()
-            .map_err(|e| Sourced::wrap(self.source.clone(), e))
+            .map_err(|e| Sourced::wrap(self.0.source.clone(), e))
     }
 
     #[trace(channels = [core])]
     fn construct(mut self) -> miette::Result<Data<String>, Sourced> {
-        self.cursor
+        self.0
+            .cursor
             .construct()
-            .map_err(|e| Sourced::wrap(self.source.clone(), e))
+            .map_err(|e| Sourced::wrap(self.0.source.clone(), e))
     }
 
     #[trace(channels = [core])]
     fn attribute(mut self) -> miette::Result<Data<String>, Sourced> {
-        self.cursor
+        self.0
+            .cursor
             .attribute()
-            .map_err(|e| Sourced::wrap(self.source.clone(), e))
+            .map_err(|e| Sourced::wrap(self.0.source.clone(), e))
     }
 
     #[trace(channels = [core])]
     fn context(mut self) -> miette::Result<Data<String>, Sourced> {
-        self.cursor
+        self.0
+            .cursor
             .context()
-            .map_err(|e| Sourced::wrap(self.source.clone(), e))
+            .map_err(|e| Sourced::wrap(self.0.source.clone(), e))
     }
 
     #[trace(channels = [core])]
     fn group(mut self) -> miette::Result<Data<String>, Sourced> {
-        self.cursor
+        self.0
+            .cursor
             .group()
-            .map_err(|e| Sourced::wrap(self.source.clone(), e))
+            .map_err(|e| Sourced::wrap(self.0.source.clone(), e))
     }
 
     #[trace(channels = [core])]
     fn partition(mut self) -> miette::Result<Data<String>, Sourced> {
-        self.cursor
+        self.0
+            .cursor
             .partition()
-            .map_err(|e| Sourced::wrap(self.source.clone(), e))
+            .map_err(|e| Sourced::wrap(self.0.source.clone(), e))
     }
 }

@@ -13,11 +13,17 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 rust_autotest(
     name = "translator",
+    aliases = {
+        "//system/translator:consume": "ingest",
+        "//system/translator:view": "inspect",
+    },
     cases = "//Molten/test/resource/system/graph/symbolic/translator:cases",
     template = "//Molten/test/resource/system/graph/symbolic/translator:template",
     deps = [
-        "//Molten:component",
-        "//Molten/system/graph:symbolic",
+        "//component:translator",
+        "//component/translator:rule",
+        "//system/translator:consume",
+        "//system/translator:view",
         "//test:utility",
     ],
 )

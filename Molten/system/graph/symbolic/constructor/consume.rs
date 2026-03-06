@@ -1,16 +1,16 @@
 use observe::trace;
 use record::debug;
 
-use component::graph::symbolic::translator::Translation;
 use error::Error;
-use translator::consume::Rules;
+use translate::Rules;
+use translator::Translation;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[trace(channels = [core])]
 pub fn space<Source: std::io::Read + std::io::Seek>(mut source: Source) -> Result<Translation<u8>> {
     let skipped = Translation::rules()
-        .terminator(component::graph::symbolic::translator::rule::glyph())
+        .terminator(rule::glyph())
         .consume(source.by_ref())?;
     debug!("Advance: {:?}", skipped.length());
     Ok(skipped)

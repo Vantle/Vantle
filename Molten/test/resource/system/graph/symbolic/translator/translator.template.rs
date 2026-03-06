@@ -1,11 +1,9 @@
-use component::graph::symbolic::translator::Translation;
-use component::graph::symbolic::translator::rule;
 use std::io::{Cursor, Read};
-use symbolic::translator::consume::Rules as ConsumeRules;
-use symbolic::translator::view::Rules as ViewRules;
+use translator::Translation;
 
 mod view {
-    use super::{Cursor, Read, Translation, ViewRules, rule};
+    use super::{Cursor, Read, Translation};
+    use inspect::Rules;
 
     pub fn quantity(input: String, limit: usize) -> String {
         let mut cursor = Cursor::new(input.as_bytes());
@@ -45,7 +43,8 @@ mod view {
 }
 
 mod consume {
-    use super::{ConsumeRules, Cursor, Read, Translation, rule};
+    use super::{Cursor, Read, Translation};
+    use ingest::Rules;
 
     pub fn quantity(input: String, limit: usize) -> String {
         let mut cursor = Cursor::new(input.as_bytes());

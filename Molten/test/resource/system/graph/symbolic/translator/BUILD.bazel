@@ -27,9 +27,15 @@ filegroup(
 rust_autotest_template(
     name = "template",
     src = "translator.template.rs",
+    aliases = {
+        "//system/translator:consume": "ingest",
+        "//system/translator:view": "inspect",
+    },
     deps = [
-        "//Molten:component",
-        "//Molten/system/graph:symbolic",
+        "//component:translator",
+        "//component/translator:rule",
+        "//system/translator:consume",
+        "//system/translator:view",
         "//test:utility",
     ],
 )

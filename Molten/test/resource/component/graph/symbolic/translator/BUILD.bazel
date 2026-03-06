@@ -29,7 +29,7 @@ rust_autotest_template(
     name = "template",
     src = "translator.template.rs",
     deps = [
-        "//Molten:component",
+        "//component:translator",
     ],
 )
 

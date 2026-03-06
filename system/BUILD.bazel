@@ -91,6 +91,18 @@ rust_library(
 )
 
 rust_library(
+    name = "translator",
+    srcs = ["translator.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//component/translator:rule",
+        "//system/translator:consume",
+        "//system/translator:error",
+        "//system/translator:view",
+    ],
+)
+
+rust_library(
     name = "event",
     srcs = ["event.rs"],
     visibility = ["//visibility:public"],

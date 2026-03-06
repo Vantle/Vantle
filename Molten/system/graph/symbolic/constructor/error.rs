@@ -43,7 +43,7 @@ pub enum Error {
 
     #[error(transparent)]
     #[diagnostic(transparent)]
-    Translator(#[from] translator::error::Error),
+    Translator(#[from] translate::Error),
 
     #[error(transparent)]
     #[diagnostic(

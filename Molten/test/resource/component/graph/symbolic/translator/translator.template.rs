@@ -1,4 +1,4 @@
-use component::graph::symbolic::translator::Translation;
+use translator::Translation;
 
 fn new(initial: u64, terminal: u64, elements: Vec<String>) -> Translation<String> {
     Translation::new(initial, terminal, elements)
@@ -13,7 +13,7 @@ fn terminal(translation: Translation<String>) -> u64 {
 }
 
 fn elements(translation: Translation<String>) -> Vec<String> {
-    translation.elements().clone()
+    translation.elements().to_vec()
 }
 
 fn length(translation: Translation<String>) -> usize {

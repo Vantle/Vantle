@@ -1,7 +1,4 @@
-use std::io::Cursor;
 use std::path::Path;
-
-use miette::NamedSource;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum State {
@@ -20,23 +17,14 @@ pub enum Control {
     Undefined,
 }
 
-pub struct Source {
-    pub cursor: Cursor<Vec<u8>>,
-    pub source: NamedSource<String>,
-}
+pub struct Source(pub source::Source);
 
 impl Source {
     pub fn path<P>(path: P) -> resource::Result<Self>
     where
         P: AsRef<Path>,
     {
-        let path = path.as_ref();
-        let content = resource::stringify(path)?;
-        Ok(Source {
-            cursor: Cursor::new(content.as_bytes().into()),
-            source: NamedSource::new(path.display().to_string(), content)
-                .with_language(language::molten()),
-        })
+        source::Source::path(path, language::molten()).map(Source)
     }
 
     #[must_use]
@@ -44,10 +32,6 @@ impl Source {
     where
         S: AsRef<str>,
     {
-        Source {
-            cursor: Cursor::new(string.as_ref().as_bytes().into()),
-            source: NamedSource::new("stdin", string.as_ref().to_string())
-                .with_language(language::molten()),
-        }
+        Source(source::Source::string(string, language::molten()))
     }
 }

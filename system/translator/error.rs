@@ -1,11 +1,11 @@
 use miette::Diagnostic;
-use thiserror::Error as ThisError;
+use thiserror::Error;
 
 pub type Result<T> = miette::Result<T, Error>;
 
-#[derive(ThisError, Debug, Diagnostic)]
+#[derive(Error, Debug, Diagnostic)]
 pub enum Error {
     #[error(transparent)]
-    #[diagnostic(code(translator::io))]
+    #[diagnostic(code(translator::io), help("check file permissions and path validity"))]
     Io(#[from] std::io::Error),
 }

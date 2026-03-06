@@ -41,36 +41,18 @@ impl<Source: Read + Seek> Translator<Source, u8> for Source {
         terminator: &Lambda<u8>,
         limiter: Option<usize>,
     ) -> Result<Translation<u8>> {
-        let initial = self.stream_position()?;
-        let remaining = self.seek(SeekFrom::End(0))? - initial;
-        let reset = self.seek(SeekFrom::Start(initial))?;
-        debug!("Reset to {:?}", reset);
+        let buffered = buffer::translate(self, filter, terminator, limiter)?;
 
-        let remain = usize::try_from(remaining).unwrap_or(usize::MAX);
-        let consumable = std::cmp::min(remain, limiter.unwrap_or(remain));
-
-        let mut buffer = vec![0u8; consumable];
-
-        self.read_exact(buffer.as_mut_slice())?;
-
-        let translation = buffer
-            .iter()
-            .take_while(|&&element| !terminator(element))
-            .filter(|&&element| filter(element))
-            .copied()
-            .collect::<Vec<u8>>();
-
-        debug!(
-            "Translation with rules and limit of {:?} capped at consumable {:?}: {:?}",
-            limiter, consumable, translation
-        );
-
-        let consumed = i64::try_from(translation.len()).unwrap_or(i64::MAX);
-        let bound = i64::try_from(consumable).unwrap_or(i64::MAX);
+        let consumed = i64::try_from(buffered.elements.len()).unwrap_or(i64::MAX);
+        let bound = i64::try_from(buffered.consumable).unwrap_or(i64::MAX);
         let terminal = self.seek(SeekFrom::Current(consumed - bound))?;
 
         debug!("Source position set to terminal: {:?}", terminal);
 
-        Ok(Translation::new(initial, terminal, translation))
+        Ok(Translation::new(
+            buffered.initial,
+            terminal,
+            buffered.elements,
+        ))
     }
 }

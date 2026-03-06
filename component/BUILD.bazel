@@ -44,6 +44,17 @@ rust_library(
 )
 
 rust_library(
+    name = "translator",
+    srcs = ["translator.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//component/translator:rule",
+        "//component/translator:source",
+        "@crates//:serde",
+    ],
+)
+
+rust_library(
     name = "web",
     srcs = ["web.rs"],
     visibility = ["//visibility:public"],

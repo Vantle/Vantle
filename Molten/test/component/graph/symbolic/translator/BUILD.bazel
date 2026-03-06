@@ -16,7 +16,7 @@ rust_autotest(
     cases = "//Molten/test/resource/component/graph/symbolic/translator:cases",
     template = "//Molten/test/resource/component/graph/symbolic/translator:template",
     deps = [
-        "//Molten:component",
+        "//component:translator",
     ],
 )
 

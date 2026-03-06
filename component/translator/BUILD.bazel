@@ -9,41 +9,20 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
-    name = "consume",
-    srcs = ["consume.rs"],
-    proc_macro_deps = [
-        "//system/observation:macro",
-    ],
+    name = "rule",
+    srcs = ["rule.rs"],
     deps = [
-        ":error",
-        "//Molten/component/graph/symbolic:translator",
-        "//Molten/component/graph/symbolic/translator:rule",
-        "//component/observation:module",
-        "@crates//:tracing",
+        "//component/translator/rule:filter",
+        "//component/translator/rule:terminate",
     ],
 )
 
 rust_library(
-    name = "error",
-    srcs = ["error.rs"],
+    name = "source",
+    srcs = ["source.rs"],
     deps = [
+        "//system:resource",
         "@crates//:miette",
-        "@crates//:thiserror",
-    ],
-)
-
-rust_library(
-    name = "view",
-    srcs = ["view.rs"],
-    proc_macro_deps = [
-        "//system/observation:macro",
-    ],
-    deps = [
-        ":error",
-        "//Molten/component/graph/symbolic:translator",
-        "//Molten/component/graph/symbolic/translator:rule",
-        "//component/observation:module",
-        "@crates//:tracing",
     ],
 )
 

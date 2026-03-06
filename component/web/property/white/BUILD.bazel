@@ -1,0 +1,13 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = [
+    "//component/web:__pkg__",
+    "//component/web:__subpackages__",
+    "//system/generation/web:__pkg__",
+    "//system/generation/web:__subpackages__",
+])
+
+rust_library(
+    name = "space",
+    srcs = ["space.rs"],
+)

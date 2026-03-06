@@ -103,39 +103,29 @@ buildifier(
 #################################################################################################################################################################
 ########## Documentation                                                                                                                         [ Documentation ]
 document(
-    srcs = ["vantle.document.rs"],
+    src = "vantle.document.rs",
     destination = "index.html",
-    deps = [
-        "//:module.bazel.version",
-        "//component/web:extraction",
-        "//system/generation/web:style",
-    ],
+    deps = ["//document:vantle"],
 )
 
 document(
-    srcs = ["info.document.rs"],
+    src = "info.document.rs",
     destination = "info.html",
-    deps = [
-        "//system/generation/web:style",
-    ],
+    deps = ["//document:info"],
 )
 
 document(
-    srcs = ["notice.document.rs"],
+    src = "notice.document.rs",
     data = ["//:NOTICE.md"],
     destination = "notice.html",
-    deps = [
-        "//system/generation/web:style",
-    ],
+    deps = ["//document:notice"],
 )
 
 document(
-    srcs = ["license.document.rs"],
+    src = "license.document.rs",
     data = ["//:LICENSE.md"],
     destination = "license.html",
-    deps = [
-        "//system/generation/web:style",
-    ],
+    deps = ["//document:license"],
 )
 
 extract(
@@ -159,13 +149,9 @@ extract(
 )
 
 document(
-    srcs = ["module.document.rs"],
+    src = "module.document.rs",
     destination = "module.html",
-    deps = [
-        "//component/web:extraction",
-        "//:module.source",
-        "//system/generation/web:style",
-    ],
+    deps = ["//document:module"],
 )
 
 #################################################################################################################################################################

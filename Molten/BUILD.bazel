@@ -48,16 +48,29 @@ rust_library(
 
 ##### Documentation                                                                                                                             [ Documentation ]
 document(
-    srcs = ["molten.document.rs"],
+    src = "molten.document.rs",
     destination = "Molten/index.html",
-    deps = [
-        "//:module.version",
-        "//Molten/test/resource/system/graph/module/citizen/symbolic:citizen",
-        "//Molten/test/resource/system/graph/module/join/symbolic:join",
-        "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean/symbolic:boolean",
-        "//component/web:extraction",
-        "//system/generation/web:style",
-    ],
+    deps = ["//Molten/document:molten"],
+)
+
+document(
+    src = "info.document.rs",
+    destination = "Molten/info.html",
+    deps = ["//Molten/document:info"],
+)
+
+document(
+    src = "notice.document.rs",
+    data = ["//:NOTICE.md"],
+    destination = "Molten/notice.html",
+    deps = ["//Molten/document:notice"],
+)
+
+document(
+    src = "license.document.rs",
+    data = ["//:LICENSE.md"],
+    destination = "Molten/license.html",
+    deps = ["//Molten/document:license"],
 )
 
 extract(
@@ -68,28 +81,3 @@ extract(
     visibility = ["//visibility:public"],
 )
 
-document(
-    srcs = ["info.document.rs"],
-    destination = "Molten/info.html",
-    deps = [
-        "//system/generation/web:style",
-    ],
-)
-
-document(
-    srcs = ["notice.document.rs"],
-    data = ["//:NOTICE.md"],
-    destination = "Molten/notice.html",
-    deps = [
-        "//system/generation/web:style",
-    ],
-)
-
-document(
-    srcs = ["license.document.rs"],
-    data = ["//:LICENSE.md"],
-    destination = "Molten/license.html",
-    deps = [
-        "//system/generation/web:style",
-    ],
-)

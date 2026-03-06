@@ -70,7 +70,7 @@ pub enum Error {
 - Early returns over nesting; combinators over if-else
 - Small, focused functions with one responsibility
 - `#[expect(...)]` at system boundaries only, never `#[allow(clippy::...)]`
-- Run `bazel run //:format.rust` and fix all clippy warnings before building
+- Run `find . -name '*.rs' -not -path './.build/*' | xargs bazel run //:format.rust --` and fix all clippy warnings before building
 
 **Configuration** — CLI arguments are the only interface. No environment variables.
 
@@ -100,7 +100,7 @@ Apply to: zoom, spacing, sizes, aspect ratios, animation timing.
 bazel build //...                              # build all
 bazel test //...                               # test all
 bazel run //Molten/system/forge:command lava   # interactive runtime
-bazel run //:format.rust                       # format
+find . -name '*.rs' -not -path './.build/*' | xargs bazel run //:format.rust --  # format
 ```
 
 ---

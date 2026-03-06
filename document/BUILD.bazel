@@ -1,0 +1,74 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+#################################################################################################################################################################
+########## Page                                                                                                                                           [ Page ]
+rust_library(
+    name = "vantle",
+    srcs = ["vantle.page.rs"],
+    deps = [
+        "//:module.bazel.version",
+        "//component/web:body",
+        "//component/web:class",
+        "//component/web:extraction",
+        "//component/web:page",
+        "//system/generation/web:style",
+        "@crates//:miette",
+    ],
+)
+
+rust_library(
+    name = "info",
+    srcs = ["info.page.rs"],
+    deps = [
+        "//component/web:body",
+        "//component/web:class",
+        "//component/web:page",
+        "//system/generation/web:style",
+        "@crates//:miette",
+    ],
+)
+
+rust_library(
+    name = "notice",
+    srcs = ["notice.page.rs"],
+    deps = [
+        "//component/web:body",
+        "//component/web:class",
+        "//component/web:page",
+        "//system/generation/web:style",
+        "@crates//:miette",
+    ],
+)
+
+rust_library(
+    name = "license",
+    srcs = ["license.page.rs"],
+    deps = [
+        "//component/web:body",
+        "//component/web:class",
+        "//component/web:page",
+        "//system/generation/web:style",
+        "@crates//:miette",
+    ],
+)
+
+rust_library(
+    name = "module",
+    srcs = ["module.page.rs"],
+    deps = [
+        "//component/web:body",
+        "//component/web:class",
+        "//component/web:extraction",
+        "//component/web:page",
+        "//:module.source",
+        "//system/generation/web:style",
+        "@crates//:miette",
+    ],
+)

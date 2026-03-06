@@ -55,9 +55,9 @@ Single-word targets matching their directory: `//system/generation/runtime:runti
 | `rust_binary` | `@rules_rust//rust:defs.bzl` | Binary targets |
 | `rust_autotest_template` | `@vantle//component/generation/starlark:defs.bzl` | Test template + validation library |
 | `rust_autotest` | `@vantle//component/generation/starlark:defs.bzl` | Generate tests from template + cases.json |
-| `generate` | `//component/web/starlark:defs.bzl` | Document generation |
-| `collection` | `//component/web/starlark:defs.bzl` | Aggregate pages |
-| `serve` | `//component/web/starlark:defs.bzl` | Dev server |
+| `document` | `//component/web/starlark:defs.bzl` | Document generation |
+| `folder` | `//component/web/starlark:defs.bzl` | Aggregate pages |
+| `distribute` | `//component/web/starlark:defs.bzl` | Dev server |
 
 ## Autotest Pattern
 
@@ -85,7 +85,7 @@ rust_autotest(
 )
 ```
 
-Standard deps are auto-included by the macro: `miette`, `serde`, `serde_json`, `//:module`, `//system:diagnostic`, `//system/generation/runtime:runtime`.
+Standard deps are auto-included by the macro: `miette`, `serde`, `serde_json`, `clap`, `//:module`, `//system:command`, `//system:concurrent`, `//system:diagnostic`, `//system:observation`, `//system/generation/runtime:runtime`. Proc macro deps (`proc_macro_deps`) are also injected automatically.
 
 ## Banned Patterns
 

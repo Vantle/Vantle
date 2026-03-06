@@ -9,7 +9,10 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Documentation                                                                                                                             [ Documentation ]
 document(
-    srcs = ["stylesheet.document.rs"],
+    src = "stylesheet.document.rs",
     destination = "resource/system/document/vantle.css",
-    deps = ["//system/generation/web:style"],
+    deps = [
+        "//component/web:class",
+        "//system/generation/web:style",
+    ],
 )

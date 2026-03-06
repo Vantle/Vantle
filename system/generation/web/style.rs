@@ -1,8 +1,21 @@
 use body::{Body, Chain};
+use collapse::Collapse;
+use cursor::Cursor;
+use decoration::Decoration;
+use direction::Direction;
+use display::Display;
 use observe::trace;
+use overflow::Overflow;
 use page::Page;
+use position::Position;
+use selector::{Pseudo, Selector, Tag, group, present, tag, universal};
+use sizing::Box as Sizing;
+use space::Space;
 use span::Span;
 use style::Style;
+use transform::Transform;
+use value::{Calculation, Concrete, Keyword, Palette, Token};
+use weight::Weight;
 
 type Result = body::Result;
 
@@ -50,18 +63,15 @@ fn dark(properties: style::Properties) -> style::Properties {
 }
 
 #[trace(channels = [document])]
-pub fn page(
-    arguments: &html::Arguments,
+pub fn layout(
     title: &str,
     context: &str,
     identifier: &str,
+    root: &str,
     f: impl FnOnce(Body) -> Result,
-) -> miette::Result<()> {
-    let root = arguments.root();
+) -> page::Result {
     let favicon = format!("{root}resource/favicon.ico");
-    html::generate(
-        arguments,
-        Page::new()
+    Page::new()
             .title(&match (context, title) {
                 ("vantle", "Vantle") | ("molten", "Molten") => title.to_string(),
                 ("molten", _) => format!("Molten.{title}"),
@@ -72,10 +82,10 @@ pub fn page(
             .wasm(&format!("{root}resource/system/document/compute.js"))
             .context(context)
             .identifier(identifier)
-            .root(&root)
+            .root(root)
             .body(|b| {
                 let molten = context == "molten";
-                b.element("nav", |n| {
+                b.tag("nav", |n| {
                     let logo_href = if molten {
                         format!("{root}Molten/")
                     } else {
@@ -87,148 +97,114 @@ pub fn page(
                         format!("{root}resource/logo.png")
                     };
                     let logo_alt = if molten { "Molten" } else { "Vantle" };
-                    n.element("a", |a| {
-                        a.class("nav-logo")
-                            .attribute("href", &logo_href)
-                            .element("img", |i| {
-                                i.attribute("src", &logo_src).attribute("alt", logo_alt)
-                            })
+                    n.anchor(&logo_href, |a| {
+                        a.class(class::nav::logo())
+                            .image(&logo_src, logo_alt)
                     })
-                    .element("div", |d| {
-                        d.class("nav-links")
-                            .element("div", |dd| {
-                                dd.class("nav-dropdown")
-                                    .element("a", |a| {
-                                        a.attribute("href", &format!("{root}index.html"))
-                                            .text("Vantle")
+                    .division(|d| {
+                        d.class(class::nav::links())
+                            .division(|dd| {
+                                dd.class(class::nav::dropdown())
+                                    .anchor(&format!("{root}index.html"), |a| {
+                                        a.text("Vantle")
                                     })
-                                    .element("div", |m| {
-                                        m.class("nav-dropdown-menu")
-                                            .element("a", |a| {
-                                                a.attribute("href", &format!("{root}info.html"))
-                                                    .text("Info")
+                                    .division(|m| {
+                                        m.class(class::nav::menu())
+                                            .anchor(&format!("{root}info.html"), |a| {
+                                                a.text("Info")
                                             })
-                                            .element("a", |a| {
-                                                a.attribute("href", &format!("{root}notice.html"))
-                                                    .text("Notice")
+                                            .anchor(&format!("{root}notice.html"), |a| {
+                                                a.text("Notice")
                                             })
-                                            .element("a", |a| {
-                                                a.attribute("href", &format!("{root}module.html"))
-                                                    .text("Module")
+                                            .anchor(&format!("{root}module.html"), |a| {
+                                                a.text("Module")
                                             })
-                                            .element("a", |a| {
-                                                a.attribute("href", &format!("{root}license.html"))
-                                                    .text("License")
+                                            .anchor(&format!("{root}license.html"), |a| {
+                                                a.text("License")
                                             })
                                     })
                             })
-                            .element("div", |dd| {
-                                dd.class("nav-dropdown")
-                                    .element("a", |a| {
-                                        a.attribute("href", &format!("{root}Molten/"))
-                                            .text("Molten")
+                            .division(|dd| {
+                                dd.class(class::nav::dropdown())
+                                    .anchor(&format!("{root}Molten/"), |a| {
+                                        a.text("Molten")
                                     })
-                                    .element("div", |m| {
-                                        m.class("nav-dropdown-menu")
-                                            .element("a", |a| {
-                                                a.attribute(
-                                                    "href",
-                                                    &format!("{root}Molten/system/spatialize/"),
-                                                )
-                                                .text("Spatialize")
-                                            })
-                                            .element("hr", Ok)
-                                            .element("a", |a| {
-                                                a.attribute(
-                                                    "href",
-                                                    &format!("{root}Molten/info.html"),
-                                                )
-                                                .text("Info")
-                                            })
-                                            .element("a", |a| {
-                                                a.attribute(
-                                                    "href",
-                                                    &format!("{root}Molten/notice.html"),
-                                                )
-                                                .text("Notice")
-                                            })
-                                            .element("a", |a| {
-                                                a.attribute(
-                                                    "href",
-                                                    &format!("{root}Molten/license.html"),
-                                                )
-                                                .text("License")
-                                            })
+                                    .division(|m| {
+                                        m.class(class::nav::menu())
+                                            .anchor(
+                                                &format!("{root}Molten/system/spatialize/"),
+                                                |a| a.text("Spatialize"),
+                                            )
+                                            .separator()
+                                            .anchor(
+                                                &format!("{root}Molten/info.html"),
+                                                |a| a.text("Info"),
+                                            )
+                                            .anchor(
+                                                &format!("{root}Molten/notice.html"),
+                                                |a| a.text("Notice"),
+                                            )
+                                            .anchor(
+                                                &format!("{root}Molten/license.html"),
+                                                |a| a.text("License"),
+                                            )
                                     })
                             })
-                            .element("div", |dd| {
-                                dd.class("nav-dropdown")
-                                    .element("a", |a| {
-                                        a.attribute(
-                                            "href",
-                                            &format!("{root}system/generation/"),
-                                        )
-                                        .text("Generation")
-                                    })
-                                    .element("div", |m| {
-                                        m.class("nav-dropdown-menu")
-                                            .element("a", |a| {
-                                                a.attribute(
-                                                    "href",
-                                                    &format!(
-                                                        "{root}system/generation/web/"
-                                                    ),
-                                                )
-                                                .text("Web")
-                                            })
-                                            .element("a", |a| {
-                                                a.attribute(
-                                                    "href",
-                                                    &format!(
-                                                        "{root}system/generation/rust/"
-                                                    ),
-                                                )
-                                                .text("Autotest")
-                                            })
+                            .division(|dd| {
+                                dd.class(class::nav::dropdown())
+                                    .anchor(
+                                        &format!("{root}system/generation/"),
+                                        |a| a.text("Generation"),
+                                    )
+                                    .division(|m| {
+                                        m.class(class::nav::menu())
+                                            .anchor(
+                                                &format!(
+                                                    "{root}system/generation/web/"
+                                                ),
+                                                |a| a.text("Web"),
+                                            )
+                                            .anchor(
+                                                &format!(
+                                                    "{root}system/generation/rust/"
+                                                ),
+                                                |a| a.text("Autotest"),
+                                            )
                                     })
                             })
-                            .element("a", |a| {
-                                a.attribute("href", &format!("{root}system/observation/"))
-                                    .text("Observation")
+                            .anchor(&format!("{root}system/observation/"), |a| {
+                                a.text("Observation")
                             })
-                            .element("a", |a| {
-                                a.attribute("href", &format!("{root}system/spatialize/"))
-                                    .text("Spatialize")
+                            .anchor(&format!("{root}system/spatialize/"), |a| {
+                                a.text("Spatialize")
                             })
                     })
                 })
-                .element("div", |l| {
-                    l.class("layout")
-                        .element("aside", |a| sidebar(a, &root, context, identifier))
-                        .element("main", |m| {
+                .division(|l| {
+                    l.class(class::layout())
+                        .tag("aside", |a| sidebar(a, root, context, identifier))
+                        .tag("main", |m| {
                             f(m)
-                                .element("footer", |footer| {
-                                    footer.element("p", |p| {
+                                .tag("footer", |footer| {
+                                    footer.tag("p", |p| {
                                         p.span(|s| {
                                             s.text("\u{00a9} 2025-2026 Vantle \u{00b7} ")
                                                 .link("https://vantle.org", "@robert.vanderzee")
                                         })
                                     })
-                                    .element("a", |a| {
-                                        a.class("footer-icon")
-                                            .attribute("href", "https://github.com/Vantle/Vantle")
+                                    .anchor("https://github.com/Vantle/Vantle", |a| {
+                                        a.class(class::footer::icon())
                                             .attribute("aria-label", "GitHub")
                                             .html("<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><path d=\"M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z\"/></svg>")
                                     })
                                 })
                         })
-                        .element("aside", |a| {
-                            a.class("outline")
+                        .tag("aside", |a| {
+                            a.class(class::outline())
                                 .attribute("aria-label", "Table of contents")
                         })
                 })
-            }),
-    )
+            })
 }
 
 fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Result {
@@ -276,13 +252,13 @@ fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Result {
     };
 
     let result = body
-        .class("sidebar")
+        .class(class::sidebar())
         .attribute("aria-label", "Page navigation")
-        .element("div", |d| d.class("sidebar-label").text("Pages"));
+        .division(|d| d.class(class::label::sidebar()).text("Pages"));
 
     let result = primary.into_iter().fold(result, |b, (text, href, id)| {
-        b.element("a", |a| {
-            let a = a.attribute("href", &href).text(text);
+        b.anchor(&href, |a| {
+            let a = a.text(text);
             if id == identifier {
                 a.attribute("aria-current", "page")
             } else {
@@ -295,11 +271,11 @@ fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Result {
         return result;
     }
 
-    let result = result.element("div", |d| d.class("sidebar-label").text("Legal"));
+    let result = result.division(|d| d.class(class::label::sidebar()).text("Legal"));
 
     legal.into_iter().fold(result, |b, (text, href, id)| {
-        b.element("a", |a| {
-            let a = a.attribute("href", &href).text(text);
+        b.anchor(&href, |a| {
+            let a = a.text(text);
             if id == identifier {
                 a.attribute("aria-current", "page")
             } else {
@@ -313,457 +289,606 @@ fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Result {
 #[must_use]
 pub fn theme() -> Style {
     variables(Style::new())
-        .rule("html", |r| {
-            r.custom(
-                "scroll-padding-top",
-                "calc(var(--scale-3) + var(--scale-n2) + var(--scale-n2))",
+        .rule(tag(Tag::Html), |r| {
+            r.scroll_padding_top(
+                Calculation::start(Token::scale(3))
+                    .plus(Token::scale(-2))
+                    .plus(Token::scale(-2)),
             )
         })
-        .rule("*", |r| r.margin("0").padding("0").box_sizing("border-box"))
-        .rule("body", |r| {
+        .rule(universal(), |r| {
+            r.margin(Concrete::zero())
+                .padding(Concrete::zero())
+                .box_sizing(Sizing::Border)
+        })
+        .rule(tag(Tag::Body), |r| {
             r.font_family("-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif")
-                .background("var(--background)")
-                .color("var(--text)")
-                .line_height(&proportion::PHI.to_string())
-                .font_size("var(--scale-0)")
+                .background(Token::palette(Palette::Background))
+                .color(Token::palette(Palette::Text))
+                .line_height(proportion::PHI.to_string())
+                .font_size(Token::scale(0))
                 .transition("background-color 0.3s ease, color 0.3s ease")
         })
-        .rule("main", |r| {
-            r.padding("var(--scale-2) var(--scale-1)")
-                .custom("min-width", "0")
+        .rule(tag(Tag::Main), |r| {
+            r.padding((Token::scale(2), Token::scale(1)))
+                .min_width(Concrete::zero())
         })
-        .rule("h1", |r| {
-            r.font_size("var(--scale-3)")
-                .font_weight("700")
-                .margin_bottom("var(--scale-n1)")
+        .rule(tag(Tag::H1), |r| {
+            r.font_size(Token::scale(3))
+                .font_weight(Weight::W700)
+                .margin_bottom(Token::scale(-1))
                 .line_height("1.1")
-                .custom("letter-spacing", "-0.03em")
+                .letter_spacing("-0.03em")
         })
-        .rule("h2", |r| {
-            r.font_size("var(--scale-2)")
-                .font_weight("600")
-                .margin_top("var(--scale-2)")
-                .margin_bottom("var(--scale-0)")
-                .custom("letter-spacing", "-0.02em")
+        .rule(tag(Tag::H2), |r| {
+            r.font_size(Token::scale(2))
+                .font_weight(Weight::W600)
+                .margin_top(Token::scale(2))
+                .margin_bottom(Token::scale(0))
+                .letter_spacing("-0.02em")
         })
-        .rule("h3", |r| {
-            r.font_size("var(--scale-1)")
-                .font_weight("600")
-                .margin_top("var(--scale-1)")
-                .margin_bottom("var(--scale-n1)")
-                .custom("letter-spacing", "-0.01em")
+        .rule(tag(Tag::H3), |r| {
+            r.font_size(Token::scale(1))
+                .font_weight(Weight::W600)
+                .margin_top(Token::scale(1))
+                .margin_bottom(Token::scale(-1))
+                .letter_spacing("-0.01em")
         })
-        .rule("h4", |r| {
-            r.font_size("var(--scale-0)")
-                .font_weight("600")
-                .custom("letter-spacing", "-0.01em")
+        .rule(tag(Tag::H4), |r| {
+            r.font_size(Token::scale(0))
+                .font_weight(Weight::W600)
+                .letter_spacing("-0.01em")
         })
-        .rule("h5", |r| {
-            r.font_size("var(--scale-0)")
-                .font_weight("500")
-                .color("var(--text-secondary)")
+        .rule(tag(Tag::H5), |r| {
+            r.font_size(Token::scale(0))
+                .font_weight(Weight::W500)
+                .color(Token::palette(Palette::Secondary))
         })
-        .rule("p", |r| r.margin_bottom("var(--scale-0)"))
-        .rule("a", |r| {
-            r.color("var(--accent)")
-                .text_decoration("none")
+        .rule(tag(Tag::P), |r| r.margin_bottom(Token::scale(0)))
+        .rule(tag(Tag::A), |r| {
+            r.color(Token::palette(Palette::Accent))
+                .text_decoration(Decoration::None)
                 .transition("color 0.2s")
         })
-        .rule("a:hover", |r| {
-            r.color("var(--accent-hover)").text_decoration("underline")
+        .rule(tag(Tag::A).pseudo(Pseudo::Hover), |r| {
+            r.color(Token::palette(Palette::Hover))
+                .text_decoration(Decoration::Underline)
         })
-        .rule("code", |r| {
+        .rule(tag(Tag::Code), |r| {
             r.font_family("'SF Mono', 'Fira Code', 'Cascadia Code', monospace")
-                .font_size("var(--scale-0)")
-                .background("var(--code-background)")
-                .color("var(--code-text)")
-                .padding("0.15em 0.4em")
-                .border_radius("4px")
+                .font_size(Token::scale(0))
+                .background(Token::palette(Palette::Code))
+                .color(Token::palette(Palette::CodeText))
+                .padding((Concrete::em(0.15), Concrete::em(0.4)))
+                .border_radius(Concrete::px(4))
                 .transition("background-color 0.3s ease, color 0.3s ease")
         })
-        .rule("pre", |r| {
+        .rule(tag(Tag::Pre), |r| {
             r.font_family("'SF Mono', 'Fira Code', 'Cascadia Code', monospace")
-                .font_size("var(--scale-0)")
-                .background("var(--code-background)")
-                .border_radius("6px")
-                .padding("var(--scale-0)")
-                .overflow("auto")
-                .margin_bottom("var(--scale-0)")
+                .font_size(Token::scale(0))
+                .background(Token::palette(Palette::Code))
+                .border_radius(Concrete::px(6))
+                .padding(Token::scale(0))
+                .overflow(Overflow::Auto)
+                .margin_bottom(Token::scale(0))
                 .line_height("1.5")
                 .transition("background-color 0.3s ease")
         })
-        .rule("pre code", |r| {
-            r.background("transparent").padding("0").border_radius("0")
+        .rule(tag(Tag::Pre).descendant(tag(Tag::Code)), |r| {
+            r.background(Keyword::Transparent)
+                .padding(Concrete::zero())
+                .border_radius(Concrete::zero())
         })
-        .rule(".code-block", |r| {
+        .rule(class::code::block(), |r| {
             r.font_family("'SF Mono', 'Fira Code', 'Cascadia Code', monospace")
-                .font_size("var(--scale-0)")
-                .background("var(--code-background)")
-                .border_radius("6px")
-                .padding("var(--scale-0)")
-                .overflow("auto")
-                .margin_bottom("var(--scale-0)")
+                .font_size(Token::scale(0))
+                .background(Token::palette(Palette::Code))
+                .border_radius(Concrete::px(6))
+                .padding(Token::scale(0))
+                .overflow(Overflow::Auto)
+                .margin_bottom(Token::scale(0))
                 .line_height("1.5")
-                .position("relative")
-                .white_space("pre-wrap")
+                .position(Position::Relative)
+                .white_space(Space::Wrap)
                 .transition("background-color 0.3s ease")
-        })
-        .rule(".code-block .syntax-keyword", |r| {
-            r.color("var(--syntax-keyword)")
-        })
-        .rule(".code-block .syntax-entity", |r| {
-            r.color("var(--syntax-entity)")
-        })
-        .rule(".code-block .syntax-string", |r| {
-            r.color("var(--syntax-string)")
-        })
-        .rule(".code-block .syntax-comment", |r| {
-            r.color("var(--syntax-comment)")
-                .custom("font-style", "italic")
-        })
-        .rule(".code-block .syntax-constant", |r| {
-            r.color("var(--syntax-constant)")
-        })
-        .rule(".code-block .syntax-storage", |r| {
-            r.color("var(--syntax-storage)")
-        })
-        .rule(".code-block .syntax-punctuation", |r| {
-            r.color("var(--syntax-punctuation)")
-        })
-        .rule(".code-block .syntax-variable", |r| {
-            r.color("var(--syntax-variable)")
-        })
-        .rule(".code-block .syntax-function", |r| {
-            r.color("var(--syntax-function)")
-        })
-        .rule(".code-block .syntax-operator", |r| {
-            r.color("var(--syntax-operator)")
-        })
-        .rule(".code-block .syntax-macro", |r| {
-            r.color("var(--syntax-macro)")
-        })
-        .rule("nav", |r| {
-            r.position("sticky")
-                .top("0")
-                .background("var(--nav-background)")
-                .backdrop_filter("blur(8px)")
-                .height("calc(var(--scale-3) + var(--scale-n2))")
-                .padding("0 var(--scale-1)")
-                .border_bottom("1px solid var(--border)")
-                .display("flex")
-                .align_items("center")
-                .custom("z-index", "100")
-                .transition("background-color 0.3s ease, border-color 0.3s ease")
-        })
-        .rule(".nav-logo", |r| {
-            r.display("flex")
-                .align_items("center")
-                .custom("flex-shrink", "0")
-        })
-        .rule(".nav-logo img", |r| r.height("var(--scale-2)"))
-        .rule(".nav-links", |r| {
-            r.display("flex")
-                .align_items("center")
-                .gap("var(--scale-n1)")
-                .custom("margin-left", "auto")
-        })
-        .rule(".nav-links > a, .nav-dropdown > a", |r| {
-            r.color("var(--text-secondary)")
-                .font_size("var(--scale-0)")
-                .font_weight("500")
-                .padding("var(--scale-n2) var(--scale-n1)")
-                .white_space("nowrap")
-                .custom("letter-spacing", "0.01em")
-        })
-        .rule(".nav-links > a:hover, .nav-dropdown > a:hover", |r| {
-            r.color("var(--text)").text_decoration("none")
-        })
-        .rule(".nav-dropdown", |r| {
-            r.position("relative").display("flex").align_items("center")
-        })
-        .rule(".nav-dropdown-menu", |r| {
-            r.display("none")
-                .position("absolute")
-                .top("100%")
-                .left("0")
-                .background("var(--background)")
-                .border("1px solid var(--border)")
-                .border_radius("6px")
-                .custom("box-shadow", "0 4px 12px #0000001a")
-                .padding("var(--scale-n2) 0")
-                .custom("min-width", "160px")
-                .custom("z-index", "200")
         })
         .rule(
-            ".nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu",
-            |r| r.display("block"),
+            Selector::from(class::code::block()).descendant(class::syntax::keyword().into()),
+            |r| r.color(Token::palette(Palette::Keyword)),
         )
-        .rule(".nav-dropdown-menu a", |r| {
-            r.display("block")
-                .padding("var(--scale-n2) var(--scale-0)")
-                .color("var(--text-secondary)")
-                .font_size("var(--scale-0)")
+        .rule(
+            Selector::from(class::code::block()).descendant(class::syntax::entity().into()),
+            |r| r.color(Token::palette(Palette::Entity)),
+        )
+        .rule(
+            Selector::from(class::code::block()).descendant(class::syntax::string().into()),
+            |r| r.color(Token::palette(Palette::Literal)),
+        )
+        .rule(
+            Selector::from(class::code::block()).descendant(class::syntax::comment().into()),
+            |r| {
+                r.color(Token::palette(Palette::Comment))
+                    .font_style(fontstyle::Style::Italic)
+            },
+        )
+        .rule(
+            Selector::from(class::code::block()).descendant(class::syntax::constant().into()),
+            |r| r.color(Token::palette(Palette::Constant)),
+        )
+        .rule(
+            Selector::from(class::code::block()).descendant(class::syntax::storage().into()),
+            |r| r.color(Token::palette(Palette::Storage)),
+        )
+        .rule(
+            Selector::from(class::code::block()).descendant(class::syntax::punctuation().into()),
+            |r| r.color(Token::palette(Palette::Punctuation)),
+        )
+        .rule(
+            Selector::from(class::code::block()).descendant(class::syntax::variable().into()),
+            |r| r.color(Token::palette(Palette::Variable)),
+        )
+        .rule(
+            Selector::from(class::code::block()).descendant(class::syntax::function().into()),
+            |r| r.color(Token::palette(Palette::Function)),
+        )
+        .rule(
+            Selector::from(class::code::block()).descendant(class::syntax::operator().into()),
+            |r| r.color(Token::palette(Palette::Operator)),
+        )
+        .rule(
+            Selector::from(class::code::block()).descendant(class::syntax::r#macro().into()),
+            |r| r.color(Token::palette(Palette::Macro)),
+        )
+        .rule(tag(Tag::Nav), |r| {
+            r.position(Position::Sticky)
+                .top(Concrete::zero())
+                .background(Token::palette(Palette::Navigation))
+                .backdrop_filter("blur(8px)")
+                .height(Calculation::start(Token::scale(3)).plus(Token::scale(-2)))
+                .padding((Concrete::zero(), Token::scale(1)))
+                .border_bottom("1px solid var(--border)")
+                .display(Display::Flex)
+                .align_items("center")
+                .z_index("100")
+                .transition("background-color 0.3s ease, border-color 0.3s ease")
         })
-        .rule(".nav-dropdown-menu a:hover", |r| {
-            r.background("var(--code-background)")
-                .color("var(--text)")
-                .text_decoration("none")
+        .rule(class::nav::logo(), |r| {
+            r.display(Display::Flex)
+                .align_items("center")
+                .flex_shrink(Concrete::zero())
         })
-        .rule(".nav-dropdown-menu hr", |r| r.margin("var(--scale-n2) 0"))
-        .rule(".layout", |r| {
-            r.display("grid")
-                .custom("grid-template-columns", &grid())
+        .rule(
+            Selector::from(class::nav::logo()).descendant(tag(Tag::Img)),
+            |r| r.height(Token::scale(2)),
+        )
+        .rule(class::nav::links(), |r| {
+            r.display(Display::Flex)
+                .align_items("center")
+                .gap(Token::scale(-1))
+                .margin_left(Keyword::Auto)
+        })
+        .rule(
+            group(vec![
+                Selector::from(class::nav::links()).child(tag(Tag::A)),
+                Selector::from(class::nav::dropdown()).child(tag(Tag::A)),
+            ]),
+            |r| {
+                r.color(Token::palette(Palette::Secondary))
+                    .font_size(Token::scale(0))
+                    .font_weight(Weight::W500)
+                    .padding((Token::scale(-2), Token::scale(-1)))
+                    .white_space(Space::Nowrap)
+                    .letter_spacing("0.01em")
+            },
+        )
+        .rule(
+            group(vec![
+                Selector::from(class::nav::links()).child(tag(Tag::A).pseudo(Pseudo::Hover)),
+                Selector::from(class::nav::dropdown()).child(tag(Tag::A).pseudo(Pseudo::Hover)),
+            ]),
+            |r| {
+                r.color(Token::palette(Palette::Text))
+                    .text_decoration(Decoration::None)
+            },
+        )
+        .rule(class::nav::dropdown(), |r| {
+            r.position(Position::Relative)
+                .display(Display::Flex)
+                .align_items("center")
+        })
+        .rule(class::nav::menu(), |r| {
+            r.display(Display::None)
+                .position(Position::Absolute)
+                .top(Concrete::percent(100.0))
+                .left(Concrete::zero())
+                .background(Token::palette(Palette::Background))
+                .border("1px solid var(--border)")
+                .border_radius(Concrete::px(6))
+                .box_shadow("0 4px 12px #0000001a")
+                .padding((Token::scale(-2), Concrete::zero()))
+                .min_width(Concrete::px(160))
+                .z_index("200")
+        })
+        .rule(
+            group(vec![
+                Selector::from(class::nav::dropdown())
+                    .pseudo(Pseudo::Hover)
+                    .descendant(class::nav::menu().into()),
+                Selector::from(class::nav::dropdown())
+                    .pseudo(Pseudo::FocusWithin)
+                    .descendant(class::nav::menu().into()),
+            ]),
+            |r| r.display(Display::Block),
+        )
+        .rule(
+            Selector::from(class::nav::menu()).descendant(tag(Tag::A)),
+            |r| {
+                r.display(Display::Block)
+                    .padding((Token::scale(-2), Token::scale(0)))
+                    .color(Token::palette(Palette::Secondary))
+                    .font_size(Token::scale(0))
+            },
+        )
+        .rule(
+            Selector::from(class::nav::menu()).descendant(tag(Tag::A).pseudo(Pseudo::Hover)),
+            |r| {
+                r.background(Token::palette(Palette::Code))
+                    .color(Token::palette(Palette::Text))
+                    .text_decoration(Decoration::None)
+            },
+        )
+        .rule(
+            Selector::from(class::nav::menu()).descendant(tag(Tag::Hr)),
+            |r| r.margin((Token::scale(-2), Concrete::zero())),
+        )
+        .rule(class::layout(), |r| {
+            r.display(Display::Grid)
+                .grid_template_columns(grid())
                 .min_height("calc(100vh - calc(var(--scale-3) + var(--scale-n2)))")
         })
-        .rule(".sidebar", |r| {
-            r.position("sticky")
-                .top("calc(var(--scale-3) + var(--scale-n2))")
+        .rule(class::sidebar(), |r| {
+            r.position(Position::Sticky)
+                .top(Calculation::start(Token::scale(3)).plus(Token::scale(-2)))
                 .height("calc(100vh - calc(var(--scale-3) + var(--scale-n2)))")
-                .custom("overflow-y", "auto")
-                .padding("var(--scale-1) var(--scale-0)")
-                .custom("border-right", "1px solid var(--border)")
+                .overflow_y(Overflow::Auto)
+                .padding((Token::scale(1), Token::scale(0)))
+                .border_right("1px solid var(--border)")
         })
-        .rule(".sidebar a", |r| {
-            r.display("block")
-                .padding("var(--scale-n2) var(--scale-n1)")
-                .color("var(--text-secondary)")
-                .font_size("var(--scale-n0h)")
-                .border_radius("4px")
-        })
-        .rule(".sidebar a:hover", |r| {
-            r.color("var(--text)")
-                .background("var(--code-background)")
-                .text_decoration("none")
-        })
-        .rule(".sidebar a[aria-current=\"page\"]", |r| {
-            r.color("var(--accent)")
-                .background("var(--code-background)")
-        })
-        .rule(".outline", |r| {
-            r.position("sticky")
-                .top("calc(var(--scale-3) + var(--scale-n2))")
+        .rule(
+            Selector::from(class::sidebar()).descendant(tag(Tag::A)),
+            |r| {
+                r.display(Display::Block)
+                    .padding((Token::scale(-2), Token::scale(-1)))
+                    .color(Token::palette(Palette::Secondary))
+                    .font_size(Token::half(0))
+                    .border_radius(Concrete::px(4))
+            },
+        )
+        .rule(
+            Selector::from(class::sidebar()).descendant(tag(Tag::A).pseudo(Pseudo::Hover)),
+            |r| {
+                r.color(Token::palette(Palette::Text))
+                    .background(Token::palette(Palette::Code))
+                    .text_decoration(Decoration::None)
+            },
+        )
+        .rule(
+            Selector::from(class::sidebar())
+                .descendant(tag(Tag::A).attribute("aria-current", "page")),
+            |r| {
+                r.color(Token::palette(Palette::Accent))
+                    .background(Token::palette(Palette::Code))
+            },
+        )
+        .rule(class::outline(), |r| {
+            r.position(Position::Sticky)
+                .top(Calculation::start(Token::scale(3)).plus(Token::scale(-2)))
                 .height("calc(100vh - calc(var(--scale-3) + var(--scale-n2)))")
-                .custom("overflow-y", "auto")
-                .padding("var(--scale-1) var(--scale-0)")
+                .overflow_y(Overflow::Auto)
+                .padding((Token::scale(1), Token::scale(0)))
                 .border_left("1px solid var(--border)")
         })
-        .rule(".outline-label", |r| {
-            r.font_size("var(--scale-n0h)")
-                .font_weight("500")
-                .custom("text-transform", "uppercase")
-                .custom("letter-spacing", "0.08em")
-                .color("var(--text-secondary)")
-                .margin_bottom("var(--scale-n1)")
+        .rule(class::label::outline(), |r| {
+            r.font_size(Token::half(0))
+                .font_weight(Weight::W500)
+                .text_transform(Transform::Uppercase)
+                .letter_spacing("0.08em")
+                .color(Token::palette(Palette::Secondary))
+                .margin_bottom(Token::scale(-1))
         })
-        .rule(".outline a", |r| {
-            r.display("block")
-                .padding("var(--scale-n2) var(--scale-n1)")
-                .color("var(--text-secondary)")
-                .font_size("var(--scale-n0h)")
-                .border_left("2px solid transparent")
-                .transition("color 0.2s, border-left-color 0.2s")
+        .rule(
+            Selector::from(class::outline()).descendant(tag(Tag::A)),
+            |r| {
+                r.display(Display::Block)
+                    .padding((Token::scale(-2), Token::scale(-1)))
+                    .color(Token::palette(Palette::Secondary))
+                    .font_size(Token::half(0))
+                    .border_left("2px solid transparent")
+                    .transition("color 0.2s, border-left-color 0.2s")
+            },
+        )
+        .rule(
+            Selector::from(class::outline()).descendant(tag(Tag::A).pseudo(Pseudo::Hover)),
+            |r| {
+                r.color(Token::palette(Palette::Text))
+                    .text_decoration(Decoration::None)
+            },
+        )
+        .rule(
+            Selector::from(class::outline()).descendant(tag(Tag::A).attribute("data-depth", "0")),
+            |r| {
+                r.font_weight(Weight::W500)
+                    .text_transform(Transform::Uppercase)
+                    .letter_spacing("0.08em")
+            },
+        )
+        .rule(
+            Selector::from(class::outline()).descendant(tag(Tag::A).pseudo(Pseudo::FirstChild)),
+            |r| r.padding_top(Concrete::zero()),
+        )
+        .rule(
+            Selector::from(class::outline()).descendant(tag(Tag::A).attribute("data-depth", "1")),
+            |r| r.padding_left(Token::scale(0)),
+        )
+        .rule(
+            Selector::from(class::outline()).descendant(tag(Tag::A).attribute("data-depth", "2")),
+            |r| r.padding_left(Token::scale(1)),
+        )
+        .rule(
+            Selector::from(class::outline()).descendant(tag(Tag::A).attribute("data-depth", "3")),
+            |r| r.padding_left(Token::scale(2)),
+        )
+        .rule(
+            Selector::from(class::outline()).descendant(tag(Tag::A).attribute("data-depth", "4")),
+            |r| r.padding_left(Token::scale(3)),
+        )
+        .rule(
+            Selector::from(class::outline()).descendant(tag(Tag::A).and(class::active().into())),
+            |r| {
+                r.color(Token::palette(Palette::Accent))
+                    .border_left_color(Token::palette(Palette::Accent))
+            },
+        )
+        .rule(class::label::sidebar(), |r| {
+            r.font_size(Token::half(0))
+                .font_weight(Weight::W500)
+                .text_transform(Transform::Uppercase)
+                .letter_spacing("0.08em")
+                .color(Token::palette(Palette::Secondary))
+                .margin_top(Token::scale(1))
+                .margin_bottom(Token::scale(-1))
         })
-        .rule(".outline a:hover", |r| {
-            r.color("var(--text)").text_decoration("none")
-        })
-        .rule(".outline a[data-depth=\"0\"]", |r| {
-            r.font_weight("500")
-                .custom("text-transform", "uppercase")
-                .custom("letter-spacing", "0.08em")
-        })
-        .rule(".outline a:first-child", |r| r.custom("padding-top", "0"))
-        .rule(".outline a[data-depth=\"1\"]", |r| {
-            r.padding_left("var(--scale-0)")
-        })
-        .rule(".outline a[data-depth=\"2\"]", |r| {
-            r.padding_left("var(--scale-1)")
-        })
-        .rule(".outline a[data-depth=\"3\"]", |r| {
-            r.padding_left("var(--scale-2)")
-        })
-        .rule(".outline a[data-depth=\"4\"]", |r| {
-            r.padding_left("var(--scale-3)")
-        })
-        .rule(".outline a.active", |r| {
-            r.color("var(--accent)")
-                .custom("border-left-color", "var(--accent)")
-        })
-        .rule(".sidebar-label", |r| {
-            r.font_size("var(--scale-n0h)")
-                .font_weight("500")
-                .custom("text-transform", "uppercase")
-                .custom("letter-spacing", "0.08em")
-                .color("var(--text-secondary)")
-                .margin_top("var(--scale-1)")
-                .margin_bottom("var(--scale-n1)")
-        })
-        .rule(".sidebar-label:first-child", |r| r.margin_top("0"))
-        .rule(".hamburger", |r| {
-            r.display("none")
-                .background("transparent")
-                .border("none")
-                .cursor("pointer")
-                .padding("0")
+        .rule(
+            Selector::from(class::label::sidebar()).pseudo(Pseudo::FirstChild),
+            |r| r.margin_top(Concrete::zero()),
+        )
+        .rule(class::hamburger(), |r| {
+            r.display(Display::None)
+                .background(Keyword::Transparent)
+                .border(Keyword::None)
+                .cursor(Cursor::Pointer)
+                .padding(Concrete::zero())
                 .align_items("center")
                 .justify_content("center")
-                .custom("align-self", "center")
-                .height("var(--scale-2)")
-                .width("var(--scale-2)")
-                .custom("flex-direction", "column")
-                .gap("3px")
+                .align_self("center")
+                .height(Token::scale(2))
+                .width(Token::scale(2))
+                .flex_direction(Direction::Column)
+                .gap(Concrete::px(3))
         })
-        .rule(".hamburger span", |r| {
-            r.display("block")
-                .width("16px")
-                .height("2px")
-                .background("var(--text-secondary)")
-                .border_radius("1px")
-                .transition("background-color 0.3s ease")
+        .rule(
+            Selector::from(class::hamburger()).descendant(tag(Tag::Span)),
+            |r| {
+                r.display(Display::Block)
+                    .width(Concrete::px(16))
+                    .height(Concrete::px(2))
+                    .background(Token::palette(Palette::Secondary))
+                    .border_radius(Concrete::px(1))
+                    .transition("background-color 0.3s ease")
+            },
+        )
+        .rule(
+            Selector::from(class::hamburger())
+                .pseudo(Pseudo::Hover)
+                .descendant(tag(Tag::Span)),
+            |r| r.background(Token::palette(Palette::Text)),
+        )
+        .rule(tag(Tag::Table), |r| {
+            r.width(Concrete::percent(100.0))
+                .border_collapse(Collapse::Collapse)
+                .margin_bottom(Token::scale(0))
         })
-        .rule(".hamburger:hover span", |r| r.background("var(--text)"))
-        .rule("table", |r| {
-            r.width("100%")
-                .border_collapse("collapse")
-                .margin_bottom("var(--scale-0)")
-        })
-        .rule("th", |r| {
-            r.text_align("left")
-                .padding("var(--scale-n1)")
+        .rule(tag(Tag::Th), |r| {
+            r.text_align(align::Align::Left)
+                .padding(Token::scale(-1))
                 .border_bottom("2px solid var(--border)")
-                .font_weight("600")
-                .font_size("var(--scale-n1)")
-                .custom("text-transform", "uppercase")
-                .custom("letter-spacing", "0.02em")
-                .color("var(--text-secondary)")
+                .font_weight(Weight::W600)
+                .font_size(Token::scale(-1))
+                .text_transform(Transform::Uppercase)
+                .letter_spacing("0.02em")
+                .color(Token::palette(Palette::Secondary))
         })
-        .rule("td", |r| {
-            r.padding("var(--scale-n1)")
+        .rule(tag(Tag::Td), |r| {
+            r.padding(Token::scale(-1))
                 .border_bottom("1px solid var(--border)")
         })
-        .rule("tbody tr:nth-child(even)", |r| {
-            r.background("var(--table-stripe)")
-        })
-        .rule("blockquote", |r| {
+        .rule(
+            tag(Tag::Tbody).descendant(tag(Tag::Tr).pseudo(Pseudo::NthChild("even".into()))),
+            |r| r.background(Token::palette(Palette::Stripe)),
+        )
+        .rule(tag(Tag::Blockquote), |r| {
             r.border_left("3px solid var(--accent)")
-                .padding_left("var(--scale-0)")
-                .color("var(--text-secondary)")
-                .margin_bottom("var(--scale-0)")
-                .custom("font-style", "italic")
+                .padding_left(Token::scale(0))
+                .color(Token::palette(Palette::Secondary))
+                .margin_bottom(Token::scale(0))
+                .font_style(fontstyle::Style::Italic)
         })
-        .rule("hr", |r| {
-            r.border("none")
+        .rule(tag(Tag::Hr), |r| {
+            r.border(Keyword::None)
                 .border_bottom("1px solid var(--border)")
-                .margin("var(--scale-1) 0")
+                .margin((Token::scale(1), Concrete::zero()))
         })
-        .rule("img", |r| {
-            r.max_width("100%").height("auto").display("block")
+        .rule(tag(Tag::Img), |r| {
+            r.max_width(Concrete::percent(100.0))
+                .height(Keyword::Auto)
+                .display(Display::Block)
         })
-        .rule(".center", |r| r.text_align("center").margin("0 auto"))
-        .rule(".subtitle", |r| {
-            r.color("var(--text-secondary)")
-                .font_size("var(--scale-1)")
-                .font_weight("400")
-                .custom("letter-spacing", "-0.01em")
-                .margin_bottom("var(--scale-1)")
-                .display("block")
+        .rule(class::center(), |r| {
+            r.text_align(align::Align::Center)
+                .margin((Concrete::zero(), Keyword::Auto))
         })
-        .rule("a.subtitle:hover", |r| {
-            r.color("var(--text)").text_decoration("none")
+        .rule(class::subtitle(), |r| {
+            r.color(Token::palette(Palette::Secondary))
+                .font_size(Token::scale(1))
+                .font_weight(Weight::W400)
+                .letter_spacing("-0.01em")
+                .margin_bottom(Token::scale(1))
+                .display(Display::Block)
         })
-        .rule("ul, ol", |r| {
-            r.padding_left("var(--scale-1)")
-                .margin_bottom("var(--scale-0)")
+        .rule(
+            tag(Tag::A)
+                .and(class::subtitle().into())
+                .pseudo(Pseudo::Hover),
+            |r| {
+                r.color(Token::palette(Palette::Text))
+                    .text_decoration(Decoration::None)
+            },
+        )
+        .rule(group(vec![tag(Tag::Ul), tag(Tag::Ol)]), |r| {
+            r.padding_left(Token::scale(1))
+                .margin_bottom(Token::scale(0))
         })
-        .rule("li", |r| r.margin_bottom("var(--scale-n2)"))
-        .rule("dl", |r| r.margin_bottom("var(--scale-0)"))
-        .rule("dt", |r| {
-            r.font_weight("600")
-                .margin_top("var(--scale-n1)")
-                .custom("letter-spacing", "-0.01em")
+        .rule(tag(Tag::Li), |r| r.margin_bottom(Token::scale(-2)))
+        .rule(tag(Tag::Dl), |r| r.margin_bottom(Token::scale(0)))
+        .rule(tag(Tag::Dt), |r| {
+            r.font_weight(Weight::W600)
+                .margin_top(Token::scale(-1))
+                .letter_spacing("-0.01em")
         })
-        .rule("dd", |r| {
-            r.margin_bottom("var(--scale-n1)")
-                .padding_left("var(--scale-0)")
+        .rule(tag(Tag::Dd), |r| {
+            r.margin_bottom(Token::scale(-1))
+                .padding_left(Token::scale(0))
         })
-        .rule("footer", |r| {
-            r.text_align("center")
-                .padding("var(--scale-2) 0 var(--scale-1) 0")
-                .margin_top("var(--scale-2)")
-                .custom("border-top", "1px solid var(--border)")
-                .color("var(--text-secondary)")
-                .font_size("var(--scale-n1)")
-                .custom("letter-spacing", "0.02em")
+        .rule(tag(Tag::Footer), |r| {
+            r.text_align(align::Align::Center)
+                .padding((
+                    Token::scale(2),
+                    Concrete::zero(),
+                    Token::scale(1),
+                    Concrete::zero(),
+                ))
+                .margin_top(Token::scale(2))
+                .border_top("1px solid var(--border)")
+                .color(Token::palette(Palette::Secondary))
+                .font_size(Token::scale(-1))
+                .letter_spacing("0.02em")
         })
-        .rule(".footer-icon", |r| {
-            r.display("inline-block")
-                .color("var(--text-secondary)")
-                .margin_top("var(--scale-n1)")
+        .rule(class::footer::icon(), |r| {
+            r.display(Display::Inline)
+                .color(Token::palette(Palette::Secondary))
+                .margin_top(Token::scale(-1))
                 .transition("color 0.2s")
         })
-        .rule(".footer-icon:hover", |r| {
-            r.color("var(--text)").text_decoration("none")
-        })
-        .rule(".footer-icon svg", |r| r.display("block"))
-        .rule(".code-toolbar", |r| {
-            r.position("absolute")
-                .top("8px")
-                .right("8px")
-                .display("flex")
-                .gap("4px")
+        .rule(
+            Selector::from(class::footer::icon()).pseudo(Pseudo::Hover),
+            |r| {
+                r.color(Token::palette(Palette::Text))
+                    .text_decoration(Decoration::None)
+            },
+        )
+        .rule(
+            Selector::from(class::footer::icon()).descendant(tag(Tag::Svg)),
+            |r| r.display(Display::Block),
+        )
+        .rule(class::code::toolbar(), |r| {
+            r.position(Position::Absolute)
+                .top(Concrete::px(8))
+                .right(Concrete::px(8))
+                .display(Display::Flex)
+                .gap(Concrete::px(4))
                 .opacity("0")
                 .transition("opacity 0.2s")
         })
-        .rule(".code-block:hover .code-toolbar", |r| r.opacity("1"))
-        .rule(".code-source, .copy-button", |r| {
-            r.custom("appearance", "none")
-                .background("var(--nav-background)")
-                .border("1px solid var(--border)")
-                .border_radius("4px")
-                .padding("2px 8px")
-                .color("var(--text-secondary)")
-                .cursor("pointer")
-                .font_size("var(--scale-n0h)")
-                .font_family("inherit")
-                .line_height("1.5")
-                .text_decoration("none")
-                .display("inline-block")
-        })
-        .rule(".code-source:hover, .copy-button:hover", |r| {
-            r.color("var(--text)").text_decoration("none")
-        })
-        .rule(".theme-toggle", |r| {
-            r.background("transparent")
-                .border("none")
-                .cursor("pointer")
-                .font_size("var(--scale-0)")
-                .width("1.5rem")
-                .height("1.5rem")
-                .custom("flex-shrink", "0")
-                .display("flex")
+        .rule(
+            Selector::from(class::code::block())
+                .pseudo(Pseudo::Hover)
+                .descendant(class::code::toolbar().into()),
+            |r| r.opacity("1"),
+        )
+        .rule(
+            group(vec![
+                class::code::source().into(),
+                class::button::copy().into(),
+            ]),
+            |r| {
+                r.appearance(appearance::Appearance::None)
+                    .background(Token::palette(Palette::Navigation))
+                    .border("1px solid var(--border)")
+                    .border_radius(Concrete::px(4))
+                    .padding((Concrete::px(2), Concrete::px(8)))
+                    .color(Token::palette(Palette::Secondary))
+                    .cursor(Cursor::Pointer)
+                    .font_size(Token::half(0))
+                    .font_family("inherit")
+                    .line_height("1.5")
+                    .text_decoration(Decoration::None)
+                    .display(Display::Inline)
+            },
+        )
+        .rule(
+            group(vec![
+                Selector::from(class::code::source()).pseudo(Pseudo::Hover),
+                Selector::from(class::button::copy()).pseudo(Pseudo::Hover),
+            ]),
+            |r| {
+                r.color(Token::palette(Palette::Text))
+                    .text_decoration(Decoration::None)
+            },
+        )
+        .rule(class::button::theme(), |r| {
+            r.background(Keyword::Transparent)
+                .border(Keyword::None)
+                .cursor(Cursor::Pointer)
+                .font_size(Token::scale(0))
+                .width(Concrete::rem(1.5))
+                .height(Concrete::rem(1.5))
+                .flex_shrink(Concrete::zero())
+                .display(Display::Flex)
                 .align_items("center")
                 .justify_content("center")
-                .overflow("hidden")
-                .padding("0")
-                .color("var(--text-secondary)")
+                .overflow(Overflow::Hidden)
+                .padding(Concrete::zero())
+                .color(Token::palette(Palette::Secondary))
                 .transition("color 0.2s")
         })
-        .rule(".theme-toggle svg", |r| {
-            r.width("var(--scale-0)").height("var(--scale-0)")
-        })
-        .rule(".theme-toggle:hover", |r| r.color("var(--text)"))
-        .rule(".enhanced [data-animate]", |r| {
-            r.opacity("0")
-                .transform("translateY(20px)")
-                .transition("opacity 0.6s ease, transform 0.6s ease")
-        })
-        .rule(".enhanced [data-visible]", |r| {
-            r.opacity("1").transform("translateY(0)")
-        })
-        .rule("html[data-theme=\"dark\"]", dark)
-        .rule("html[data-theme=\"dark\"] .nav-dropdown-menu", |r| {
-            r.custom("box-shadow", "0 4px 12px #00000066")
-        })
-        .rule("html[data-theme=\"light\"]", |r| {
+        .rule(
+            Selector::from(class::button::theme()).descendant(tag(Tag::Svg)),
+            |r| r.width(Token::scale(0)).height(Token::scale(0)),
+        )
+        .rule(
+            Selector::from(class::button::theme()).pseudo(Pseudo::Hover),
+            |r| r.color(Token::palette(Palette::Text)),
+        )
+        .rule(
+            Selector::from(class::enhanced()).descendant(present("data-animate")),
+            |r| {
+                r.opacity("0")
+                    .transform("translateY(20px)")
+                    .transition("opacity 0.6s ease, transform 0.6s ease")
+            },
+        )
+        .rule(
+            Selector::from(class::enhanced()).descendant(present("data-visible")),
+            |r| r.opacity("1").transform("translateY(0)"),
+        )
+        .rule(tag(Tag::Html).attribute("data-theme", "dark"), dark)
+        .rule(
+            tag(Tag::Html)
+                .attribute("data-theme", "dark")
+                .descendant(class::nav::menu().into()),
+            |r| r.box_shadow("0 4px 12px #00000066"),
+        )
+        .rule(tag(Tag::Html).attribute("data-theme", "light"), |r| {
             palette::PALETTE
                 .iter()
                 .chain(palette::SYNTAX)
@@ -778,48 +903,49 @@ pub fn theme() -> Style {
                 .fold(m, |s, token| {
                     s.variable(&format!("--{}", token.role), token.dark)
                 })
-                .rule(".nav-dropdown-menu", |r| {
-                    r.custom("box-shadow", "0 4px 12px #00000066")
-                })
+                .rule(class::nav::menu(), |r| r.box_shadow("0 4px 12px #00000066"))
         })
         .media("max-width: 1280px", |m| {
-            m.rule(".outline", |r| r.display("none"))
-                .rule(".layout", |r| {
-                    r.custom(
-                        "grid-template-columns",
-                        &format!("{}fr 1fr", proportion::scale(-3)),
-                    )
+            m.rule(class::outline(), |r| r.display(Display::None))
+                .rule(class::layout(), |r| {
+                    r.grid_template_columns(format!("{}fr 1fr", proportion::scale(-3)))
                 })
         })
         .media("max-width: 1024px", |m| {
-            m.rule(".sidebar", |r| {
-                r.display("none")
-                    .position("fixed")
-                    .top("calc(var(--scale-3) + var(--scale-n2))")
-                    .left("0")
-                    .width("280px")
+            m.rule(class::sidebar(), |r| {
+                r.display(Display::None)
+                    .position(Position::Fixed)
+                    .top(Calculation::start(Token::scale(3)).plus(Token::scale(-2)))
+                    .left(Concrete::zero())
+                    .width(Concrete::px(280))
                     .height("calc(100vh - calc(var(--scale-3) + var(--scale-n2)))")
-                    .background("var(--background)")
-                    .custom("z-index", "150")
-                    .custom("border-right", "1px solid var(--border)")
+                    .background(Token::palette(Palette::Background))
+                    .z_index("150")
+                    .border_right("1px solid var(--border)")
             })
-            .rule(".sidebar.open", |r| r.display("block"))
-            .rule(".layout", |r| r.custom("grid-template-columns", "1fr"))
-            .rule(".hamburger", |r| r.display("flex"))
+            .rule(
+                Selector::from(class::sidebar()).and(class::open().into()),
+                |r| r.display(Display::Block),
+            )
+            .rule(class::layout(), |r| r.grid_template_columns("1fr"))
+            .rule(class::hamburger(), |r| r.display(Display::Flex))
         })
         .media("max-width: 768px", |m| {
-            m.rule("main", |r| r.padding("var(--scale-0) var(--scale-n1)"))
-                .rule("h1", |r| {
-                    r.font_size("var(--scale-2)")
-                        .custom("letter-spacing", "-0.02em")
-                })
-                .rule("nav", |r| r.padding("0 var(--scale-n1)"))
+            m.rule(tag(Tag::Main), |r| {
+                r.padding((Token::scale(0), Token::scale(-1)))
+            })
+            .rule(tag(Tag::H1), |r| {
+                r.font_size(Token::scale(2)).letter_spacing("-0.02em")
+            })
+            .rule(tag(Tag::Nav), |r| {
+                r.padding((Concrete::zero(), Token::scale(-1)))
+            })
         })
 }
 
 pub trait Composition {
     fn heading(self, level: u8, text: &str) -> Result;
-    fn image(self, src: &str, alt: &str) -> Result;
+    fn figure(self, source: &str, alternate: &str) -> Result;
     fn title(self, text: &str) -> Result;
     fn subtitle(self, text: &str) -> Result;
     fn rule(self) -> Result;
@@ -831,20 +957,18 @@ pub trait Composition {
     fn navigation(self, f: impl FnOnce(Body) -> Result) -> Result;
     fn bold(self, text: &str) -> Result;
     fn link(self, href: &str, text: &str) -> Result;
+    fn definition(self, f: impl FnOnce(Body) -> Result) -> Result;
 }
 
 impl Composition for Body {
     #[trace(channels = [document])]
     fn heading(self, level: u8, text: &str) -> Result {
-        self.element(&format!("h{}", level.clamp(1, 6)), |e| e.text(text))
+        self.tag(&format!("h{}", level.clamp(1, 6)), |e| e.text(text))
     }
 
     #[trace(channels = [document])]
-    fn image(self, src: &str, alt: &str) -> Result {
-        self.element("div", |d| {
-            d.class("center")
-                .element("img", |e| e.attribute("src", src).attribute("alt", alt))
-        })
+    fn figure(self, source: &str, alternate: &str) -> Result {
+        self.division(|d| d.class(class::center()).image(source, alternate))
     }
 
     #[trace(channels = [document])]
@@ -854,55 +978,59 @@ impl Composition for Body {
 
     #[trace(channels = [document])]
     fn subtitle(self, text: &str) -> Result {
-        self.element("p", |p| p.class("subtitle").text(text))
+        self.tag("p", |p| p.class(class::subtitle()).text(text))
     }
 
     #[trace(channels = [document])]
     fn rule(self) -> Result {
-        self.element("hr", Ok)
+        self.separator()
     }
 
     #[trace(channels = [document])]
     fn paragraph(self, f: impl FnOnce(Span) -> Span) -> Result {
-        self.element("p", |p| p.span(f))
+        self.tag("p", |p| p.span(f))
     }
 
     #[trace(channels = [document])]
     fn section(self, title: &str, f: impl FnOnce(Body) -> Result) -> Result {
-        self.element("section", |s| f(s.heading(2, title)?))
+        self.tag("section", |s| f(s.heading(2, title)?))
     }
 
     #[trace(channels = [document])]
     fn subsection(self, title: &str, f: impl FnOnce(Body) -> Result) -> Result {
-        self.element("section", |s| f(s.heading(3, title)?))
+        self.tag("section", |s| f(s.heading(3, title)?))
     }
 
     #[trace(channels = [document])]
     fn term(self, word: &str, f: impl FnOnce(Span) -> Span) -> Result {
-        self.element("dl", |dl| {
-            dl.element("dt", |dt| dt.text(word))
-                .element("dd", |dd| dd.span(f))
+        self.tag("dl", |dl| {
+            dl.tag("dt", |dt| dt.text(word)).tag("dd", |dd| dd.span(f))
         })
     }
 
     #[trace(channels = [document])]
     fn aside(self, f: impl FnOnce(Span) -> Span) -> Result {
-        self.element("blockquote", |bq| bq.element("p", |p| p.span(f)))
+        self.tag("blockquote", |bq| bq.tag("p", |p| p.span(f)))
     }
 
     #[trace(channels = [document])]
     fn navigation(self, f: impl FnOnce(Body) -> Result) -> Result {
-        self.element("nav", f)
+        self.tag("nav", f)
     }
 
     #[trace(channels = [document])]
     fn bold(self, text: &str) -> Result {
-        self.element("strong", |e| e.text(text))
+        self.strong(|e| e.text(text))
     }
 
     #[trace(channels = [document])]
     fn link(self, href: &str, text: &str) -> Result {
-        self.element("a", |e| e.attribute("href", href).text(text))
+        self.anchor(href, |e| e.text(text))
+    }
+
+    #[trace(channels = [document])]
+    fn definition(self, f: impl FnOnce(Body) -> Result) -> Result {
+        self.tag("dl", f)
     }
 }
 
@@ -911,8 +1039,8 @@ impl Composition for Result {
         self?.heading(level, text)
     }
 
-    fn image(self, src: &str, alt: &str) -> Result {
-        self?.image(src, alt)
+    fn figure(self, source: &str, alternate: &str) -> Result {
+        self?.figure(source, alternate)
     }
 
     fn title(self, text: &str) -> Result {
@@ -957,5 +1085,9 @@ impl Composition for Result {
 
     fn link(self, href: &str, text: &str) -> Result {
         self?.link(href, text)
+    }
+
+    fn definition(self, f: impl FnOnce(Body) -> Result) -> Result {
+        self?.definition(f)
     }
 }

@@ -54,13 +54,67 @@ rust_library(
     visibility = ["//visibility:public"],
     deps = [
         ":element",
+        ":span",
     ],
+)
+
+rust_library(
+    name = "value",
+    srcs = ["value.rs"],
+    visibility = ["//visibility:public"],
+)
+
+rust_library(
+    name = "selector",
+    srcs = ["selector.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":class",
+    ],
+)
+
+rust_library(
+    name = "class",
+    srcs = ["class.rs"],
+    visibility = ["//visibility:public"],
 )
 
 rust_library(
     name = "style",
     srcs = ["style.rs"],
+    aliases = {
+        "//component/web/property/font:style": "fontstyle",
+    },
     visibility = ["//visibility:public"],
+    deps = [
+        ":selector",
+        ":value",
+        "//component/web/property:appearance",
+        "//component/web/property:cursor",
+        "//component/web/property:display",
+        "//component/web/property:overflow",
+        "//component/web/property:position",
+        "//component/web/property/border:collapse",
+        "//component/web/property/flex:direction",
+        "//component/web/property/flex:wrap",
+        "//component/web/property/font:style",
+        "//component/web/property/font:weight",
+        "//component/web/property/sizing",
+        "//component/web/property/text:align",
+        "//component/web/property/text:decoration",
+        "//component/web/property/text:transform",
+        "//component/web/property/white:space",
+    ],
+)
+
+rust_library(
+    name = "list",
+    srcs = ["list.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":element",
+        ":span",
+    ],
 )
 
 rust_library(
@@ -68,9 +122,11 @@ rust_library(
     srcs = ["body.rs"],
     visibility = ["//visibility:public"],
     deps = [
+        ":class",
         ":element",
         ":extraction",
         ":language",
+        ":list",
         ":span",
         ":table",
         "@crates//:miette",

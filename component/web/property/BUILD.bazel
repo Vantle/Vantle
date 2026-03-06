@@ -1,0 +1,33 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = [
+    "//component/web:__pkg__",
+    "//component/web:__subpackages__",
+    "//system/generation/web:__pkg__",
+    "//system/generation/web:__subpackages__",
+])
+
+rust_library(
+    name = "display",
+    srcs = ["display.rs"],
+)
+
+rust_library(
+    name = "position",
+    srcs = ["position.rs"],
+)
+
+rust_library(
+    name = "cursor",
+    srcs = ["cursor.rs"],
+)
+
+rust_library(
+    name = "overflow",
+    srcs = ["overflow.rs"],
+)
+
+rust_library(
+    name = "appearance",
+    srcs = ["appearance.rs"],
+)

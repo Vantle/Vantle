@@ -1,4 +1,5 @@
 use element::Element;
+use span::{Fragment, Span};
 
 pub struct Table {
     pub headers: Vec<String>,
@@ -34,6 +35,26 @@ impl Table {
     #[must_use]
     pub fn markup<const N: usize>(mut self, cells: [Element; N]) -> Self {
         self.rows.push(cells.into());
+        self
+    }
+
+    #[must_use]
+    pub fn describe(mut self, term: &str, description: &str) -> Self {
+        self.rows.push(vec![
+            Element::Span(vec![Fragment::Code(term.into())]),
+            Element::Text(description.into()),
+        ]);
+        self
+    }
+
+    #[must_use]
+    pub fn rich<const N: usize>(mut self, cells: [impl FnOnce(Span) -> Span; N]) -> Self {
+        self.rows.push(
+            cells
+                .into_iter()
+                .map(|f| Element::Span(f(Span::new()).fragments))
+                .collect::<Vec<_>>(),
+        );
         self
     }
 }

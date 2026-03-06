@@ -152,10 +152,7 @@ rust_binary(
 
 ##### Documentation                                                                                                                             [ Documentation ]
 document(
-    srcs = ["observation.document.rs"],
+    src = "observation.document.rs",
     destination = "system/observation/index.html",
-    deps = [
-        "//component/web:language",
-        "//system/generation/web:style",
-    ],
+    deps = ["//system/observation/document:observation"],
 )

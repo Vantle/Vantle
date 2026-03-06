@@ -1,0 +1,28 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+#################################################################################################################################################################
+########## Page                                                                                                                                           [ Page ]
+rust_library(
+    name = "autotest",
+    srcs = ["autotest.page.rs"],
+    deps = [
+        "//Molten/test/resource/system/graph/state/particle:cases.document",
+        "//Molten/test/resource/system/graph/state/particle:disjoint",
+        "//component/web:body",
+        "//component/web:class",
+        "//component/web:element",
+        "//component/web:extraction",
+        "//component/web:language",
+        "//component/web:page",
+        "//component/web:span",
+        "//system/generation/web:style",
+        "@crates//:miette",
+    ],
+)

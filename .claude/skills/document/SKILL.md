@@ -22,22 +22,27 @@ Key files:
 - `system/generation/web/style.rs` — page template and `Composition` trait
 - `system/generation/web/html.rs` — HTML generation engine
 - `component/web/body.rs` — `Body` builder DSL
-- `*.document.rs` — source files that generate HTML pages
+- `component/web/list.rs` — `List` builder for unordered/ordered lists
+- `component/web/table.rs` — `Table` builder for structured data
+- `component/web/span.rs` — `Span` builder for inline formatting
+- `*.page.rs` — content library sources (in `document/` subdirectories)
+- `*.document.rs` — thin binary entry points that invoke page libraries
 
 ## Process
 
 ### 1. Discover
 
 Documentation sources and build targets:
-- Source files: `**/*.document.rs` — each generates one HTML page
-- Build targets: each source has a `document()` rule in its `BUILD.bazel`
+- Content libraries: `**/document/*.page.rs` — each defines a `pub fn page()` returning page content
+- Entry points: `*.document.rs` — binary wrappers used by the `document()` Bazel rule
+- Build targets: each entry point has a `document()` rule in its `BUILD.bazel`
 - Full site: `bazel build //:documentation` assembles all pages into a folder
 - Output: `.build/bazel/result/bin/documentation/`
 - Local preview: `bazel run //:distribute.documentation` serves at `http://127.0.0.1:3000`
 
 ### 2. Analyze
 
-For each documentation page, evaluate the `.document.rs` source and its rendered output:
+For each documentation page, evaluate the `.page.rs` source and its rendered output:
 
 **Accuracy**: Content matches implementation, paths exist, code examples compile, versions current
 **Beauty**: Consistent use of the rendering framework, proper section hierarchy, visual coherence

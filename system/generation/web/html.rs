@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
+use std::path::PathBuf;
 
 use clap::Parser;
 use element::{Element, Location};
@@ -16,10 +17,10 @@ use style::{Keyframe, Media, Properties, Style};
 )]
 pub struct Arguments {
     #[arg(long, help = "Output file path")]
-    pub output: std::path::PathBuf,
+    pub output: PathBuf,
 
-    #[arg(long, help = "Workspace-relative destination path")]
-    pub destination: String,
+    #[arg(long, help = "Root-relative path prefix")]
+    pub root: String,
 
     #[arg(long, help = "Data files to inject into the document")]
     pub data: Vec<String>,
@@ -30,24 +31,16 @@ pub struct Arguments {
 
 pub fn execute<F>(run: F) -> miette::Result<()>
 where
-    F: FnOnce(&Arguments) -> miette::Result<()>,
+    F: FnOnce(&Arguments) -> miette::Result<PathBuf>,
 {
     command::execute(
         |arguments: &Arguments| observation::initialize(&arguments.observation.sink),
-        |arguments, _runtime| run(&arguments),
+        |arguments, _runtime| {
+            let path = run(&arguments)?;
+            println!("{}", path.display());
+            Ok(())
+        },
     )
-}
-
-impl Arguments {
-    #[must_use]
-    pub fn root(&self) -> String {
-        let depth = self.destination.chars().filter(|&c| c == '/').count();
-        if depth == 0 {
-            "./".into()
-        } else {
-            "../".repeat(depth)
-        }
-    }
 }
 
 #[trace(channels = [document])]
@@ -166,16 +159,18 @@ pub fn css(style: &Style) -> String {
 }
 
 #[trace(channels = [document])]
-pub fn generate(arguments: &Arguments, page: page::Result) -> miette::Result<()> {
+pub fn generate(arguments: &Arguments, page: page::Result) -> miette::Result<PathBuf> {
     let page = page?;
     let data = load(&arguments.data)?;
     let html = render(&page, &data)?;
-    emit(&arguments.output, &html)
+    emit(&arguments.output, &html)?;
+    Ok(arguments.output.clone())
 }
 
 #[trace(channels = [document])]
-pub fn stylesheet(arguments: &Arguments, style: &Style) -> miette::Result<()> {
-    emit(&arguments.output, &css(style))
+pub fn stylesheet(arguments: &Arguments, style: &Style) -> miette::Result<PathBuf> {
+    emit(&arguments.output, &css(style))?;
+    Ok(arguments.output.clone())
 }
 
 #[trace(channels = [document])]

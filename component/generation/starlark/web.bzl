@@ -9,47 +9,52 @@ load("@rules_rust//rust:defs.bzl", "rust_binary")
 load("//component/web/starlark:aspect.bzl", "validation")
 load(":action.bzl", "generate")
 
-def document(srcs, destination, name = None, data = [], deps = [], compile_data = [], **kwargs):
+def document(src, destination, name = None, data = [], deps = [], compile_data = [], **kwargs):
     """
     Build a file from a Rust DSL source file.
 
-    Produces three targets:
+    Produces targets:
       - {name}.binary       - rust_binary that generates the file
       - {name}              - the generated file (via generate rule)
       - {name}.validation   - validation marker (aspect attaches here)
 
     Args:
-        srcs: Rust source files
+        src: Rust binary source file (.document.rs)
         destination: Workspace-relative output path (e.g., "Molten/index.html")
-        name: Target name (derived from first src if omitted)
+        name: Target name (derived from src if omitted)
         data: Runtime data files (code injection, WASM)
-        deps: Additional compile deps (page-to-page deps)
+        deps: Compile deps (page libraries, extraction targets, etc.)
         compile_data: Compile-time data files (include_str! sources)
         **kwargs: Standard Bazel attrs (visibility, tags, testonly)
     """
     if name == None:
-        name = srcs[0].removesuffix(".rs")
-    standard = ["//component:web", "//component/web:body", "//system/generation/web:html", "@crates//:miette"]
+        name = src.removesuffix(".rs")
 
+    passthrough = {k: kwargs[k] for k in ["visibility", "tags", "testonly"] if k in kwargs}
+
+    standard = ["//system/generation/web:html", "@crates//:miette"]
     binary = name + ".binary"
     rust_binary(
         name = binary,
         crate_name = binary.replace(".", "_"),
-        srcs = srcs,
+        srcs = [src],
         compile_data = compile_data,
         deps = standard + deps,
         data = data,
-        **{k: kwargs[k] for k in ["visibility", "tags", "testonly"] if k in kwargs}
+        **passthrough
     )
+
+    depth = destination.count("/")
+    root = "../" * depth if depth > 0 else "./"
 
     generate(
         name = name,
         generator = ":" + name + ".binary",
-        parameters = {"destination": destination},
+        parameters = {"root": root},
         data = data,
-        output = destination.replace("/", "_"),
+        output = destination.replace("/", "."),
         sink = destination,
-        **{k: kwargs[k] for k in ["visibility", "tags"] if k in kwargs}
+        **{k: v for k, v in passthrough.items() if k != "testonly"}
     )
 
     kind = "css" if destination.endswith(".css") else "html"
@@ -57,5 +62,5 @@ def document(srcs, destination, name = None, data = [], deps = [], compile_data 
         name = name + ".validation",
         src = ":" + name,
         kind = kind,
-        **{k: kwargs[k] for k in ["visibility", "tags"] if k in kwargs}
+        **{k: v for k, v in passthrough.items() if k != "testonly"}
     )

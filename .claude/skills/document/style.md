@@ -14,6 +14,7 @@ The golden ratio (phi = 1.618) governs all proportions through CSS variables:
 |----------|-------|-------|
 | `--scale-n2` | phi^-2 | 0.382rem |
 | `--scale-n1` | phi^-1 | 0.618rem |
+| `--scale-n0h` | phi^0 / 2 | 0.5rem |
 | `--scale-0` | phi^0 | 1rem |
 | `--scale-1` | phi^1 | 1.618rem |
 | `--scale-2` | phi^2 | 2.618rem |

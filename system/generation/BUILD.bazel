@@ -50,11 +50,8 @@ rust_binary(
 )
 
 document(
-    srcs = ["generation.document.rs"],
+    src = "generation.document.rs",
     destination = "system/generation/index.html",
     visibility = ["//visibility:public"],
-    deps = [
-        "//component/web:element",
-        "//system/generation/web:style",
-    ],
+    deps = ["//system/generation/document:generation"],
 )

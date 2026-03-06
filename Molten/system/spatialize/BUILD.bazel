@@ -221,11 +221,7 @@ rust_binary(
 
 ##### Documentation                                                                                                                             [ Documentation ]
 document(
-    srcs = ["spatialize.document.rs"],
+    src = "spatialize.document.rs",
     destination = "Molten/system/spatialize/index.html",
-    deps = [
-        "//component/web:element",
-        "//component/web:span",
-        "//system/generation/web:style",
-    ],
+    deps = ["//Molten/system/spatialize/document:spatialize"],
 )

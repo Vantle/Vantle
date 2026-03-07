@@ -1,0 +1,55 @@
+{
+    "functions": [
+        {
+            "function": "sort",
+            "parameters": {
+                "size": 0
+            },
+            "returns": {
+                "()": 0
+            },
+            "cases": [
+                {
+                    "tags": ["performance"],
+                    "parameters": { "size": 50000 },
+                    "returns": { "()": 50000 }
+                },
+                {
+                    "tags": ["performance"],
+                    "parameters": { "size": 100000 },
+                    "returns": { "()": 100000 }
+                },
+                {
+                    "tags": ["performance"],
+                    "parameters": { "size": 250000 },
+                    "returns": { "()": 250000 }
+                },
+                {
+                    "tags": ["performance"],
+                    "parameters": { "size": 500000 },
+                    "returns": { "()": 500000 }
+                },
+                {
+                    "tags": ["performance"],
+                    "parameters": { "size": 750000 },
+                    "returns": { "()": 750000 }
+                },
+                {
+                    "tags": ["performance"],
+                    "parameters": { "size": 999999 },
+                    "returns": { "()": 999999 }
+                },
+                {
+                    "tags": ["performance"],
+                    "parameters": { "size": 2000000 },
+                    "returns": { "()": 2000000 }
+                },
+                {
+                    "tags": ["performance"],
+                    "parameters": { "size": 4000000 },
+                    "returns": { "()": 4000000 }
+                }
+            ]
+        }
+    ]
+}

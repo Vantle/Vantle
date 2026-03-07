@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_function")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -11,7 +11,7 @@ package(default_visibility = [
 ])
 
 ##### Module                                                                                                                                           [ Module ]
-rust_autotest(
+rust_autotest_function(
     name = "level",
     cases = "//test/resource/system/observation/level:cases",
     template = "//test/resource/system/observation/level:template",
@@ -23,7 +23,7 @@ rust_autotest(
     ],
 )
 
-rust_autotest(
+rust_autotest_function(
     name = "span",
     cases = "//test/resource/system/observation/span:cases",
     template = "//test/resource/system/observation/span:template",
@@ -35,7 +35,7 @@ rust_autotest(
     ],
 )
 
-rust_autotest(
+rust_autotest_function(
     name = "hierarchy",
     cases = "//test/resource/system/observation/hierarchy:cases",
     template = "//test/resource/system/observation/hierarchy:template",
@@ -47,7 +47,7 @@ rust_autotest(
     ],
 )
 
-rust_autotest(
+rust_autotest_function(
     name = "filtering",
     cases = "//test/resource/system/observation/filtering:cases",
     template = "//test/resource/system/observation/filtering:template",
@@ -60,7 +60,7 @@ rust_autotest(
     ],
 )
 
-rust_autotest(
+rust_autotest_function(
     name = "peer",
     cases = "//test/resource/system/observation/peer:cases",
     template = "//test/resource/system/observation/peer:template",

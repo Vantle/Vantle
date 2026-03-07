@@ -5,9 +5,7 @@ use proc_macro2::Span;
 use serde_json::{Map, Value};
 use syn::{Expr, FnArg, Signature, Type};
 
-use component::generation::rust::error::Error;
-use component::generation::rust::schema::Case;
-use component::generation::rust::types::Callable;
+use component::generation::rust::{error::Error, schema::Case, types::Callable};
 use literal::expression;
 
 #[derive(Debug, Clone)]
@@ -180,7 +178,7 @@ fn validate(
         parameters: parameters
             .iter()
             .map(|(k, v)| (syn::Ident::new(k, Span::call_site()), v.clone()))
-            .collect(),
+            .collect::<HashMap<_, _>>(),
         returns: returns.clone(),
     })
 }
@@ -349,7 +347,8 @@ fn recording(
     parameters: &HashMap<syn::Ident, Value>,
     expected: &HashMap<String, Value>,
 ) -> Result<syn::Expr, Box<Error>> {
-    let mut expr: syn::Expr = syn::parse_quote! { vantle::test::report::Actuals::default() };
+    let mut expr: syn::Expr =
+        syn::parse_quote! { vantle::test::system::function::Actuals::default() };
 
     if expected.contains_key(keyword::result().key) {
         let key = keyword::result().key;
@@ -392,7 +391,7 @@ fn comparison(
         let key = keyword::result().key;
         let stmt: syn::Stmt = syn::parse_quote! {
             if !vantle::test::utility::equal(&#variable, &#expectation) {
-                return Err(Box::new(vantle::test::report::error::Error::mismatch(
+                return Err(Box::new(vantle::test::system::function::error::Error::mismatch(
                     actuals.clone(),
                     format!("expected {}: {:?}, got: {:?}", #key, #expectation, #variable),
                 )));
@@ -422,7 +421,7 @@ fn comparison(
                 let label = key.as_str();
                 let stmt: syn::Stmt = syn::parse_quote! {
                     if !vantle::test::utility::equal(&#ident, &#expectation) {
-                        return Err(Box::new(vantle::test::report::error::Error::mismatch(
+                        return Err(Box::new(vantle::test::system::function::error::Error::mismatch(
                             actuals.clone(),
                             format!("expected {}: {:?}, got: {:?}", #label, #expectation, #ident),
                         )));

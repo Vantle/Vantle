@@ -21,10 +21,10 @@ rust_library(
 rust_library(
     name = "observation",
     srcs = ["observation.rs"],
-    visibility = ["//visibility:public"],
     proc_macro_deps = [
         "//system/observation:macro",
     ],
+    visibility = ["//visibility:public"],
     deps = [
         "//component/observation:channel",
         "//component/observation:module",

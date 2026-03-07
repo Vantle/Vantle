@@ -27,9 +27,11 @@ filegroup(
 rust_autotest_template(
     name = "template",
     src = "expression.template.rs",
+    aliases = {"//component/observation:expression": "filterable"},
     deps = [
         "//component/observation:channel",
         "//component/observation:expression",
+        "//component/tag:expression",
         "//component/observation/expression:parse",
     ],
 )

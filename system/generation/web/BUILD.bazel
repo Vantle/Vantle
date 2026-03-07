@@ -17,8 +17,8 @@ rust_library(
     proc_macro_deps = ["//system/observation:macro"],
     deps = [
         "//component/web:element",
-        "//component/web:language",
         "//component/web:error",
+        "//component/web:language",
         "//component/web:page",
         "//component/web:span",
         "//component/web:style",

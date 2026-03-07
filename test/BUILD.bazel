@@ -12,23 +12,11 @@ package(default_visibility = [
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
-    name = "report",
-    srcs = ["report.rs"],
-    proc_macro_deps = ["//system/observation:macro"],
+    name = "system",
+    srcs = ["system.rs"],
     deps = [
-        "//component/observation:channel",
-        "//component/observation:module",
-        "//platform:test",
-        "//system:concurrent",
-        "//system/observation:argument",
-        "//test/report:error",
-        "//test/report:execution",
-        "@crates//:clap",
-        "@crates//:derive_more",
-        "@crates//:miette",
-        "@crates//:serde",
-        "@crates//:serde_json",
-        "@crates//:tracing",
+        "//test/system/function",
+        "//test/system/performance",
     ],
 )
 

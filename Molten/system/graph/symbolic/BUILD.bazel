@@ -11,15 +11,13 @@ package(default_visibility = ["//visibility:public"])
 rust_library(
     name = "constructor",
     srcs = ["constructor.rs"],
-    proc_macro_deps = [
-        "//system/observation:macro",
-    ],
     aliases = {
         "//system/translator:view": "translate",
     },
+    proc_macro_deps = [
+        "//system/observation:macro",
+    ],
     deps = [
-        "//component:translator",
-        "//system/translator:view",
         "//Molten:component",
         "//Molten/component/graph/symbolic:constructor",
         "//Molten/component/graph/symbolic/constructor:syntax",
@@ -28,8 +26,10 @@ rust_library(
         "//Molten/system/graph/symbolic/constructor:error",
         "//Molten/system/graph/symbolic/constructor:view",
         "//component:assemble",
+        "//component:translator",
         "//component/observation:module",
         "//system:language",
+        "//system/translator:view",
         "@crates//:miette",
         "@crates//:tracing",
     ],

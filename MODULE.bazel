@@ -259,6 +259,11 @@ crate.spec(
     package = "rstar",
     version = "0.12.2",
 )
+crate.spec(
+    features = ["serde-serialize"],
+    package = "nalgebra",
+    version = "0.33.2",
+)
 
 ##### Server                                                                                                        [ Toolchain, Rust, Crates, Server ]
 crate.spec(

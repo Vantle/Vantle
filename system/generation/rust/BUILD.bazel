@@ -36,12 +36,38 @@ rust_library(
 )
 
 rust_library(
-    name = "test",
-    srcs = ["test.rs"],
+    name = "function",
+    srcs = ["function.rs"],
     deps = [
         ":keyword",
         ":literal",
         "//:component",
+        "//system/graph:similarity",
+        "@crates//:proc-macro2",
+        "@crates//:quote",
+        "@crates//:serde_json",
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "context",
+    srcs = ["context.rs"],
+    deps = [
+        "@crates//:syn",
+    ],
+)
+
+rust_library(
+    name = "harness",
+    srcs = ["harness.rs"],
+    deps = [
+        ":context",
+        ":function",
+        "//component/generation/rust:error",
+        "//component/generation/rust:performance",
+        "//component/generation/rust:schema",
+        "//component/tag:expression",
         "//system/graph:similarity",
         "@crates//:proc-macro2",
         "@crates//:quote",
@@ -56,4 +82,18 @@ document(
     destination = "system/generation/rust/index.html",
     visibility = ["//visibility:public"],
     deps = ["//system/generation/rust/document:autotest"],
+)
+
+document(
+    src = "function.document.rs",
+    destination = "system/generation/rust/function.html",
+    visibility = ["//visibility:public"],
+    deps = ["//system/generation/rust/document:function"],
+)
+
+document(
+    src = "performance.document.rs",
+    destination = "system/generation/rust/performance.html",
+    visibility = ["//visibility:public"],
+    deps = ["//system/generation/rust/document:performance"],
 )

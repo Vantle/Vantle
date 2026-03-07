@@ -3,9 +3,11 @@ Autotest code generation macros and rules.
 
 Public API:
 - autotest_template: Generic template creation
-- autotest: Generic test generation
+- autotest_function: Generic function test generation
+- autotest_performance: Generic performance test generation
 - rust_autotest_template: Rust template with defaults
-- rust_autotest: Rust test generation with defaults
+- rust_autotest_function: Rust function test generation with defaults
+- rust_autotest_performance: Rust performance test generation with defaults
 
 Example:
     rust_autotest_template(
@@ -14,11 +16,19 @@ Example:
         deps = [],  # Optional custom deps
     )
 
-    rust_autotest(
+    rust_autotest_function(
         name = "my_test",
         template = ":template",
         cases = ":cases.json",
         deps = [],  # Optional custom deps (must match template if customized)
+    )
+
+    rust_autotest_performance(
+        name = "my_perf_test",
+        template = ":template",
+        cases = ":cases.json",
+        specification = ":specification.json",
+        deps = [],
     )
 """
 
@@ -127,7 +137,7 @@ _autotest_template_provider = rule(
     doc = "Internal rule providing TemplateInfo for code generation templates",
 )
 
-def _autotest_generate_impl(ctx):
+def _validate(ctx):
     if not ctx.attr.template:
         fail(
             "Template not found for target '{}'. Please ensure '{}' exists and is a valid library target.".format(
@@ -165,19 +175,27 @@ def _autotest_generate_impl(ctx):
         test_name = test_name[:-len(".generation")]
     output = ctx.actions.declare_file("{}.generated.{}".format(test_name, lang.extension))
 
-    action(ctx, ctx.executable.generator, [
+    return template_file, language, cases, lang, output
+
+def _autotest_function_generate_impl(ctx):
+    template_file, language, cases, _lang, output = _validate(ctx)
+
+    arguments = [
         "--template",
         template_file.path,
         "--cases",
         cases.path,
         "--language",
         language,
-    ], [template_file, cases], output, mnemonic = "Generator")
+    ]
+    inputs = [template_file, cases]
+
+    action(ctx, ctx.executable.generator, arguments, inputs, output, mnemonic = "Generator")
 
     return [DefaultInfo(files = depset([output]))]
 
-_autotest_generate = rule(
-    implementation = _autotest_generate_impl,
+_autotest_function_generate = rule(
+    implementation = _autotest_function_generate_impl,
     attrs = {
         "template": attr.label(
             mandatory = True,
@@ -199,7 +217,57 @@ _autotest_generate = rule(
             doc = "Build dependencies (typically includes template)",
         ),
     },
-    doc = "Generates test code from a template and test cases",
+    doc = "Generates function test code from a template and test cases",
+)
+
+def _autotest_performance_generate_impl(ctx):
+    template_file, language, cases, _lang, output = _validate(ctx)
+
+    arguments = [
+        "--template",
+        template_file.path,
+        "--cases",
+        cases.path,
+        "--language",
+        language,
+        "--specification",
+        ctx.file.specification.path,
+    ]
+    inputs = [template_file, cases, ctx.file.specification]
+
+    action(ctx, ctx.executable.generator, arguments, inputs, output, mnemonic = "Generator")
+
+    return [DefaultInfo(files = depset([output]))]
+
+_autotest_performance_generate = rule(
+    implementation = _autotest_performance_generate_impl,
+    attrs = {
+        "template": attr.label(
+            mandatory = True,
+            allow_files = True,
+            doc = "Template target providing TemplateInfo",
+        ),
+        "cases": attr.label(
+            allow_single_file = True,
+            mandatory = True,
+            doc = "Test cases data file (JSON)",
+        ),
+        "generator": attr.label(
+            mandatory = True,
+            executable = True,
+            cfg = "exec",
+            doc = "Generator binary for creating test files",
+        ),
+        "deps": attr.label_list(
+            doc = "Build dependencies (typically includes template)",
+        ),
+        "specification": attr.label(
+            allow_single_file = True,
+            mandatory = True,
+            doc = "Performance specification file (JSON)",
+        ),
+    },
+    doc = "Generates performance test code from a template, test cases, and specification",
 )
 
 #############################################################################
@@ -241,11 +309,23 @@ def autotest_template(name, src, language, library, deps = [], **kwargs):
         testonly = True,
     )
 
-def autotest(name, template, cases, language, generator = "//system/generation:generator", **kwargs):
-    """
-    Create a test target from a template and test cases.
+def _resolve_language(language, name):
+    if type(language) == "string":
+        target = LANGUAGES.get(language)
+        if not target:
+            fail("Unsupported language '{}' for '{}'. Supported: {}".format(
+                language,
+                name,
+                ", ".join(sorted(LANGUAGES.keys())),
+            ))
+        return target
+    return language
 
-    Language-agnostic base. Use language-specific wrappers (rust_autotest) for convenience.
+def autotest_function(name, template, cases, language, generator = "//system/generation:generator", **kwargs):
+    """
+    Create a function test target from a template and test cases.
+
+    Language-agnostic base. Use language-specific wrappers (rust_autotest_function) for convenience.
 
     Args:
         name: Test target name
@@ -256,32 +336,79 @@ def autotest(name, template, cases, language, generator = "//system/generation:g
         **kwargs: Passed to test target (deps, data, visibility, etc.)
     """
 
-    if type(language) == "string":
-        target = LANGUAGES.get(language)
-        if not target:
-            fail("Unsupported language '{}' for '{}'. Supported: {}".format(
-                language,
-                name,
-                ", ".join(sorted(LANGUAGES.keys())),
-            ))
-    else:
-        target = language
+    target = _resolve_language(language, name)
 
     if not template:
-        fail("autotest requires 'template' for '{}'".format(name))
+        fail("autotest_function requires 'template' for '{}'".format(name))
     if not cases:
-        fail("autotest requires 'cases' for '{}'".format(name))
+        fail("autotest_function requires 'cases' for '{}'".format(name))
 
     generate_target = "{}.generation".format(name)
 
-    _autotest_generate(
+    generate_attrs = {attr: kwargs[attr] for attr in ["visibility", "tags", "deprecation"] if attr in kwargs}
+
+    _autotest_function_generate(
         name = generate_target,
         template = template,
         cases = cases,
         generator = generator,
         deps = [template],
         testonly = True,
-        **{attr: kwargs[attr] for attr in ["visibility", "tags", "deprecation"] if attr in kwargs}
+        **generate_attrs
+    )
+
+    if "timeout" not in kwargs:
+        kwargs["timeout"] = "short"
+
+    proc_macro_deps = kwargs.pop("proc_macro_deps", [])
+    proc_macro_deps = depset(proc_macro_deps + target.proc_macro_deps).to_list()
+
+    target.test(
+        name = name,
+        srcs = [":{}".format(generate_target)],
+        use_libtest_harness = False,
+        proc_macro_deps = proc_macro_deps,
+        **kwargs
+    )
+
+def autotest_performance(name, template, cases, specification, language, generator = "//system/generation:generator", **kwargs):
+    """
+    Create a performance test target from a template, test cases, and specification.
+
+    Language-agnostic base. Use language-specific wrappers (rust_autotest_performance) for convenience.
+
+    Args:
+        name: Test target name
+        template: Template target (created with autotest_template)
+        cases: Test case data file (JSON)
+        specification: Performance specification file (JSON)
+        language: Language name or Language struct
+        generator: Generator binary (default: //system/generation:generator)
+        **kwargs: Passed to test target (deps, data, visibility, etc.)
+    """
+
+    target = _resolve_language(language, name)
+
+    if not template:
+        fail("autotest_performance requires 'template' for '{}'".format(name))
+    if not cases:
+        fail("autotest_performance requires 'cases' for '{}'".format(name))
+    if not specification:
+        fail("autotest_performance requires 'specification' for '{}'".format(name))
+
+    generate_target = "{}.generation".format(name)
+
+    generate_attrs = {attr: kwargs[attr] for attr in ["visibility", "tags", "deprecation"] if attr in kwargs}
+    generate_attrs["specification"] = specification
+
+    _autotest_performance_generate(
+        name = generate_target,
+        template = template,
+        cases = cases,
+        generator = generator,
+        deps = [template],
+        testonly = True,
+        **generate_attrs
     )
 
     if "timeout" not in kwargs:
@@ -329,9 +456,9 @@ def rust_autotest_template(name, src, deps = [], **kwargs):
         **kwargs
     )
 
-def rust_autotest(name, template, cases, generator = "//system/generation:generator", deps = [], **kwargs):
+def rust_autotest_function(name, template, cases, generator = "//system/generation:generator", deps = [], **kwargs):
     """
-    Generate and run Rust tests from a template and test cases.
+    Generate and run Rust function tests from a template and test cases.
 
     Standard deps auto-included: serde, serde_json, vantle, component, utility.
     Only specify deps if template has custom dependencies beyond defaults.
@@ -350,11 +477,51 @@ def rust_autotest(name, template, cases, generator = "//system/generation:genera
     merged = depset(deps + standard_deps).to_list()
     kwargs["deps"] = merged
 
-    autotest(
+    autotest_function(
         name = name,
         template = template,
         cases = cases,
         language = "rust",
         generator = generator,
+        **kwargs
+    )
+
+def rust_autotest_performance(name, template, cases, specification, deps = [], **kwargs):
+    """
+    Generate and run Rust performance tests from a template, test cases, and a performance specification.
+
+    Auto-includes standard deps plus performance-specific deps (regression, nalgebra).
+    Selects cases by tag, times them, auto-infers best-fit model, and asserts bounds.
+
+    Args:
+        name: Test target name
+        template: Template target (created with rust_autotest_template)
+        cases: Test case data file (JSON)
+        specification: Performance specification file (JSON)
+        deps: Custom dependencies (only if template uses non-default deps)
+        **kwargs: Passed to rust_test (data, visibility, etc.)
+    """
+
+    performance_deps = [
+        "//component/math:regression",
+        "//test/system/performance:performance",
+        "@crates//:nalgebra",
+    ]
+
+    rust_language = LANGUAGES.get("rust")
+    merged = depset(deps + rust_language.deps + performance_deps).to_list()
+    kwargs["deps"] = merged
+
+    rustc_flags = kwargs.get("rustc_flags", [])
+    if "-A" not in " ".join(rustc_flags):
+        rustc_flags = rustc_flags + ["-A", "dead_code"]
+    kwargs["rustc_flags"] = rustc_flags
+
+    autotest_performance(
+        name = name,
+        template = template,
+        cases = cases,
+        specification = specification,
+        language = "rust",
         **kwargs
     )

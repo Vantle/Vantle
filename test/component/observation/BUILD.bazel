@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_function")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -11,7 +11,7 @@ package(default_visibility = [
 ])
 
 ##### Module                                                                                                                                           [ Module ]
-rust_autotest(
+rust_autotest_function(
     name = "observation",
     cases = "//test/resource/component/observation:cases",
     template = "//test/resource/component/observation:template",
@@ -23,7 +23,7 @@ rust_autotest(
     ],
 )
 
-rust_autotest(
+rust_autotest_function(
     name = "lifecycle",
     cases = "//test/resource/component/observation/lifecycle:cases",
     template = "//test/resource/component/observation/lifecycle:template",
@@ -35,7 +35,7 @@ rust_autotest(
     ],
 )
 
-rust_autotest(
+rust_autotest_function(
     name = "channel",
     cases = "//test/resource/component/observation/channel:cases",
     template = "//test/resource/component/observation/channel:template",
@@ -44,13 +44,15 @@ rust_autotest(
     ],
 )
 
-rust_autotest(
+rust_autotest_function(
     name = "expression",
+    aliases = {"//component/observation:expression": "filterable"},
     cases = "//test/resource/component/observation/expression:cases",
     template = "//test/resource/component/observation/expression:template",
     deps = [
         "//component/observation:channel",
         "//component/observation:expression",
+        "//component/tag:expression",
         "//component/observation/expression:parse",
     ],
 )

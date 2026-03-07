@@ -47,9 +47,9 @@ rust_library(
     name = "endpoint",
     srcs = ["endpoint.rs"],
     deps = [
-        "//component/observation:expression",
         "//component/observation:layer",
         "//component/observation/expression:parse",
+        "//component/tag:expression",
         "//system/observation/trace:error",
         "@crates//:tracing",
         "@crates//:url",
@@ -59,13 +59,15 @@ rust_library(
 rust_library(
     name = "trace",
     srcs = ["trace.rs"],
+    aliases = {"//component/observation:expression": "filterable"},
     deps = [
         ":endpoint",
         "//component/observation:channel",
+        "//component/observation:expression",
         "//component/observation:filter",
         "//component/observation:layer",
         "//component/observation:stream",
-        "//component/observation:expression",
+        "//component/tag:expression",
         "//system/observation/trace:error",
         "//system/observation/trace/layer:chrome",
         "//system/observation/trace/layer:grpc",

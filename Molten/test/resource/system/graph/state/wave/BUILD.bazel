@@ -17,6 +17,11 @@ filegroup(
 )
 
 filegroup(
+    name = "performance",
+    srcs = ["performance.cases.json"],
+)
+
+filegroup(
     name = "data",
     srcs = [
         "wave.template.rs",

@@ -12,7 +12,7 @@ rust_library(
     name = "error",
     srcs = ["error.rs"],
     deps = [
-        "//component/observation:expression",
+        "//component/tag:expression",
         "@crates//:miette",
         "@crates//:thiserror",
         "@crates//:url",

@@ -1,0 +1,53 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+load("@vantle//component/generation/starlark:defs.bzl", "extract", "rust_autotest_template")
+##### External                                                                                                                               [ Import, External ]
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+filegroup(
+    name = "cases",
+    srcs = ["cases.json"],
+)
+
+filegroup(
+    name = "performance",
+    srcs = ["performance.cases.json"],
+)
+
+rust_autotest_template(
+    name = "template",
+    src = "sort.template.rs",
+)
+
+extract(
+    name = "sort.document",
+    language = "rust",
+    query = "(function_item name: (identifier) @name (#eq? @name \"sort\")) @capture",
+    source = "sort.template.rs",
+    visibility = ["//visibility:public"],
+)
+
+extract(
+    name = "sort.cases.json",
+    language = "json",
+    query = "(document) @capture",
+    source = "cases.json",
+    visibility = ["//visibility:public"],
+)
+
+extract(
+    name = "specification.json",
+    language = "json",
+    query = "(document) @capture",
+    source = "performance.cases.json",
+    visibility = ["//visibility:public"],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

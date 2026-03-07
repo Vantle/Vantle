@@ -5,7 +5,13 @@
 load("@rules_rust//rust:defs.bzl", "rust_library")
 
 ##### Visibility                                                                                                                                       [ Module ]
-package(default_visibility = ["//component/generation:__pkg__"])
+package(default_visibility = [
+    "//component/generation:__pkg__",
+    "//system/generation:__pkg__",
+    "//system/generation:__subpackages__",
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
@@ -37,6 +43,15 @@ rust_library(
         ":types",
         "@crates//:serde",
         "@crates//:serde_json",
+    ],
+)
+
+rust_library(
+    name = "performance",
+    srcs = ["performance.rs"],
+    deps = [
+        ":types",
+        "@crates//:serde",
     ],
 )
 

@@ -20,9 +20,9 @@ rust_library(
     deps = [
         ":error",
         "//component:translator",
+        "//component/observation:module",
         "//component/translator:rule",
         "//system/translator:consume",
-        "//component/observation:module",
         "@crates//:tracing",
     ],
 )
@@ -34,8 +34,8 @@ rust_library(
         "//system/translator:error": "translate",
     },
     deps = [
-        "//system/translator:error",
         "//system:language",
+        "//system/translator:error",
         "@crates//:miette",
         "@crates//:thiserror",
     ],

@@ -1,0 +1,26 @@
+{
+    "functions": [
+        {
+            "function": "join",
+            "select": "performance",
+            "measure": {
+                "candidate": "length"
+            },
+            "sampling": {
+                "iterations": 30,
+                "warmup": 5
+            },
+            "bounds": [
+                {
+                    "at": {
+                        "candidate": 25
+                    },
+                    "within": "5s"
+                },
+                {
+                    "determination": 0.7
+                }
+            ]
+        }
+    ]
+}

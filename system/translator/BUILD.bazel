@@ -13,8 +13,8 @@ rust_library(
     srcs = ["buffer.rs"],
     deps = [
         ":error",
-        "//component/translator:rule",
         "//component/observation:module",
+        "//component/translator:rule",
         "@crates//:tracing",
     ],
 )
@@ -29,8 +29,8 @@ rust_library(
         ":buffer",
         ":error",
         "//component:translator",
-        "//component/translator:rule",
         "//component/observation:module",
+        "//component/translator:rule",
         "@crates//:tracing",
     ],
 )
@@ -54,8 +54,8 @@ rust_library(
         ":buffer",
         ":error",
         "//component:translator",
-        "//component/translator:rule",
         "//component/observation:module",
+        "//component/translator:rule",
         "@crates//:tracing",
     ],
 )

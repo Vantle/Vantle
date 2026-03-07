@@ -1,0 +1,26 @@
+{
+    "functions": [
+        {
+            "function": "sort",
+            "select": "performance",
+            "measure": {
+                "size": "value"
+            },
+            "sampling": {
+                "iterations": 20,
+                "warmup": 5
+            },
+            "bounds": [
+                {
+                    "at": {
+                        "size": 99999
+                    },
+                    "within": "1s"
+                },
+                {
+                    "determination": 0.85
+                }
+            ]
+        }
+    ]
+}

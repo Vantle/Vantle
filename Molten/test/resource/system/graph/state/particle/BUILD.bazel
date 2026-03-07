@@ -45,10 +45,18 @@ extract(
 )
 
 extract(
-    name = "cases.document",
+    name = "particle.cases.json",
     language = "json",
     query = "(document) @capture",
     source = "cases.json",
+    visibility = ["//visibility:public"],
+)
+
+extract(
+    name = "template.document",
+    language = "starlark",
+    query = "(call function: (identifier) @name (#eq? @name \"rust_autotest_template\")) @capture",
+    source = "BUILD.bazel",
     visibility = ["//visibility:public"],
 )
 

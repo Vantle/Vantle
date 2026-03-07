@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_function")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -12,7 +12,7 @@ package(default_visibility = [
 
 ##### Module                                                                                                                                           [ Module ]
 
-rust_autotest(
+rust_autotest_function(
     name = "syntax",
     cases = "//Molten/test/resource/component/graph/symbolic/constructor/syntax:cases",
     template = "//Molten/test/resource/component/graph/symbolic/constructor/syntax:template",

@@ -1,12 +1,6 @@
-use std::collections::HashMap;
+use syn::File;
 
-use syn::{
-    File, Ident, ItemFn, ItemMod, Signature,
-    visit::{self, Visit},
-};
-
-use component::generation::rust::error::Error;
-use component::generation::rust::schema::Cases;
+use component::generation::rust::{error::Error, schema::Cases};
 
 pub fn generate(
     template: &str,
@@ -17,34 +11,37 @@ pub fn generate(
 ) -> Result<String, Box<Error>> {
     let mut ast = syn::parse_file(template).map_err(Error::from)?;
 
-    let context = Context::from_ast(&ast);
+    let context = context::Context::from(&ast);
     let registrations = process(data, &context, content, path)?;
 
     inject(&mut ast, registrations, source, path);
     Ok(prettyplease::unparse(&ast))
 }
 
-struct Context {
-    functions: HashMap<String, Signature>,
-}
+pub fn benchmark(
+    template: &str,
+    data: &Cases,
+    specification: &performance::Specification,
+    content: &str,
+    path: &str,
+    source: &str,
+    location: &str,
+) -> Result<String, Box<Error>> {
+    let mut ast = syn::parse_file(template).map_err(Error::from)?;
 
-impl Context {
-    fn from_ast(ast: &File) -> Self {
-        let mut collector = Collector::default();
-        collector.visit_file(ast);
+    let context = context::Context::from(&ast);
+    let registrations = harness::measure(data, specification, &context, content, path)?;
 
-        Self {
-            functions: collector.functions,
-        }
-    }
+    harness::instrument(&mut ast, registrations, source, path, location);
+    Ok(prettyplease::unparse(&ast))
 }
 
 fn process(
     data: &Cases,
-    context: &Context,
+    context: &context::Context,
     content: &str,
     path: &str,
-) -> Result<Vec<test::Registration>, Box<Error>> {
+) -> Result<Vec<function::Registration>, Box<Error>> {
     let mut registrations = Vec::new();
 
     for function in &data.functions {
@@ -82,13 +79,13 @@ fn process(
         }
 
         for case in &function.cases {
-            let inputs = test::Inputs {
+            let inputs = function::Inputs {
                 parameters: &function.parameters,
                 returns: &function.returns,
                 functions: &context.functions,
             };
 
-            let registration = test::build(
+            let registration = function::build(
                 case,
                 &function.function,
                 &function.tags,
@@ -104,10 +101,10 @@ fn process(
     Ok(registrations)
 }
 
-fn inject(ast: &mut File, registrations: Vec<test::Registration>, source: &str, cases: &str) {
+fn inject(ast: &mut File, registrations: Vec<function::Registration>, source: &str, cases: &str) {
     let statements = registrations
         .into_iter()
-        .map(registration)
+        .map(emit)
         .collect::<Vec<syn::Stmt>>();
 
     let entry: syn::ItemFn = syn::parse_quote! {
@@ -115,11 +112,11 @@ fn inject(ast: &mut File, registrations: Vec<test::Registration>, source: &str, 
             use miette::IntoDiagnostic as _;
 
             vantle::system::command::execute(
-                |arguments: &vantle::test::report::Arguments| {
+                |arguments: &vantle::test::system::function::Arguments| {
                     vantle::system::observation::initialize(&arguments.sink.sink)
                 },
                 |arguments, runtime| {
-                    let mut executor: vantle::test::report::Executor = vantle::test::report::Executor::new(arguments, #source, #cases);
+                    let mut executor: vantle::test::system::function::Executor = vantle::test::system::function::Executor::new(arguments, #source, #cases);
                     #(#statements)*
                     executor.wait(runtime)
                 },
@@ -130,7 +127,7 @@ fn inject(ast: &mut File, registrations: Vec<test::Registration>, source: &str, 
     ast.items.push(syn::Item::Fn(entry));
 }
 
-fn registration(reg: test::Registration) -> syn::Stmt {
+fn emit(reg: function::Registration) -> syn::Stmt {
     let name = &reg.name;
     let tags = reg
         .tags
@@ -161,45 +158,6 @@ fn registration(reg: test::Registration) -> syn::Stmt {
                     Ok(actuals)
                 },
             );
-        }
-    }
-}
-
-#[derive(Default)]
-struct Collector {
-    functions: HashMap<String, Signature>,
-    module: Vec<Ident>,
-}
-
-impl Visit<'_> for Collector {
-    fn visit_item_fn(&mut self, item: &ItemFn) {
-        let name = item.sig.ident.to_string();
-        let qualified = self.qualified(&name);
-
-        self.functions.insert(qualified, item.sig.clone());
-
-        visit::visit_item_fn(self, item);
-    }
-
-    fn visit_item_mod(&mut self, item: &ItemMod) {
-        self.module.push(item.ident.clone());
-        visit::visit_item_mod(self, item);
-        self.module.pop();
-    }
-}
-
-impl Collector {
-    fn qualified(&self, name: &str) -> String {
-        if self.module.is_empty() {
-            name.to_string()
-        } else {
-            let path = self
-                .module
-                .iter()
-                .map(ToString::to_string)
-                .collect::<Vec<_>>()
-                .join("::");
-            format!("{path}::{name}")
         }
     }
 }

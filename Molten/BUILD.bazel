@@ -80,4 +80,3 @@ extract(
     source = "BUILD.bazel",
     visibility = ["//visibility:public"],
 )
-

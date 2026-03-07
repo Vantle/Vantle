@@ -1,6 +1,5 @@
 use clap::{Parser, ValueEnum};
-use component::generation::rust::error::Error;
-use component::generation::rust::schema::Cases;
+use component::generation::rust::{error::Error, schema::Cases};
 use miette::{Context, IntoDiagnostic};
 use std::{fs, path::PathBuf};
 
@@ -22,6 +21,8 @@ struct Arguments {
     language: Language,
     #[arg(long, help = "Output file path")]
     output: PathBuf,
+    #[arg(long, help = "Path to performance specification JSON file")]
+    specification: Option<PathBuf>,
 }
 
 fn main() -> miette::Result<()> {
@@ -56,14 +57,45 @@ fn generate(arguments: Arguments) -> miette::Result<()> {
         .map_err(|e| Error::deserialization("Cases", &arguments.cases, &cases, e))?;
 
     let output = match arguments.language {
-        Language::Rust => rust::generate(
-            &template,
-            &data,
-            &cases,
-            &arguments.cases.to_string_lossy(),
-            &arguments.template.to_string_lossy(),
-        )
-        .map_err(|e| miette::Report::new(*e))?,
+        Language::Rust => match arguments.specification {
+            None => rust::generate(
+                &template,
+                &data,
+                &cases,
+                &arguments.cases.to_string_lossy(),
+                &arguments.template.to_string_lossy(),
+            )
+            .map_err(|e| miette::Report::new(*e))?,
+            Some(ref specification_path) => {
+                let specification_content = fs::read_to_string(specification_path)
+                    .into_diagnostic()
+                    .wrap_err(format!(
+                        "failed to read specification: {}",
+                        specification_path.display()
+                    ))?;
+
+                let specification: performance::Specification =
+                    serde_json::from_str(&specification_content).map_err(|e| {
+                        Error::deserialization(
+                            "Specification",
+                            specification_path,
+                            &specification_content,
+                            e,
+                        )
+                    })?;
+
+                rust::benchmark(
+                    &template,
+                    &data,
+                    &specification,
+                    &cases,
+                    &arguments.cases.to_string_lossy(),
+                    &arguments.template.to_string_lossy(),
+                    &specification_path.to_string_lossy(),
+                )
+                .map_err(|e| miette::Report::new(*e))?
+            }
+        },
     };
 
     if let Some(parent) = arguments.output.parent() {

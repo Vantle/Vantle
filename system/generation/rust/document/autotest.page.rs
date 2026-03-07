@@ -1,12 +1,10 @@
 use body::Chain;
-use element::Element;
 use extraction::Query;
 use language::Language;
-use span::Fragment;
 use style::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Autotest", "generation", "autotest", root, |c| {
+    style::layout("Autotest", "autotest", "autotest", root, |c| {
         c.title("Autotest")
             .subtitle("JSON-driven test generation for Rust")
             .rule()
@@ -29,7 +27,7 @@ pub fn page(root: &str) -> page::Result {
                         .code("cases.json")
                         .text(". Each function specifies default parameters, expected returns, and individual cases that can override defaults:")
                 })
-                .extract(cases_document::EXTRACTIONS.one())
+                .extract(particle_cases_json::EXTRACTIONS.one())
             })
             .rule()
             .section("Execution", |s| {
@@ -44,62 +42,51 @@ pub fn page(root: &str) -> page::Result {
             })
             .rule()
             .section("Macro", |s| {
-                s.paragraph(|p| {
-                    p.text("Two Starlark macros work as a pair. The template compiles as a ")
-                        .code("rust_library")
-                        .text(" for IDE support. The generator reads the template and cases, then produces a ")
-                        .code(".generated.rs")
-                        .text(" test file that runs via ")
-                        .code("rust_test")
-                        .text(".")
-                })
-                .code("load(\"@vantle//component/generation/starlark:defs.bzl\", \"rust_autotest\", \"rust_autotest_template\")\n\nrust_autotest_template(\n    name = \"template\",\n    src = \"function.template.rs\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)\n\nrust_autotest(\n    name = \"function\",\n    template = \":template\",\n    cases = \":cases.json\",\n    deps = [\"//Molten/component/graph/state/particle:module\"],\n)", Language::Starlark)
-                .subsection("rust_autotest_template", |ss| {
+                s.subsection("rust_autotest_template", |ss| {
                     ss.paragraph(|p| {
-                        p.text("Validates template compilation and enables IDE support. Automatically adds ")
+                        p.text("Compiles the template as a ")
+                            .code("rust_library")
+                            .text(" for IDE support. Automatically adds ")
                             .code("-A dead_code")
-                            .text(".")
+                            .text(". Shared by both function and performance modules.")
                     })
+                    .extract(template_document::EXTRACTIONS.one())
                     .table(|t| {
                         t.header(["Parameter", "Description"])
                             .describe("src", "Template source file")
                             .describe("deps", "Template dependencies")
                     })
                 })
-                .subsection("rust_autotest", |ss| {
-                    ss.paragraph(|p| {
-                        p.text("Generates and runs test functions. Standard Vantle dependencies are auto-included; only add deps beyond the defaults.")
-                    })
-                    .table(|t| {
-                        t.header(["Parameter", "Description"])
-                            .markup([
-                                Element::Span(vec![Fragment::Code("template".into())]),
-                                Element::Span(vec![
-                                    Fragment::Text("Template target from ".into()),
-                                    Fragment::Code("rust_autotest_template".into()),
-                                ]),
-                            ])
-                            .describe("cases", "JSON test case definitions")
-                            .describe("deps", "Custom dependencies beyond defaults")
-                    })
-                })
             })
             .rule()
-            .section("Features", |s| {
-                s.list(|ul| {
-                    ul.feature(
-                        "Parameter shadowing",
-                        ": Function-level defaults with case-level overrides",
-                    )
-                    .feature("Tag organization", ": Filter tests by tags")
-                    .feature(
-                        "Schema validation",
-                        ": Parameters match function signatures",
-                    )
-                    .feature(
-                        "Rich diagnostics",
-                        ": Error reporting via miette with source locations",
-                    )
+            .section("Modules", |s| {
+                s.subsection("Function", |ss| {
+                    ss.aside(|a| {
+                        a.italic("Generates exhaustive test suites from template functions and JSON cases")
+                    })
+                    .paragraph(|p| {
+                        p.text("Each template function is expanded into individual test cases with parameter shadowing, tag filtering, and schema validation.")
+                    })
+                    .paragraph(|p| {
+                        p.link(
+                            &format!("{root}system/generation/rust/function.html"),
+                            "more \u{2192}",
+                        )
+                    })
+                })
+                .subsection("Performance", |ss| {
+                    ss.aside(|a| {
+                        a.italic("Regression-aware performance testing with statistical curve fitting")
+                    })
+                    .paragraph(|p| {
+                        p.text("Measures execution time across scaling inputs, fits complexity curves, and enforces bounds on both wall time and R\u{00b2} determination.")
+                    })
+                    .paragraph(|p| {
+                        p.link(
+                            &format!("{root}system/generation/rust/performance.html"),
+                            "more \u{2192}",
+                        )
+                    })
                 })
             })
     })

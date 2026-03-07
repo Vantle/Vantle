@@ -1,9 +1,9 @@
-pub use channel;
 pub use error;
 
 use endpoint::{Sink, Stream};
 use expression::Expression;
 use filter::Filter;
+use filterable::Filterable as _;
 use std::io::{LineWriter, Write};
 use std::sync::Mutex;
 use tokio_util::sync::CancellationToken;

@@ -6,8 +6,6 @@ use itertools::Itertools;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use serde_with::serde_as;
 
-pub use particle;
-
 use particle::Particle;
 
 #[serde_as]
@@ -39,6 +37,16 @@ impl<T: Eq + Ord> Wave<T> {
     #[must_use]
     pub fn new(particles: BTreeMap<Particle<T>, usize>) -> Self {
         Wave { particles }
+    }
+
+    #[must_use]
+    pub fn len(&self) -> usize {
+        self.particles.len()
+    }
+
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.particles.is_empty()
     }
 
     #[must_use]

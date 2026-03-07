@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_function")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -11,7 +11,7 @@ package(default_visibility = [
 ])
 
 ##### Module                                                                                                                                           [ Module ]
-rust_autotest(
+rust_autotest_function(
     name = "snapshot",
     cases = "//Molten/test/resource/system/observation/snapshot:cases",
     template = "//Molten/test/resource/system/observation/snapshot:template",

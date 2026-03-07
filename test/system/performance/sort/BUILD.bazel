@@ -1,0 +1,30 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@vantle//component/generation/starlark:defs.bzl", "extract", "rust_autotest_performance")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest_performance(
+    name = "sort",
+    size = "medium",
+    cases = "//test/resource/system/performance/sort:cases",
+    specification = "//test/resource/system/performance/sort:performance",
+    template = "//test/resource/system/performance/sort:template",
+)
+
+extract(
+    name = "performance.document",
+    language = "starlark",
+    query = "(call function: (identifier) @name (#eq? @name \"rust_autotest_performance\")) @capture",
+    source = "BUILD.bazel",
+    visibility = ["//visibility:public"],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

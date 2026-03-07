@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest")
+load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
 
 ##### External                                                                                                                               [ Import, External ]
 
@@ -12,7 +12,7 @@ package(default_visibility = [
 ])
 
 ##### Module                                                                                                                                           [ Module ]
-rust_autotest(
+rust_autotest_function(
     name = "evaluate",
     cases = "//Molten/test/resource/system/hypergraph/evaluate:cases",
     template = "//Molten/test/resource/system/hypergraph/evaluate:template",
@@ -24,7 +24,7 @@ rust_autotest(
     ],
 )
 
-rust_autotest(
+rust_autotest_function(
     name = "observation",
     cases = "//Molten/test/resource/system/hypergraph/evaluate/observation:cases",
     template = "//Molten/test/resource/system/hypergraph/evaluate/observation:template",

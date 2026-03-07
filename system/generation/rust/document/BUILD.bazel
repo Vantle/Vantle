@@ -13,16 +13,48 @@ rust_library(
     name = "autotest",
     srcs = ["autotest.page.rs"],
     deps = [
-        "//Molten/test/resource/system/graph/state/particle:cases.document",
         "//Molten/test/resource/system/graph/state/particle:disjoint",
+        "//Molten/test/resource/system/graph/state/particle:particle.cases.json",
+        "//Molten/test/resource/system/graph/state/particle:template.document",
         "//component/web:body",
-        "//component/web:class",
-        "//component/web:element",
         "//component/web:extraction",
         "//component/web:language",
         "//component/web:page",
+        "//system/generation/web:style",
+        "@crates//:miette",
+    ],
+)
+
+rust_library(
+    name = "function",
+    srcs = ["function.page.rs"],
+    crate_name = "function",
+    deps = [
+        "//Molten/test/component/graph/state/particle:function.document",
+        "//component/web:body",
+        "//component/web:element",
+        "//component/web:extraction",
+        "//component/web:page",
         "//component/web:span",
         "//system/generation/web:style",
+        "@crates//:miette",
+    ],
+)
+
+rust_library(
+    name = "performance",
+    srcs = ["performance.page.rs"],
+    deps = [
+        "//component/web:body",
+        "//component/web:element",
+        "//component/web:extraction",
+        "//component/web:page",
+        "//component/web:span",
+        "//system/generation/web:style",
+        "//test/resource/system/performance/sort:sort.cases.json",
+        "//test/resource/system/performance/sort:sort.document",
+        "//test/resource/system/performance/sort:specification.json",
+        "//test/system/performance/sort:performance.document",
         "@crates//:miette",
     ],
 )

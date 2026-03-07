@@ -20,7 +20,10 @@ rust_library(
     srcs = ["rust.rs"],
     deps = [
         "//:component",
-        "//system/generation/rust:test",
+        "//component/generation/rust:performance",
+        "//system/generation/rust:context",
+        "//system/generation/rust:function",
+        "//system/generation/rust:harness",
         "//system/graph:similarity",
         "@crates//:prettyplease",
         "@crates//:serde_json",
@@ -37,6 +40,7 @@ rust_binary(
     deps = [
         "//:component",
         "//:system",
+        "//component/generation/rust:performance",
         "//component/observation:module",
         "//system:command",
         "//system:diagnostic",

@@ -170,6 +170,19 @@ pub fn layout(
                                                 ),
                                                 |a| a.text("Autotest"),
                                             )
+                                            .separator()
+                                            .anchor(
+                                                &format!(
+                                                    "{root}system/generation/rust/function.html"
+                                                ),
+                                                |a| a.text("Function"),
+                                            )
+                                            .anchor(
+                                                &format!(
+                                                    "{root}system/generation/rust/performance.html"
+                                                ),
+                                                |a| a.text("Performance"),
+                                            )
                                     })
                             })
                             .anchor(&format!("{root}system/observation/"), |a| {
@@ -230,6 +243,30 @@ fn sidebar(body: Body, root: &str, context: &str, identifier: &str) -> Result {
                     "Autotest",
                     format!("{root}system/generation/rust/"),
                     "autotest",
+                ),
+            ],
+            vec![
+                ("Info", format!("{root}info.html"), "info"),
+                ("Notice", format!("{root}notice.html"), "notice"),
+                ("License", format!("{root}license.html"), "license"),
+            ],
+        ),
+        "autotest" => (
+            vec![
+                (
+                    "Autotest",
+                    format!("{root}system/generation/rust/"),
+                    "autotest",
+                ),
+                (
+                    "Function",
+                    format!("{root}system/generation/rust/function.html"),
+                    "function",
+                ),
+                (
+                    "Performance",
+                    format!("{root}system/generation/rust/performance.html"),
+                    "performance",
                 ),
             ],
             vec![

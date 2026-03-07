@@ -2,7 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest")
+load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_function")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -11,7 +11,7 @@ package(default_visibility = [
 ])
 
 ##### Module                                                                                                                                           [ Module ]
-rust_autotest(
+rust_autotest_function(
     name = "wave",
     cases = "//Molten/test/resource/component/graph/state/wave:cases",
     template = "//Molten/test/resource/component/graph/state/wave:template",

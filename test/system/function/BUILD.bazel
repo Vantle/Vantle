@@ -5,7 +5,8 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
-    "//test:__pkg__",
+    "//:__pkg__",
+    "//:__subpackages__",
 ])
 
 ##### Module                                                                                                                                           [ Module ]
@@ -13,7 +14,7 @@ rust_library(
     name = "error",
     srcs = ["error.rs"],
     deps = [
-        "//system/generation/runtime:runtime",
+        "//system/generation/runtime",
         "@crates//:miette",
         "@crates//:serde_json",
         "@crates//:thiserror",
@@ -24,8 +25,29 @@ rust_library(
     name = "execution",
     srcs = ["execution.rs"],
     deps = [
-        "//test/report:error",
+        "//test/system/function:error",
         "@crates//:serde",
         "@crates//:serde_json",
+    ],
+)
+
+rust_library(
+    name = "function",
+    srcs = ["report.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
+    deps = [
+        "//component/observation:channel",
+        "//component/observation:module",
+        "//platform:test",
+        "//system:concurrent",
+        "//system/observation:argument",
+        "//test/system/function:error",
+        "//test/system/function:execution",
+        "@crates//:clap",
+        "@crates//:derive_more",
+        "@crates//:miette",
+        "@crates//:serde",
+        "@crates//:serde_json",
+        "@crates//:tracing",
     ],
 )

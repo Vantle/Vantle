@@ -80,6 +80,11 @@ pub mod nav {
     pub fn menu() -> Reference {
         Reference("nav-dropdown-menu")
     }
+
+    #[must_use]
+    pub fn nested() -> Reference {
+        Reference("nav-nested")
+    }
 }
 
 pub mod label {

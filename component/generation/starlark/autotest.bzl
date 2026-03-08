@@ -32,7 +32,7 @@ Example:
     )
 """
 
-load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load(":action.bzl", "action")
 
 #############################################################################
@@ -81,23 +81,58 @@ LANGUAGES = {
         extension = "rs",
         test = rust_test,
         library = rust_library,
-        deps = [
-            "@crates//:clap",
-            "@crates//:miette",
-            "@crates//:serde",
-            "@crates//:serde_json",
-            "//:module",
-            "//system:command",
-            "//system:concurrent",
-            "//system:diagnostic",
-            "//system:observation",
-            "//system/generation/runtime:runtime",
-        ],
+        deps = [],
         proc_macro_deps = [
             "//system/observation:macro",
         ],
     ),
 }
+
+_CRATE = struct(
+    miette = "@crates//:miette",
+    nalgebra = "@crates//:nalgebra",
+    serde = "@crates//:serde",
+    serde_json = "@crates//:serde_json",
+)
+
+_SYSTEM = struct(
+    command = "//system:command",
+    diagnostic = "//system:diagnostic",
+    observation = "//system:observation",
+    runtime = "//system/generation/runtime:runtime",
+)
+
+_HARNESS = struct(
+    function = "//test/system:function",
+    performance = "//test/system:performance",
+    regression = "//component/math:regression",
+    utility = "//test:utility",
+)
+
+_BASE = [
+    _CRATE.miette,
+    _CRATE.serde,
+    _CRATE.serde_json,
+    _SYSTEM.command,
+    _SYSTEM.diagnostic,
+    _SYSTEM.observation,
+    _SYSTEM.runtime,
+]
+
+dependencies = struct(
+    template = [_CRATE.serde],
+    rust = struct(
+        function = _BASE + [
+            _HARNESS.function,
+            _HARNESS.utility,
+        ],
+        performance = _BASE + [
+            _CRATE.nalgebra,
+            _HARNESS.performance,
+            _HARNESS.regression,
+        ],
+    ),
+)
 
 #############################################################################
 # INTERNAL RULES
@@ -289,6 +324,8 @@ def autotest_template(name, src, language, library, deps = [], **kwargs):
         **kwargs: Passed to library rule
     """
 
+    testonly = kwargs.pop("testonly", True)
+
     library_name = "{}.library".format(name)
     crate_name = "{}_library".format(name)
     library(
@@ -296,7 +333,7 @@ def autotest_template(name, src, language, library, deps = [], **kwargs):
         crate_name = crate_name,
         srcs = [src],
         deps = deps,
-        testonly = True,
+        testonly = testonly,
         **kwargs
     )
 
@@ -306,7 +343,7 @@ def autotest_template(name, src, language, library, deps = [], **kwargs):
         language = language,
         deps = deps,
         library = ":{}".format(library_name),
-        testonly = True,
+        testonly = testonly,
     )
 
 def _resolve_language(language, name):
@@ -336,6 +373,8 @@ def autotest_function(name, template, cases, language, generator = "//system/gen
         **kwargs: Passed to test target (deps, data, visibility, etc.)
     """
 
+    testonly = kwargs.pop("testonly", True)
+
     target = _resolve_language(language, name)
 
     if not template:
@@ -353,7 +392,7 @@ def autotest_function(name, template, cases, language, generator = "//system/gen
         cases = cases,
         generator = generator,
         deps = [template],
-        testonly = True,
+        testonly = testonly,
         **generate_attrs
     )
 
@@ -367,6 +406,7 @@ def autotest_function(name, template, cases, language, generator = "//system/gen
         name = name,
         srcs = [":{}".format(generate_target)],
         use_libtest_harness = False,
+        testonly = testonly,
         proc_macro_deps = proc_macro_deps,
         **kwargs
     )
@@ -386,6 +426,8 @@ def autotest_performance(name, template, cases, specification, language, generat
         generator: Generator binary (default: //system/generation:generator)
         **kwargs: Passed to test target (deps, data, visibility, etc.)
     """
+
+    testonly = kwargs.pop("testonly", True)
 
     target = _resolve_language(language, name)
 
@@ -407,7 +449,7 @@ def autotest_performance(name, template, cases, specification, language, generat
         cases = cases,
         generator = generator,
         deps = [template],
-        testonly = True,
+        testonly = testonly,
         **generate_attrs
     )
 
@@ -421,9 +463,20 @@ def autotest_performance(name, template, cases, specification, language, generat
         name = name,
         srcs = [":{}".format(generate_target)],
         use_libtest_harness = False,
+        testonly = testonly,
         proc_macro_deps = proc_macro_deps,
         **kwargs
     )
+
+    if not testonly:
+        rust_binary(
+            name = name + ".binary",
+            crate_name = name + "_binary",
+            srcs = [":" + generate_target],
+            deps = kwargs.get("deps", []),
+            proc_macro_deps = proc_macro_deps,
+            rustc_flags = kwargs.get("rustc_flags", []),
+        )
 
 def rust_autotest_template(name, src, deps = [], **kwargs):
     """
@@ -444,9 +497,7 @@ def rust_autotest_template(name, src, deps = [], **kwargs):
         rustc_flags = rustc_flags + ["-A", "dead_code"]
     kwargs["rustc_flags"] = rustc_flags
 
-    rust_language = LANGUAGES.get("rust")
-    merged = depset(deps + rust_language.deps).to_list()
-    kwargs["deps"] = merged
+    kwargs["deps"] = depset(deps + dependencies.template).to_list()
 
     autotest_template(
         name = name,
@@ -472,9 +523,7 @@ def rust_autotest_function(name, template, cases, generator = "//system/generati
         **kwargs: Passed to rust_test (data, visibility, etc.)
     """
 
-    rust_language = LANGUAGES.get("rust")
-    standard_deps = rust_language.deps
-    merged = depset(deps + standard_deps).to_list()
+    merged = depset(deps + dependencies.rust.function).to_list()
     kwargs["deps"] = merged
 
     autotest_function(
@@ -502,14 +551,7 @@ def rust_autotest_performance(name, template, cases, specification, deps = [], *
         **kwargs: Passed to rust_test (data, visibility, etc.)
     """
 
-    performance_deps = [
-        "//component/math:regression",
-        "//test/system/performance:performance",
-        "@crates//:nalgebra",
-    ]
-
-    rust_language = LANGUAGES.get("rust")
-    merged = depset(deps + rust_language.deps + performance_deps).to_list()
+    merged = depset(deps + dependencies.rust.performance).to_list()
     kwargs["deps"] = merged
 
     rustc_flags = kwargs.get("rustc_flags", [])

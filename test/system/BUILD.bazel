@@ -2,6 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -10,5 +11,51 @@ package(default_visibility = [
 ])
 
 ##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "function",
+    srcs = ["function.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
+    visibility = [
+        "//:__pkg__",
+        "//:__subpackages__",
+    ],
+    deps = [
+        "//component/observation:channel",
+        "//component/observation:module",
+        "//platform:test",
+        "//system:concurrent",
+        "//system/observation:argument",
+        "//test/system/function:error",
+        "//test/system/function:execution",
+        "@crates//:clap",
+        "@crates//:derive_more",
+        "@crates//:miette",
+        "@crates//:serde",
+        "@crates//:serde_json",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "performance",
+    srcs = ["performance.rs"],
+    visibility = [
+        "//:__pkg__",
+        "//:__subpackages__",
+    ],
+    deps = [
+        "//:component",
+        "//component/generation/rust:performance",
+        "//component/math:regression",
+        "//platform:test",
+        "//system:concurrent",
+        "//system/observation:argument",
+        "//test/system/performance:error",
+        "@crates//:clap",
+        "@crates//:miette",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
 
 ##### Documentation                                                                                                                             [ Documentation ]

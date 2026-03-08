@@ -7,17 +7,51 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
 
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "index",
+    srcs = ["index.rs"],
+    aliases = {
+        "//system/generation/rust/document:index": "autotest",
+        "//system/generation/web/document:index": "web",
+    },
+    deps = [
+        "//component/web:index",
+        "//system/generation/rust/document:index",
+        "//system/generation/web/document:index",
+    ],
+)
+
 #################################################################################################################################################################
 ########## Page                                                                                                                                           [ Page ]
 rust_library(
     name = "generation",
     srcs = ["generation.page.rs"],
     deps = [
+        "//:distribute.command",
         "//component/web:body",
         "//component/web:class",
         "//component/web:element",
+        "//component/web:extraction",
         "//component/web:page",
-        "//system/generation/web:style",
+        "//document:index",
+        "//system/generation/web:navigation",
+        "@crates//:miette",
+    ],
+)
+
+rust_library(
+    name = "extract",
+    srcs = ["extract.page.rs"],
+    deps = [
+        "//component/generation/starlark:extract.document",
+        "//component/generation/starlark:query.document",
+        "//component/web:body",
+        "//component/web:class",
+        "//component/web:extraction",
+        "//component/web:page",
+        "//document:index",
+        "//system/generation/web:navigation",
         "@crates//:miette",
     ],
 )

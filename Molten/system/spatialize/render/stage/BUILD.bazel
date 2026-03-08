@@ -1,4 +1,5 @@
 load("@rules_rust//rust:defs.bzl", "rust_library")
+load("//component/generation/starlark:defs.bzl", "extract")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -160,4 +161,13 @@ rust_library(
         "@crates//:glyphon",
         "@crates//:wgpu",
     ],
+)
+
+##### Extraction                                                                                                                               [ Extraction ]
+extract(
+    name = "geometry.pipeline",
+    language = "rust",
+    query = "(let_declaration pattern: (identifier) @name (#eq? @name \"shader\")) @capture",
+    source = "geometry.rs",
+    visibility = ["//visibility:public"],
 )

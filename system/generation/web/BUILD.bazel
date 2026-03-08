@@ -35,6 +35,25 @@ rust_library(
 )
 
 rust_library(
+    name = "navigation",
+    srcs = ["navigation.rs"],
+    aliases = {
+        "//component/web:index": "entry",
+    },
+    proc_macro_deps = ["//system/observation:macro"],
+    deps = [
+        "//component/web:body",
+        "//component/web:class",
+        "//component/web:index",
+        "//component/web:page",
+        "//component/web:span",
+        "//document:index",
+        "@crates//:miette",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
     name = "style",
     srcs = ["style.rs"],
     aliases = {
@@ -44,11 +63,8 @@ rust_library(
     deps = [
         "//component/design:palette",
         "//component/design:proportion",
-        "//component/web:body",
         "//component/web:class",
-        "//component/web:page",
         "//component/web:selector",
-        "//component/web:span",
         "//component/web:style",
         "//component/web:value",
         "//component/web/property:appearance",
@@ -65,7 +81,6 @@ rust_library(
         "//component/web/property/text:decoration",
         "//component/web/property/text:transform",
         "//component/web/property/white:space",
-        "//system/generation/web:html",
         "@crates//:miette",
         "@crates//:tracing",
     ],

@@ -2,7 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_performance")
+load("//component/generation/starlark:defs.bzl", "rust_autotest_performance")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [

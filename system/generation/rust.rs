@@ -51,12 +51,11 @@ fn process(
             let name = &function.function.qualified;
             let pattern = format!("\"function\": \"{name}\"");
 
-            let (start, length) = if let Some(position) = content.find(&pattern) {
+            let span = if let Some(position) = content.find(&pattern) {
                 let offset = position + pattern.find(name).unwrap_or(0);
-                (offset, name.len())
+                Some((offset, name.len()))
             } else {
-                let position = content.find(name).unwrap_or(0);
-                (position, name.len())
+                content.find(name).map(|position| (position, name.len()))
             };
 
             let suggestion = similarity::nearest(name, &functions).unwrap_or_default();
@@ -73,7 +72,7 @@ fn process(
             return Err(Box::new(Error::cases(
                 path,
                 content.to_string(),
-                Some((start, length)),
+                span,
                 message,
             )));
         }
@@ -111,12 +110,12 @@ fn inject(ast: &mut File, registrations: Vec<function::Registration>, source: &s
         fn main() -> miette::Result<()> {
             use miette::IntoDiagnostic as _;
 
-            vantle::system::command::execute(
-                |arguments: &vantle::test::system::function::Arguments| {
-                    vantle::system::observation::initialize(&arguments.sink.sink)
+            command::execute(
+                |arguments: &function::Arguments| {
+                    observation::initialize(&arguments.sink.sink)
                 },
                 |arguments, runtime| {
-                    let mut executor: vantle::test::system::function::Executor = vantle::test::system::function::Executor::new(arguments, #source, #cases);
+                    let mut executor: function::Executor = function::Executor::new(arguments, #source, #cases);
                     #(#statements)*
                     executor.wait(runtime)
                 },
@@ -136,8 +135,8 @@ fn emit(reg: function::Registration) -> syn::Stmt {
             syn::parse_quote! { #t }
         })
         .collect::<Vec<_>>();
-    let parameters = serde_json::to_string(&reg.parameters).unwrap();
-    let expected = serde_json::to_string(&reg.expected).unwrap();
+    let parameters = serde_json::to_string(&reg.parameters).expect("Value is always serializable");
+    let expected = serde_json::to_string(&reg.expected).expect("Value is always serializable");
     let statements = reg.statements;
     let actuals = reg.actuals;
     let comparisons = reg.comparisons;

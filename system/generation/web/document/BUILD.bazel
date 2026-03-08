@@ -7,6 +7,13 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
 
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "index",
+    srcs = ["index.rs"],
+    deps = ["//component/web:index"],
+)
+
 #################################################################################################################################################################
 ########## Page                                                                                                                                           [ Page ]
 rust_library(
@@ -20,11 +27,12 @@ rust_library(
         "//component/web:class",
         "//component/web:element",
         "//component/web:extraction",
-        "//component/web:language",
         "//component/web:page",
         "//component/web:span",
+        "//document:index",
         "//resource:copy.rule",
-        "//system/generation/web:style",
+        "//system/generation/rust:function.document.extract",
+        "//system/generation/web:navigation",
         "@crates//:miette",
     ],
 )

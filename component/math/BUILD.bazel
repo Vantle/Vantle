@@ -21,4 +21,14 @@ rust_library(
     ],
 )
 
+rust_library(
+    name = "expression",
+    srcs = ["expression.rs"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:serde",
+        "@crates//:thiserror",
+    ],
+)
+
 ##### Documentation                                                                                                                             [ Documentation ]

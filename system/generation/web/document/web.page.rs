@@ -1,12 +1,11 @@
 use body::Chain;
 use element::Element;
 use extraction::Query;
-use language::Language;
+use navigation::Composition;
 use span::Fragment;
-use style::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Web", "generation", "web", root, |c| {
+    navigation::layout("Web", &index::generation::web::web(root), root, |c| {
         c.title("Web")
             .subtitle("Web file generation by output format")
             .rule()
@@ -27,7 +26,7 @@ pub fn page(root: &str) -> page::Result {
                         .code("Composition")
                         .text(" trait, which provides semantic methods for document structure:")
                 })
-                .code("use style::Composition;\n\nfn main() -> miette::Result<()> {\n    html::execute(|arguments| {\n        html::generate(arguments, style::layout(\n            \"Title\", \"context\", \"page\", &arguments.root, |c| {\n                c.title(\"Title\")\n                    .section(\"Overview\", |s| {\n                        s.paragraph(|p| p.text(\"Content here.\"))\n                    })\n            },\n        ))\n    })\n}", Language::Rust)
+                .extract(function_document_extract::EXTRACTIONS.one())
                 .subsection("Composition", |ss| {
                     ss.paragraph(|p| {
                         p.text("The ")

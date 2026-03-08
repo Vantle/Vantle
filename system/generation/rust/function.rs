@@ -347,8 +347,7 @@ fn recording(
     parameters: &HashMap<syn::Ident, Value>,
     expected: &HashMap<String, Value>,
 ) -> Result<syn::Expr, Box<Error>> {
-    let mut expr: syn::Expr =
-        syn::parse_quote! { vantle::test::system::function::Actuals::default() };
+    let mut expr: syn::Expr = syn::parse_quote! { function::Actuals::default() };
 
     if expected.contains_key(keyword::result().key) {
         let key = keyword::result().key;
@@ -390,8 +389,8 @@ fn comparison(
         let expectation = expression(ty.as_ref(), value, &path);
         let key = keyword::result().key;
         let stmt: syn::Stmt = syn::parse_quote! {
-            if !vantle::test::utility::equal(&#variable, &#expectation) {
-                return Err(Box::new(vantle::test::system::function::error::Error::mismatch(
+            if !utility::equal(&#variable, &#expectation) {
+                return Err(Box::new(function::error::Error::mismatch(
                     actuals.clone(),
                     format!("expected {}: {:?}, got: {:?}", #key, #expectation, #variable),
                 )));
@@ -420,8 +419,8 @@ fn comparison(
                 let expectation = expression(inner, value, &path);
                 let label = key.as_str();
                 let stmt: syn::Stmt = syn::parse_quote! {
-                    if !vantle::test::utility::equal(&#ident, &#expectation) {
-                        return Err(Box::new(vantle::test::system::function::error::Error::mismatch(
+                    if !utility::equal(&#ident, &#expectation) {
+                        return Err(Box::new(function::error::Error::mismatch(
                             actuals.clone(),
                             format!("expected {}: {:?}, got: {:?}", #label, #expectation, #ident),
                         )));

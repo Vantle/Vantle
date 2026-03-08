@@ -1,9 +1,14 @@
 use body::Chain;
-use style::Composition;
+use extraction::Query;
+use navigation::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Generation", "generation", "generation", root, |c| {
-        c.title("Generation")
+    navigation::layout(
+        "Generation",
+        &index::generation::generation(root),
+        root,
+        |c| {
+            c.title("Generation")
             .subtitle("Code generation framework")
             .rule()
             .paragraph(|p| {
@@ -25,7 +30,7 @@ pub fn page(root: &str) -> page::Result {
                             .text(" trait. The web generator renders complete HTML with automatic table-of-contents, syntax-highlighted code blocks, golden-ratio styling, and optional WASM interactivity.")
                     })
                     .paragraph(|p| {
-                        p.link(&format!("{root}system/generation/web/"), "more \u{2192}")
+                        p.link(&index::generation::web::web(root).href, "more \u{2192}")
                     })
                 })
                 .subsection("Autotest", |ss| {
@@ -37,7 +42,21 @@ pub fn page(root: &str) -> page::Result {
                     })
                     .paragraph(|p| {
                         p.link(
-                            &format!("{root}system/generation/rust/"),
+                            &index::generation::autotest::autotest(root).href,
+                            "more \u{2192}",
+                        )
+                    })
+                })
+                .subsection("Extract", |ss| {
+                    ss.aside(|a| {
+                        a.italic("Code extraction via tree-sitter queries")
+                    })
+                    .paragraph(|p| {
+                        p.text("Pull code snippets from source files at build time using tree-sitter queries. Extracted snippets become constants in generated Rust libraries, keeping documentation in sync with the codebase.")
+                    })
+                    .paragraph(|p| {
+                        p.link(
+                            &index::generation::extract(root).href,
                             "more \u{2192}",
                         )
                     })
@@ -48,7 +67,7 @@ pub fn page(root: &str) -> page::Result {
                 s.paragraph(|p| {
                     p.text("Deploys generated files to the workspace via a manifest-driven copy. Supports verification mode to detect drift between generated output and committed source.")
                 })
-                .shell("bazel run //:generate.documentation")
+                .extract(distribute_command::EXTRACTIONS.one())
             })
             .rule()
             .aside(|a| {
@@ -56,5 +75,6 @@ pub fn page(root: &str) -> page::Result {
                     .code(".document.rs")
                     .italic(" files and rendered to HTML by the web generator.")
             })
-    })
+        },
+    )
 }

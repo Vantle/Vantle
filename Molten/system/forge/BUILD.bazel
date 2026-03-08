@@ -3,6 +3,7 @@
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
 load("@rules_rust//rust:defs.bzl", "rust_binary")
+load("//component/generation/starlark:defs.bzl", "query")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
@@ -36,6 +37,36 @@ rust_binary(
         "@crates//:thiserror",
         "@crates//:tracing",
     ],
+)
+
+##### Query                                                                                                                                         [ Query ]
+query(
+    name = "command.lava",
+    arguments = ["lava"],
+    binary = ":command",
+    label = "//Molten/system/forge:command",
+)
+
+query(
+    name = "command.lava.sink.log",
+    arguments = [
+        "lava",
+        "--sink",
+        "log:///tmp/trace.jsonl",
+    ],
+    binary = ":command",
+    label = "//Molten/system/forge:command",
+)
+
+query(
+    name = "command.lava.sink.grpc",
+    arguments = [
+        "lava",
+        "--sink",
+        "grpc://127.0.0.1:50051",
+    ],
+    binary = ":command",
+    label = "//Molten/system/forge:command",
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

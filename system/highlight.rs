@@ -12,9 +12,7 @@ impl miette::highlighters::Highlighter for Syntax {
         let language = detect(source);
         let text = std::str::from_utf8(source.data()).unwrap_or("");
         let lines = match &language {
-            Some(Language::Rust) => classify_rust(text),
-            Some(Language::Molten) => classify_molten(text),
-            Some(Language::Starlark) => classify_starlark(text),
+            Some(language) => language.classify(text),
             None => Vec::new(),
         };
         Box::new(State { line: 0, lines })
@@ -95,6 +93,56 @@ impl Language {
             _ => None,
         }
     }
+
+    fn classify(&self, source: &str) -> Vec<Vec<Classified>> {
+        match self {
+            Self::Rust => {
+                let Ok(ast) = syn::parse_file(source) else {
+                    return Vec::new();
+                };
+
+                let line_count = source.lines().count().max(1);
+                let mut lines = (0..line_count)
+                    .map(|_| Vec::new())
+                    .collect::<Vec<Vec<Classified>>>();
+                let mut collector = Collector { lines: &mut lines };
+
+                for item in &ast.items {
+                    collector.item(item);
+                }
+
+                for line in &mut lines {
+                    line.sort_by_key(|c| c.start);
+                }
+
+                lines
+            }
+            Self::Molten => source
+                .lines()
+                .map(tokenize)
+                .collect::<Vec<Vec<Classified>>>(),
+            Self::Starlark => {
+                let line_count = source.lines().count().max(1);
+                let mut lines = (0..line_count)
+                    .map(|_| Vec::new())
+                    .collect::<Vec<Vec<Classified>>>();
+
+                let mut parser = tree_sitter::Parser::new();
+                if parser
+                    .set_language(&tree_sitter_python::LANGUAGE.into())
+                    .is_err()
+                {
+                    return lines;
+                }
+                let Some(tree) = parser.parse(source, None) else {
+                    return lines;
+                };
+
+                traverse(tree.root_node(), source, &mut lines, categorize);
+                lines
+            }
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -128,33 +176,11 @@ struct Classified {
     category: Category,
 }
 
-fn classify_rust(source: &str) -> Vec<Vec<Classified>> {
-    let Ok(ast) = syn::parse_file(source) else {
-        return Vec::new();
-    };
-
-    let line_count = source.lines().count().max(1);
-    let mut lines = (0..line_count)
-        .map(|_| Vec::new())
-        .collect::<Vec<Vec<Classified>>>();
-    let mut collector = RustCollector { lines: &mut lines };
-
-    for item in &ast.items {
-        collector.item(item);
-    }
-
-    for line in &mut lines {
-        line.sort_by_key(|c| c.start);
-    }
-
-    lines
-}
-
-struct RustCollector<'a> {
+struct Collector<'a> {
     lines: &'a mut [Vec<Classified>],
 }
 
-impl RustCollector<'_> {
+impl Collector<'_> {
     fn emit(&mut self, span: proc_macro2::Span, category: Category) {
         let start = span.start();
         let end = span.end();
@@ -850,14 +876,7 @@ impl RustCollector<'_> {
     }
 }
 
-fn classify_molten(source: &str) -> Vec<Vec<Classified>> {
-    source
-        .lines()
-        .map(classify_molten_line)
-        .collect::<Vec<Vec<Classified>>>()
-}
-
-fn classify_molten_line(line: &str) -> Vec<Classified> {
+fn tokenize(line: &str) -> Vec<Classified> {
     let mut spans = Vec::new();
     let bytes = line.as_bytes();
     let mut pos = 0;
@@ -900,28 +919,7 @@ fn classify_molten_line(line: &str) -> Vec<Classified> {
     spans
 }
 
-fn classify_starlark(source: &str) -> Vec<Vec<Classified>> {
-    let line_count = source.lines().count().max(1);
-    let mut lines = (0..line_count)
-        .map(|_| Vec::new())
-        .collect::<Vec<Vec<Classified>>>();
-
-    let mut parser = tree_sitter::Parser::new();
-    if parser
-        .set_language(&tree_sitter_python::LANGUAGE.into())
-        .is_err()
-    {
-        return lines;
-    }
-    let Some(tree) = parser.parse(source, None) else {
-        return lines;
-    };
-
-    classify_terminal(tree.root_node(), source, &mut lines, category_starlark);
-    lines
-}
-
-fn classify_terminal(
+fn traverse(
     node: tree_sitter::Node,
     source: &str,
     lines: &mut [Vec<Classified>],
@@ -973,12 +971,12 @@ fn classify_terminal(
     #[expect(clippy::cast_possible_truncation)]
     for i in 0..node.child_count() as u32 {
         if let Some(child) = node.child(i) {
-            classify_terminal(child, source, lines, categorize);
+            traverse(child, source, lines, categorize);
         }
     }
 }
 
-fn category_starlark(node: &tree_sitter::Node, text: &str) -> Option<Category> {
+fn categorize(node: &tree_sitter::Node, text: &str) -> Option<Category> {
     if node.is_error() || node.is_missing() {
         return None;
     }

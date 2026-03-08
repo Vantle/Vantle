@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use clap::Parser;
 use wgpu::Instance;
 use winit::event::{DeviceEvent, DeviceId, ElementState, Modifiers, WindowEvent};
 use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
@@ -24,6 +25,10 @@ use ray::Ray;
 use render::Renderer;
 use scene::Scene;
 use view::View;
+
+#[derive(Parser)]
+#[command(name = "spatialize", about = "Interactive hypergraph visualization")]
+struct Arguments;
 
 const BOUNDS: f32 = 500.0;
 
@@ -296,7 +301,11 @@ impl Spatialize {
     }
 }
 
-fn main() -> Result<()> {
+fn main() -> miette::Result<()> {
+    command::execute(|_: &Arguments| Ok(()), |_, _| Ok(spatialize()?))
+}
+
+fn spatialize() -> Result<()> {
     let event = EventLoop::new().map_err(|source| Error::Event { source })?;
     event.set_control_flow(ControlFlow::Wait);
 

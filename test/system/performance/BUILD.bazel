@@ -13,27 +13,9 @@ package(default_visibility = [
 rust_library(
     name = "error",
     srcs = ["error.rs"],
-    crate_name = "error",
     deps = [
         "@crates//:miette",
         "@crates//:thiserror",
     ],
 )
 
-rust_library(
-    name = "performance",
-    srcs = ["performance.rs"],
-    deps = [
-        "//:component",
-        "//component/generation/rust:performance",
-        "//component/math:regression",
-        "//platform:test",
-        "//system:concurrent",
-        "//system/observation:argument",
-        "//test/system/performance:error",
-        "@crates//:clap",
-        "@crates//:miette",
-        "@crates//:serde",
-        "@crates//:serde_json",
-    ],
-)

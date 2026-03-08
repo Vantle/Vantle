@@ -61,12 +61,9 @@ impl std::str::FromStr for Toggle {
 }
 
 #[derive(Clone)]
-pub enum BoundAssertion {
-    At {
-        point: HashMap<String, usize>,
-        within: std::time::Duration,
-    },
-    Determination(f64),
+pub struct Assertion {
+    pub terms: Vec<(Vec<usize>, f64)>,
+    pub confidence: f64,
 }
 
 pub struct Timing {
@@ -77,7 +74,7 @@ pub struct Timing {
 pub struct Measured {
     pub name: String,
     pub dimensions: Vec<String>,
-    pub bounds: Vec<BoundAssertion>,
+    pub bounds: Vec<Assertion>,
     pub timings: Vec<Timing>,
 }
 
@@ -175,7 +172,7 @@ impl Sampler {
 }
 
 #[expect(clippy::cast_precision_loss, clippy::cast_possible_truncation)]
-fn analyze(measured: &Measured, arguments: &Arguments) -> FunctionReport {
+fn analyze(measured: &Measured, arguments: &Arguments) -> Function {
     let mut grouped: HashMap<Vec<i64>, Vec<f64>> = HashMap::new();
 
     for timing in &measured.timings {
@@ -196,7 +193,7 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> FunctionReport {
             observation: mean,
         });
 
-        let mut entry = SampleReport {
+        let mut entry = Entry {
             point: point.clone(),
             mean,
             deviation,
@@ -213,12 +210,12 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> FunctionReport {
     }
 
     if samples.len() < 2 {
-        return FunctionReport {
-            function: measured.name.clone(),
+        return Function {
+            name: measured.name.clone(),
             expression: "performance".to_string(),
             dimension: measured.dimensions.clone(),
-            observation: ObservationReport {
-                time: TimeReport {
+            observation: Observation {
+                time: Timed {
                     unit: "second".to_string(),
                     model: None,
                     sample: entries,
@@ -247,7 +244,7 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> FunctionReport {
                 .polynomial
                 .terms
                 .iter()
-                .map(|term| TermReport {
+                .map(|term| Term {
                     exponent: term.monomial.exponent.clone(),
                     coefficient: term.coefficient,
                 })
@@ -256,18 +253,21 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> FunctionReport {
             let candidate = selection
                 .candidates
                 .iter()
-                .map(|c| CandidateReport {
-                    family: c.family.label().to_string(),
+                .map(|c| Candidate {
                     degree: c.degree,
                     criterion: c.criterion,
                 })
                 .collect::<Vec<_>>();
 
-            model = Some(ModelReport {
-                family: selection.family.label().to_string(),
+            let interpretation = selection.interpretation();
+
+            model = Some(Model {
                 degree: selection.degree,
                 term: terms,
-                interpretation: selection.interpretation(),
+                interpretation: Interpretation {
+                    expression: interpretation.structure,
+                    scale: interpretation.scale,
+                },
                 determination: selection.determination,
                 criterion: selection.criterion,
                 candidate,
@@ -276,72 +276,63 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> FunctionReport {
 
         if arguments.bound.enabled() {
             for bound in &measured.bounds {
-                match bound {
-                    BoundAssertion::At { point, within } => {
-                        let evaluation = measured
-                            .dimensions
+                let contributions = selection
+                    .polynomial
+                    .terms
+                    .iter()
+                    .map(|term| {
+                        let value = samples
                             .iter()
-                            .map(|d| *point.get(d).unwrap_or(&0) as f64)
-                            .collect::<Vec<_>>();
+                            .map(|s| (term.coefficient * term.monomial.evaluate(&s.point)).abs())
+                            .fold(0.0_f64, f64::max);
+                        (term.monomial.exponent.clone(), value)
+                    })
+                    .collect::<HashMap<_, _>>();
 
-                        let predicted = selection.evaluate(&evaluation);
-                        let (lower, upper) = selection.interval(&evaluation, 0.95);
-                        let within_seconds = within.as_secs_f64();
+                let mut sorted = bound.terms.clone();
+                sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
 
-                        let status = if predicted <= within_seconds {
-                            "pass"
-                        } else {
-                            "fail"
-                        };
-
-                        let assertion = serde_json::json!({
-                            "at": point,
-                            "within": performance::format(*within),
-                        });
-
-                        assertions.push(BoundReport {
-                            assertion,
-                            predicted: Some(performance::format(
-                                std::time::Duration::from_secs_f64(predicted.max(0.0)),
-                            )),
-                            interval: Some([
-                                performance::format(std::time::Duration::from_secs_f64(
-                                    lower.max(0.0),
-                                )),
-                                performance::format(std::time::Duration::from_secs_f64(
-                                    upper.max(0.0),
-                                )),
-                            ]),
-                            actual: None,
-                            status: status.to_string(),
-                        });
-                    }
-                    BoundAssertion::Determination(threshold) => {
-                        let status = if selection.determination >= *threshold {
-                            "pass"
-                        } else {
-                            "fail"
-                        };
-
-                        assertions.push(BoundReport {
-                            assertion: serde_json::json!({ "determination": threshold }),
-                            predicted: None,
-                            interval: None,
-                            actual: Some(selection.determination),
-                            status: status.to_string(),
-                        });
+                let mut status = "pass";
+                let mut violated = None;
+                for pair in sorted.windows(2) {
+                    let higher = contributions.get(&pair[0].0).copied().unwrap_or(0.0);
+                    let lower = contributions.get(&pair[1].0).copied().unwrap_or(0.0);
+                    if higher < lower * bound.confidence {
+                        status = "fail";
+                        violated = Some(format!(
+                            "{:?} < {:?} * {}",
+                            pair[0].0, pair[1].0, bound.confidence
+                        ));
+                        break;
                     }
                 }
+
+                let structure: HashMap<String, f64> = bound
+                    .terms
+                    .iter()
+                    .map(|(exp, weight)| (format!("{exp:?}"), *weight))
+                    .collect();
+
+                let assertion = serde_json::json!({
+                    "structure": structure,
+                    "confidence": bound.confidence,
+                });
+
+                assertions.push(Constraint {
+                    assertion,
+                    violated,
+                    status: status.to_string(),
+                });
             }
         }
     }
 
-    FunctionReport {
-        function: measured.name.clone(),
+    Function {
+        name: measured.name.clone(),
         expression: "performance".to_string(),
         dimension: measured.dimensions.clone(),
-        observation: ObservationReport {
-            time: TimeReport {
+        observation: Observation {
+            time: Timed {
                 unit: "second".to_string(),
                 model,
                 sample: entries,
@@ -381,57 +372,61 @@ fn aggregate(observations: &[f64]) -> (Vec<f64>, f64, f64) {
 #[derive(Serialize)]
 struct Report {
     source: Source,
-    functions: Vec<FunctionReport>,
+    functions: Vec<Function>,
 }
 
 #[derive(Serialize)]
-struct FunctionReport {
-    function: String,
+struct Function {
+    name: String,
     expression: String,
     dimension: Vec<String>,
-    observation: ObservationReport,
+    observation: Observation,
 }
 
 #[derive(Serialize)]
-struct ObservationReport {
-    time: TimeReport,
+struct Observation {
+    time: Timed,
 }
 
 #[derive(Serialize)]
-struct TimeReport {
+struct Timed {
     unit: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    model: Option<ModelReport>,
-    sample: Vec<SampleReport>,
-    bound: Vec<BoundReport>,
+    model: Option<Model>,
+    sample: Vec<Entry>,
+    bound: Vec<Constraint>,
 }
 
 #[derive(Serialize)]
-struct ModelReport {
-    family: String,
+struct Model {
     degree: usize,
-    term: Vec<TermReport>,
-    interpretation: String,
+    term: Vec<Term>,
+    interpretation: Interpretation,
     determination: f64,
     criterion: f64,
-    candidate: Vec<CandidateReport>,
+    candidate: Vec<Candidate>,
 }
 
 #[derive(Serialize)]
-struct TermReport {
+struct Interpretation {
+    expression: String,
+    scale: f64,
+}
+
+#[derive(Serialize)]
+struct Term {
     exponent: Vec<usize>,
     coefficient: f64,
 }
 
 #[derive(Serialize)]
-struct CandidateReport {
-    family: String,
+struct Candidate {
     degree: usize,
     criterion: f64,
 }
 
 #[derive(Serialize)]
-struct SampleReport {
+struct Entry {
     point: Vec<f64>,
     mean: f64,
     deviation: f64,
@@ -442,13 +437,9 @@ struct SampleReport {
 }
 
 #[derive(Serialize)]
-struct BoundReport {
+struct Constraint {
     assertion: Value,
     #[serde(skip_serializing_if = "Option::is_none")]
-    predicted: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    interval: Option<[String; 2]>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    actual: Option<f64>,
+    violated: Option<String>,
     status: String,
 }

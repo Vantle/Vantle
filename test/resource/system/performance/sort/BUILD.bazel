@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("@vantle//component/generation/starlark:defs.bzl", "extract", "rust_autotest_template")
+load("//component/generation/starlark:defs.bzl", "extract", "rust_autotest_template")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -24,6 +24,7 @@ filegroup(
 rust_autotest_template(
     name = "template",
     src = "sort.template.rs",
+    testonly = False,
 )
 
 extract(

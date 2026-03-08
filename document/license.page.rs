@@ -1,8 +1,8 @@
 use body::Chain;
-use style::Composition;
+use navigation::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("License", "vantle", "license", root, |c| {
+    navigation::layout("License", &index::license(root), root, |c| {
         c.title("License").rule().markdown("LICENSE.md")
     })
 }

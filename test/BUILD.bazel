@@ -15,8 +15,8 @@ rust_library(
     name = "system",
     srcs = ["system.rs"],
     deps = [
-        "//test/system/function",
-        "//test/system/performance",
+        "//test/system:function",
+        "//test/system:performance",
     ],
 )
 

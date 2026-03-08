@@ -5,6 +5,7 @@ Public API:
 - SinkInfo: Provider carrying workspace-relative output path
 - action: Helper to execute a generator binary
 - generate: Rule to run a generator binary and produce an output file
+- execute: Rule to run a binary and capture its output
 """
 
 SinkInfo = provider(
@@ -83,5 +84,33 @@ generate = rule(
         "data": attr.label_list(allow_files = True),
         "output": attr.output(mandatory = True),
         "sink": attr.string(),
+    },
+)
+
+def _execute_impl(ctx):
+    output = ctx.outputs.output
+
+    arguments = []
+    for key, value in ctx.attr.parameters.items():
+        arguments.extend(["--" + key, value])
+
+    inputs = []
+    for dep in ctx.attr.data:
+        for file in dep.files.to_list():
+            inputs.append(file)
+
+    action(ctx, ctx.executable.binary, arguments, inputs, output, mnemonic = "Execute")
+
+execute = rule(
+    implementation = _execute_impl,
+    attrs = {
+        "binary": attr.label(
+            mandatory = True,
+            executable = True,
+            cfg = "exec",
+        ),
+        "parameters": attr.string_dict(),
+        "data": attr.label_list(allow_files = True),
+        "output": attr.output(mandatory = True),
     },
 )

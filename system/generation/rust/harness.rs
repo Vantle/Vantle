@@ -97,10 +97,10 @@ pub fn measure(
                 let ident = syn::Ident::new(parameter, proc_macro2::Span::call_site());
                 let extraction: syn::Expr = match measured {
                     performance::Measure::Length | performance::Measure::Keys => {
-                        syn::parse_quote! { vantle::test::system::performance::dimension(#ident.len()) }
+                        syn::parse_quote! { performance::dimension(#ident.len()) }
                     }
                     performance::Measure::Value => {
-                        syn::parse_quote! { vantle::test::system::performance::dimension(#ident) }
+                        syn::parse_quote! { performance::dimension(#ident) }
                     }
                 };
                 extractions.push(extraction);
@@ -127,6 +127,33 @@ pub fn measure(
     Ok(registrations)
 }
 
+fn literal(value: f64) -> syn::LitFloat {
+    let raw = format!("{value}");
+    let (integer, fraction) = raw
+        .split_once('.')
+        .map_or((raw.as_str(), "0"), |(i, f)| (i, f));
+    let separated_integer = integer
+        .chars()
+        .rev()
+        .collect::<Vec<_>>()
+        .chunks(3)
+        .map(|chunk| chunk.iter().rev().collect::<String>())
+        .rev()
+        .collect::<Vec<_>>()
+        .join("_");
+    let separated_fraction = fraction
+        .chars()
+        .collect::<Vec<_>>()
+        .chunks(3)
+        .map(|chunk| chunk.iter().collect::<String>())
+        .collect::<Vec<_>>()
+        .join("_");
+    syn::LitFloat::new(
+        &format!("{separated_integer}.{separated_fraction}_f64"),
+        proc_macro2::Span::call_site(),
+    )
+}
+
 pub fn instrument(
     ast: &mut File,
     registrations: Vec<Harness>,
@@ -146,29 +173,20 @@ pub fn instrument(
             .bounds
             .iter()
             .map(|bound| -> syn::Expr {
-                match bound {
-                    performance::Bound::At { at, within } => {
-                        let seconds = within.as_secs();
-                        let nanoseconds = within.subsec_nanos();
-                        let keys = at.keys().collect::<Vec<_>>();
-                        let values = at.values().collect::<Vec<_>>();
-                        syn::parse_quote! {
-                            vantle::test::system::performance::BoundAssertion::At {
-                                point: {
-                                    let mut map = std::collections::HashMap::new();
-                                    #(map.insert(#keys.to_string(), #values);)*
-                                    map
-                                },
-                                within: std::time::Duration::new(#seconds, #nanoseconds),
-                            }
-                        }
-                    }
-                    performance::Bound::Determination {
-                        determination: threshold,
-                    } => {
-                        syn::parse_quote! {
-                            vantle::test::system::performance::BoundAssertion::Determination(#threshold)
-                        }
+                let terms = bound
+                    .structure
+                    .iter()
+                    .map(|(key, weight)| -> syn::Expr {
+                        let parsed = serde_json::from_str::<Vec<usize>>(key).unwrap_or_default();
+                        let weight = literal(*weight);
+                        syn::parse_quote! { (vec![#(#parsed),*], #weight) }
+                    })
+                    .collect::<Vec<_>>();
+                let confidence = literal(bound.confidence);
+                syn::parse_quote! {
+                    performance::Assertion {
+                        terms: vec![#(#terms),*],
+                        confidence: #confidence,
                     }
                 }
             })
@@ -195,7 +213,7 @@ pub fn instrument(
                         let elapsed = start.elapsed().as_secs_f64();
 
                         if iteration >= #warmup {
-                            timings.push(vantle::test::system::performance::Timing {
+                            timings.push(performance::Timing {
                                 point,
                                 observation: elapsed,
                             });
@@ -209,9 +227,9 @@ pub fn instrument(
 
         let stmt: syn::Stmt = syn::parse_quote! {
             {
-                let mut timings: Vec<vantle::test::system::performance::Timing> = Vec::new();
+                let mut timings: Vec<performance::Timing> = Vec::new();
                 #(#samples)*
-                sampler.register(vantle::test::system::performance::Measured {
+                sampler.register(performance::Measured {
                     name: #name.to_string(),
                     dimensions: vec![#(#dimensions.to_string()),*],
                     bounds: vec![#(#bounds),*],
@@ -225,12 +243,12 @@ pub fn instrument(
 
     let entry: syn::ItemFn = syn::parse_quote! {
         fn main() -> miette::Result<()> {
-            vantle::system::command::execute(
-                |arguments: &vantle::test::system::performance::Arguments| {
-                    vantle::system::observation::initialize(&arguments.sink.sink)
+            command::execute(
+                |arguments: &performance::Arguments| {
+                    observation::initialize(&arguments.sink.sink)
                 },
                 |arguments, runtime| {
-                    let mut sampler: vantle::test::system::performance::Sampler = vantle::test::system::performance::Sampler::new(arguments, #source, #cases, #specification);
+                    let mut sampler: performance::Sampler = performance::Sampler::new(arguments, #source, #cases, #specification);
                     #(#statements)*
                     sampler.wait(runtime)
                 },

@@ -7,19 +7,11 @@
                 "size": "value"
             },
             "sampling": {
-                "iterations": 20,
-                "warmup": 5
+                "iterations": 10,
+                "warmup": 3
             },
             "bounds": [
-                {
-                    "at": {
-                        "size": 99999
-                    },
-                    "within": "1s"
-                },
-                {
-                    "determination": 0.85
-                }
+                {"structure": {"[1]": 2.0, "[0]": 1.0}}
             ]
         }
     ]

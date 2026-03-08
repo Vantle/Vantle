@@ -2,7 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("@vantle//component/generation/starlark:defs.bzl", "extract", "rust_autotest_performance")
+load("//component/generation/starlark:defs.bzl", "execute", "extract", "rust_autotest_performance")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -14,9 +14,29 @@ package(default_visibility = [
 rust_autotest_performance(
     name = "sort",
     size = "medium",
+    testonly = False,
     cases = "//test/resource/system/performance/sort:cases",
     specification = "//test/resource/system/performance/sort:performance",
     template = "//test/resource/system/performance/sort:template",
+)
+
+execute(
+    name = "sort.execute",
+    binary = ":sort.binary",
+    output = "sort.execution.json",
+    parameters = {
+        "bound": "on",
+        "interval": "on",
+        "model": "on",
+        "sample": "off",
+    },
+)
+
+extract(
+    name = "execution.schema",
+    language = "json",
+    source = ":sort.execute",
+    visibility = ["//visibility:public"],
 )
 
 extract(

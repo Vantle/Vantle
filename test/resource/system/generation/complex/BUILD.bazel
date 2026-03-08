@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("@vantle//component/generation/starlark:defs.bzl", "rust_autotest_template")
+load("//component/generation/starlark:defs.bzl", "rust_autotest_template")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]

@@ -11,15 +11,7 @@
                 "warmup": 5
             },
             "bounds": [
-                {
-                    "at": {
-                        "candidate": 25
-                    },
-                    "within": "5s"
-                },
-                {
-                    "determination": 0.7
-                }
+                {"structure": {"[1]": 2.0, "[0]": 1.0}}
             ]
         }
     ]

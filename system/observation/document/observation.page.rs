@@ -1,10 +1,14 @@
 use body::Chain;
-use language::Language;
-use style::Composition;
+use extraction::Query;
+use navigation::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Observation", "vantle", "observation", root, |c| {
-        c.title("Observation")
+    navigation::layout(
+        "Observation",
+        &index::observation::observation(root),
+        root,
+        |c| {
+            c.title("Observation")
             .subtitle("Trace streaming and recording for Vantle")
             .rule()
             .paragraph(|p| {
@@ -41,7 +45,7 @@ pub fn page(root: &str) -> page::Result {
                 })
                 .paragraph(|p| {
                     p.text("Each application decides where to send its traces. See ")
-                        .link(&format!("{root}Molten/#forge"), "Forge")
+                        .link(&index::molten::readme(root).fragment("forge"), "Forge")
                         .text(" for an example of configuring trace destinations.")
                 })
             })
@@ -53,7 +57,7 @@ pub fn page(root: &str) -> page::Result {
                         .text(" macro instruments functions for observation.")
                 })
                 .subsection("Usage", |ss| {
-                    ss.code("#[trace(channels = [core])]\nfn process() {\n    evaluate();\n}", Language::Rust)
+                    ss.extract(view_trace::EXTRACTIONS.one())
                 })
                 .subsection("Channels", |ss| {
                     ss.paragraph(|p| {
@@ -68,5 +72,6 @@ pub fn page(root: &str) -> page::Result {
                     })
                 })
             })
-    })
+        },
+    )
 }

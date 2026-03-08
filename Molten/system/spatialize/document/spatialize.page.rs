@@ -1,11 +1,16 @@
 use body::Chain;
 use element::Element;
+use extraction::Query;
+use navigation::Composition;
 use span::Fragment;
-use style::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Spatialize", "molten", "spatialize", root, |c| {
-        c.title("Spatialize")
+    navigation::layout(
+        "Spatialize",
+        &index::molten::spatialize::spatialize(root),
+        root,
+        |c| {
+            c.title("Spatialize")
             .subtitle("Interactive hypergraph visualization for Molten")
             .rule()
             .paragraph(|p| {
@@ -16,7 +21,7 @@ pub fn page(root: &str) -> page::Result {
             .rule()
             .section("Invoke", |s| {
                 s.paragraph(|p| p.text("Run the spatialize visualization:"))
-                    .shell("bazel run //Molten/system/spatialize:command")
+                    .extract(command_spatialize::EXTRACTIONS.one())
                     .paragraph(|p| {
                         p.text("This opens an interactive window displaying hypergraph state with real-time layout simulation.")
                     })
@@ -85,5 +90,6 @@ pub fn page(root: &str) -> page::Result {
                         .plain("Boundary constraints")
                 })
             })
-    })
+        },
+    )
 }

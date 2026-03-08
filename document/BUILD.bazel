@@ -7,6 +7,25 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
 
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "index",
+    srcs = ["index.rs"],
+    aliases = {
+        "//Molten/document:index": "molten",
+        "//system/generation/document:index": "generation",
+        "//system/observation/document:index": "observation",
+        "//system/spatialize/document:index": "spatialize",
+    },
+    deps = [
+        "//Molten/document:index",
+        "//component/web:index",
+        "//system/generation/document:index",
+        "//system/observation/document:index",
+        "//system/spatialize/document:index",
+    ],
+)
+
 #################################################################################################################################################################
 ########## Page                                                                                                                                           [ Page ]
 rust_library(
@@ -18,7 +37,8 @@ rust_library(
         "//component/web:class",
         "//component/web:extraction",
         "//component/web:page",
-        "//system/generation/web:style",
+        "//document:index",
+        "//system/generation/web:navigation",
         "@crates//:miette",
     ],
 )
@@ -30,7 +50,8 @@ rust_library(
         "//component/web:body",
         "//component/web:class",
         "//component/web:page",
-        "//system/generation/web:style",
+        "//document:index",
+        "//system/generation/web:navigation",
         "@crates//:miette",
     ],
 )
@@ -42,7 +63,8 @@ rust_library(
         "//component/web:body",
         "//component/web:class",
         "//component/web:page",
-        "//system/generation/web:style",
+        "//document:index",
+        "//system/generation/web:navigation",
         "@crates//:miette",
     ],
 )
@@ -54,7 +76,8 @@ rust_library(
         "//component/web:body",
         "//component/web:class",
         "//component/web:page",
-        "//system/generation/web:style",
+        "//document:index",
+        "//system/generation/web:navigation",
         "@crates//:miette",
     ],
 )
@@ -68,7 +91,8 @@ rust_library(
         "//component/web:class",
         "//component/web:extraction",
         "//component/web:page",
-        "//system/generation/web:style",
+        "//document:index",
+        "//system/generation/web:navigation",
         "@crates//:miette",
     ],
 )

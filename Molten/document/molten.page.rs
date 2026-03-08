@@ -1,9 +1,9 @@
 use body::Chain;
 use extraction::Query;
-use style::Composition;
+use navigation::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Molten", "molten", "readme", root, |c| {
+    navigation::layout("Molten", &index::molten::readme(root), root, |c| {
         c.title("Molten")
             .subtitle("Computational expression over hypergraphs")
             .rule()
@@ -262,7 +262,7 @@ pub fn page(root: &str) -> page::Result {
                 })
                 .subsection("Invoke", |ss| {
                     ss.paragraph(|p| p.text("Run the forge lava interactive runtime:"))
-                        .shell("bazel run //Molten/system/forge:command lava")
+                        .extract(command_lava::EXTRACTIONS.one())
                         .paragraph(|p| {
                             p.text("This starts an interactive session where you can enter Molten expressions line by line. Each expression is evaluated and the resulting hypergraph state is displayed. Subsequent commands are ")
                                 .italic("disjoint")
@@ -271,9 +271,9 @@ pub fn page(root: &str) -> page::Result {
                 })
                 .subsection("Sink", |ss| {
                     ss.paragraph(|p| p.text("Stream execution traces to a file:"))
-                        .shell("bazel run //Molten/system/forge:command lava -- --sink log:///tmp/trace.jsonl")
+                        .extract(command_lava_sink_log::EXTRACTIONS.one())
                         .paragraph(|p| p.text("Or to a running peer (others may source or sink from or to your evaluation):"))
-                        .shell("bazel run //Molten/system/forge:command lava -- --sink grpc://127.0.0.1:50051")
+                        .extract(command_lava_sink_grpc::EXTRACTIONS.one())
                         .paragraph(|p| {
                             p.text("Functions decorated with ")
                                 .code("#[trace(channels = [core])]")

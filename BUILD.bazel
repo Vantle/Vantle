@@ -4,7 +4,7 @@
 ##### External                                                                                                                               [ Import, External ]
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@rules_rust//rust:defs.bzl", "rust_library")
-load("//component/generation/starlark:defs.bzl", "extract")
+load("//component/generation/starlark:defs.bzl", "extract", "query")
 load("//component/web/starlark:defs.bzl", "copy", "distribute", "document", "folder")
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -155,6 +155,14 @@ document(
 )
 
 #################################################################################################################################################################
+########## Query                                                                                                                                         [ Query ]
+query(
+    name = "distribute.command",
+    binary = "//system/observation:command",
+    label = "//:distribute.documentation",
+)
+
+#################################################################################################################################################################
 ########## Distribution                                                                                                                             [ Distribution ]
 copy(
     name = "domain",
@@ -171,6 +179,7 @@ folder(
         ":module.document",
         ":notice.document",
         ":vantle.document",
+        "//:distribute.command.source",
         "//:distribute.rule.source",
         "//:folder.rule.source",
         "//:module.source.source",
@@ -180,25 +189,44 @@ folder(
         "//Molten:molten.document",
         "//Molten:notice.document",
         "//Molten/resource:logo.copy",
+        "//Molten/system/forge:command.lava.source",
+        "//Molten/system/forge:command.lava.sink.grpc.source",
+        "//Molten/system/forge:command.lava.sink.log.source",
+        "//Molten/system/spatialize:command.spatialize.source",
+        "//Molten/system/spatialize:launcher.assembler.source",
         "//Molten/system/spatialize:spatialize.document",
+        "//Molten/system/spatialize/render/stage:geometry.pipeline.source",
+        "//Molten/test/component/graph/state/particle:function.document.source",
         "//Molten/test/resource/system/graph/module/citizen/symbolic:citizen.source",
         "//Molten/test/resource/system/graph/module/join/symbolic:join.source",
         "//Molten/test/resource/system/graph/module/math/numeric/logic/boolean/symbolic:boolean.source",
         "//Molten/test/resource/system/graph/state/particle:particle.cases.json.source",
         "//Molten/test/resource/system/graph/state/particle:disjoint.source",
+        "//Molten/test/resource/system/graph/state/particle:template.document.source",
         "//resource:copy.rule.source",
         "//resource:favicon.copy",
         "//resource:logo.copy",
         "//system/documentation:stylesheet.document",
+        "//component/generation/starlark:extract.document.source",
+        "//component/generation/starlark:query.document.source",
+        "//system/generation:extract.document",
         "//system/generation:generation.document",
         "//system/generation/rust:autotest.document",
         "//system/generation/rust:function.document",
+        "//system/generation/rust:function.document.extract.source",
         "//system/generation/rust:performance.document",
         "//system/generation/web:web.document",
         "//system/generation/web/assembly:compute.js.copy",
         "//system/generation/web/assembly:compute.wasm.copy",
         "//system/observation:observation.document",
         "//system/spatialize:spatialize.document",
+        "//system/translator:view.trace.source",
+        "//test/resource/system/performance/sort:sort.cases.json.source",
+        "//test/resource/system/performance/sort:sort.document.source",
+        "//test/resource/system/performance/sort:specification.json.source",
+        "//test/system/function:execution.schema.source",
+        "//test/system/performance/sort:execution.schema.source",
+        "//test/system/performance/sort:performance.document.source",
     ],
 )
 

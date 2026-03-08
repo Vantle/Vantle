@@ -1,7 +1,7 @@
-use style::Composition;
+use navigation::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Info", "molten", "info", root, |c| {
+    navigation::layout("Info", &index::molten::info(root), root, |c| {
         c.title("Vantle.Molten")
             .rule()
             .paragraph(|p| {

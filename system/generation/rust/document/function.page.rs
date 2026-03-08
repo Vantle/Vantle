@@ -1,12 +1,16 @@
 use body::Chain;
 use element::Element;
 use extraction::Query;
+use navigation::Composition;
 use span::Fragment;
-use style::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Function", "autotest", "function", root, |c| {
-        c.title("Function")
+    navigation::layout(
+        "Function",
+        &index::generation::autotest::function(root),
+        root,
+        |c| {
+            c.title("Function")
             .subtitle("Functional test generation")
             .rule()
             .paragraph(|p| {
@@ -48,5 +52,6 @@ pub fn page(root: &str) -> page::Result {
                     )
                 })
             })
-    })
+        },
+    )
 }

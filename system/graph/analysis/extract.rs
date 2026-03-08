@@ -35,18 +35,27 @@ pub fn extract(
     let mut results = Vec::new();
 
     while let Some(each) = matches.next() {
+        let mut byte_start = usize::MAX;
+        let mut byte_end = 0usize;
+        let mut row_start = usize::MAX;
+        let mut row_end = 0usize;
+
         for capture in each.captures {
             if capture.index as usize == capture_index {
-                let text = capture
-                    .node
-                    .utf8_text(source.as_bytes())
-                    .map_err(|_| error::Error::Parse)?;
-                results.push(Extraction {
-                    content: text.to_string(),
-                    start: capture.node.start_position().row + 1,
-                    end: capture.node.end_position().row + 1,
-                });
+                let node = &capture.node;
+                byte_start = byte_start.min(node.start_byte());
+                byte_end = byte_end.max(node.end_byte());
+                row_start = row_start.min(node.start_position().row);
+                row_end = row_end.max(node.end_position().row);
             }
+        }
+
+        if byte_start < byte_end {
+            results.push(Extraction {
+                content: source[byte_start..byte_end].to_string(),
+                start: row_start + 1,
+                end: row_end + 1,
+            });
         }
     }
 

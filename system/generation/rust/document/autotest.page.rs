@@ -1,11 +1,14 @@
 use body::Chain;
 use extraction::Query;
-use language::Language;
-use style::Composition;
+use navigation::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Autotest", "autotest", "autotest", root, |c| {
-        c.title("Autotest")
+    navigation::layout(
+        "Autotest",
+        &index::generation::autotest::autotest(root),
+        root,
+        |c| {
+            c.title("Autotest")
             .subtitle("JSON-driven test generation for Rust")
             .rule()
             .paragraph(|p| {
@@ -38,7 +41,7 @@ pub fn page(root: &str) -> page::Result {
                         .code("unexpected")
                         .text(" values:")
                 })
-                .code("{\n  \"source\": {\n    \"file\": \"particle.template.rs\",\n    \"cases\": \"cases.json\"\n  },\n  \"functions\": [\n    {\n      \"function\": \"disjoint\",\n      \"tags\": [\"complete\"],\n      \"cases\": [\n        {\n          \"parameters\": { \"candidate\": [[\"a\", 1]], \"basis\": [[\"b\", 2]] },\n          \"returns\": { \"()\": [[\"a\", 1]] },\n          \"unexpected\": null\n        }\n      ]\n    }\n  ]\n}", Language::Json)
+                .extract(execution_schema::EXTRACTIONS.one())
             })
             .rule()
             .section("Macro", |s| {
@@ -69,7 +72,7 @@ pub fn page(root: &str) -> page::Result {
                     })
                     .paragraph(|p| {
                         p.link(
-                            &format!("{root}system/generation/rust/function.html"),
+                            &index::generation::autotest::function(root).href,
                             "more \u{2192}",
                         )
                     })
@@ -79,15 +82,16 @@ pub fn page(root: &str) -> page::Result {
                         a.italic("Regression-aware performance testing with statistical curve fitting")
                     })
                     .paragraph(|p| {
-                        p.text("Measures execution time across scaling inputs, fits complexity curves, and enforces bounds on both wall time and R\u{00b2} determination.")
+                        p.text("Measures execution time across scaling inputs, fits complexity curves, and enforces structure assertions on polynomial term ordering.")
                     })
                     .paragraph(|p| {
                         p.link(
-                            &format!("{root}system/generation/rust/performance.html"),
+                            &index::generation::autotest::performance(root).href,
                             "more \u{2192}",
                         )
                     })
                 })
             })
-    })
+        },
+    )
 }

@@ -53,3 +53,20 @@ bzl_library(
 )
 
 ##### Documentation                                                                                                                                 [ Documentation ]
+load(":extract.bzl", _doc_extract = "extract")
+
+_doc_extract(
+    name = "extract.document",
+    language = "starlark",
+    query = "(function_definition name: (identifier) @name (#eq? @name \"extract\")) @capture",
+    source = "extract.bzl",
+    visibility = ["//visibility:public"],
+)
+
+_doc_extract(
+    name = "query.document",
+    language = "starlark",
+    query = "(function_definition name: (identifier) @name (#eq? @name \"query\")) @capture",
+    source = "query.bzl",
+    visibility = ["//visibility:public"],
+)

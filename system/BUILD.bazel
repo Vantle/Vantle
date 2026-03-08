@@ -125,6 +125,7 @@ rust_library(
         "//component:assemble",
         "//platform:command",
         "//system:concurrent",
+        "//system/command:error",
         "//system/concurrent:pool",
         "@crates//:clap",
         "@crates//:miette",

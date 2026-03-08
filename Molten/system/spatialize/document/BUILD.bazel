@@ -7,18 +7,28 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
 
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "index",
+    srcs = ["index.rs"],
+    deps = ["//component/web:index"],
+)
+
 #################################################################################################################################################################
 ########## Page                                                                                                                                           [ Page ]
 rust_library(
     name = "spatialize",
     srcs = ["spatialize.page.rs"],
     deps = [
+        "//Molten/system/spatialize:command.spatialize",
         "//component/web:body",
         "//component/web:class",
         "//component/web:element",
+        "//component/web:extraction",
         "//component/web:page",
         "//component/web:span",
-        "//system/generation/web:style",
+        "//document:index",
+        "//system/generation/web:navigation",
         "@crates//:miette",
     ],
 )

@@ -155,6 +155,12 @@ rust_library(
     ],
 )
 
+rust_library(
+    name = "index",
+    srcs = ["index.rs"],
+    visibility = ["//visibility:public"],
+)
+
 ##### Binary                                                                                                                                           [ Binary ]
 rust_binary(
     name = "validate",

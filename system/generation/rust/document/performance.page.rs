@@ -1,12 +1,16 @@
 use body::Chain;
 use element::Element;
 use extraction::Query;
+use navigation::Composition;
 use span::Fragment;
-use style::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Performance", "autotest", "performance", root, |c| {
-        c.title("Performance")
+    navigation::layout(
+        "Performance",
+        &index::generation::autotest::performance(root),
+        root,
+        |c| {
+            c.title("Performance")
             .subtitle("Regression-aware performance testing")
             .rule()
             .paragraph(|p| {
@@ -61,7 +65,7 @@ pub fn page(root: &str) -> page::Result {
                         .markup([
                             Element::Span(vec![Fragment::Code("bounds".into())]),
                             Element::Span(vec![Fragment::Text(
-                                "Constraints: time limits at specific inputs and R\u{00b2} determination thresholds".into(),
+                                "Structure assertions: polynomial term ordering with confidence thresholds".into(),
                             )]),
                         ])
                 })
@@ -87,6 +91,13 @@ pub fn page(root: &str) -> page::Result {
                 })
             })
             .rule()
+            .section("Execution", |s| {
+                s.paragraph(|p| {
+                    p.text("The performance report includes timing measurements, regression coefficients, and structural validation results:")
+                })
+                .extract(execution_schema::EXTRACTIONS.one())
+            })
+            .rule()
             .section("Features", |s| {
                 s.list(|ul| {
                     ul.feature(
@@ -97,12 +108,13 @@ pub fn page(root: &str) -> page::Result {
                         "Warmup",
                         ": Configurable warmup iterations before measurement",
                     )
-                    .feature("Bounds", ": Time limits at specific input sizes")
+                    .feature("Bounds", ": Structure assertions enforce polynomial term ordering")
                     .feature(
                         "R\u{00b2} determination",
-                        ": Statistical confidence threshold for curve fit",
+                        ": Statistical goodness-of-fit for the regression model",
                     )
                 })
             })
-    })
+        },
+    )
 }

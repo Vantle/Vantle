@@ -47,176 +47,161 @@ pub struct Sample {
     pub observation: f64,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum Family {
-    Polynomial,
-    Power,
-    Exponential,
-}
-
-impl Family {
-    fn transform(self, sample: &Sample) -> Option<Sample> {
-        match self {
-            Self::Polynomial => Some(sample.clone()),
-            Self::Power => {
-                if sample.observation <= 0.0 || sample.point.iter().any(|&v| v <= 0.0) {
-                    return None;
-                }
-                Some(Sample {
-                    point: sample.point.iter().map(|v| v.ln()).collect::<Vec<_>>(),
-                    observation: sample.observation.ln(),
-                })
-            }
-            Self::Exponential => {
-                if sample.observation <= 0.0 {
-                    return None;
-                }
-                Some(Sample {
-                    point: sample.point.clone(),
-                    observation: sample.observation.ln(),
-                })
-            }
-        }
-    }
-
-    fn inverse(self, value: f64) -> f64 {
-        if matches!(self, Self::Polynomial) {
-            value
-        } else {
-            value.exp()
-        }
-    }
-
-    #[must_use]
-    pub fn label(self) -> &'static str {
-        match self {
-            Self::Polynomial => "polynomial",
-            Self::Power => "power",
-            Self::Exponential => "exponential",
-        }
-    }
+pub struct Interpretation {
+    pub structure: String,
+    pub scale: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Candidate {
-    pub family: Family,
     pub degree: usize,
     pub determination: f64,
     pub criterion: f64,
 }
 
 pub struct Selection {
-    pub family: Family,
     pub degree: usize,
     pub polynomial: Polynomial,
     pub determination: f64,
     pub criterion: f64,
     pub candidates: Vec<Candidate>,
     pub residual: f64,
-    pub leverage: Vec<f64>,
     dimensions: usize,
+    samples: Vec<Sample>,
+    normalization: Vec<f64>,
+    gram: DMatrix<f64>,
 }
 
 impl Selection {
     #[must_use]
     pub fn evaluate(&self, point: &[f64]) -> f64 {
-        let transformed = if matches!(self.family, Family::Power) {
-            point.iter().map(|v| v.max(1e-10).ln()).collect::<Vec<_>>()
-        } else {
-            point.to_vec()
-        };
-        let raw = self.polynomial.evaluate(&transformed);
-        self.family.inverse(raw)
+        let normalized = self.normalize(point);
+        self.polynomial.evaluate(&normalized)
     }
 
     #[must_use]
     pub fn interval(&self, point: &[f64], confidence: f64) -> (f64, f64) {
-        let transformed = if matches!(self.family, Family::Power) {
-            point.iter().map(|v| v.max(1e-10).ln()).collect::<Vec<_>>()
-        } else {
-            point.to_vec()
-        };
-
+        let normalized = self.normalize(point);
         let terms = monomials(self.dimensions, self.degree);
-        let row = terms
-            .iter()
-            .map(|m| m.evaluate(&transformed))
-            .collect::<Vec<_>>();
 
-        let n = self.leverage.len();
+        let n = self.samples.len();
         let k = terms.len();
         if n <= k {
-            let predicted = self.family.inverse(self.polynomial.evaluate(&transformed));
+            let predicted = self.polynomial.evaluate(&normalized);
             return (predicted * 0.5, predicted * 2.0);
         }
 
-        let leverage = row.iter().map(|v| v * v).sum::<f64>() * 0.01;
+        let row: Vec<f64> = terms.iter().map(|m| m.evaluate(&normalized)).collect();
+        let x = DVector::from_vec(row);
+        let leverage = (&x.transpose() * &self.gram * &x)[(0, 0)];
 
         let alpha = 1.0 - confidence;
         let critical = critical(alpha, float(n - k));
         let margin = critical * self.residual * (1.0 + leverage).sqrt();
 
-        let predicted = self.polynomial.evaluate(&transformed);
-        let lower = self.family.inverse(predicted - margin);
-        let upper = self.family.inverse(predicted + margin);
-        (lower, upper)
+        let predicted = self.polynomial.evaluate(&normalized);
+        (predicted - margin, predicted + margin)
     }
 
     #[must_use]
-    pub fn interpretation(&self) -> String {
-        match self.family {
-            Family::Polynomial => {
-                let mut parts = Vec::new();
-                for term in &self.polynomial.terms {
-                    let total: usize = term.monomial.exponent.iter().sum();
-                    if total == 0 {
-                        parts.push(format!("{:.2}", term.coefficient));
-                    } else {
-                        let vars = term
-                            .monomial
-                            .exponent
-                            .iter()
-                            .copied()
-                            .enumerate()
-                            .filter(|(_, e)| *e > 0)
-                            .map(|(i, e)| {
-                                if e == 1 {
-                                    format!("x{i}")
-                                } else {
-                                    format!("x{i}^{e}")
-                                }
-                            })
-                            .collect::<Vec<_>>()
-                            .join("·");
-                        parts.push(format!("{:.2}·{vars}", term.coefficient));
-                    }
-                }
-                format!("time ~ {}", parts.join(" + "))
+    pub fn interpretation(&self) -> Interpretation {
+        let contributions = self.contributions();
+        let peak = contributions.iter().copied().fold(0.0_f64, f64::max);
+        let threshold = peak * 0.01;
+
+        let dominant = self
+            .polynomial
+            .terms
+            .iter()
+            .zip(contributions.iter())
+            .filter(|(_, c)| **c >= threshold)
+            .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+            .map(|(term, _)| term.coefficient.abs());
+
+        let scale = match dominant {
+            Some(s) if s > 0.0 => s,
+            _ => {
+                return Interpretation {
+                    structure: "0".to_string(),
+                    scale: 0.0,
+                };
             }
-            Family::Power => {
-                let mut parts = Vec::new();
-                for term in &self.polynomial.terms {
-                    let total: usize = term.monomial.exponent.iter().sum();
-                    if total == 0 {
-                        continue;
-                    }
-                    for (i, e) in term.monomial.exponent.iter().enumerate() {
-                        let e = *e;
-                        if e > 0 {
-                            parts.push(format!("x{i}^{:.2}", term.coefficient));
+        };
+
+        let mut structure = String::new();
+        for (term, contribution) in self.polynomial.terms.iter().zip(contributions.iter()) {
+            if *contribution < threshold {
+                continue;
+            }
+            let normalized = term.coefficient / scale;
+            let magnitude = normalized.abs();
+            let negative = normalized < 0.0;
+
+            if structure.is_empty() {
+                if negative {
+                    structure.push('-');
+                }
+            } else if negative {
+                structure.push_str(" - ");
+            } else {
+                structure.push_str(" + ");
+            }
+
+            let total: usize = term.monomial.exponent.iter().sum();
+            if total == 0 {
+                structure.push_str(&notation(magnitude));
+            } else {
+                let vars = term
+                    .monomial
+                    .exponent
+                    .iter()
+                    .copied()
+                    .enumerate()
+                    .filter(|(_, e)| *e > 0)
+                    .map(|(i, e)| {
+                        if e == 1 {
+                            format!("x{i}")
+                        } else {
+                            format!("x{i}^{e}")
                         }
-                    }
-                }
-                if parts.is_empty() {
-                    "time ~ constant".to_string()
+                    })
+                    .collect::<Vec<_>>()
+                    .join("·");
+                if (magnitude - 1.0).abs() < 1e-6 {
+                    structure.push_str(&vars);
                 } else {
-                    format!("time ~ {}", parts.join(" · "))
+                    use std::fmt::Write;
+                    let _ = write!(structure, "{}·{vars}", notation(magnitude));
                 }
-            }
-            Family::Exponential => {
-                format!("time ~ exp(f(x)), degree {}", self.degree)
             }
         }
+
+        if structure.is_empty() {
+            structure.push('0');
+        }
+
+        Interpretation { structure, scale }
+    }
+
+    fn contributions(&self) -> Vec<f64> {
+        self.polynomial
+            .terms
+            .iter()
+            .map(|term| {
+                self.samples
+                    .iter()
+                    .map(|sample| (term.coefficient * term.monomial.evaluate(&sample.point)).abs())
+                    .fold(0.0_f64, f64::max)
+            })
+            .collect::<Vec<_>>()
+    }
+
+    fn normalize(&self, point: &[f64]) -> Vec<f64> {
+        point
+            .iter()
+            .zip(&self.normalization)
+            .map(|(v, n)| v / n)
+            .collect::<Vec<_>>()
     }
 }
 
@@ -247,22 +232,28 @@ fn enumerate(
     exponent[index] = 0;
 }
 
-#[must_use]
-pub fn fit(samples: &[Sample], terms: &[Monomial]) -> Polynomial {
+fn vandermonde(samples: &[Sample], terms: &[Monomial]) -> DMatrix<f64> {
     let n = samples.len();
     let k = terms.len();
-
-    let mut vandermonde = DMatrix::zeros(n, k);
-    let mut observations = DVector::zeros(n);
-
+    let mut matrix = DMatrix::zeros(n, k);
     for (i, sample) in samples.iter().enumerate() {
         for (j, monomial) in terms.iter().enumerate() {
-            vandermonde[(i, j)] = monomial.evaluate(&sample.point);
+            matrix[(i, j)] = monomial.evaluate(&sample.point);
         }
+    }
+    matrix
+}
+
+#[must_use]
+pub fn fit(samples: &[Sample], terms: &[Monomial]) -> Polynomial {
+    let k = terms.len();
+    let matrix = vandermonde(samples, terms);
+    let mut observations = DVector::zeros(samples.len());
+    for (i, sample) in samples.iter().enumerate() {
         observations[i] = sample.observation;
     }
 
-    let svd = SVD::new(vandermonde, true, true);
+    let svd = SVD::new(matrix, true, true);
     let coefficients = svd
         .solve(&observations, 1e-10)
         .unwrap_or_else(|_| DVector::zeros(k));
@@ -286,137 +277,140 @@ pub fn select(samples: &[Sample], dimensions: usize, maximum: usize) -> Option<S
         return None;
     }
 
-    let families = [Family::Polynomial, Family::Power, Family::Exponential];
-    let mut best: Option<(Family, usize, Polynomial, f64, f64, Vec<f64>)> = None;
+    let normalization: Vec<f64> = (0..dimensions)
+        .map(|d| {
+            samples
+                .iter()
+                .map(|s| s.point.get(d).copied().unwrap_or(0.0).abs())
+                .fold(1.0_f64, f64::max)
+        })
+        .collect();
+
+    let normalized: Vec<Sample> = samples
+        .iter()
+        .map(|s| Sample {
+            point: s
+                .point
+                .iter()
+                .zip(&normalization)
+                .map(|(v, scale)| v / scale)
+                .collect(),
+            observation: s.observation,
+        })
+        .collect();
+
+    let cap = maximum.min(n.saturating_sub(1));
+    let mut best: Option<(usize, Polynomial, f64, f64)> = None;
     let mut candidates = Vec::new();
 
-    for &family in &families {
-        let transformed = samples
-            .iter()
-            .filter_map(|s| family.transform(s))
-            .collect::<Vec<_>>();
-
-        if transformed.len() < 2 {
+    for degree in 1..=cap {
+        let terms = monomials(dimensions, degree);
+        if terms.len() >= n {
             continue;
         }
 
-        let effective = transformed.len();
-        let cap = maximum.min(effective.saturating_sub(1));
+        let polynomial = fit(&normalized, &terms);
+        let k = float(terms.len());
 
-        for degree in 1..=cap {
-            let terms = monomials(dimensions, degree);
-            if terms.len() >= effective {
-                continue;
-            }
+        let mean: f64 = normalized.iter().map(|s| s.observation).sum::<f64>() / float(n);
+        let mut residual = 0.0;
+        let mut total = 0.0;
 
-            let polynomial = fit(&transformed, &terms);
-            let k = float(terms.len());
+        for sample in &normalized {
+            let predicted = polynomial.evaluate(&sample.point);
+            residual += (sample.observation - predicted).powi(2);
+            total += (sample.observation - mean).powi(2);
+        }
 
-            let mut residual_sum = 0.0;
-            let mean: f64 =
-                transformed.iter().map(|s| s.observation).sum::<f64>() / float(effective);
-            let mut total_sum = 0.0;
+        let determination = if total > 0.0 {
+            1.0 - residual / total
+        } else {
+            1.0
+        };
 
-            for sample in &transformed {
-                let predicted = polynomial.evaluate(&sample.point);
-                residual_sum += (sample.observation - predicted).powi(2);
-                total_sum += (sample.observation - mean).powi(2);
-            }
+        let criterion = if residual > 0.0 {
+            float(n) * (residual / float(n)).ln() + k * float(n).ln()
+        } else {
+            f64::NEG_INFINITY
+        };
 
-            let determination = if total_sum > 0.0 {
-                1.0 - residual_sum / total_sum
-            } else {
-                1.0
-            };
+        candidates.push(Candidate {
+            degree,
+            determination,
+            criterion,
+        });
 
-            let criterion = if residual_sum > 0.0 {
-                float(effective) * (residual_sum / float(effective)).ln()
-                    + k * (float(effective)).ln()
-            } else {
-                f64::NEG_INFINITY
-            };
+        let dominated = best
+            .as_ref()
+            .is_none_or(|(_, _, _, best_bic)| criterion < *best_bic);
 
-            candidates.push(Candidate {
-                family,
-                degree,
-                determination,
-                criterion,
-            });
-
-            let leverage = leverage(&transformed, &terms);
-
-            let dominated = best
-                .as_ref()
-                .is_none_or(|(_, _, _, _, best_bic, _)| criterion < *best_bic);
-
-            if dominated {
-                best = Some((
-                    family,
-                    degree,
-                    polynomial,
-                    determination,
-                    criterion,
-                    leverage,
-                ));
-            }
+        if dominated {
+            best = Some((degree, polynomial, determination, criterion));
         }
     }
 
-    let (family, degree, polynomial, determination, criterion, leverage) = best?;
-    let n_effective = leverage.len();
-    let k = monomials(dimensions, degree).len();
-    let residual = if n_effective > k {
-        let transformed = samples
-            .iter()
-            .filter_map(|s| family.transform(s))
-            .collect::<Vec<_>>();
-        let residual_sum: f64 = transformed
+    let (degree, polynomial, determination, criterion) = best?;
+    let terms = monomials(dimensions, degree);
+    let k = terms.len();
+
+    let residual = if n > k {
+        let squared: f64 = normalized
             .iter()
             .map(|s| (s.observation - polynomial.evaluate(&s.point)).powi(2))
             .sum();
-        (residual_sum / (float(n_effective) - float(k))).sqrt()
+        (squared / (float(n) - float(k))).sqrt()
     } else {
         0.0
     };
 
+    let matrix = vandermonde(&normalized, &terms);
+    let gram = pseudoinverse(&matrix);
+
     Some(Selection {
-        family,
         degree,
         polynomial,
         determination,
         criterion,
         candidates,
         residual,
-        leverage,
         dimensions,
+        samples: normalized,
+        normalization,
+        gram,
     })
 }
 
-fn leverage(samples: &[Sample], terms: &[Monomial]) -> Vec<f64> {
-    let n = samples.len();
-    let k = terms.len();
-
-    let mut vandermonde = DMatrix::zeros(n, k);
-    for (i, sample) in samples.iter().enumerate() {
-        for (j, monomial) in terms.iter().enumerate() {
-            vandermonde[(i, j)] = monomial.evaluate(&sample.point);
-        }
-    }
-
-    let vtv = vandermonde.transpose() * &vandermonde;
+fn pseudoinverse(matrix: &DMatrix<f64>) -> DMatrix<f64> {
+    let k = matrix.ncols();
+    let vtv = matrix.transpose() * matrix;
     let svd = SVD::new(vtv, true, true);
-
-    if let Ok(inverse) = svd.pseudo_inverse(1e-10) {
-        let hat = &vandermonde * inverse * vandermonde.transpose();
-        (0..n).map(|i| hat[(i, i)]).collect::<Vec<_>>()
-    } else {
-        vec![0.0; n]
-    }
+    svd.pseudo_inverse(1e-10)
+        .unwrap_or_else(|_| DMatrix::identity(k, k))
 }
 
 #[expect(clippy::cast_precision_loss)]
 fn float(value: usize) -> f64 {
     value as f64
+}
+
+fn notation(value: f64) -> String {
+    if value == 0.0 {
+        return "0".to_string();
+    }
+    let magnitude = value.abs().log10().floor();
+    if (-2.0..=3.0).contains(&magnitude) {
+        match (2.0 - magnitude).max(0.0) {
+            d if d < 0.5 => format!("{value:.0}"),
+            d if d < 1.5 => format!("{value:.1}"),
+            d if d < 2.5 => format!("{value:.2}"),
+            d if d < 3.5 => format!("{value:.3}"),
+            _ => format!("{value:.4}"),
+        }
+    } else {
+        let power = 10_f64.powf(magnitude);
+        let mantissa = value / power;
+        format!("{mantissa:.2}e{magnitude}")
+    }
 }
 
 fn critical(alpha: f64, degrees: f64) -> f64 {

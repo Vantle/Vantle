@@ -7,6 +7,13 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
 
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "index",
+    srcs = ["index.rs"],
+    deps = ["//component/web:index"],
+)
+
 #################################################################################################################################################################
 ########## Page                                                                                                                                           [ Page ]
 rust_library(
@@ -18,9 +25,10 @@ rust_library(
         "//Molten/test/resource/system/graph/state/particle:template.document",
         "//component/web:body",
         "//component/web:extraction",
-        "//component/web:language",
         "//component/web:page",
-        "//system/generation/web:style",
+        "//document:index",
+        "//system/generation/web:navigation",
+        "//test/system/function:execution.schema",
         "@crates//:miette",
     ],
 )
@@ -28,7 +36,6 @@ rust_library(
 rust_library(
     name = "function",
     srcs = ["function.page.rs"],
-    crate_name = "function",
     deps = [
         "//Molten/test/component/graph/state/particle:function.document",
         "//component/web:body",
@@ -36,7 +43,8 @@ rust_library(
         "//component/web:extraction",
         "//component/web:page",
         "//component/web:span",
-        "//system/generation/web:style",
+        "//document:index",
+        "//system/generation/web:navigation",
         "@crates//:miette",
     ],
 )
@@ -50,10 +58,12 @@ rust_library(
         "//component/web:extraction",
         "//component/web:page",
         "//component/web:span",
-        "//system/generation/web:style",
+        "//document:index",
+        "//system/generation/web:navigation",
         "//test/resource/system/performance/sort:sort.cases.json",
         "//test/resource/system/performance/sort:sort.document",
         "//test/resource/system/performance/sort:specification.json",
+        "//test/system/performance/sort:execution.schema",
         "//test/system/performance/sort:performance.document",
         "@crates//:miette",
     ],

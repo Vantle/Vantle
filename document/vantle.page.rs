@@ -1,9 +1,9 @@
 use body::Chain;
 use extraction::Query;
-use style::Composition;
+use navigation::Composition;
 
 pub fn page(root: &str) -> page::Result {
-    style::layout("Vantle", "vantle", "readme", root, |c| {
+    navigation::layout("Vantle", &index::readme(root), root, |c| {
         c.title("Vantle")
             .anchor("https://github.com/Vantle/Vantle", |a| {
                 a.class(class::subtitle())
@@ -21,7 +21,7 @@ pub fn page(root: &str) -> page::Result {
                         .paragraph(|p| {
                             p.text("An AI frontend language designed for continual learning algorithms. Build hypergraphs through polymorphic relations, enabling declarative computation with concepts, orthogonalities, and transformations evaluated with temporal semantics.")
                         })
-                        .paragraph(|p| p.link(&format!("{root}Molten/"), "more \u{2192}"))
+                        .paragraph(|p| p.link(&index::molten::readme(root).href, "more \u{2192}"))
                 })
                 .subsection("Generation", |ss| {
                     ss.aside(|a| a.italic("Code generation framework for Rust"))
@@ -30,7 +30,7 @@ pub fn page(root: &str) -> page::Result {
                                 .bold("autotest")
                                 .text(" system eliminates boilerplate while enabling data-driven testing with parameter shadowing and tag organization.")
                         })
-                        .paragraph(|p| p.link(&format!("{root}system/generation/"), "more \u{2192}"))
+                        .paragraph(|p| p.link(&index::generation::generation(root).href, "more \u{2192}"))
                 })
                 .subsection("Observation", |ss| {
                     ss.aside(|a| a.italic("Trace streaming and recording"))
@@ -39,14 +39,14 @@ pub fn page(root: &str) -> page::Result {
                                 .code("#[trace]")
                                 .text(" macro instruments functions with channel-based filtering for selective observation to files or remote peers.")
                         })
-                        .paragraph(|p| p.link(&format!("{root}system/observation/"), "more \u{2192}"))
+                        .paragraph(|p| p.link(&index::observation::observation(root).href, "more \u{2192}"))
                 })
                 .subsection("Spatialize", |ss| {
                     ss.aside(|a| a.italic("GPU rendering infrastructure"))
                         .paragraph(|p| {
                             p.text("Render with wgpu using assembler-pattern context creation and frame-based draw submission. Golden ratio scaling utilities ensure harmonious visual proportions throughout.")
                         })
-                        .paragraph(|p| p.link(&format!("{root}system/spatialize/"), "more \u{2192}"))
+                        .paragraph(|p| p.link(&index::spatialize::spatialize(root).href, "more \u{2192}"))
                 })
             })
             .rule()

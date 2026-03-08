@@ -5,6 +5,7 @@
 load("@rules_rust//rust:defs.bzl", "rust_library")
 
 ##### Documentation                                                                                                                                 [ Documentation ]
+load("//component/generation/starlark:defs.bzl", "extract")
 load("//component/web/starlark:defs.bzl", "document")
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -74,6 +75,14 @@ rust_library(
         "@crates//:serde_json",
         "@crates//:syn",
     ],
+)
+
+##### Extraction                                                                                                                               [ Extraction ]
+extract(
+    name = "function.document.extract",
+    language = "rust",
+    source = "function.document.rs",
+    visibility = ["//visibility:public"],
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]

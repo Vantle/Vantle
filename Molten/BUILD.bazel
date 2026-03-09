@@ -61,14 +61,12 @@ document(
 
 document(
     src = "notice.document.rs",
-    data = ["//:NOTICE.md"],
     destination = "Molten/notice.html",
     deps = ["//Molten/document:notice"],
 )
 
 document(
     src = "license.document.rs",
-    data = ["//:LICENSE.md"],
     destination = "Molten/license.html",
     deps = ["//Molten/document:license"],
 )

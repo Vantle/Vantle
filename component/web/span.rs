@@ -1,53 +1,77 @@
-pub struct Span {
-    pub fragments: Vec<Fragment>,
-}
+use element::Element;
 
-pub enum Fragment {
-    Text(String),
-    Bold(String),
-    Italic(String),
-    Code(String),
-    Link { href: String, text: String },
+pub struct Span {
+    pub elements: Vec<Element>,
 }
 
 impl Span {
     #[must_use]
     pub fn new() -> Self {
         Self {
-            fragments: Vec::new(),
+            elements: Vec::new(),
         }
     }
 
     #[must_use]
     pub fn text(mut self, content: &str) -> Self {
-        self.fragments.push(Fragment::Text(content.into()));
+        self.elements.push(Element::Text(content.into()));
         self
     }
 
     #[must_use]
     pub fn bold(mut self, content: &str) -> Self {
-        self.fragments.push(Fragment::Bold(content.into()));
+        self.elements.push(Element::Tag {
+            name: "strong".into(),
+            attributes: Vec::new(),
+            children: vec![Element::Text(content.into())],
+        });
         self
     }
 
     #[must_use]
     pub fn italic(mut self, content: &str) -> Self {
-        self.fragments.push(Fragment::Italic(content.into()));
+        self.elements.push(Element::Tag {
+            name: "em".into(),
+            attributes: Vec::new(),
+            children: vec![Element::Text(content.into())],
+        });
         self
     }
 
     #[must_use]
     pub fn code(mut self, content: &str) -> Self {
-        self.fragments.push(Fragment::Code(content.into()));
+        self.elements.push(Element::Tag {
+            name: "code".into(),
+            attributes: Vec::new(),
+            children: vec![Element::Text(content.into())],
+        });
         self
     }
 
     #[must_use]
-    pub fn link(mut self, href: &str, text: &str) -> Self {
-        self.fragments.push(Fragment::Link {
-            href: href.into(),
-            text: text.into(),
+    pub fn link(mut self, href: &str, f: impl FnOnce(Span) -> Span) -> Self {
+        let inner = f(Span::new());
+        self.elements.push(Element::Tag {
+            name: "a".into(),
+            attributes: vec![("href".into(), href.into())],
+            children: inner.elements,
         });
+        self
+    }
+
+    #[must_use]
+    pub fn class(mut self, reference: class::Reference) -> Self {
+        if let Some(Element::Tag { attributes, .. }) = self.elements.last_mut() {
+            element::merge(attributes, "class", reference.name());
+        }
+        self
+    }
+
+    #[must_use]
+    pub fn attribute(mut self, name: &str, value: &str) -> Self {
+        if let Some(Element::Tag { attributes, .. }) = self.elements.last_mut() {
+            attributes.push((name.into(), value.into()));
+        }
         self
     }
 }

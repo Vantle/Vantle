@@ -21,7 +21,7 @@ pub fn snippet(ast: &syn::File) -> String {
         if i > 0 {
             visitor.output.push('\n');
         }
-        visitor.emit_statement(stmt, "");
+        visitor.statement(stmt, "");
     }
     visitor.output
 }
@@ -82,7 +82,7 @@ impl Visitor {
     fn operator(&mut self, text: &str) {
         self.token("operator", text);
     }
-    fn macro_name(&mut self, text: &str) {
+    fn macros(&mut self, text: &str) {
         self.token("macro", text);
     }
     fn comment(&mut self, text: &str) {
@@ -90,15 +90,17 @@ impl Visitor {
     }
 
     fn plain(&mut self, text: &str) {
-        self.output.push_str(&escape::escape(text));
+        escape::stream(&mut self.output, text);
     }
 
     fn node(&mut self, class: &str) {
-        escape::open(&mut self.output, class);
+        self.output.push_str("<span class=\"node-");
+        escape::stream(&mut self.output, class);
+        self.output.push_str("\">");
     }
 
     fn end(&mut self) {
-        escape::close(&mut self.output);
+        self.output.push_str("</span>");
     }
 
     fn leading(&self) -> String {
@@ -119,10 +121,10 @@ impl Visitor {
         " ".repeat(spaces + 4)
     }
 
-    fn emit_chain(&mut self, expression: &Expr) {
+    fn chained(&mut self, expression: &Expr) {
         let (root, links, trailing) = flatten(expression);
         let indent = self.leading();
-        self.emit_expr(root);
+        self.expression(root);
         for link in &links {
             self.output.push('\n');
             self.output.push_str(&indent);
@@ -137,7 +139,7 @@ impl Visitor {
                                 self.plain(", ");
                             }
                             match arg {
-                                GenericArgument::Type(t) => self.emit_type(t),
+                                GenericArgument::Type(t) => self.typed(t),
                                 _ => self.plain(&arg.to_token_stream().to_string()),
                             }
                         }
@@ -148,7 +150,7 @@ impl Visitor {
                         if i > 0 {
                             self.plain(", ");
                         }
-                        self.emit_expr(arg);
+                        self.expression(arg);
                     }
                     self.punctuation(")");
                 }
@@ -167,19 +169,19 @@ impl Visitor {
         }
     }
 
-    fn emit_attrs(&mut self, attrs: &[syn::Attribute]) {
+    fn attributes(&mut self, attrs: &[syn::Attribute]) {
         if attrs.is_empty() {
             return;
         }
         self.node("attributes");
         for attr in attrs {
-            self.macro_name(&attr.to_token_stream().to_string());
+            self.macros(&attr.to_token_stream().to_string());
             self.output.push('\n');
         }
         self.end();
     }
 
-    fn emit_visibility(&mut self, vis: &syn::Visibility) {
+    fn visibility(&mut self, vis: &syn::Visibility) {
         match vis {
             syn::Visibility::Public(_) => {
                 self.node("visibility");
@@ -200,7 +202,7 @@ impl Visitor {
         }
     }
 
-    fn emit_generics(&mut self, generics: &syn::Generics) {
+    fn generics(&mut self, generics: &syn::Generics) {
         if !generics.params.is_empty() {
             self.node("generics");
             self.punctuation("<");
@@ -217,7 +219,7 @@ impl Visitor {
                             } else {
                                 self.plain(" + ");
                             }
-                            self.emit_type_bound(bound);
+                            self.bound(bound);
                         }
                     }
                     syn::GenericParam::Lifetime(l) => {
@@ -228,7 +230,7 @@ impl Visitor {
                         self.plain(" ");
                         self.constant(&c.ident.to_string());
                         self.punctuation(": ");
-                        self.emit_type(&c.ty);
+                        self.typed(&c.ty);
                     }
                 }
             }
@@ -237,10 +239,10 @@ impl Visitor {
         }
     }
 
-    fn emit_type_bound(&mut self, bound: &syn::TypeParamBound) {
+    fn bound(&mut self, bound: &syn::TypeParamBound) {
         match bound {
             syn::TypeParamBound::Trait(t) => {
-                self.emit_path(&t.path);
+                self.path(&t.path);
             }
             syn::TypeParamBound::Lifetime(l) => {
                 self.storage(&format!("'{}", l.ident));
@@ -251,7 +253,7 @@ impl Visitor {
         }
     }
 
-    fn emit_where_clause(&mut self, clause: &syn::WhereClause) {
+    fn clause(&mut self, clause: &syn::WhereClause) {
         self.node("where");
         self.output.push('\n');
         self.keyword("where");
@@ -263,13 +265,13 @@ impl Visitor {
             self.plain("    ");
             match predicate {
                 syn::WherePredicate::Type(t) => {
-                    self.emit_type(&t.bounded_ty);
+                    self.typed(&t.bounded_ty);
                     self.punctuation(": ");
                     for (j, bound) in t.bounds.iter().enumerate() {
                         if j > 0 {
                             self.plain(" + ");
                         }
-                        self.emit_type_bound(bound);
+                        self.bound(bound);
                     }
                 }
                 _ => {
@@ -281,7 +283,45 @@ impl Visitor {
         self.end();
     }
 
-    fn emit_path(&mut self, path: &syn::Path) {
+    fn arguments(&mut self, args: &PathArguments, turbofish: bool) {
+        match args {
+            PathArguments::AngleBracketed(args) => {
+                self.punctuation(if turbofish { "::<" } else { "<" });
+                for (i, arg) in args.args.iter().enumerate() {
+                    if i > 0 {
+                        self.plain(", ");
+                    }
+                    match arg {
+                        GenericArgument::Type(t) => self.typed(t),
+                        GenericArgument::Lifetime(l) => {
+                            self.storage(&format!("'{}", l.ident));
+                        }
+                        _ => self.plain(&arg.to_token_stream().to_string()),
+                    }
+                }
+                self.punctuation(">");
+            }
+            PathArguments::Parenthesized(args) => {
+                self.punctuation("(");
+                for (i, input) in args.inputs.iter().enumerate() {
+                    if i > 0 {
+                        self.plain(", ");
+                    }
+                    self.typed(input);
+                }
+                self.punctuation(")");
+                if let ReturnType::Type(_, ty) = &args.output {
+                    self.plain(" ");
+                    self.operator("->");
+                    self.plain(" ");
+                    self.typed(ty);
+                }
+            }
+            PathArguments::None => {}
+        }
+    }
+
+    fn path(&mut self, path: &syn::Path) {
         self.node("path");
         for (i, segment) in path.segments.iter().enumerate() {
             if i > 0 {
@@ -293,52 +333,18 @@ impl Visitor {
             } else {
                 self.plain(&name);
             }
-            match &segment.arguments {
-                PathArguments::AngleBracketed(args) => {
-                    self.punctuation("::<");
-                    for (j, arg) in args.args.iter().enumerate() {
-                        if j > 0 {
-                            self.plain(", ");
-                        }
-                        match arg {
-                            GenericArgument::Type(t) => self.emit_type(t),
-                            GenericArgument::Lifetime(l) => {
-                                self.storage(&format!("'{}", l.ident));
-                            }
-                            _ => self.plain(&arg.to_token_stream().to_string()),
-                        }
-                    }
-                    self.punctuation(">");
-                }
-                PathArguments::Parenthesized(args) => {
-                    self.punctuation("(");
-                    for (j, input) in args.inputs.iter().enumerate() {
-                        if j > 0 {
-                            self.plain(", ");
-                        }
-                        self.emit_type(input);
-                    }
-                    self.punctuation(")");
-                    if let ReturnType::Type(_, ty) = &args.output {
-                        self.plain(" ");
-                        self.operator("->");
-                        self.plain(" ");
-                        self.emit_type(ty);
-                    }
-                }
-                PathArguments::None => {}
-            }
+            self.arguments(&segment.arguments, true);
         }
         self.end();
     }
 
-    fn emit_type(&mut self, ty: &Type) {
+    fn typed(&mut self, ty: &Type) {
         self.node("type");
         match ty {
             Type::Path(path) => {
                 if let Some(qself) = &path.qself {
                     self.punctuation("<");
-                    self.emit_type(&qself.ty);
+                    self.typed(&qself.ty);
                     self.plain(" ");
                     self.keyword("as");
                     self.plain(" ");
@@ -367,41 +373,7 @@ impl Visitor {
                         } else {
                             self.plain(&name);
                         }
-                        match &segment.arguments {
-                            PathArguments::AngleBracketed(args) => {
-                                self.punctuation("<");
-                                for (j, arg) in args.args.iter().enumerate() {
-                                    if j > 0 {
-                                        self.plain(", ");
-                                    }
-                                    match arg {
-                                        GenericArgument::Type(t) => self.emit_type(t),
-                                        GenericArgument::Lifetime(l) => {
-                                            self.storage(&format!("'{}", l.ident));
-                                        }
-                                        _ => self.plain(&arg.to_token_stream().to_string()),
-                                    }
-                                }
-                                self.punctuation(">");
-                            }
-                            PathArguments::Parenthesized(args) => {
-                                self.punctuation("(");
-                                for (j, input) in args.inputs.iter().enumerate() {
-                                    if j > 0 {
-                                        self.plain(", ");
-                                    }
-                                    self.emit_type(input);
-                                }
-                                self.punctuation(")");
-                                if let ReturnType::Type(_, t) = &args.output {
-                                    self.plain(" ");
-                                    self.operator("->");
-                                    self.plain(" ");
-                                    self.emit_type(t);
-                                }
-                            }
-                            PathArguments::None => {}
-                        }
+                        self.arguments(&segment.arguments, false);
                     }
                 }
             }
@@ -415,16 +387,16 @@ impl Visitor {
                     self.keyword("mut");
                     self.plain(" ");
                 }
-                self.emit_type(&r.elem);
+                self.typed(&r.elem);
             }
             Type::Slice(s) => {
                 self.punctuation("[");
-                self.emit_type(&s.elem);
+                self.typed(&s.elem);
                 self.punctuation("]");
             }
             Type::Array(a) => {
                 self.punctuation("[");
-                self.emit_type(&a.elem);
+                self.typed(&a.elem);
                 self.plain("; ");
                 self.plain(&a.len.to_token_stream().to_string());
                 self.punctuation("]");
@@ -435,7 +407,7 @@ impl Visitor {
                     if i > 0 {
                         self.plain(", ");
                     }
-                    self.emit_type(elem);
+                    self.typed(elem);
                 }
                 self.punctuation(")");
             }
@@ -446,7 +418,7 @@ impl Visitor {
                     if i > 0 {
                         self.plain(" + ");
                     }
-                    self.emit_type_bound(bound);
+                    self.bound(bound);
                 }
             }
             Type::TraitObject(obj) => {
@@ -456,7 +428,7 @@ impl Visitor {
                     if i > 0 {
                         self.plain(" + ");
                     }
-                    self.emit_type_bound(bound);
+                    self.bound(bound);
                 }
             }
             Type::Infer(_) => self.plain("_"),
@@ -466,10 +438,10 @@ impl Visitor {
         self.end();
     }
 
-    fn emit_expr(&mut self, expr: &Expr) {
+    fn expression(&mut self, expr: &Expr) {
         self.node("expression");
         match expr {
-            Expr::Lit(lit) => self.emit_lit(&lit.lit),
+            Expr::Lit(lit) => self.value(&lit.lit),
             Expr::Path(path) => {
                 if path.path.segments.len() == 1 {
                     let name = path.path.segments[0].ident.to_string();
@@ -481,27 +453,27 @@ impl Visitor {
                         self.variable(&name);
                     }
                 } else {
-                    self.emit_path(&path.path);
+                    self.path(&path.path);
                 }
             }
             Expr::Call(call) => {
-                self.emit_expr(&call.func);
+                self.expression(&call.func);
                 self.punctuation("(");
                 for (i, arg) in call.args.iter().enumerate() {
                     if i > 0 {
                         self.plain(", ");
                     }
-                    self.emit_expr(arg);
+                    self.expression(arg);
                 }
                 self.punctuation(")");
             }
             Expr::MethodCall(_) | Expr::Field(_) | Expr::Try(_) | Expr::Await(_)
                 if chain(expr) >= 3 =>
             {
-                self.emit_chain(expr);
+                self.chained(expr);
             }
             Expr::MethodCall(mc) => {
-                self.emit_expr(&mc.receiver);
+                self.expression(&mc.receiver);
                 self.punctuation(".");
                 self.function(&mc.method.to_string());
                 if let Some(turbofish) = &mc.turbofish {
@@ -511,7 +483,7 @@ impl Visitor {
                             self.plain(", ");
                         }
                         match arg {
-                            GenericArgument::Type(t) => self.emit_type(t),
+                            GenericArgument::Type(t) => self.typed(t),
                             _ => self.plain(&arg.to_token_stream().to_string()),
                         }
                     }
@@ -522,7 +494,7 @@ impl Visitor {
                     if i > 0 {
                         self.plain(", ");
                     }
-                    self.emit_expr(arg);
+                    self.expression(arg);
                 }
                 self.punctuation(")");
             }
@@ -532,14 +504,14 @@ impl Visitor {
                     self.keyword("mut");
                     self.plain(" ");
                 }
-                self.emit_expr(&r.expr);
+                self.expression(&r.expr);
             }
             Expr::Block(block) => {
                 let indent = self.leading();
                 let outer = &indent[..indent.len().saturating_sub(4)];
                 self.plain(" {\n");
                 for stmt in &block.block.stmts {
-                    self.emit_statement(stmt, &indent);
+                    self.statement(stmt, &indent);
                 }
                 self.output.push_str(outer);
                 self.plain("}");
@@ -549,10 +521,10 @@ impl Visitor {
                 let outer = &indent[..indent.len().saturating_sub(4)];
                 self.keyword("if");
                 self.plain(" ");
-                self.emit_expr(&expr_if.cond);
+                self.expression(&expr_if.cond);
                 self.plain(" {\n");
                 for stmt in &expr_if.then_branch.stmts {
-                    self.emit_statement(stmt, &indent);
+                    self.statement(stmt, &indent);
                 }
                 self.output.push_str(outer);
                 self.plain("}");
@@ -560,7 +532,7 @@ impl Visitor {
                     self.plain(" ");
                     self.keyword("else");
                     self.plain(" ");
-                    self.emit_expr(else_branch);
+                    self.expression(else_branch);
                 }
             }
             Expr::Match(m) => {
@@ -568,15 +540,15 @@ impl Visitor {
                 let outer = &indent[..indent.len().saturating_sub(4)];
                 self.keyword("match");
                 self.plain(" ");
-                self.emit_expr(&m.expr);
+                self.expression(&m.expr);
                 self.plain(" {\n");
                 for arm in &m.arms {
                     self.output.push_str(&indent);
-                    self.emit_pat(&arm.pat);
+                    self.pattern(&arm.pat);
                     self.plain(" ");
                     self.operator("=>");
                     self.plain(" ");
-                    self.emit_expr(&arm.body);
+                    self.expression(&arm.body);
                     self.plain(",\n");
                 }
                 self.output.push_str(outer);
@@ -600,7 +572,7 @@ impl Visitor {
                     if i > 0 {
                         self.plain(", ");
                     }
-                    self.emit_pat(input);
+                    self.pattern(input);
                 }
                 self.punctuation("|");
                 self.plain(" ");
@@ -609,18 +581,18 @@ impl Visitor {
                     let outer = &indent[..indent.len().saturating_sub(4)];
                     self.plain("{\n");
                     for stmt in &block.block.stmts {
-                        self.emit_statement(stmt, &indent);
+                        self.statement(stmt, &indent);
                     }
                     self.output.push_str(outer);
                     self.plain("}");
                 } else {
-                    self.emit_expr(&c.body);
+                    self.expression(&c.body);
                 }
             }
             Expr::Struct(s) => {
                 let indent = self.leading();
                 let outer = &indent[..indent.len().saturating_sub(4)];
-                self.emit_path(&s.path);
+                self.path(&s.path);
                 self.plain(" {\n");
                 for (i, field) in s.fields.iter().enumerate() {
                     if i > 0 {
@@ -632,62 +604,62 @@ impl Visitor {
                         self.punctuation(":");
                         self.plain(" ");
                     }
-                    self.emit_expr(&field.expr);
+                    self.expression(&field.expr);
                 }
                 self.output.push('\n');
                 self.output.push_str(outer);
                 self.plain("}");
             }
             Expr::Field(f) => {
-                self.emit_expr(&f.base);
+                self.expression(&f.base);
                 self.punctuation(".");
                 self.variable(&f.member.to_token_stream().to_string());
             }
             Expr::Index(idx) => {
-                self.emit_expr(&idx.expr);
+                self.expression(&idx.expr);
                 self.punctuation("[");
-                self.emit_expr(&idx.index);
+                self.expression(&idx.index);
                 self.punctuation("]");
             }
             Expr::Unary(u) => {
                 self.operator(&u.op.to_token_stream().to_string());
-                self.emit_expr(&u.expr);
+                self.expression(&u.expr);
             }
             Expr::Binary(b) => {
-                self.emit_expr(&b.left);
+                self.expression(&b.left);
                 self.plain(" ");
                 self.operator(&b.op.to_token_stream().to_string());
                 self.plain(" ");
-                self.emit_expr(&b.right);
+                self.expression(&b.right);
             }
             Expr::Let(l) => {
                 self.keyword("let");
                 self.plain(" ");
-                self.emit_pat(&l.pat);
+                self.pattern(&l.pat);
                 self.plain(" ");
                 self.operator("=");
                 self.plain(" ");
-                self.emit_expr(&l.expr);
+                self.expression(&l.expr);
             }
             Expr::Return(r) => {
                 self.keyword("return");
                 if let Some(expr) = &r.expr {
                     self.plain(" ");
-                    self.emit_expr(expr);
+                    self.expression(expr);
                 }
             }
             Expr::Try(t) => {
-                self.emit_expr(&t.expr);
+                self.expression(&t.expr);
                 self.operator("?");
             }
             Expr::Await(a) => {
-                self.emit_expr(&a.base);
+                self.expression(&a.base);
                 self.punctuation(".");
                 self.keyword("await");
             }
             Expr::Paren(p) => {
                 self.punctuation("(");
-                self.emit_expr(&p.expr);
+                self.expression(&p.expr);
                 self.punctuation(")");
             }
             Expr::Tuple(t) => {
@@ -696,7 +668,7 @@ impl Visitor {
                     if i > 0 {
                         self.plain(", ");
                     }
-                    self.emit_expr(elem);
+                    self.expression(elem);
                 }
                 self.punctuation(")");
             }
@@ -706,29 +678,29 @@ impl Visitor {
                     if i > 0 {
                         self.plain(", ");
                     }
-                    self.emit_expr(elem);
+                    self.expression(elem);
                 }
                 self.punctuation("]");
             }
             Expr::Cast(c) => {
-                self.emit_expr(&c.expr);
+                self.expression(&c.expr);
                 self.plain(" ");
                 self.keyword("as");
                 self.plain(" ");
-                self.emit_type(&c.ty);
+                self.typed(&c.ty);
             }
             Expr::Range(r) => {
                 if let Some(start) = &r.start {
-                    self.emit_expr(start);
+                    self.expression(start);
                 }
                 self.operator(&r.limits.to_token_stream().to_string());
                 if let Some(end) = &r.end {
-                    self.emit_expr(end);
+                    self.expression(end);
                 }
             }
             Expr::Macro(m) => {
-                self.emit_path(&m.mac.path);
-                self.macro_name("!");
+                self.path(&m.mac.path);
+                self.macros("!");
                 self.punctuation("(");
                 self.plain(&m.mac.tokens.to_string());
                 self.punctuation(")");
@@ -738,7 +710,7 @@ impl Visitor {
         self.end();
     }
 
-    fn emit_lit(&mut self, lit: &Lit) {
+    fn value(&mut self, lit: &Lit) {
         match lit {
             Lit::Str(s) => self.string(&format!("\"{}\"", s.value())),
             Lit::Char(c) => self.string(&format!("'{}'", c.value())),
@@ -751,7 +723,7 @@ impl Visitor {
         }
     }
 
-    fn emit_pat(&mut self, pat: &Pat) {
+    fn pattern(&mut self, pat: &Pat) {
         self.node("pattern");
         match pat {
             Pat::Ident(ident) => {
@@ -766,31 +738,31 @@ impl Visitor {
                 self.variable(&ident.ident.to_string());
             }
             Pat::Wild(_) => self.plain("_"),
-            Pat::Lit(lit) => self.emit_lit(&lit.lit),
-            Pat::Path(path) => self.emit_path(&path.path),
+            Pat::Lit(lit) => self.value(&lit.lit),
+            Pat::Path(path) => self.path(&path.path),
             Pat::Tuple(t) => {
                 self.punctuation("(");
                 for (i, elem) in t.elems.iter().enumerate() {
                     if i > 0 {
                         self.plain(", ");
                     }
-                    self.emit_pat(elem);
+                    self.pattern(elem);
                 }
                 self.punctuation(")");
             }
             Pat::TupleStruct(ts) => {
-                self.emit_path(&ts.path);
+                self.path(&ts.path);
                 self.punctuation("(");
                 for (i, elem) in ts.elems.iter().enumerate() {
                     if i > 0 {
                         self.plain(", ");
                     }
-                    self.emit_pat(elem);
+                    self.pattern(elem);
                 }
                 self.punctuation(")");
             }
             Pat::Struct(s) => {
-                self.emit_path(&s.path);
+                self.path(&s.path);
                 self.plain(" { ");
                 for (i, field) in s.fields.iter().enumerate() {
                     if i > 0 {
@@ -799,7 +771,7 @@ impl Visitor {
                     self.variable(&field.member.to_token_stream().to_string());
                     if field.colon_token.is_some() {
                         self.punctuation(": ");
-                        self.emit_pat(&field.pat);
+                        self.pattern(&field.pat);
                     }
                 }
                 if s.qself.is_some() {
@@ -813,7 +785,7 @@ impl Visitor {
                     self.keyword("mut");
                     self.plain(" ");
                 }
-                self.emit_pat(&r.pat);
+                self.pattern(&r.pat);
             }
             Pat::Slice(s) => {
                 self.punctuation("[");
@@ -821,7 +793,7 @@ impl Visitor {
                     if i > 0 {
                         self.plain(", ");
                     }
-                    self.emit_pat(elem);
+                    self.pattern(elem);
                 }
                 self.punctuation("]");
             }
@@ -830,41 +802,41 @@ impl Visitor {
                     if i > 0 {
                         self.plain(" | ");
                     }
-                    self.emit_pat(case);
+                    self.pattern(case);
                 }
             }
             Pat::Rest(_) => self.plain(".."),
             Pat::Type(t) => {
-                self.emit_pat(&t.pat);
+                self.pattern(&t.pat);
                 self.punctuation(": ");
-                self.emit_type(&t.ty);
+                self.typed(&t.ty);
             }
             _ => self.plain(&pat.to_token_stream().to_string()),
         }
         self.end();
     }
 
-    fn emit_statement(&mut self, stmt: &Stmt, indent: &str) {
+    fn statement(&mut self, stmt: &Stmt, indent: &str) {
         match stmt {
             Stmt::Local(local) => {
                 self.node("let");
                 self.output.push_str(indent);
                 self.keyword("let");
                 self.plain(" ");
-                if local.pat.to_token_stream().to_string().starts_with("mut ") {
+                if let Pat::Ident(ident) = &local.pat
+                    && ident.mutability.is_some()
+                {
                     self.keyword("mut");
                     self.plain(" ");
-                    if let Pat::Ident(ident) = &local.pat {
-                        self.variable(&ident.ident.to_string());
-                    }
+                    self.variable(&ident.ident.to_string());
                 } else {
-                    self.emit_pat(&local.pat);
+                    self.pattern(&local.pat);
                 }
                 if let Some(init) = &local.init {
                     self.plain(" ");
                     self.operator("=");
                     self.plain(" ");
-                    self.emit_expr(&init.expr);
+                    self.expression(&init.expr);
                 }
                 self.punctuation(";");
                 self.output.push('\n');
@@ -873,19 +845,19 @@ impl Visitor {
             Stmt::Expr(expr, semi) => {
                 self.node("statement");
                 self.output.push_str(indent);
-                self.emit_expr(expr);
+                self.expression(expr);
                 if semi.is_some() {
                     self.punctuation(";");
                 }
                 self.output.push('\n');
                 self.end();
             }
-            Stmt::Item(item) => self.emit_item(item),
+            Stmt::Item(item) => self.item(item),
             Stmt::Macro(m) => {
                 self.node("statement");
                 self.output.push_str(indent);
-                self.emit_path(&m.mac.path);
-                self.macro_name("!");
+                self.path(&m.mac.path);
+                self.macros("!");
                 self.punctuation("(");
                 self.plain(&m.mac.tokens.to_string());
                 self.punctuation(")");
@@ -898,7 +870,7 @@ impl Visitor {
         }
     }
 
-    fn emit_signature(&mut self, sig: &syn::Signature) {
+    fn signature(&mut self, sig: &syn::Signature) {
         if sig.constness.is_some() {
             self.storage("const");
             self.plain(" ");
@@ -914,20 +886,20 @@ impl Visitor {
         self.keyword("fn");
         self.plain(" ");
         self.entity(&sig.ident.to_string());
-        self.emit_generics(&sig.generics);
-        self.emit_parameters(&sig.inputs);
+        self.generics(&sig.generics);
+        self.parameters(&sig.inputs);
         if let ReturnType::Type(_, ty) = &sig.output {
             self.plain(" ");
             self.operator("->");
             self.plain(" ");
-            self.emit_type(ty);
+            self.typed(ty);
         }
         if let Some(clause) = &sig.generics.where_clause {
-            self.emit_where_clause(clause);
+            self.clause(clause);
         }
     }
 
-    fn emit_parameters(&mut self, inputs: &syn::punctuated::Punctuated<FnArg, syn::token::Comma>) {
+    fn parameters(&mut self, inputs: &syn::punctuated::Punctuated<FnArg, syn::token::Comma>) {
         self.node("parameters");
         self.punctuation("(");
         for (i, arg) in inputs.iter().enumerate() {
@@ -951,10 +923,10 @@ impl Visitor {
                     self.keyword("self");
                 }
                 FnArg::Typed(t) => {
-                    self.emit_pat(&t.pat);
+                    self.pattern(&t.pat);
                     self.punctuation(":");
                     self.plain(" ");
-                    self.emit_type(&t.ty);
+                    self.typed(&t.ty);
                 }
             }
             self.end();
@@ -963,28 +935,28 @@ impl Visitor {
         self.end();
     }
 
-    fn emit_item(&mut self, item: &Item) {
+    fn item(&mut self, item: &Item) {
         match item {
             Item::Use(u) => {
                 self.node("use");
-                self.emit_attrs(&u.attrs);
-                self.emit_visibility(&u.vis);
+                self.attributes(&u.attrs);
+                self.visibility(&u.vis);
                 self.keyword("use");
                 self.plain(" ");
-                self.emit_use_tree(&u.tree);
+                self.tree(&u.tree);
                 self.punctuation(";");
                 self.output.push('\n');
                 self.end();
             }
             Item::Fn(f) => {
                 self.node("function");
-                self.emit_attrs(&f.attrs);
-                self.emit_visibility(&f.vis);
-                self.emit_signature(&f.sig);
+                self.attributes(&f.attrs);
+                self.visibility(&f.vis);
+                self.signature(&f.sig);
                 self.node("block");
                 self.plain(" {\n");
                 for stmt in &f.block.stmts {
-                    self.emit_statement(stmt, "    ");
+                    self.statement(stmt, "    ");
                 }
                 self.plain("}\n");
                 self.end();
@@ -992,27 +964,27 @@ impl Visitor {
             }
             Item::Struct(s) => {
                 self.node("struct");
-                self.emit_attrs(&s.attrs);
-                self.emit_visibility(&s.vis);
+                self.attributes(&s.attrs);
+                self.visibility(&s.vis);
                 self.keyword("struct");
                 self.plain(" ");
                 self.entity(&s.ident.to_string());
-                self.emit_generics(&s.generics);
+                self.generics(&s.generics);
                 match &s.fields {
                     syn::Fields::Named(fields) => {
                         if let Some(clause) = &s.generics.where_clause {
-                            self.emit_where_clause(clause);
+                            self.clause(clause);
                         }
                         self.plain(" {\n");
                         for field in &fields.named {
                             self.node("field");
-                            self.emit_attrs(&field.attrs);
+                            self.attributes(&field.attrs);
                             self.plain("    ");
-                            self.emit_visibility(&field.vis);
+                            self.visibility(&field.vis);
                             self.variable(&field.ident.as_ref().unwrap().to_string());
                             self.punctuation(":");
                             self.plain(" ");
-                            self.emit_type(&field.ty);
+                            self.typed(&field.ty);
                             self.plain(",\n");
                             self.end();
                         }
@@ -1024,8 +996,8 @@ impl Visitor {
                             if i > 0 {
                                 self.plain(", ");
                             }
-                            self.emit_visibility(&field.vis);
-                            self.emit_type(&field.ty);
+                            self.visibility(&field.vis);
+                            self.typed(&field.ty);
                         }
                         self.punctuation(")");
                         self.punctuation(";");
@@ -1040,16 +1012,16 @@ impl Visitor {
             }
             Item::Enum(e) => {
                 self.node("enum");
-                self.emit_attrs(&e.attrs);
-                self.emit_visibility(&e.vis);
+                self.attributes(&e.attrs);
+                self.visibility(&e.vis);
                 self.keyword("enum");
                 self.plain(" ");
                 self.entity(&e.ident.to_string());
-                self.emit_generics(&e.generics);
+                self.generics(&e.generics);
                 self.plain(" {\n");
                 for variant in &e.variants {
                     self.node("variant");
-                    self.emit_attrs(&variant.attrs);
+                    self.attributes(&variant.attrs);
                     self.plain("    ");
                     self.entity(&variant.ident.to_string());
                     match &variant.fields {
@@ -1061,7 +1033,7 @@ impl Visitor {
                                 self.variable(&field.ident.as_ref().unwrap().to_string());
                                 self.punctuation(":");
                                 self.plain(" ");
-                                self.emit_type(&field.ty);
+                                self.typed(&field.ty);
                                 self.plain(",\n");
                                 self.end();
                             }
@@ -1074,7 +1046,7 @@ impl Visitor {
                                     self.plain(", ");
                                 }
                                 self.node("field");
-                                self.emit_type(&field.ty);
+                                self.typed(&field.ty);
                                 self.end();
                             }
                             self.punctuation(")");
@@ -1089,38 +1061,38 @@ impl Visitor {
             }
             Item::Impl(imp) => {
                 self.node("impl");
-                self.emit_attrs(&imp.attrs);
+                self.attributes(&imp.attrs);
                 if imp.unsafety.is_some() {
                     self.storage("unsafe");
                     self.plain(" ");
                 }
                 self.keyword("impl");
-                self.emit_generics(&imp.generics);
+                self.generics(&imp.generics);
                 self.plain(" ");
                 if let Some((_, path, _)) = &imp.trait_ {
-                    self.emit_path(path);
+                    self.path(path);
                     self.plain(" ");
                     self.keyword("for");
                     self.plain(" ");
                 }
-                self.emit_type(&imp.self_ty);
+                self.typed(&imp.self_ty);
                 if let Some(clause) = &imp.generics.where_clause {
-                    self.emit_where_clause(clause);
+                    self.clause(clause);
                 }
                 self.plain(" {\n");
                 for item in &imp.items {
                     match item {
                         syn::ImplItem::Fn(f) => {
                             self.node("function");
-                            self.emit_attrs(&f.attrs);
+                            self.attributes(&f.attrs);
                             self.plain("    ");
-                            self.emit_visibility(&f.vis);
-                            self.emit_signature(&f.sig);
+                            self.visibility(&f.vis);
+                            self.signature(&f.sig);
                             self.node("block");
                             self.plain(" {\n");
                             for stmt in &f.block.stmts {
                                 self.plain("    ");
-                                self.emit_statement(stmt, "    ");
+                                self.statement(stmt, "    ");
                             }
                             self.plain("    }\n");
                             self.end();
@@ -1135,7 +1107,7 @@ impl Visitor {
                             self.plain(" ");
                             self.operator("=");
                             self.plain(" ");
-                            self.emit_type(&t.ty);
+                            self.typed(&t.ty);
                             self.punctuation(";");
                             self.output.push('\n');
                             self.end();
@@ -1148,11 +1120,11 @@ impl Visitor {
                             self.constant(&c.ident.to_string());
                             self.punctuation(":");
                             self.plain(" ");
-                            self.emit_type(&c.ty);
+                            self.typed(&c.ty);
                             self.plain(" ");
                             self.operator("=");
                             self.plain(" ");
-                            self.emit_expr(&c.expr);
+                            self.expression(&c.expr);
                             self.punctuation(";");
                             self.output.push('\n');
                             self.end();
@@ -1165,8 +1137,8 @@ impl Visitor {
             }
             Item::Trait(t) => {
                 self.node("trait");
-                self.emit_attrs(&t.attrs);
-                self.emit_visibility(&t.vis);
+                self.attributes(&t.attrs);
+                self.visibility(&t.vis);
                 if t.unsafety.is_some() {
                     self.storage("unsafe");
                     self.plain(" ");
@@ -1174,7 +1146,7 @@ impl Visitor {
                 self.keyword("trait");
                 self.plain(" ");
                 self.entity(&t.ident.to_string());
-                self.emit_generics(&t.generics);
+                self.generics(&t.generics);
                 self.plain(" {\n");
                 for item in &t.items {
                     match item {
@@ -1184,7 +1156,7 @@ impl Visitor {
                             self.keyword("fn");
                             self.plain(" ");
                             self.entity(&f.sig.ident.to_string());
-                            self.emit_generics(&f.sig.generics);
+                            self.generics(&f.sig.generics);
                             self.node("parameters");
                             self.punctuation("(");
                             for (i, arg) in f.sig.inputs.iter().enumerate() {
@@ -1204,10 +1176,10 @@ impl Visitor {
                                         self.keyword("self");
                                     }
                                     FnArg::Typed(t) => {
-                                        self.emit_pat(&t.pat);
+                                        self.pattern(&t.pat);
                                         self.punctuation(":");
                                         self.plain(" ");
-                                        self.emit_type(&t.ty);
+                                        self.typed(&t.ty);
                                     }
                                 }
                                 self.end();
@@ -1218,7 +1190,7 @@ impl Visitor {
                                 self.plain(" ");
                                 self.operator("->");
                                 self.plain(" ");
-                                self.emit_type(ty);
+                                self.typed(ty);
                             }
                             self.punctuation(";");
                             self.output.push('\n');
@@ -1242,26 +1214,26 @@ impl Visitor {
             }
             Item::Const(c) => {
                 self.node("const");
-                self.emit_attrs(&c.attrs);
-                self.emit_visibility(&c.vis);
+                self.attributes(&c.attrs);
+                self.visibility(&c.vis);
                 self.storage("const");
                 self.plain(" ");
                 self.constant(&c.ident.to_string());
                 self.punctuation(":");
                 self.plain(" ");
-                self.emit_type(&c.ty);
+                self.typed(&c.ty);
                 self.plain(" ");
                 self.operator("=");
                 self.plain(" ");
-                self.emit_expr(&c.expr);
+                self.expression(&c.expr);
                 self.punctuation(";");
                 self.output.push('\n');
                 self.end();
             }
             Item::Static(s) => {
                 self.node("static");
-                self.emit_attrs(&s.attrs);
-                self.emit_visibility(&s.vis);
+                self.attributes(&s.attrs);
+                self.visibility(&s.vis);
                 self.storage("static");
                 self.plain(" ");
                 if s.mutability == syn::StaticMutability::Mut(syn::token::Mut::default()) {
@@ -1271,42 +1243,42 @@ impl Visitor {
                 self.constant(&s.ident.to_string());
                 self.punctuation(":");
                 self.plain(" ");
-                self.emit_type(&s.ty);
+                self.typed(&s.ty);
                 self.plain(" ");
                 self.operator("=");
                 self.plain(" ");
-                self.emit_expr(&s.expr);
+                self.expression(&s.expr);
                 self.punctuation(";");
                 self.output.push('\n');
                 self.end();
             }
             Item::Type(t) => {
                 self.node("alias");
-                self.emit_attrs(&t.attrs);
-                self.emit_visibility(&t.vis);
+                self.attributes(&t.attrs);
+                self.visibility(&t.vis);
                 self.keyword("type");
                 self.plain(" ");
                 self.entity(&t.ident.to_string());
-                self.emit_generics(&t.generics);
+                self.generics(&t.generics);
                 self.plain(" ");
                 self.operator("=");
                 self.plain(" ");
-                self.emit_type(&t.ty);
+                self.typed(&t.ty);
                 self.punctuation(";");
                 self.output.push('\n');
                 self.end();
             }
             Item::Mod(m) => {
                 self.node("mod");
-                self.emit_attrs(&m.attrs);
-                self.emit_visibility(&m.vis);
+                self.attributes(&m.attrs);
+                self.visibility(&m.vis);
                 self.keyword("mod");
                 self.plain(" ");
                 self.plain(&m.ident.to_string());
                 if let Some((_, items)) = &m.content {
                     self.plain(" {\n");
                     for item in items {
-                        self.emit_item(item);
+                        self.item(item);
                     }
                     self.plain("}\n");
                 } else {
@@ -1317,8 +1289,8 @@ impl Visitor {
             }
             Item::Macro(m) => {
                 self.node("macro");
-                self.emit_path(&m.mac.path);
-                self.macro_name("!");
+                self.path(&m.mac.path);
+                self.macros("!");
                 self.plain(" {\n");
                 self.plain(&m.mac.tokens.to_string());
                 self.plain("\n}\n");
@@ -1331,7 +1303,7 @@ impl Visitor {
         }
     }
 
-    fn emit_use_tree(&mut self, tree: &UseTree) {
+    fn tree(&mut self, tree: &UseTree) {
         match tree {
             UseTree::Path(path) => {
                 let name = path.ident.to_string();
@@ -1341,7 +1313,7 @@ impl Visitor {
                     self.plain(&name);
                 }
                 self.punctuation("::");
-                self.emit_use_tree(&path.tree);
+                self.tree(&path.tree);
             }
             UseTree::Name(name) => {
                 let n = name.ident.to_string();
@@ -1377,7 +1349,7 @@ impl Visitor {
                     if i > 0 {
                         self.plain(", ");
                     }
-                    self.emit_use_tree(item);
+                    self.tree(item);
                 }
                 self.plain("}");
             }
@@ -1395,7 +1367,7 @@ impl<'ast> Visit<'ast> for Visitor {
             if i > 0 {
                 self.output.push('\n');
             }
-            self.emit_item(item);
+            self.item(item);
         }
     }
 }

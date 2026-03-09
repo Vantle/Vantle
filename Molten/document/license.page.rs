@@ -1,8 +1,9 @@
-use body::Chain;
-use navigation::Composition;
-
-pub fn page(root: &str) -> page::Result {
-    navigation::layout("License", &index::molten::license(root), root, |c| {
-        c.title("License").rule().markdown("LICENSE.md")
-    })
+#[must_use]
+pub fn page(root: &str) -> page::Page {
+    content::page(
+        "License",
+        &index::molten::license(root),
+        root,
+        content::license(),
+    )
 }

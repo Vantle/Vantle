@@ -33,6 +33,5 @@ rust_library(
         "//resource:copy.rule",
         "//system/generation/rust:function.document.extract",
         "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )

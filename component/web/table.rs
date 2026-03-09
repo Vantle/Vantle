@@ -1,5 +1,5 @@
 use element::Element;
-use span::{Fragment, Span};
+use span::Span;
 
 pub struct Table {
     pub headers: Vec<String>,
@@ -41,7 +41,11 @@ impl Table {
     #[must_use]
     pub fn describe(mut self, term: &str, description: &str) -> Self {
         self.rows.push(vec![
-            Element::Span(vec![Fragment::Code(term.into())]),
+            Element::Tag {
+                name: "code".into(),
+                attributes: Vec::new(),
+                children: vec![Element::Text(term.into())],
+            },
             Element::Text(description.into()),
         ]);
         self
@@ -52,7 +56,17 @@ impl Table {
         self.rows.push(
             cells
                 .into_iter()
-                .map(|f| Element::Span(f(Span::new()).fragments))
+                .map(|f| {
+                    let span = f(Span::new());
+                    match span.elements.len() {
+                        1 => span.elements.into_iter().next().unwrap(),
+                        _ => Element::Tag {
+                            name: "span".into(),
+                            attributes: Vec::new(),
+                            children: span.elements,
+                        },
+                    }
+                })
                 .collect::<Vec<_>>(),
         );
         self

@@ -1,8 +1,7 @@
-use body::Chain;
 use extraction::Query;
-use navigation::Composition;
 
-pub fn page(root: &str) -> page::Result {
+#[must_use]
+pub fn page(root: &str) -> page::Page {
     navigation::layout(
         "Generation",
         &index::generation::generation(root),
@@ -18,7 +17,7 @@ pub fn page(root: &str) -> page::Result {
             })
             .rule()
             .section("Generators", |s| {
-                s.subsection("Web", |ss| {
+                s.section("Web", |ss| {
                     ss.aside(|a| {
                         a.italic("HTML, CSS, syntax highlighting, and WebAssembly from Rust DSL")
                     })
@@ -30,10 +29,10 @@ pub fn page(root: &str) -> page::Result {
                             .text(" trait. The web generator renders complete HTML with automatic table-of-contents, syntax-highlighted code blocks, golden-ratio styling, and optional WASM interactivity.")
                     })
                     .paragraph(|p| {
-                        p.link(&index::generation::web::web(root).href, "more \u{2192}")
+                        p.link(&index::generation::web::web(root).href, |l| l.text("more \u{2192}"))
                     })
                 })
-                .subsection("Autotest", |ss| {
+                .section("Autotest", |ss| {
                     ss.aside(|a| {
                         a.italic("JSON-driven test generation for Rust")
                     })
@@ -43,11 +42,11 @@ pub fn page(root: &str) -> page::Result {
                     .paragraph(|p| {
                         p.link(
                             &index::generation::autotest::autotest(root).href,
-                            "more \u{2192}",
+                            |l| l.text("more \u{2192}"),
                         )
                     })
                 })
-                .subsection("Extract", |ss| {
+                .section("Extract", |ss| {
                     ss.aside(|a| {
                         a.italic("Code extraction via tree-sitter queries")
                     })
@@ -57,7 +56,7 @@ pub fn page(root: &str) -> page::Result {
                     .paragraph(|p| {
                         p.link(
                             &index::generation::extract(root).href,
-                            "more \u{2192}",
+                            |l| l.text("more \u{2192}"),
                         )
                     })
                 })

@@ -36,7 +36,6 @@ rust_library(
         "//component/web:page",
         "//document:index",
         "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )
 
@@ -52,6 +51,5 @@ rust_library(
         "//component/web:page",
         "//document:index",
         "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )

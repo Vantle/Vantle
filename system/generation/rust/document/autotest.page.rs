@@ -1,8 +1,7 @@
-use body::Chain;
 use extraction::Query;
-use navigation::Composition;
 
-pub fn page(root: &str) -> page::Result {
+#[must_use]
+pub fn page(root: &str) -> page::Page {
     navigation::layout(
         "Autotest",
         &index::generation::autotest::autotest(root),
@@ -45,7 +44,7 @@ pub fn page(root: &str) -> page::Result {
             })
             .rule()
             .section("Macro", |s| {
-                s.subsection("rust_autotest_template", |ss| {
+                s.section("rust_autotest_template", |ss| {
                     ss.paragraph(|p| {
                         p.text("Compiles the template as a ")
                             .code("rust_library")
@@ -63,7 +62,7 @@ pub fn page(root: &str) -> page::Result {
             })
             .rule()
             .section("Modules", |s| {
-                s.subsection("Function", |ss| {
+                s.section("Function", |ss| {
                     ss.aside(|a| {
                         a.italic("Generates exhaustive test suites from template functions and JSON cases")
                     })
@@ -73,11 +72,11 @@ pub fn page(root: &str) -> page::Result {
                     .paragraph(|p| {
                         p.link(
                             &index::generation::autotest::function(root).href,
-                            "more \u{2192}",
+                            |l| l.text("more \u{2192}"),
                         )
                     })
                 })
-                .subsection("Performance", |ss| {
+                .section("Performance", |ss| {
                     ss.aside(|a| {
                         a.italic("Regression-aware performance testing with statistical curve fitting")
                     })
@@ -87,7 +86,7 @@ pub fn page(root: &str) -> page::Result {
                     .paragraph(|p| {
                         p.link(
                             &index::generation::autotest::performance(root).href,
-                            "more \u{2192}",
+                            |l| l.text("more \u{2192}"),
                         )
                     })
                 })

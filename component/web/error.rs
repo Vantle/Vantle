@@ -3,17 +3,6 @@ use thiserror::Error;
 
 #[derive(Error, Debug, Diagnostic)]
 pub enum Error {
-    #[error("source file '{name}' not found in data map")]
-    #[diagnostic(
-        code(web::source),
-        help("available sources: [{available}]{suggestion}")
-    )]
-    Source {
-        name: String,
-        available: String,
-        suggestion: String,
-    },
-
     #[error("failed to highlight '{language}' code")]
     #[diagnostic(
         code(web::highlight),
@@ -35,18 +24,6 @@ pub enum Error {
         #[source]
         source: std::io::Error,
     },
-}
-
-impl Error {
-    #[must_use]
-    pub fn source(name: &str, available: &[String]) -> Self {
-        let suggestion = similarity::nearest(name, available).unwrap_or_default();
-        Self::Source {
-            name: name.into(),
-            available: available.join(", "),
-            suggestion,
-        }
-    }
 }
 
 pub type Result<T> = miette::Result<T, Error>;

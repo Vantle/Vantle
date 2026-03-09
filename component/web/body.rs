@@ -3,14 +3,13 @@ use element::{Element, Location};
 use extraction::Extraction;
 use language::Language;
 use list::List;
+use observe::trace;
 use span::Span;
 use table::Table;
 
-pub type Result = miette::Result<Body>;
-
 pub struct Body {
     pub elements: Vec<Element>,
-    pending: Vec<(String, String)>,
+    depth: u8,
 }
 
 impl Body {
@@ -18,124 +17,164 @@ impl Body {
     pub fn new() -> Self {
         Self {
             elements: Vec::new(),
-            pending: Vec::new(),
+            depth: 1,
         }
     }
 
-    pub fn tag(mut self, name: &str, f: impl FnOnce(Body) -> Result) -> Result {
-        let inner = f(Body::new())?;
+    #[must_use]
+    pub fn tag(mut self, name: &'static str, f: impl FnOnce(Body) -> Body) -> Self {
+        let mut child = Body::new();
+        child.depth = self.depth;
+        let inner = f(child);
         self.elements.push(Element::Tag {
             name: name.into(),
-            attributes: inner.pending,
+            attributes: Vec::new(),
             children: inner.elements,
         });
-        Ok(self)
+        self
     }
 
-    pub fn anchor(self, href: &str, f: impl FnOnce(Body) -> Result) -> Result {
-        self.tag("a", |a| f(a.attribute("href", href)?))
+    #[must_use]
+    pub fn anchor(self, href: &str, f: impl FnOnce(Body) -> Body) -> Self {
+        self.tag("a", f).attribute("href", href)
     }
 
-    pub fn division(self, f: impl FnOnce(Body) -> Result) -> Result {
+    #[must_use]
+    pub fn division(self, f: impl FnOnce(Body) -> Body) -> Self {
         self.tag("div", f)
     }
 
-    pub fn image(self, source: &str, alternate: &str) -> Result {
-        self.tag("img", |i| {
-            i.attribute("src", source).attribute("alt", alternate)
-        })
+    #[must_use]
+    pub fn image(mut self, source: &str, alternate: &str) -> Self {
+        self.elements.push(Element::Void {
+            name: "img".into(),
+            attributes: vec![
+                ("src".into(), source.into()),
+                ("alt".into(), alternate.into()),
+            ],
+        });
+        self
     }
 
-    pub fn separator(self) -> Result {
-        self.tag("hr", Ok)
+    #[must_use]
+    pub fn separator(mut self) -> Self {
+        self.elements.push(Element::Void {
+            name: "hr".into(),
+            attributes: Vec::new(),
+        });
+        self
     }
 
-    pub fn linebreak(self) -> Result {
-        self.tag("br", Ok)
+    #[must_use]
+    pub fn linebreak(mut self) -> Self {
+        self.elements.push(Element::Void {
+            name: "br".into(),
+            attributes: Vec::new(),
+        });
+        self
     }
 
-    pub fn preformatted(self, f: impl FnOnce(Body) -> Result) -> Result {
+    #[must_use]
+    pub fn preformatted(self, f: impl FnOnce(Body) -> Body) -> Self {
         self.tag("pre", f)
     }
 
-    pub fn strong(self, f: impl FnOnce(Body) -> Result) -> Result {
+    #[must_use]
+    pub fn strong(self, f: impl FnOnce(Body) -> Body) -> Self {
         self.tag("strong", f)
     }
 
-    pub fn unordered(self, f: impl FnOnce(Body) -> Result) -> Result {
+    #[must_use]
+    pub fn unordered(self, f: impl FnOnce(Body) -> Body) -> Self {
         self.tag("ul", f)
     }
 
-    pub fn ordered(self, f: impl FnOnce(Body) -> Result) -> Result {
+    #[must_use]
+    pub fn ordered(self, f: impl FnOnce(Body) -> Body) -> Self {
         self.tag("ol", f)
     }
 
-    pub fn item(self, f: impl FnOnce(Body) -> Result) -> Result {
+    #[must_use]
+    pub fn item(self, f: impl FnOnce(Body) -> Body) -> Self {
         self.tag("li", f)
     }
 
-    pub fn list(mut self, f: impl FnOnce(List) -> List) -> Result {
+    #[must_use]
+    pub fn list(self, f: impl FnOnce(List) -> List) -> Self {
+        self.items("ul", f)
+    }
+
+    #[must_use]
+    pub fn enumeration(self, f: impl FnOnce(List) -> List) -> Self {
+        self.items("ol", f)
+    }
+
+    fn items(mut self, name: &'static str, f: impl FnOnce(List) -> List) -> Self {
         let list = f(List::new());
         self.elements.push(Element::Tag {
-            name: "ul".into(),
+            name: name.into(),
             attributes: Vec::new(),
             children: list.items,
         });
-        Ok(self)
+        self
     }
 
-    pub fn enumeration(mut self, f: impl FnOnce(List) -> List) -> Result {
-        let list = f(List::new());
-        self.elements.push(Element::Tag {
-            name: "ol".into(),
-            attributes: Vec::new(),
-            children: list.items,
-        });
-        Ok(self)
-    }
-
-    pub fn text(mut self, content: &str) -> Result {
+    #[must_use]
+    pub fn text(mut self, content: &str) -> Self {
         self.elements.push(Element::Text(content.into()));
-        Ok(self)
+        self
     }
 
-    pub fn span(mut self, f: impl FnOnce(Span) -> Span) -> Result {
+    #[must_use]
+    pub fn span(mut self, f: impl FnOnce(Span) -> Span) -> Self {
         let span = f(Span::new());
-        self.elements.push(Element::Span(span.fragments));
-        Ok(self)
+        self.elements.extend(span.elements);
+        self
     }
 
-    pub fn html(mut self, raw: &str) -> Result {
+    #[must_use]
+    pub fn html(mut self, raw: &str) -> Self {
         self.elements.push(Element::Raw(raw.into()));
-        Ok(self)
+        self
     }
 
-    pub fn class(mut self, reference: Reference) -> Result {
-        let name = reference.name();
-        if let Some(existing) = self.pending.iter_mut().find(|(k, _)| k == "class") {
-            existing.1.push(' ');
-            existing.1.push_str(name);
-        } else {
-            self.pending.push(("class".into(), name.into()));
+    #[must_use]
+    pub fn class(mut self, reference: Reference) -> Self {
+        if let Some(Element::Tag { attributes, .. } | Element::Void { attributes, .. }) =
+            self.elements.last_mut()
+        {
+            element::merge(attributes, "class", reference.name());
         }
-        Ok(self)
+        self
     }
 
-    pub fn attribute(mut self, name: &str, value: &str) -> Result {
-        self.pending.push((name.into(), value.into()));
-        Ok(self)
+    #[must_use]
+    pub fn attribute(mut self, name: &str, value: &str) -> Self {
+        if let Some(Element::Tag { attributes, .. } | Element::Void { attributes, .. }) =
+            self.elements.last_mut()
+        {
+            attributes.push((name.into(), value.into()));
+        }
+        self
     }
 
-    pub fn code(mut self, content: &str, language: Language) -> Result {
+    #[must_use]
+    pub fn when(self, condition: bool, f: impl FnOnce(Self) -> Self) -> Self {
+        if condition { f(self) } else { self }
+    }
+
+    #[must_use]
+    pub fn code(mut self, content: &str, language: Language) -> Self {
         self.elements.push(Element::Code {
             content: content.into(),
             language,
             location: None,
         });
-        Ok(self)
+        self
     }
 
-    pub fn extract(mut self, extraction: &Extraction) -> Result {
+    #[must_use]
+    pub fn extract(mut self, extraction: &Extraction) -> Self {
         self.elements.push(Element::Code {
             content: extraction.content.into(),
             language: extraction.language,
@@ -145,224 +184,156 @@ impl Body {
                 end: extraction.end,
             }),
         });
-        Ok(self)
+        self
     }
 
-    pub fn shell(mut self, command: &str) -> Result {
-        self.elements.push(Element::Shell {
-            command: command.into(),
-        });
-        Ok(self)
+    #[must_use]
+    pub fn shell(self, command: &str) -> Self {
+        self.code(command, Language::Bash)
     }
 
-    pub fn inject(mut self, name: &str) -> Result {
-        self.elements.push(Element::Inject { name: name.into() });
-        Ok(self)
+    #[must_use]
+    pub fn markdown(mut self, elements: Vec<element::Element>) -> Self {
+        self.elements.extend(elements);
+        self
     }
 
-    pub fn markdown(mut self, name: &str) -> Result {
-        self.elements.push(Element::Markdown { name: name.into() });
-        Ok(self)
-    }
-
-    pub fn table(mut self, f: impl FnOnce(Table) -> Table) -> Result {
+    #[must_use]
+    pub fn table(self, f: impl FnOnce(Table) -> Table) -> Self {
         let table = f(Table::new());
-        let mut rows = Vec::new();
-
-        if !table.headers.is_empty() {
-            let header_cells = table
-                .headers
-                .into_iter()
-                .map(|h| Element::Tag {
-                    name: "th".into(),
-                    attributes: Vec::new(),
-                    children: vec![Element::Text(h)],
-                })
-                .collect::<Vec<_>>();
-            rows.push(Element::Tag {
-                name: "thead".into(),
-                attributes: Vec::new(),
-                children: vec![Element::Tag {
-                    name: "tr".into(),
-                    attributes: Vec::new(),
-                    children: header_cells,
-                }],
-            });
-        }
-
-        let body_rows = table
-            .rows
-            .into_iter()
-            .map(|row| {
-                let cells = row
-                    .into_iter()
-                    .map(|cell| Element::Tag {
-                        name: "td".into(),
-                        attributes: Vec::new(),
-                        children: vec![cell],
+        self.tag("table", |t| {
+            let t = if table.headers.is_empty() {
+                t
+            } else {
+                t.tag("thead", |h| {
+                    h.tag("tr", |r| {
+                        table
+                            .headers
+                            .into_iter()
+                            .fold(r, |r, header| r.tag("th", |c| c.text(&header)))
                     })
-                    .collect::<Vec<_>>();
-                Element::Tag {
-                    name: "tr".into(),
-                    attributes: Vec::new(),
-                    children: cells,
-                }
-            })
-            .collect::<Vec<_>>();
-
-        if !body_rows.is_empty() {
-            rows.push(Element::Tag {
-                name: "tbody".into(),
-                attributes: Vec::new(),
-                children: body_rows,
-            });
-        }
-
-        self.elements.push(Element::Tag {
-            name: "table".into(),
-            attributes: Vec::new(),
-            children: rows,
-        });
-        Ok(self)
+                })
+            };
+            if table.rows.is_empty() {
+                t
+            } else {
+                t.tag("tbody", |b| {
+                    table.rows.into_iter().fold(b, |b, row| {
+                        b.tag("tr", |r| {
+                            row.into_iter().fold(r, |mut r, cell| {
+                                r.elements.push(element("td", cell));
+                                r
+                            })
+                        })
+                    })
+                })
+            }
+        })
     }
 
-    pub fn compose(self, f: impl FnOnce(Body) -> Result) -> Result {
+    #[must_use]
+    pub fn compose(self, f: impl FnOnce(Body) -> Body) -> Self {
         f(self)
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn heading(self, level: u8, text: &str) -> Self {
+        self.tag(element::HEADINGS[(level.clamp(1, 6) - 1) as usize], |e| {
+            e.text(text)
+        })
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn figure(self, source: &str, alternate: &str) -> Self {
+        self.division(|d| d.image(source, alternate))
+            .class(class::center())
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn title(self, text: &str) -> Self {
+        self.heading(1, text)
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn subtitle(self, text: &str) -> Self {
+        self.tag("p", |p| p.text(text)).class(class::subtitle())
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn rule(self) -> Self {
+        self.separator()
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn paragraph(self, f: impl FnOnce(Span) -> Span) -> Self {
+        self.tag("p", |p| p.span(f))
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn section(self, heading: &str, f: impl FnOnce(Body) -> Body) -> Self {
+        let level = self.depth + 1;
+        self.tag("section", |mut s| {
+            s.depth = level;
+            f(s.heading(level.min(6), heading))
+        })
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn term(self, word: &str, f: impl FnOnce(Span) -> Span) -> Self {
+        self.tag("dl", |dl| {
+            dl.tag("dt", |dt| dt.text(word)).tag("dd", |dd| dd.span(f))
+        })
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn aside(self, f: impl FnOnce(Span) -> Span) -> Self {
+        self.tag("blockquote", |bq| bq.tag("p", |p| p.span(f)))
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn navigation(self, f: impl FnOnce(Body) -> Body) -> Self {
+        self.tag("nav", f)
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn bold(self, text: &str) -> Self {
+        self.strong(|e| e.text(text))
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn link(self, href: &str, text: &str) -> Self {
+        self.anchor(href, |e| e.text(text))
+    }
+
+    #[trace(channels = [document])]
+    #[must_use]
+    pub fn definition(self, f: impl FnOnce(Body) -> Body) -> Self {
+        self.tag("dl", f)
+    }
+}
+
+fn element(name: &'static str, child: Element) -> Element {
+    Element::Tag {
+        name: name.into(),
+        attributes: Vec::new(),
+        children: vec![child],
     }
 }
 
 impl Default for Body {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-pub trait Chain {
-    fn tag(self, name: &str, f: impl FnOnce(Body) -> Result) -> Result;
-    fn anchor(self, href: &str, f: impl FnOnce(Body) -> Result) -> Result;
-    fn division(self, f: impl FnOnce(Body) -> Result) -> Result;
-    fn image(self, source: &str, alternate: &str) -> Result;
-    fn separator(self) -> Result;
-    fn linebreak(self) -> Result;
-    fn preformatted(self, f: impl FnOnce(Body) -> Result) -> Result;
-    fn strong(self, f: impl FnOnce(Body) -> Result) -> Result;
-    fn unordered(self, f: impl FnOnce(Body) -> Result) -> Result;
-    fn ordered(self, f: impl FnOnce(Body) -> Result) -> Result;
-    fn item(self, f: impl FnOnce(Body) -> Result) -> Result;
-    fn list(self, f: impl FnOnce(List) -> List) -> Result;
-    fn enumeration(self, f: impl FnOnce(List) -> List) -> Result;
-    fn text(self, content: &str) -> Result;
-    fn span(self, f: impl FnOnce(Span) -> Span) -> Result;
-    fn html(self, raw: &str) -> Result;
-    fn class(self, reference: Reference) -> Result;
-    fn attribute(self, name: &str, value: &str) -> Result;
-    fn code(self, content: &str, language: Language) -> Result;
-    fn extract(self, extraction: &Extraction) -> Result;
-    fn shell(self, command: &str) -> Result;
-    fn inject(self, name: &str) -> Result;
-    fn markdown(self, name: &str) -> Result;
-    fn table(self, f: impl FnOnce(Table) -> Table) -> Result;
-    fn compose(self, f: impl FnOnce(Body) -> Result) -> Result;
-}
-
-impl Chain for Result {
-    fn tag(self, name: &str, f: impl FnOnce(Body) -> Result) -> Result {
-        self?.tag(name, f)
-    }
-
-    fn anchor(self, href: &str, f: impl FnOnce(Body) -> Result) -> Result {
-        self?.anchor(href, f)
-    }
-
-    fn division(self, f: impl FnOnce(Body) -> Result) -> Result {
-        self?.division(f)
-    }
-
-    fn image(self, source: &str, alternate: &str) -> Result {
-        self?.image(source, alternate)
-    }
-
-    fn separator(self) -> Result {
-        self?.separator()
-    }
-
-    fn linebreak(self) -> Result {
-        self?.linebreak()
-    }
-
-    fn preformatted(self, f: impl FnOnce(Body) -> Result) -> Result {
-        self?.preformatted(f)
-    }
-
-    fn strong(self, f: impl FnOnce(Body) -> Result) -> Result {
-        self?.strong(f)
-    }
-
-    fn unordered(self, f: impl FnOnce(Body) -> Result) -> Result {
-        self?.unordered(f)
-    }
-
-    fn ordered(self, f: impl FnOnce(Body) -> Result) -> Result {
-        self?.ordered(f)
-    }
-
-    fn item(self, f: impl FnOnce(Body) -> Result) -> Result {
-        self?.item(f)
-    }
-
-    fn list(self, f: impl FnOnce(List) -> List) -> Result {
-        self?.list(f)
-    }
-
-    fn enumeration(self, f: impl FnOnce(List) -> List) -> Result {
-        self?.enumeration(f)
-    }
-
-    fn text(self, content: &str) -> Result {
-        self?.text(content)
-    }
-
-    fn span(self, f: impl FnOnce(Span) -> Span) -> Result {
-        self?.span(f)
-    }
-
-    fn html(self, raw: &str) -> Result {
-        self?.html(raw)
-    }
-
-    fn class(self, reference: Reference) -> Result {
-        self?.class(reference)
-    }
-
-    fn attribute(self, name: &str, value: &str) -> Result {
-        self?.attribute(name, value)
-    }
-
-    fn code(self, content: &str, language: Language) -> Result {
-        self?.code(content, language)
-    }
-
-    fn extract(self, extraction: &Extraction) -> Result {
-        self?.extract(extraction)
-    }
-
-    fn shell(self, command: &str) -> Result {
-        self?.shell(command)
-    }
-
-    fn inject(self, name: &str) -> Result {
-        self?.inject(name)
-    }
-
-    fn markdown(self, name: &str) -> Result {
-        self?.markdown(name)
-    }
-
-    fn table(self, f: impl FnOnce(Table) -> Table) -> Result {
-        self?.table(f)
-    }
-
-    fn compose(self, f: impl FnOnce(Body) -> Result) -> Result {
-        self?.compose(f)
     }
 }

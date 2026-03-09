@@ -1,5 +1,5 @@
 use element::Element;
-use span::{Fragment, Span};
+use span::Span;
 
 pub struct List {
     pub items: Vec<Element>,
@@ -17,7 +17,7 @@ impl List {
         self.items.push(Element::Tag {
             name: "li".into(),
             attributes: Vec::new(),
-            children: vec![Element::Span(span.fragments)],
+            children: span.elements,
         });
         self
     }
@@ -27,10 +27,14 @@ impl List {
         self.items.push(Element::Tag {
             name: "li".into(),
             attributes: Vec::new(),
-            children: vec![Element::Span(vec![
-                Fragment::Bold(term.into()),
-                Fragment::Text(description.into()),
-            ])],
+            children: vec![
+                Element::Tag {
+                    name: "strong".into(),
+                    attributes: Vec::new(),
+                    children: vec![Element::Text(term.into())],
+                },
+                Element::Text(description.into()),
+            ],
         });
         self
     }
@@ -40,10 +44,14 @@ impl List {
         self.items.push(Element::Tag {
             name: "li".into(),
             attributes: Vec::new(),
-            children: vec![Element::Span(vec![
-                Fragment::Code(term.into()),
-                Fragment::Text(description.into()),
-            ])],
+            children: vec![
+                Element::Tag {
+                    name: "code".into(),
+                    attributes: Vec::new(),
+                    children: vec![Element::Text(term.into())],
+                },
+                Element::Text(description.into()),
+            ],
         });
         self
     }
@@ -55,6 +63,22 @@ impl List {
             attributes: Vec::new(),
             children: vec![Element::Text(text.into())],
         });
+        self
+    }
+
+    #[must_use]
+    pub fn class(mut self, reference: class::Reference) -> Self {
+        if let Some(Element::Tag { attributes, .. }) = self.items.last_mut() {
+            element::merge(attributes, "class", reference.name());
+        }
+        self
+    }
+
+    #[must_use]
+    pub fn attribute(mut self, name: &str, value: &str) -> Self {
+        if let Some(Element::Tag { attributes, .. }) = self.items.last_mut() {
+            attributes.push((name.into(), value.into()));
+        }
         self
     }
 }

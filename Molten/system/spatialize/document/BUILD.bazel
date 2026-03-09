@@ -29,6 +29,5 @@ rust_library(
         "//component/web:span",
         "//document:index",
         "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )

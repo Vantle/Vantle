@@ -9,26 +9,22 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
-    name = "index",
-    srcs = ["index.rs"],
-    deps = ["//component/web:index"],
+    name = "escape",
+    srcs = ["escape.rs"],
 )
 
-#################################################################################################################################################################
-########## Page                                                                                                                                           [ Page ]
 rust_library(
-    name = "spatialize",
-    srcs = ["spatialize.page.rs"],
+    name = "serialize",
+    srcs = ["serialize.rs"],
     deps = [
-        "//Molten/system/spatialize:launcher.assembler",
-        "//Molten/system/spatialize/render/stage:geometry.pipeline",
-        "//component/web:body",
-        "//component/web:class",
         "//component/web:element",
-        "//component/web:extraction",
+        "//component/web:language",
         "//component/web:page",
-        "//component/web:span",
-        "//document:index",
-        "//system/generation/web:navigation",
+        "//component/web:style",
+        "//component/web/render:escape",
+        "//component/web:render",
+        "@crates//:miette",
     ],
 )
+
+##### Documentation                                                                                                                             [ Documentation ]

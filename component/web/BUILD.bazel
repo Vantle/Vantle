@@ -28,7 +28,6 @@ rust_library(
     visibility = ["//visibility:public"],
     deps = [
         ":language",
-        ":span",
     ],
 )
 
@@ -46,6 +45,10 @@ rust_library(
     name = "span",
     srcs = ["span.rs"],
     visibility = ["//visibility:public"],
+    deps = [
+        ":class",
+        ":element",
+    ],
 )
 
 rust_library(
@@ -112,14 +115,26 @@ rust_library(
     srcs = ["list.rs"],
     visibility = ["//visibility:public"],
     deps = [
+        ":class",
         ":element",
         ":span",
     ],
 )
 
 rust_library(
+    name = "markdown",
+    srcs = ["markdown.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":element",
+        "@crates//:pulldown-cmark",
+    ],
+)
+
+rust_library(
     name = "body",
     srcs = ["body.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
     visibility = ["//visibility:public"],
     deps = [
         ":class",
@@ -129,7 +144,7 @@ rust_library(
         ":list",
         ":span",
         ":table",
-        "@crates//:miette",
+        "@crates//:tracing",
     ],
 )
 
@@ -140,6 +155,26 @@ rust_library(
     deps = [
         ":body",
         ":element",
+    ],
+)
+
+rust_library(
+    name = "query",
+    srcs = ["query.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":element",
+    ],
+)
+
+rust_library(
+    name = "render",
+    srcs = ["render.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":element",
+        ":language",
+        ":query",
         "@crates//:miette",
     ],
 )
@@ -149,7 +184,6 @@ rust_library(
     srcs = ["error.rs"],
     visibility = ["//visibility:public"],
     deps = [
-        "//system/graph:similarity",
         "@crates//:miette",
         "@crates//:thiserror",
     ],

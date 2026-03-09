@@ -1,10 +1,8 @@
-use body::Chain;
 use element::Element;
 use extraction::Query;
-use navigation::Composition;
-use span::Fragment;
 
-pub fn page(root: &str) -> page::Result {
+#[must_use]
+pub fn page(root: &str) -> page::Page {
     navigation::layout(
         "Function",
         &index::generation::autotest::function(root),
@@ -18,16 +16,28 @@ pub fn page(root: &str) -> page::Result {
             })
             .rule()
             .section("Macro", |s| {
-                s.subsection("rust_autotest_function", |ss| {
+                s.section("rust_autotest_function", |ss| {
                     ss.extract(function_document::EXTRACTIONS.one())
                         .table(|t| {
                             t.header(["Parameter", "Description"])
                                 .markup([
-                                    Element::Span(vec![Fragment::Code("template".into())]),
-                                    Element::Span(vec![
-                                        Fragment::Text("Template target from ".into()),
-                                        Fragment::Code("rust_autotest_template".into()),
-                                    ]),
+                                    Element::Tag {
+                                        name: "code".into(),
+                                        attributes: Vec::new(),
+                                        children: vec![Element::Text("template".into())],
+                                    },
+                                    Element::Tag {
+                                        name: "span".into(),
+                                        attributes: Vec::new(),
+                                        children: vec![
+                                            Element::Text("Template target from ".into()),
+                                            Element::Tag {
+                                                name: "code".into(),
+                                                attributes: Vec::new(),
+                                                children: vec![Element::Text("rust_autotest_template".into())],
+                                            },
+                                        ],
+                                    },
                                 ])
                                 .describe("cases", "JSON test case definitions")
                                 .describe("deps", "Custom dependencies beyond defaults")

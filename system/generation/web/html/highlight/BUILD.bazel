@@ -14,7 +14,13 @@ package(default_visibility = [
 rust_library(
     name = "escape",
     srcs = ["escape.rs"],
+    aliases = {
+        "//component/web/render:escape": "portable",
+    },
     visibility = ["//visibility:public"],
+    deps = [
+        "//component/web/render:escape",
+    ],
 )
 
 rust_library(

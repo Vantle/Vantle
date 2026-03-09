@@ -29,7 +29,6 @@ rust_library(
         "//document:index",
         "//system/generation/web:navigation",
         "//test/system/function:execution.schema",
-        "@crates//:miette",
     ],
 )
 
@@ -45,7 +44,6 @@ rust_library(
         "//component/web:span",
         "//document:index",
         "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )
 
@@ -65,6 +63,5 @@ rust_library(
         "//test/resource/system/performance/sort:specification.json",
         "//test/system/performance/sort:execution.schema",
         "//test/system/performance/sort:performance.document",
-        "@crates//:miette",
     ],
 )

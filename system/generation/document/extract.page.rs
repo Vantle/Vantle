@@ -1,8 +1,7 @@
-use body::Chain;
 use extraction::Query;
-use navigation::Composition;
 
-pub fn page(root: &str) -> page::Result {
+#[must_use]
+pub fn page(root: &str) -> page::Page {
     navigation::layout("Extract", &index::generation::extract(root), root, |c| {
         c.title("Extract")
             .subtitle("Code extraction via tree-sitter queries")

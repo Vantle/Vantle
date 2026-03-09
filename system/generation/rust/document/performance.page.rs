@@ -1,10 +1,8 @@
-use body::Chain;
 use element::Element;
 use extraction::Query;
-use navigation::Composition;
-use span::Fragment;
 
-pub fn page(root: &str) -> page::Result {
+#[must_use]
+pub fn page(root: &str) -> page::Page {
     navigation::layout(
         "Performance",
         &index::generation::autotest::performance(root),
@@ -44,44 +42,36 @@ pub fn page(root: &str) -> page::Result {
                 .extract(specification_json::EXTRACTIONS.one())
                 .table(|t| {
                     t.header(["Field", "Description"])
-                        .markup([
-                            Element::Span(vec![Fragment::Code("select".into())]),
-                            Element::Span(vec![Fragment::Text(
-                                "Tag filter selecting which cases to benchmark".into(),
-                            )]),
-                        ])
-                        .markup([
-                            Element::Span(vec![Fragment::Code("measure".into())]),
-                            Element::Span(vec![Fragment::Text(
-                                "Maps parameter names to scaling dimensions".into(),
-                            )]),
-                        ])
-                        .markup([
-                            Element::Span(vec![Fragment::Code("sampling".into())]),
-                            Element::Span(vec![Fragment::Text(
-                                "Iteration count and warmup rounds per case".into(),
-                            )]),
-                        ])
-                        .markup([
-                            Element::Span(vec![Fragment::Code("bounds".into())]),
-                            Element::Span(vec![Fragment::Text(
-                                "Structure assertions: polynomial term ordering with confidence thresholds".into(),
-                            )]),
-                        ])
+                        .describe("select", "Tag filter selecting which cases to benchmark")
+                        .describe("measure", "Maps parameter names to scaling dimensions")
+                        .describe("sampling", "Iteration count and warmup rounds per case")
+                        .describe("bounds", "Structure assertions: polynomial term ordering with confidence thresholds")
                 })
             })
             .rule()
             .section("Macro", |s| {
-                s.subsection("rust_autotest_performance", |ss| {
+                s.section("rust_autotest_performance", |ss| {
                     ss.extract(performance_document::EXTRACTIONS.one())
                         .table(|t| {
                             t.header(["Parameter", "Description"])
                                 .markup([
-                                    Element::Span(vec![Fragment::Code("template".into())]),
-                                    Element::Span(vec![
-                                        Fragment::Text("Template target from ".into()),
-                                        Fragment::Code("rust_autotest_template".into()),
-                                    ]),
+                                    Element::Tag {
+                                        name: "code".into(),
+                                        attributes: Vec::new(),
+                                        children: vec![Element::Text("template".into())],
+                                    },
+                                    Element::Tag {
+                                        name: "span".into(),
+                                        attributes: Vec::new(),
+                                        children: vec![
+                                            Element::Text("Template target from ".into()),
+                                            Element::Tag {
+                                                name: "code".into(),
+                                                attributes: Vec::new(),
+                                                children: vec![Element::Text("rust_autotest_template".into())],
+                                            },
+                                        ],
+                                    },
                                 ])
                                 .describe("cases", "JSON test case definitions")
                                 .describe("specification", "Performance specification JSON")

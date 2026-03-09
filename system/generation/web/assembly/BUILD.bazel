@@ -74,6 +74,28 @@ rust_library(
     ],
 )
 
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
+    name = "render",
+    srcs = ["render.rs"],
+    deps = [
+        ":error",
+        "//component/web:element",
+        "//component/web:language",
+        "//component/web:render",
+        "@crates//:miette",
+        "@crates//:web-sys",
+    ],
+)
+
 rust_shared_library(
     name = "binary",
     srcs = ["module.rs"],
@@ -83,6 +105,7 @@ rust_shared_library(
         ":hamburger",
         ":navigate",
         ":outline",
+        ":render",
         ":scroll",
         ":theme",
         "@crates//:wasm-bindgen",

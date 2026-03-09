@@ -27,6 +27,5 @@ rust_library(
         "//document:index",
         "//system/generation/web:navigation",
         "//system/translator:view.trace",
-        "@crates//:miette",
     ],
 )

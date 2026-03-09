@@ -1,8 +1,4 @@
-use body::Chain;
-use navigation::Composition;
-
-pub fn page(root: &str) -> page::Result {
-    navigation::layout("Notice", &index::notice(root), root, |c| {
-        c.title("Notice").rule().markdown("NOTICE.md")
-    })
+#[must_use]
+pub fn page(root: &str) -> page::Page {
+    content::page("Notice", &index::notice(root), root, content::notice())
 }

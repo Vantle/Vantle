@@ -1,8 +1,7 @@
-use body::Chain;
 use extraction::Query;
-use navigation::Composition;
 
-pub fn page(root: &str) -> page::Result {
+#[must_use]
+pub fn page(root: &str) -> page::Page {
     navigation::layout(
         "Observation",
         &index::observation::observation(root),
@@ -45,7 +44,7 @@ pub fn page(root: &str) -> page::Result {
                 })
                 .paragraph(|p| {
                     p.text("Each application decides where to send its traces. See ")
-                        .link(&index::molten::readme(root).fragment("forge"), "Forge")
+                        .link(&index::molten::readme(root).fragment("forge"), |l| l.text("Forge"))
                         .text(" for an example of configuring trace destinations.")
                 })
             })
@@ -56,10 +55,10 @@ pub fn page(root: &str) -> page::Result {
                         .code("#[trace]")
                         .text(" macro instruments functions for observation.")
                 })
-                .subsection("Usage", |ss| {
+                .section("Usage", |ss| {
                     ss.extract(view_trace::EXTRACTIONS.one())
                 })
-                .subsection("Channels", |ss| {
+                .section("Channels", |ss| {
                     ss.paragraph(|p| {
                         p.text("Channels filter which spans to emit. Common channels include:")
                     })

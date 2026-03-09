@@ -37,7 +37,6 @@ rust_library(
         "//component/web:page",
         "//document:index",
         "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )
 
@@ -46,11 +45,9 @@ rust_library(
     srcs = ["info.page.rs"],
     deps = [
         "//component/web:body",
-        "//component/web:class",
         "//component/web:page",
         "//document:index",
         "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )
 
@@ -58,12 +55,9 @@ rust_library(
     name = "notice",
     srcs = ["notice.page.rs"],
     deps = [
-        "//component/web:body",
-        "//component/web:class",
         "//component/web:page",
+        "//document:content",
         "//document:index",
-        "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )
 
@@ -71,11 +65,8 @@ rust_library(
     name = "license",
     srcs = ["license.page.rs"],
     deps = [
-        "//component/web:body",
-        "//component/web:class",
         "//component/web:page",
+        "//document:content",
         "//document:index",
-        "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )

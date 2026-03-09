@@ -1,8 +1,7 @@
-use body::Chain;
 use extraction::Query;
-use navigation::Composition;
 
-pub fn page(root: &str) -> page::Result {
+#[must_use]
+pub fn page(root: &str) -> page::Page {
     navigation::layout("Molten", &index::molten::readme(root), root, |c| {
         c.title("Molten")
             .subtitle("Computational expression over hypergraphs")
@@ -78,7 +77,7 @@ pub fn page(root: &str) -> page::Result {
                         .italic("library")
                         .text(". The semantics are identical; the distinction exists purely to help humans reason about intent.")
                 })
-                .subsection("Textual", |ss| {
+                .section("Textual", |ss| {
                     ss.list(|ul| {
                         ul.item(|s| {
                             s.bold("Orderless")
@@ -130,7 +129,7 @@ pub fn page(root: &str) -> page::Result {
             .rule()
             .section("Compositions", |s| {
                 s.paragraph(|p| p.text("Compositions emerge from combining syntactic primitives."))
-                    .subsection("Join", |ss| {
+                    .section("Join", |ss| {
                         ss.paragraph(|p| {
                             p.text("Any number of orthogonalities \u{2013} each carrying one of the required concepts (")
                                 .code("A")
@@ -143,7 +142,7 @@ pub fn page(root: &str) -> page::Result {
                                 .text(" is added. Execution then proceeds in that unified orthogonality.")
                         })
                     })
-                    .subsection("Scope", |ss| {
+                    .section("Scope", |ss| {
                         ss.paragraph(|p| {
                             p.text("An orthogonality holding ")
                                 .code("A")
@@ -158,7 +157,7 @@ pub fn page(root: &str) -> page::Result {
                                 .text(" in the orthogonality\u{2019}s state.")
                         })
                     })
-                    .subsection("Polymorphism", |ss| {
+                    .section("Polymorphism", |ss| {
                         ss.paragraph(|p| {
                             p.text("Two orthogonalities, ")
                                 .code("A")
@@ -211,24 +210,27 @@ pub fn page(root: &str) -> page::Result {
                                     .text(".")
                             })
                         })
-                        .heading(4, "Recursive derivations")
-                        .paragraph(|p| {
-                            p.code("A")
-                                .text(" reproduces itself inductively; after sufficient iterations, ")
-                                .code("A.A.A.A.A")
-                                .text(" matches ")
-                                .code("[A.A.A.A.A] D")
-                                .text(" and transforms to ")
-                                .code("D")
-                                .text(".")
+                        .section("Recursive derivations", |ss| {
+                            ss.paragraph(|p| {
+                                p.code("A")
+                                    .text(" reproduces itself inductively; after sufficient iterations, ")
+                                    .code("A.A.A.A.A")
+                                    .text(" matches ")
+                                    .code("[A.A.A.A.A] D")
+                                    .text(" and transforms to ")
+                                    .code("D")
+                                    .text(".")
+                            })
                         })
-                        .heading(4, "Curry\u{2019}s Paradox")
-                        .paragraph(|p| {
-                            p.text("Curry\u{2019}s Paradox often occurs within logical systems, where some logical deduction existing invalidates its own existence via self-referential logic. Molten does not care about this; it will evaluate. It is the programmer\u{2019}s responsibility to understand the semantics of their program, and such behaviors will appear as that node being isomorphic to itself. This may be behavior you want, and eliminating it requires a nondeterministic \u{201c}step\u{201d} runtime, so no such feature exists. It can be useful to investigate the logical consistency of your rules.")
-                        })
-                        .heading(5, "Philosophical note")
-                        .paragraph(|p| {
-                            p.text("This is essentially the problem of axioms. It is a feature of reality, not a bug.")
+                        .section("Curry\u{2019}s Paradox", |ss| {
+                            ss.paragraph(|p| {
+                                p.text("Curry\u{2019}s Paradox often occurs within logical systems, where some logical deduction existing invalidates its own existence via self-referential logic. Molten does not care about this; it will evaluate. It is the programmer\u{2019}s responsibility to understand the semantics of their program, and such behaviors will appear as that node being isomorphic to itself. This may be behavior you want, and eliminating it requires a nondeterministic \u{201c}step\u{201d} runtime, so no such feature exists. It can be useful to investigate the logical consistency of your rules.")
+                            })
+                            .section("Philosophical note", |sss| {
+                                sss.paragraph(|p| {
+                                    p.text("This is essentially the problem of axioms. It is a feature of reality, not a bug.")
+                                })
+                            })
                         })
                     })
             })
@@ -250,8 +252,8 @@ pub fn page(root: &str) -> page::Result {
                         .code("American.Citizen.Male")
                         .text(".")
                 })
-                .subsection("Boolean Logic", |ss| ss.extract(boolean::EXTRACTIONS.one()))
-                .subsection("Joins", |ss| ss.extract(join::EXTRACTIONS.one()))
+                .section("Boolean Logic", |ss| ss.extract(boolean::EXTRACTIONS.one()))
+                .section("Joins", |ss| ss.extract(join::EXTRACTIONS.one()))
             })
             .rule()
             .section("Forge", |s| {
@@ -260,7 +262,7 @@ pub fn page(root: &str) -> page::Result {
                         .code(module_version::EXTRACTIONS.one().content)
                         .text(" supports temporal runtime for Molten.")
                 })
-                .subsection("Invoke", |ss| {
+                .section("Invoke", |ss| {
                     ss.paragraph(|p| p.text("Run the forge lava interactive runtime:"))
                         .extract(command_lava::EXTRACTIONS.one())
                         .paragraph(|p| {
@@ -269,7 +271,7 @@ pub fn page(root: &str) -> page::Result {
                                 .text(" worlds to the previous graphs, but still evolve any existing state.")
                         })
                 })
-                .subsection("Sink", |ss| {
+                .section("Sink", |ss| {
                     ss.paragraph(|p| p.text("Stream execution traces to a file:"))
                         .extract(command_lava_sink_log::EXTRACTIONS.one())
                         .paragraph(|p| p.text("Or to a running peer (others may source or sink from or to your evaluation):"))

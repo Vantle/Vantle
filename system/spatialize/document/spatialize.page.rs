@@ -1,8 +1,7 @@
-use body::Chain;
 use extraction::Query;
-use navigation::Composition;
 
-pub fn page(root: &str) -> page::Result {
+#[must_use]
+pub fn page(root: &str) -> page::Page {
     navigation::layout(
         "Spatialize",
         &index::spatialize::spatialize(root),
@@ -21,7 +20,7 @@ pub fn page(root: &str) -> page::Result {
                     s.paragraph(|p| {
                         p.text("The render context manages GPU resources and pipeline state.")
                     })
-                    .subsection("Assembler", |ss| {
+                    .section("Assembler", |ss| {
                         ss.paragraph(|p| {
                             p.text("Build a rendering context with the assembler pattern:")
                         })
@@ -33,7 +32,7 @@ pub fn page(root: &str) -> page::Result {
                                 .describe("size", "Initial viewport dimensions")
                         })
                     })
-                    .subsection("Pipelines", |ss| {
+                    .section("Pipelines", |ss| {
                         ss.paragraph(|p| {
                             p.text("Build GPU pipelines with the raster and compute assemblers:")
                         })

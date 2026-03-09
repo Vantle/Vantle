@@ -9,6 +9,26 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
+    name = "content",
+    srcs = ["content.rs"],
+    aliases = {
+        "//component/web:index": "entry",
+    },
+    compile_data = [
+        "//:LICENSE.md",
+        "//:NOTICE.md",
+    ],
+    deps = [
+        "//component/web:body",
+        "//component/web:element",
+        "//component/web:index",
+        "//component/web:markdown",
+        "//component/web:page",
+        "//system/generation/web:navigation",
+    ],
+)
+
+rust_library(
     name = "index",
     srcs = ["index.rs"],
     aliases = {
@@ -39,7 +59,6 @@ rust_library(
         "//component/web:page",
         "//document:index",
         "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )
 
@@ -48,11 +67,9 @@ rust_library(
     srcs = ["info.page.rs"],
     deps = [
         "//component/web:body",
-        "//component/web:class",
         "//component/web:page",
         "//document:index",
         "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )
 
@@ -60,12 +77,9 @@ rust_library(
     name = "notice",
     srcs = ["notice.page.rs"],
     deps = [
-        "//component/web:body",
-        "//component/web:class",
         "//component/web:page",
+        "//document:content",
         "//document:index",
-        "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )
 
@@ -73,12 +87,9 @@ rust_library(
     name = "license",
     srcs = ["license.page.rs"],
     deps = [
-        "//component/web:body",
-        "//component/web:class",
         "//component/web:page",
+        "//document:content",
         "//document:index",
-        "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )
 
@@ -93,6 +104,5 @@ rust_library(
         "//component/web:page",
         "//document:index",
         "//system/generation/web:navigation",
-        "@crates//:miette",
     ],
 )

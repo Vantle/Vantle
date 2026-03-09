@@ -1,10 +1,8 @@
-use body::Chain;
 use element::Element;
 use extraction::Query;
-use navigation::Composition;
-use span::Fragment;
 
-pub fn page(root: &str) -> page::Result {
+#[must_use]
+pub fn page(root: &str) -> page::Page {
     navigation::layout(
         "Spatialize",
         &index::molten::spatialize::spatialize(root),
@@ -34,18 +32,18 @@ pub fn page(root: &str) -> page::Result {
                             .markup([
                                 Element::Text("Relation".into()),
                                 Element::Text("Edge and node relationships".into()),
-                                Element::Span(vec![Fragment::Code("Tab".into())]),
+                                Element::Tag { name: "code".into(), attributes: Vec::new(), children: vec![Element::Text("Tab".into())] },
                             ])
                             .markup([
                                 Element::Text("Inference".into()),
                                 Element::Text("Derivation and inference paths".into()),
-                                Element::Span(vec![Fragment::Code("Tab".into())]),
+                                Element::Tag { name: "code".into(), attributes: Vec::new(), children: vec![Element::Text("Tab".into())] },
                             ])
                     })
             })
             .rule()
             .section("Controls", |s| {
-                s.subsection("Navigation", |ss| {
+                s.section("Navigation", |ss| {
                     ss.table(|t| {
                         t.header(["Action", "Control"])
                             .row(["Pan", "Left click + drag"])
@@ -57,24 +55,24 @@ pub fn page(root: &str) -> page::Result {
                             .row(["Select", "Right click"])
                     })
                 })
-                .subsection("View", |ss| {
+                .section("View", |ss| {
                     ss.table(|t| {
                         t.header(["Action", "Control"])
                             .markup([
                                 Element::Text("Toggle pane".into()),
-                                Element::Span(vec![Fragment::Code("Tab".into())]),
+                                Element::Tag { name: "code".into(), attributes: Vec::new(), children: vec![Element::Text("Tab".into())] },
                             ])
                             .markup([
                                 Element::Text("Relation pane".into()),
-                                Element::Span(vec![Fragment::Code("R".into())]),
+                                Element::Tag { name: "code".into(), attributes: Vec::new(), children: vec![Element::Text("R".into())] },
                             ])
                             .markup([
                                 Element::Text("Inference pane".into()),
-                                Element::Span(vec![Fragment::Code("I".into())]),
+                                Element::Tag { name: "code".into(), attributes: Vec::new(), children: vec![Element::Text("I".into())] },
                             ])
                             .markup([
                                 Element::Text("Deselect".into()),
-                                Element::Span(vec![Fragment::Code("Escape".into())]),
+                                Element::Tag { name: "code".into(), attributes: Vec::new(), children: vec![Element::Text("Escape".into())] },
                             ])
                     })
                 })

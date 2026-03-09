@@ -1,10 +1,8 @@
-use body::Chain;
 use element::Element;
 use extraction::Query;
-use navigation::Composition;
-use span::Fragment;
 
-pub fn page(root: &str) -> page::Result {
+#[must_use]
+pub fn page(root: &str) -> page::Page {
     navigation::layout("Web", &index::generation::web::web(root), root, |c| {
         c.title("Web")
             .subtitle("Web file generation by output format")
@@ -27,7 +25,7 @@ pub fn page(root: &str) -> page::Result {
                         .text(" trait, which provides semantic methods for document structure:")
                 })
                 .extract(function_document_extract::EXTRACTIONS.one())
-                .subsection("Composition", |ss| {
+                .section("Composition", |ss| {
                     ss.paragraph(|p| {
                         p.text("The ")
                             .code("Composition")
@@ -42,8 +40,6 @@ pub fn page(root: &str) -> page::Result {
                                 .code("subtitle")
                                 .text(", ")
                                 .code("section")
-                                .text(", ")
-                                .code("subsection")
                                 .text(" \u{2014} document structure")
                         })
                         .item(|s| {
@@ -145,7 +141,7 @@ pub fn page(root: &str) -> page::Result {
                         .code("//component/web/starlark:defs.bzl")
                         .text(".")
                 })
-                .subsection("document", |ss| {
+                .section("document", |ss| {
                     ss.paragraph(|p| {
                         p.text("Compiles a Rust DSL source into a binary, executes it, and collects the generated output. Standard dependencies (")
                             .code("html")
@@ -161,28 +157,40 @@ pub fn page(root: &str) -> page::Result {
                             .describe("deps", "Additional compile dependencies")
                             .describe("data", "Runtime data files for WASM or code injection")
                             .markup([
-                                Element::Span(vec![Fragment::Code("compile_data".into())]),
-                                Element::Span(vec![
-                                    Fragment::Text("Compile-time data files for ".into()),
-                                    Fragment::Code("include_str!".into()),
-                                    Fragment::Text(" sources".into()),
-                                ]),
+                                Element::Tag {
+                                    name: "code".into(),
+                                    attributes: Vec::new(),
+                                    children: vec![Element::Text("compile_data".into())],
+                                },
+                                Element::Tag {
+                                    name: "span".into(),
+                                    attributes: Vec::new(),
+                                    children: vec![
+                                        Element::Text("Compile-time data files for ".into()),
+                                        Element::Tag {
+                                            name: "code".into(),
+                                            attributes: Vec::new(),
+                                            children: vec![Element::Text("include_str!".into())],
+                                        },
+                                        Element::Text(" sources".into()),
+                                    ],
+                                },
                             ])
                     })
                 })
-                .subsection("copy", |ss| {
+                .section("copy", |ss| {
                     ss.paragraph(|p| {
                         p.text("Wraps an existing file with a destination path for inclusion in folder manifests. Uses a zero-cost symlink action.")
                     })
                     .extract(copy_rule::EXTRACTIONS.one())
                 })
-                .subsection("folder", |ss| {
+                .section("folder", |ss| {
                     ss.paragraph(|p| {
                         p.text("Aggregates document and copy targets into a manifest, then copies all generated files into the workspace.")
                     })
                     .extract(folder_rule::EXTRACTIONS.one())
                 })
-                .subsection("distribute", |ss| {
+                .section("distribute", |ss| {
                     ss.paragraph(|p| {
                         p.text("Serves the workspace directory over HTTP for local preview.")
                     })

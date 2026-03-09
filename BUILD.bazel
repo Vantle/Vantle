@@ -116,14 +116,12 @@ document(
 
 document(
     src = "notice.document.rs",
-    data = ["//:NOTICE.md"],
     destination = "notice.html",
     deps = ["//document:notice"],
 )
 
 document(
     src = "license.document.rs",
-    data = ["//:LICENSE.md"],
     destination = "license.html",
     deps = ["//document:license"],
 )

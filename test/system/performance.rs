@@ -130,15 +130,17 @@ impl Sampler {
         for measured in self.functions {
             let function = analyze(&measured, &self.arguments);
 
-            for bound in &function.observation.time.bound {
-                if bound.status == "fail" {
-                    violations.push(Violation::new(
-                        measured.name.clone(),
-                        format!(
-                            "bound violated: {}",
-                            serde_json::to_string(&bound.assertion).unwrap_or_default()
-                        ),
-                    ));
+            if let Some(classification) = function.observation.time.classification {
+                for bound in &function.observation.time.candidate[classification].bound {
+                    if bound.status == "fail" {
+                        violations.push(Violation::new(
+                            measured.name.clone(),
+                            format!(
+                                "bound violated: {}",
+                                serde_json::to_string(&bound.assertion).unwrap_or_default()
+                            ),
+                        ));
+                    }
                 }
             }
             report.functions.push(function);
@@ -217,9 +219,9 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> Function {
             observation: Observation {
                 time: Timed {
                     unit: "second".to_string(),
-                    model: None,
+                    classification: None,
+                    candidate: Vec::new(),
                     sample: entries,
-                    bound: Vec::new(),
                 },
             },
         };
@@ -228,8 +230,8 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> Function {
     let dimensions = measured.dimensions.len().max(1);
     let selection = regression::select(&samples, dimensions, 5);
 
-    let mut model = None;
-    let mut assertions = Vec::new();
+    let mut classification = None;
+    let mut candidates = Vec::new();
 
     if let Some(ref selection) = selection {
         for sample in &mut entries {
@@ -240,88 +242,37 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> Function {
         }
 
         if arguments.model.enabled() {
-            let terms = selection
-                .polynomial
-                .terms
-                .iter()
-                .map(|term| Term {
-                    exponent: term.monomial.exponent.clone(),
-                    coefficient: term.coefficient,
-                })
-                .collect::<Vec<_>>();
+            classification = Some(selection.classification);
 
-            let candidate = selection
-                .candidates
-                .iter()
-                .map(|c| Candidate {
-                    degree: c.degree,
-                    criterion: c.criterion,
-                })
-                .collect::<Vec<_>>();
-
-            let interpretation = selection.interpretation();
-
-            model = Some(Model {
-                degree: selection.degree,
-                term: terms,
-                interpretation: Interpretation {
-                    expression: interpretation.structure,
-                    scale: interpretation.scale,
-                },
-                determination: selection.determination,
-                criterion: selection.criterion,
-                candidate,
-            });
-        }
-
-        if arguments.bound.enabled() {
-            for bound in &measured.bounds {
-                let contributions = selection
+            for c in &selection.candidates {
+                let terms = c
                     .polynomial
                     .terms
                     .iter()
-                    .map(|term| {
-                        let value = samples
-                            .iter()
-                            .map(|s| (term.coefficient * term.monomial.evaluate(&s.point)).abs())
-                            .fold(0.0_f64, f64::max);
-                        (term.monomial.exponent.clone(), value)
+                    .map(|term| Term {
+                        exponent: term.monomial.exponent.clone(),
+                        coefficient: term.coefficient,
                     })
-                    .collect::<HashMap<_, _>>();
+                    .collect::<Vec<_>>();
 
-                let mut sorted = bound.terms.clone();
-                sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+                let interpretation = selection.interpret(&c.polynomial);
 
-                let mut status = "pass";
-                let mut violated = None;
-                for pair in sorted.windows(2) {
-                    let higher = contributions.get(&pair[0].0).copied().unwrap_or(0.0);
-                    let lower = contributions.get(&pair[1].0).copied().unwrap_or(0.0);
-                    if higher < lower * bound.confidence {
-                        status = "fail";
-                        violated = Some(format!(
-                            "{:?} < {:?} * {}",
-                            pair[0].0, pair[1].0, bound.confidence
-                        ));
-                        break;
-                    }
-                }
+                let bound = if arguments.bound.enabled() {
+                    check(&measured.bounds, &samples, &c.polynomial)
+                } else {
+                    Vec::new()
+                };
 
-                let structure: HashMap<String, f64> = bound
-                    .terms
-                    .iter()
-                    .map(|(exp, weight)| (format!("{exp:?}"), *weight))
-                    .collect();
-
-                let assertion = serde_json::json!({
-                    "structure": structure,
-                    "confidence": bound.confidence,
-                });
-
-                assertions.push(Constraint {
-                    assertion,
-                    violated,
-                    status: status.to_string(),
+                candidates.push(Candidate {
+                    degree: c.degree,
+                    term: terms,
+                    interpretation: Interpretation {
+                        expression: interpretation.structure,
+                        scale: interpretation.scale,
+                    },
+                    determination: c.determination,
+                    criterion: c.criterion,
+                    bound,
                 });
             }
         }
@@ -334,12 +285,69 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> Function {
         observation: Observation {
             time: Timed {
                 unit: "second".to_string(),
-                model,
+                classification,
+                candidate: candidates,
                 sample: entries,
-                bound: assertions,
             },
         },
     }
+}
+
+fn check(
+    bounds: &[Assertion],
+    samples: &[Sample],
+    polynomial: &regression::Polynomial,
+) -> Vec<Constraint> {
+    let contributions = polynomial
+        .terms
+        .iter()
+        .map(|term| {
+            let value = samples
+                .iter()
+                .map(|s| (term.coefficient * term.monomial.evaluate(&s.point)).abs())
+                .fold(0.0_f64, f64::max);
+            (term.monomial.exponent.clone(), value)
+        })
+        .collect::<HashMap<_, _>>();
+
+    let mut constraints = Vec::new();
+    for bound in bounds {
+        let mut sorted = bound.terms.clone();
+        sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+
+        let mut status = "pass";
+        let mut violated = None;
+        for pair in sorted.windows(2) {
+            let higher = contributions.get(&pair[0].0).copied().unwrap_or(0.0);
+            let lower = contributions.get(&pair[1].0).copied().unwrap_or(0.0);
+            if higher < lower * bound.confidence {
+                status = "fail";
+                violated = Some(format!(
+                    "{:?} < {:?} * {}",
+                    pair[0].0, pair[1].0, bound.confidence
+                ));
+                break;
+            }
+        }
+
+        let structure: HashMap<String, f64> = bound
+            .terms
+            .iter()
+            .map(|(exp, weight)| (format!("{exp:?}"), *weight))
+            .collect();
+
+        let assertion = serde_json::json!({
+            "structure": structure,
+            "confidence": bound.confidence,
+        });
+
+        constraints.push(Constraint {
+            assertion,
+            violated,
+            status: status.to_string(),
+        });
+    }
+    constraints
 }
 
 #[expect(clippy::cast_precision_loss)]
@@ -392,19 +400,20 @@ struct Observation {
 struct Timed {
     unit: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    model: Option<Model>,
+    classification: Option<usize>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    candidate: Vec<Candidate>,
     sample: Vec<Entry>,
-    bound: Vec<Constraint>,
 }
 
 #[derive(Serialize)]
-struct Model {
+struct Candidate {
     degree: usize,
     term: Vec<Term>,
     interpretation: Interpretation,
     determination: f64,
     criterion: f64,
-    candidate: Vec<Candidate>,
+    bound: Vec<Constraint>,
 }
 
 #[derive(Serialize)]
@@ -417,12 +426,6 @@ struct Interpretation {
 struct Term {
     exponent: Vec<usize>,
     coefficient: f64,
-}
-
-#[derive(Serialize)]
-struct Candidate {
-    degree: usize,
-    criterion: f64,
 }
 
 #[derive(Serialize)]

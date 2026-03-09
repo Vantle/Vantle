@@ -55,15 +55,13 @@ pub struct Interpretation {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Candidate {
     pub degree: usize,
+    pub polynomial: Polynomial,
     pub determination: f64,
     pub criterion: f64,
 }
 
 pub struct Selection {
-    pub degree: usize,
-    pub polynomial: Polynomial,
-    pub determination: f64,
-    pub criterion: f64,
+    pub classification: usize,
     pub candidates: Vec<Candidate>,
     pub residual: f64,
     dimensions: usize,
@@ -74,20 +72,28 @@ pub struct Selection {
 
 impl Selection {
     #[must_use]
+    pub fn winner(&self) -> &Candidate {
+        &self.candidates[self.classification]
+    }
+}
+
+impl Selection {
+    #[must_use]
     pub fn evaluate(&self, point: &[f64]) -> f64 {
         let normalized = self.normalize(point);
-        self.polynomial.evaluate(&normalized)
+        self.winner().polynomial.evaluate(&normalized)
     }
 
     #[must_use]
     pub fn interval(&self, point: &[f64], confidence: f64) -> (f64, f64) {
         let normalized = self.normalize(point);
-        let terms = monomials(self.dimensions, self.degree);
+        let winner = self.winner();
+        let terms = monomials(self.dimensions, winner.degree);
 
         let n = self.samples.len();
         let k = terms.len();
         if n <= k {
-            let predicted = self.polynomial.evaluate(&normalized);
+            let predicted = winner.polynomial.evaluate(&normalized);
             return (predicted * 0.5, predicted * 2.0);
         }
 
@@ -99,18 +105,22 @@ impl Selection {
         let critical = critical(alpha, float(n - k));
         let margin = critical * self.residual * (1.0 + leverage).sqrt();
 
-        let predicted = self.polynomial.evaluate(&normalized);
+        let predicted = winner.polynomial.evaluate(&normalized);
         (predicted - margin, predicted + margin)
     }
 
     #[must_use]
     pub fn interpretation(&self) -> Interpretation {
-        let contributions = self.contributions();
+        self.interpret(&self.winner().polynomial)
+    }
+
+    #[must_use]
+    pub fn interpret(&self, polynomial: &Polynomial) -> Interpretation {
+        let contributions = self.contributions(polynomial);
         let peak = contributions.iter().copied().fold(0.0_f64, f64::max);
         let threshold = peak * 0.01;
 
-        let dominant = self
-            .polynomial
+        let dominant = polynomial
             .terms
             .iter()
             .zip(contributions.iter())
@@ -129,7 +139,7 @@ impl Selection {
         };
 
         let mut structure = String::new();
-        for (term, contribution) in self.polynomial.terms.iter().zip(contributions.iter()) {
+        for (term, contribution) in polynomial.terms.iter().zip(contributions.iter()) {
             if *contribution < threshold {
                 continue;
             }
@@ -183,8 +193,9 @@ impl Selection {
         Interpretation { structure, scale }
     }
 
-    fn contributions(&self) -> Vec<f64> {
-        self.polynomial
+    #[must_use]
+    pub fn contributions(&self, polynomial: &Polynomial) -> Vec<f64> {
+        polynomial
             .terms
             .iter()
             .map(|term| {
@@ -300,7 +311,7 @@ pub fn select(samples: &[Sample], dimensions: usize, maximum: usize) -> Option<S
         .collect();
 
     let cap = maximum.min(n.saturating_sub(1));
-    let mut best: Option<(usize, Polynomial, f64, f64)> = None;
+    let mut best: Option<usize> = None;
     let mut candidates = Vec::new();
 
     for degree in 1..=cap {
@@ -334,29 +345,32 @@ pub fn select(samples: &[Sample], dimensions: usize, maximum: usize) -> Option<S
             f64::NEG_INFINITY
         };
 
+        let index = candidates.len();
         candidates.push(Candidate {
             degree,
+            polynomial,
             determination,
             criterion,
         });
 
         let dominated = best
             .as_ref()
-            .is_none_or(|(_, _, _, best_bic)| criterion < *best_bic);
+            .is_none_or(|&i| criterion < candidates[i].criterion);
 
         if dominated {
-            best = Some((degree, polynomial, determination, criterion));
+            best = Some(index);
         }
     }
 
-    let (degree, polynomial, determination, criterion) = best?;
-    let terms = monomials(dimensions, degree);
+    let classification = best?;
+    let winner = &candidates[classification];
+    let terms = monomials(dimensions, winner.degree);
     let k = terms.len();
 
     let residual = if n > k {
         let squared: f64 = normalized
             .iter()
-            .map(|s| (s.observation - polynomial.evaluate(&s.point)).powi(2))
+            .map(|s| (s.observation - winner.polynomial.evaluate(&s.point)).powi(2))
             .sum();
         (squared / (float(n) - float(k))).sqrt()
     } else {
@@ -367,10 +381,7 @@ pub fn select(samples: &[Sample], dimensions: usize, maximum: usize) -> Option<S
     let gram = pseudoinverse(&matrix);
 
     Some(Selection {
-        degree,
-        polynomial,
-        determination,
-        criterion,
+        classification,
         candidates,
         residual,
         dimensions,

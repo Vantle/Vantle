@@ -116,7 +116,7 @@ crate.spec(
 )
 crate.spec(
     package = "cached",
-    version = "0.56.0",
+    version = "0.58.0",
 )
 crate.spec(
     package = "ctor",
@@ -262,7 +262,7 @@ crate.spec(
 crate.spec(
     features = ["serde-serialize"],
     package = "nalgebra",
-    version = "0.33.2",
+    version = "0.34.1",
 )
 
 ##### Server                                                                                                        [ Toolchain, Rust, Crates, Server ]
@@ -471,8 +471,8 @@ vnu = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archiv
 vnu(
     name = "vnu",
     build_file_content = """exports_files(["package/build/dist/vnu.jar"])""",
-    sha256 = "bd68ba6cda589513a1ba273405708d2a63865cb51f614946819236d42cc34301",
-    urls = ["https://registry.npmjs.org/vnu-jar/-/vnu-jar-26.2.20.tgz"],
+    sha256 = "fea8d3a97667b1a69b50c90dfdd917a34bbd5aae0b39d42761a723dc1a7cae84",
+    urls = ["https://registry.npmjs.org/vnu-jar/-/vnu-jar-26.3.8.tgz"],
 )
 
 ##### Bazel                                                                                                                                 [ Validation, Bazel ]

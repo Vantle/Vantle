@@ -411,12 +411,6 @@ crate.spec(
     version = "0.10.9",
 )
 
-##### Document                                                                                                  [ Toolchain, Rust, Crates, Document ]
-crate.spec(
-    package = "pulldown-cmark",
-    version = "0.13.1",
-)
-
 ##### Syntax                                                                                                    [ Toolchain, Rust, Crates, Syntax ]
 crate.spec(
     package = "tree-sitter",
@@ -438,6 +432,11 @@ crate.spec(
     package = "tree-sitter-json",
     version = "0.24.8",
 )
+crate.spec(
+    package = "tree-sitter-md",
+    version = "0.5.3",
+    features = ["parser"],
+)
 crate.annotation(
     crate = "tree-sitter",
     gen_build_script = "on",
@@ -456,6 +455,10 @@ crate.annotation(
 )
 crate.annotation(
     crate = "tree-sitter-json",
+    gen_build_script = "on",
+)
+crate.annotation(
+    crate = "tree-sitter-md",
     gen_build_script = "on",
 )
 crate.from_specs()

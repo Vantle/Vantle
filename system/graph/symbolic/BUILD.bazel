@@ -9,12 +9,25 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:serde_json",
+        "@crates//:syn",
+        "@crates//:thiserror",
+        "@crates//:tree-sitter",
+    ],
+)
+
+rust_library(
     name = "constructor",
     srcs = ["constructor.rs"],
     aliases = {
         "//Molten/system/graph/symbolic:constructor": "parse",
     },
     deps = [
+        ":error",
         "//Molten:component",
         "//Molten/system/graph/symbolic:constructor",
         "@crates//:miette",
@@ -22,6 +35,7 @@ rust_library(
         "@crates//:syn",
         "@crates//:tree-sitter",
         "@crates//:tree-sitter-bash",
+        "@crates//:tree-sitter-md",
         "@crates//:tree-sitter-python",
     ],
 )

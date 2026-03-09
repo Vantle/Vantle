@@ -127,7 +127,9 @@ rust_library(
     visibility = ["//visibility:public"],
     deps = [
         ":element",
-        "@crates//:pulldown-cmark",
+        "//system/graph/symbolic:constructor",
+        "@crates//:tree-sitter",
+        "@crates//:tree-sitter-md",
     ],
 )
 

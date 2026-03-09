@@ -1,0 +1,57 @@
+{
+    "functions": [
+        {
+            "function": "hex",
+            "cases": [
+                {
+                    "tags": ["white"],
+                    "parameters": {"value": 4294967295},
+                    "returns": {"()": [1.0, 1.0, 1.0, 1.0]}
+                },
+                {
+                    "tags": ["black"],
+                    "parameters": {"value": 255},
+                    "returns": {"()": [0.0, 0.0, 0.0, 1.0]}
+                },
+                {
+                    "tags": ["transparent"],
+                    "parameters": {"value": 0},
+                    "returns": {"()": [0.0, 0.0, 0.0, 0.0]}
+                }
+            ]
+        },
+        {
+            "function": "lerp",
+            "cases": [
+                {
+                    "tags": ["midpoint"],
+                    "parameters": {
+                        "a": [0.0, 0.0, 0.0, 1.0],
+                        "b": [1.0, 1.0, 1.0, 1.0],
+                        "t": 0.5
+                    },
+                    "returns": {"()": [0.5, 0.5, 0.5, 1.0]}
+                },
+                {
+                    "tags": ["start"],
+                    "parameters": {
+                        "a": [1.0, 0.0, 0.0, 1.0],
+                        "b": [0.0, 1.0, 0.0, 1.0],
+                        "t": 0.0
+                    },
+                    "returns": {"()": [1.0, 0.0, 0.0, 1.0]}
+                }
+            ]
+        },
+        {
+            "function": "transparent",
+            "cases": [
+                {
+                    "tags": ["basic"],
+                    "parameters": {},
+                    "returns": {"()": [0.0, 0.0, 0.0, 0.0]}
+                }
+            ]
+        }
+    ]
+}

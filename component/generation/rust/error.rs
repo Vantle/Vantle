@@ -4,19 +4,31 @@ use thiserror::Error;
 #[derive(Error, Debug, Diagnostic)]
 pub enum Error {
     #[error("IO error: {0}")]
-    #[diagnostic(code(generator::io_error))]
+    #[diagnostic(
+        code(generator::io_error),
+        help("check file permissions and path validity")
+    )]
     Io(#[from] std::io::Error),
 
     #[error("JSON parsing error: {0}")]
-    #[diagnostic(code(generator::json_error))]
+    #[diagnostic(
+        code(generator::json_error),
+        help("ensure the JSON file is well-formed")
+    )]
     Json(#[from] serde_json::Error),
 
     #[error("Syntax error: {0}")]
-    #[diagnostic(code(generator::syntax_error))]
+    #[diagnostic(
+        code(generator::syntax_error),
+        help("check the template for valid Rust syntax")
+    )]
     Syntax(#[from] syn::Error),
 
     #[error("Unsupported language: {0}")]
-    #[diagnostic(code(generator::unsupported_language))]
+    #[diagnostic(
+        code(generator::unsupported_language),
+        help("supported languages are defined by the generator")
+    )]
     Language(String),
 
     #[error("Missing field '{field}' in {context}")]
@@ -88,13 +100,13 @@ pub enum Error {
         help: String,
     },
 
-    #[error("Deserialization")]
+    #[error("deserialization failed")]
     #[diagnostic(code(generator::deserialization))]
     Deserialization {
         #[source_code]
         json: NamedSource<String>,
 
-        #[label("Invalid syntax here")]
+        #[label("here")]
         location: SourceSpan,
 
         #[help]

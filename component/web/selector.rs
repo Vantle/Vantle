@@ -74,7 +74,7 @@ pub fn tag(element: Tag) -> Selector {
 }
 
 #[must_use]
-pub fn class(reference: class::Reference) -> Selector {
+pub fn class(reference: reference::Reference) -> Selector {
     Selector::Class(reference.name().into())
 }
 
@@ -252,8 +252,8 @@ impl From<String> for Selector {
     }
 }
 
-impl From<class::Reference> for Selector {
-    fn from(reference: class::Reference) -> Self {
+impl From<reference::Reference> for Selector {
+    fn from(reference: reference::Reference) -> Self {
         Self::Class(reference.name().into())
     }
 }

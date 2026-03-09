@@ -1,0 +1,57 @@
+{
+    "functions": [
+        {
+            "function": "identity",
+            "cases": [
+                {
+                    "tags": ["basic"],
+                    "parameters": {},
+                    "returns": {"()": [1.0, 0.0, 0.0, 0.0]}
+                }
+            ]
+        },
+        {
+            "function": "conjugate",
+            "cases": [
+                {
+                    "tags": ["identity"],
+                    "parameters": {"input": [1.0, 0.0, 0.0, 0.0]},
+                    "returns": {"()": [1.0, 0.0, 0.0, 0.0]}
+                },
+                {
+                    "tags": ["general"],
+                    "parameters": {"input": [1.0, 2.0, 3.0, 4.0]},
+                    "returns": {"()": [1.0, -2.0, -3.0, -4.0]}
+                }
+            ]
+        },
+        {
+            "function": "magnitude",
+            "cases": [
+                {
+                    "tags": ["identity"],
+                    "parameters": {"input": [1.0, 0.0, 0.0, 0.0]},
+                    "returns": {"()": 1.0}
+                },
+                {
+                    "tags": ["unit"],
+                    "parameters": {"input": [0.0, 1.0, 0.0, 0.0]},
+                    "returns": {"()": 1.0}
+                }
+            ]
+        },
+        {
+            "function": "rotate",
+            "cases": [
+                {
+                    "tags": ["identity"],
+                    "parameters": {
+                        "quaternion": [1.0, 0.0, 0.0, 0.0],
+                        "point": [1.0, 0.0, 0.0]
+                    },
+                    "returns": {"()": [1.0, 0.0, 0.0]}
+                }
+            ]
+        }
+    ]
+}

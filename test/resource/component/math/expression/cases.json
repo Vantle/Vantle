@@ -1,0 +1,60 @@
+{
+    "functions": [
+        {
+            "function": "evaluate",
+            "cases": [
+                {
+                    "tags": ["constant"],
+                    "parameters": {
+                        "terms": {"[]": 5.0},
+                        "point": []
+                    },
+                    "returns": {"()": 5.0}
+                },
+                {
+                    "tags": ["linear"],
+                    "parameters": {
+                        "terms": {"[1]": 2.0},
+                        "point": [3.0]
+                    },
+                    "returns": {"()": 6.0}
+                },
+                {
+                    "tags": ["quadratic"],
+                    "parameters": {
+                        "terms": {"[2]": 1.0, "[]": 1.0},
+                        "point": [3.0]
+                    },
+                    "returns": {"()": 10.0}
+                },
+                {
+                    "tags": ["multivariate"],
+                    "parameters": {
+                        "terms": {"[1, 1]": 1.0},
+                        "point": [2.0, 3.0]
+                    },
+                    "returns": {"()": 6.0}
+                }
+            ]
+        },
+        {
+            "function": "parse",
+            "cases": [
+                {
+                    "tags": ["valid"],
+                    "parameters": {
+                        "terms": {"[1]": 2.0, "[]": 1.0}
+                    },
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["invalid"],
+                    "parameters": {
+                        "terms": {"bad": 1.0}
+                    },
+                    "returns": {"()": false}
+                }
+            ]
+        }
+    ]
+}

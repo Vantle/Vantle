@@ -101,7 +101,7 @@ pub fn layout(title: &str, index: &entry::Index, root: &str, f: impl FnOnce(Body
                 })
                 .division(|l| {
                     l.tag("aside", |a| sidebar(a, root, index))
-                        .class(class::sidebar())
+                        .class(class::reference::sidebar())
                         .attribute("aria-label", "Page navigation")
                         .tag("main", |m| {
                             f(m)
@@ -128,10 +128,10 @@ pub fn layout(title: &str, index: &entry::Index, root: &str, f: impl FnOnce(Body
                         })
                         .tag("aside", |b| b)
                         .attribute("id", "outline")
-                        .class(class::outline())
+                        .class(class::reference::outline())
                         .attribute("aria-label", "Table of contents")
                 })
-                .class(class::layout())
+                .class(class::reference::layout())
             })
 }
 

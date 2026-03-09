@@ -1,0 +1,243 @@
+{
+    "functions": [
+        {
+            "function": "particle.subset",
+            "cases": [
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "source": [],
+                        "basis": [["A", 1]]
+                    },
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["contained"],
+                    "parameters": {
+                        "source": [["A", 1]],
+                        "basis": [["A", 1], ["B", 1]]
+                    },
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["not_contained"],
+                    "parameters": {
+                        "source": [["A", 1], ["C", 1]],
+                        "basis": [["A", 1], ["B", 1]]
+                    },
+                    "returns": {"()": false}
+                }
+            ]
+        },
+        {
+            "function": "particle.superset",
+            "cases": [
+                {
+                    "tags": ["superset"],
+                    "parameters": {
+                        "source": [["A", 1], ["B", 1]],
+                        "basis": [["A", 1]]
+                    },
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["not_superset"],
+                    "parameters": {
+                        "source": [["A", 1]],
+                        "basis": [["A", 1], ["B", 1]]
+                    },
+                    "returns": {"()": false}
+                }
+            ]
+        },
+        {
+            "function": "particle.joint",
+            "cases": [
+                {
+                    "tags": ["overlap"],
+                    "parameters": {
+                        "source": [["A", 1], ["B", 1]],
+                        "basis": [["B", 1], ["C", 1]]
+                    },
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["disjoint"],
+                    "parameters": {
+                        "source": [["A", 1]],
+                        "basis": [["B", 1]]
+                    },
+                    "returns": {"()": false}
+                }
+            ]
+        },
+        {
+            "function": "particle.disjoint",
+            "cases": [
+                {
+                    "tags": ["disjoint"],
+                    "parameters": {
+                        "source": [["A", 1]],
+                        "basis": [["B", 1]]
+                    },
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["overlapping"],
+                    "parameters": {
+                        "source": [["A", 1], ["B", 1]],
+                        "basis": [["B", 1]]
+                    },
+                    "returns": {"()": false}
+                }
+            ]
+        },
+        {
+            "function": "particle.isomorphic",
+            "cases": [
+                {
+                    "tags": ["equal"],
+                    "parameters": {
+                        "source": [["A", 1], ["B", 1]],
+                        "basis": [["A", 1], ["B", 1]]
+                    },
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["unequal"],
+                    "parameters": {
+                        "source": [["A", 1]],
+                        "basis": [["A", 1], ["B", 1]]
+                    },
+                    "returns": {"()": false}
+                }
+            ]
+        },
+        {
+            "function": "particle.rank",
+            "cases": [
+                {
+                    "tags": ["empty"],
+                    "parameters": {"source": []},
+                    "returns": {"()": 0}
+                },
+                {
+                    "tags": ["single"],
+                    "parameters": {"source": [["A", 1]]},
+                    "returns": {"()": 1}
+                },
+                {
+                    "tags": ["multiple"],
+                    "parameters": {"source": [["A", 1], ["B", 1], ["C", 1]]},
+                    "returns": {"()": 3}
+                }
+            ]
+        },
+        {
+            "function": "particle.empty",
+            "cases": [
+                {
+                    "tags": ["empty"],
+                    "parameters": {"source": []},
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["nonempty"],
+                    "parameters": {"source": [["A", 1]]},
+                    "returns": {"()": false}
+                }
+            ]
+        },
+        {
+            "function": "wave.subset",
+            "cases": [
+                {
+                    "tags": ["empty_source"],
+                    "parameters": {
+                        "source": [],
+                        "basis": [[[["A", 1]], 1]]
+                    },
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["contained"],
+                    "parameters": {
+                        "source": [[[["A", 1]], 1]],
+                        "basis": [[[["A", 1], ["B", 1]], 1]]
+                    },
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["not_contained"],
+                    "parameters": {
+                        "source": [[[["C", 1]], 1]],
+                        "basis": [[[["A", 1]], 1]]
+                    },
+                    "returns": {"()": false}
+                }
+            ]
+        },
+        {
+            "function": "wave.superset",
+            "cases": [
+                {
+                    "tags": ["empty_basis"],
+                    "parameters": {
+                        "source": [[[["A", 1]], 1]],
+                        "basis": []
+                    },
+                    "returns": {"()": true}
+                },
+                {
+                    "tags": ["superset"],
+                    "parameters": {
+                        "source": [[[["A", 1], ["B", 1]], 1]],
+                        "basis": [[[["A", 1]], 1]]
+                    },
+                    "returns": {"()": true}
+                }
+            ]
+        },
+        {
+            "function": "wave.rank",
+            "cases": [
+                {
+                    "tags": ["empty"],
+                    "parameters": {"source": []},
+                    "returns": {"()": 0}
+                },
+                {
+                    "tags": ["single"],
+                    "parameters": {"source": [[[["A", 1]], 1]]},
+                    "returns": {"()": 1}
+                },
+                {
+                    "tags": ["multiple"],
+                    "parameters": {"source": [[[["A", 1]], 2], [[["B", 1]], 1]]},
+                    "returns": {"()": 3}
+                }
+            ]
+        },
+        {
+            "function": "wave.diverges",
+            "cases": [
+                {
+                    "tags": ["empty_basis"],
+                    "parameters": {
+                        "source": [[[["A", 1]], 1]],
+                        "basis": []
+                    },
+                    "returns": {"()": [[[[["A", 1]], 1]]]}
+                },
+                {
+                    "tags": ["exact_match"],
+                    "parameters": {
+                        "source": [[[["A", 1]], 1]],
+                        "basis": [[[["A", 1]], 1]]
+                    },
+                    "returns": {"()": [[]]}
+                }
+            ]
+        }
+    ]
+}

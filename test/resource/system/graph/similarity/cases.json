@@ -1,0 +1,41 @@
+{
+    "functions": [
+        {
+            "function": "suggest",
+            "cases": [
+                {
+                    "tags": ["exact"],
+                    "parameters": {
+                        "target": "hello",
+                        "candidates": ["hello", "world"]
+                    },
+                    "returns": {"()": "\n\nMaybe: \"hello\"?"}
+                },
+                {
+                    "tags": ["typo"],
+                    "parameters": {
+                        "target": "helo",
+                        "candidates": ["hello", "world"]
+                    },
+                    "returns": {"()": "\n\nMaybe: \"hello\"?"}
+                },
+                {
+                    "tags": ["distant"],
+                    "parameters": {
+                        "target": "xyz",
+                        "candidates": ["hello", "world"]
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "target": "hello",
+                        "candidates": []
+                    },
+                    "returns": {"()": null}
+                }
+            ]
+        }
+    ]
+}

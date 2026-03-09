@@ -65,7 +65,7 @@ impl Execution {
             Ok(Ok(_)) => Outcome::Pass,
             Ok(Err(error)) => match *error {
                 Error::Mismatch { actuals, .. } => Outcome::Mismatch(actuals),
-                other => Outcome::Panic(format!("{other}")),
+                other => Outcome::Panic(format!("{:?}", miette::Report::new(other))),
             },
             Err(panic) => {
                 let message = panic

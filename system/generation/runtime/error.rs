@@ -3,13 +3,15 @@ use thiserror::Error;
 
 #[derive(Error, Debug, Diagnostic)]
 pub enum Runtime {
-    #[error("Deserialization")]
+    #[error("deserialization failed for `{target}`")]
     #[diagnostic(code(runtime::deserialization))]
     Deserialization {
+        target: String,
+
         #[source_code]
         json: NamedSource<String>,
 
-        #[label("Invalid syntax here")]
+        #[label("here")]
         location: SourceOffset,
 
         #[help]
@@ -50,7 +52,8 @@ impl Runtime {
         );
 
         Self::Deserialization {
-            json: NamedSource::new("serialized.json", json).with_language("json"),
+            target: target.to_string(),
+            json: NamedSource::new(source, json).with_language("json"),
             location: SourceOffset::from(offset),
             help,
             cause: error,

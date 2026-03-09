@@ -46,8 +46,8 @@ rust_library(
     srcs = ["span.rs"],
     visibility = ["//visibility:public"],
     deps = [
-        ":class",
         ":element",
+        "//component/web/class:reference",
     ],
 )
 
@@ -72,7 +72,7 @@ rust_library(
     srcs = ["selector.rs"],
     visibility = ["//visibility:public"],
     deps = [
-        ":class",
+        "//component/web/class:reference",
     ],
 )
 
@@ -80,6 +80,16 @@ rust_library(
     name = "class",
     srcs = ["class.rs"],
     visibility = ["//visibility:public"],
+    deps = [
+        "//component/web/class:button",
+        "//component/web/class:code",
+        "//component/web/class:footer",
+        "//component/web/class:label",
+        "//component/web/class:nav",
+        "//component/web/class:node",
+        "//component/web/class:reference",
+        "//component/web/class:syntax",
+    ],
 )
 
 rust_library(
@@ -115,9 +125,9 @@ rust_library(
     srcs = ["list.rs"],
     visibility = ["//visibility:public"],
     deps = [
-        ":class",
         ":element",
         ":span",
+        "//component/web/class:reference",
     ],
 )
 
@@ -139,13 +149,13 @@ rust_library(
     proc_macro_deps = ["//system/observation:macro"],
     visibility = ["//visibility:public"],
     deps = [
-        ":class",
         ":element",
         ":extraction",
         ":language",
         ":list",
         ":span",
         ":table",
+        "//component/web/class:reference",
         "@crates//:tracing",
     ],
 )

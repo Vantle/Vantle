@@ -74,3 +74,11 @@ While redistributing the Work or Derivative Works thereof, You may choose to off
 ---
 
 END OF TERMS AND CONDITIONS
+
+---
+
+## Supporting the Project
+
+This software is free and open source. If you find it useful — whether in a product, a research paper, a model, or a workflow — please consider supporting the project. Contributions of any kind help sustain development: code, documentation, bug reports, or financial sponsorship.
+
+Visit [projects.vantle.org/support](https://projects.vantle.org/support) to learn more.

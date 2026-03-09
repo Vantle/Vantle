@@ -1,0 +1,24 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest_function(
+    name = "render",
+    cases = "//test/resource/component/web/render:cases",
+    template = "//test/resource/component/web/render:template",
+    deps = [
+        "//component/web:element",
+        "//component/web:render",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

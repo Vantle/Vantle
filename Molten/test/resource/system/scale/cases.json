@@ -1,0 +1,62 @@
+{
+    "functions": [
+        {
+            "function": "particle",
+            "cases": [
+                {
+                    "tags": ["found"],
+                    "parameters": {
+                        "source": [["A", 3], ["B", 1]],
+                        "basis": "A"
+                    },
+                    "returns": {"()": 3}
+                },
+                {
+                    "tags": ["missing"],
+                    "parameters": {
+                        "source": [["A", 1]],
+                        "basis": "B"
+                    },
+                    "returns": {"()": 0}
+                },
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "source": [],
+                        "basis": "A"
+                    },
+                    "returns": {"()": 0}
+                }
+            ]
+        },
+        {
+            "function": "wave",
+            "cases": [
+                {
+                    "tags": ["found"],
+                    "parameters": {
+                        "source": [[[["A", 1]], 2]],
+                        "basis": [["A", 1]]
+                    },
+                    "returns": {"()": 2}
+                },
+                {
+                    "tags": ["missing"],
+                    "parameters": {
+                        "source": [[[["A", 1]], 1]],
+                        "basis": [["B", 1]]
+                    },
+                    "returns": {"()": 0}
+                },
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "source": [],
+                        "basis": [["A", 1]]
+                    },
+                    "returns": {"()": 0}
+                }
+            ]
+        }
+    ]
+}

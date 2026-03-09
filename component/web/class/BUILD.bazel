@@ -1,0 +1,58 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "reference",
+    srcs = ["reference.rs"],
+)
+
+rust_library(
+    name = "nav",
+    srcs = ["nav.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "label",
+    srcs = ["label.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "footer",
+    srcs = ["footer.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "code",
+    srcs = ["code.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "button",
+    srcs = ["button.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "syntax",
+    srcs = ["syntax.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "node",
+    srcs = ["node.rs"],
+    deps = [":reference"],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

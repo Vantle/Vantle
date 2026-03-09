@@ -60,7 +60,7 @@ impl Span {
     }
 
     #[must_use]
-    pub fn class(mut self, reference: class::Reference) -> Self {
+    pub fn class(mut self, reference: reference::Reference) -> Self {
         if let Some(Element::Tag { attributes, .. }) = self.elements.last_mut() {
             element::merge(attributes, "class", reference.name());
         }

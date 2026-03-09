@@ -7,7 +7,7 @@ pub fn page(root: &str) -> page::Page {
             .anchor("https://github.com/Vantle/Vantle", |a| {
                 a.text("Platform for everything")
             })
-            .class(class::subtitle())
+            .class(class::reference::subtitle())
             .rule()
             .paragraph(|p| {
                 p.bold("Vantle")

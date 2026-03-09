@@ -1,0 +1,94 @@
+{
+    "functions": [
+        {
+            "function": "relate",
+            "cases": [
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "source": {"adjacency": []},
+                        "label": "A",
+                        "relation": "B"
+                    },
+                    "returns": {"()": {"adjacency": [["A", ["B"]]]}}
+                },
+                {
+                    "tags": ["existing"],
+                    "parameters": {
+                        "source": {"adjacency": [["A", ["B"]]]},
+                        "label": "A",
+                        "relation": "C"
+                    },
+                    "returns": {"()": {"adjacency": [["A", ["B", "C"]]]}}
+                },
+                {
+                    "tags": ["new_node"],
+                    "parameters": {
+                        "source": {"adjacency": [["A", ["B"]]]},
+                        "label": "C",
+                        "relation": "D"
+                    },
+                    "returns": {"()": {"adjacency": [["A", ["B"]], ["C", ["D"]]]}}
+                }
+            ]
+        },
+        {
+            "function": "descendants",
+            "cases": [
+                {
+                    "tags": ["found"],
+                    "parameters": {
+                        "source": {"adjacency": [["A", ["B", "C"]], ["B", ["D"]]]},
+                        "from": "A"
+                    },
+                    "returns": {"()": ["B", "C"]}
+                },
+                {
+                    "tags": ["missing"],
+                    "parameters": {
+                        "source": {"adjacency": [["A", ["B"]]]},
+                        "from": "Z"
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["empty"],
+                    "parameters": {
+                        "source": {"adjacency": []},
+                        "from": "A"
+                    },
+                    "returns": {"()": null}
+                }
+            ]
+        },
+        {
+            "function": "predecessors",
+            "cases": [
+                {
+                    "tags": ["found"],
+                    "parameters": {
+                        "source": {"adjacency": [["A", ["C"]], ["B", ["C"]]]},
+                        "from": "C"
+                    },
+                    "returns": {"()": ["A", "B"]}
+                },
+                {
+                    "tags": ["missing"],
+                    "parameters": {
+                        "source": {"adjacency": [["A", ["B"]]]},
+                        "from": "Z"
+                    },
+                    "returns": {"()": null}
+                },
+                {
+                    "tags": ["single"],
+                    "parameters": {
+                        "source": {"adjacency": [["A", ["B", "C"]]]},
+                        "from": "C"
+                    },
+                    "returns": {"()": ["A"]}
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = [
+    "//test:__pkg__",
+    "//test:__subpackages__",
+])
+
+##### Module                                                                                                                                           [ Module ]
+rust_autotest_function(
+    name = "proportion",
+    cases = "//test/resource/component/design/proportion:cases",
+    template = "//test/resource/component/design/proportion:template",
+    deps = [
+        "//component/design:proportion",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

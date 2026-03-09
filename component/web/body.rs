@@ -1,9 +1,9 @@
-use class::Reference;
 use element::{Element, Location};
 use extraction::Extraction;
 use language::Language;
 use list::List;
 use observe::trace;
+use reference::Reference;
 use span::Span;
 use table::Table;
 
@@ -248,7 +248,7 @@ impl Body {
     #[must_use]
     pub fn figure(self, source: &str, alternate: &str) -> Self {
         self.division(|d| d.image(source, alternate))
-            .class(class::center())
+            .class(reference::center())
     }
 
     #[trace(channels = [document])]
@@ -260,7 +260,7 @@ impl Body {
     #[trace(channels = [document])]
     #[must_use]
     pub fn subtitle(self, text: &str) -> Self {
-        self.tag("p", |p| p.text(text)).class(class::subtitle())
+        self.tag("p", |p| p.text(text)).class(reference::subtitle())
     }
 
     #[trace(channels = [document])]

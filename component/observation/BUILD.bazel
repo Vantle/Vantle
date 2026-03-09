@@ -102,7 +102,10 @@ rust_library(
     name = "opaque",
     srcs = ["opaque.rs"],
     crate_name = "record",
-    deps = [":category"],
+    deps = [
+        ":category",
+        "//component/observation/opaque:serialize",
+    ],
 )
 
 rust_library(

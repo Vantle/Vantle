@@ -1,0 +1,99 @@
+{
+    "functions": [
+        {
+            "function": "phases",
+            "cases": [
+                {
+                    "tags": ["single"],
+                    "parameters": {
+                        "ast": {"category": {"Attribute": "A"}}
+                    },
+                    "returns": {"()": ["Enter:A", "Visit:A", "Exit:A"]}
+                },
+                {
+                    "tags": ["nested"],
+                    "parameters": {
+                        "ast": {
+                            "category": "Group",
+                            "context": [
+                                {"category": {"Attribute": "A"}},
+                                {"category": {"Attribute": "B"}}
+                            ]
+                        }
+                    },
+                    "returns": {"()": [
+                        "Enter:Group", "Visit:Group",
+                        "Enter:A", "Visit:A", "Exit:A",
+                        "Enter:B", "Visit:B", "Exit:B",
+                        "Exit:Group"
+                    ]}
+                },
+                {
+                    "tags": ["deep"],
+                    "parameters": {
+                        "ast": {
+                            "category": "Group",
+                            "context": [
+                                {
+                                    "category": "Group",
+                                    "context": [
+                                        {"category": {"Attribute": "X"}}
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {"()": [
+                        "Enter:Group", "Visit:Group",
+                        "Enter:Group", "Visit:Group",
+                        "Enter:X", "Visit:X", "Exit:X",
+                        "Exit:Group",
+                        "Exit:Group"
+                    ]}
+                }
+            ]
+        },
+        {
+            "function": "depth",
+            "cases": [
+                {
+                    "tags": ["single"],
+                    "parameters": {
+                        "ast": {"category": {"Attribute": "A"}}
+                    },
+                    "returns": {"()": [0]}
+                },
+                {
+                    "tags": ["nested"],
+                    "parameters": {
+                        "ast": {
+                            "category": "Group",
+                            "context": [
+                                {"category": {"Attribute": "A"}},
+                                {"category": {"Attribute": "B"}}
+                            ]
+                        }
+                    },
+                    "returns": {"()": [0, 1, 1]}
+                },
+                {
+                    "tags": ["deep"],
+                    "parameters": {
+                        "ast": {
+                            "category": "Group",
+                            "context": [
+                                {
+                                    "category": "Group",
+                                    "context": [
+                                        {"category": {"Attribute": "X"}}
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "returns": {"()": [0, 1, 2]}
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,54 @@
+{
+    "functions": [
+        {
+            "function": "slug",
+            "cases": [
+                {
+                    "tags": ["basic"],
+                    "parameters": {"text": "Hello World"},
+                    "returns": {"()": "hello-world"}
+                },
+                {
+                    "tags": ["punctuation"],
+                    "parameters": {"text": "What's New?"},
+                    "returns": {"()": "what-s-new"}
+                },
+                {
+                    "tags": ["trailing"],
+                    "parameters": {"text": "Trailing ---"},
+                    "returns": {"()": "trailing"}
+                },
+                {
+                    "tags": ["single"],
+                    "parameters": {"text": "Molten"},
+                    "returns": {"()": "molten"}
+                },
+                {
+                    "tags": ["numbers"],
+                    "parameters": {"text": "Version 2.0"},
+                    "returns": {"()": "version-2-0"}
+                }
+            ]
+        },
+        {
+            "function": "textual",
+            "cases": [
+                {
+                    "tags": ["single"],
+                    "parameters": {"elements": ["Hello"]},
+                    "returns": {"()": "Hello"}
+                },
+                {
+                    "tags": ["multiple"],
+                    "parameters": {"elements": ["Hello", " ", "World"]},
+                    "returns": {"()": "Hello World"}
+                },
+                {
+                    "tags": ["empty"],
+                    "parameters": {"elements": []},
+                    "returns": {"()": ""}
+                }
+            ]
+        }
+    ]
+}

@@ -27,6 +27,7 @@ rust_library(
     srcs = ["execution.rs"],
     deps = [
         "//test/system/function:error",
+        "@crates//:miette",
         "@crates//:serde",
         "@crates//:serde_json",
     ],

@@ -4,6 +4,10 @@ pub struct Token {
     pub dark: &'static str,
 }
 
+pub const PASS: &str = "#34c759";
+pub const FAIL: &str = "#ff3b30";
+pub const PANIC: &str = "#ff9500";
+
 pub const PALETTE: &[Token] = &[
     Token {
         role: "background",

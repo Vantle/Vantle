@@ -44,9 +44,11 @@ rust_library(
 rust_library(
     name = "span",
     srcs = ["span.rs"],
+    aliases = {"//component/web/attribute:reference": "attribute"},
     visibility = ["//visibility:public"],
     deps = [
         ":element",
+        "//component/web/attribute:reference",
         "//component/web/class:reference",
     ],
 )
@@ -70,9 +72,28 @@ rust_library(
 rust_library(
     name = "selector",
     srcs = ["selector.rs"],
+    aliases = {"//component/web/attribute:reference": "attribute"},
     visibility = ["//visibility:public"],
     deps = [
+        "//component/web/attribute:reference",
         "//component/web/class:reference",
+    ],
+)
+
+rust_library(
+    name = "attribute",
+    srcs = ["attribute.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//component/web/attribute:difference",
+        "//component/web/attribute:expand",
+        "//component/web/attribute:navigate",
+        "//component/web/attribute:paginate",
+        "//component/web/attribute:render",
+        "//component/web/attribute:scroll",
+        "//component/web/attribute:search",
+        "//component/web/attribute:status",
+        "//component/web/attribute:theme",
     ],
 )
 
@@ -83,9 +104,10 @@ rust_library(
     deps = [
         "//component/web/class:button",
         "//component/web/class:code",
+        "//component/web/class:dashboard",
         "//component/web/class:footer",
         "//component/web/class:label",
-        "//component/web/class:nav",
+        "//component/web/class:navigation",
         "//component/web/class:node",
         "//component/web/class:reference",
         "//component/web/class:syntax",
@@ -108,6 +130,7 @@ rust_library(
         "//component/web/property:overflow",
         "//component/web/property:position",
         "//component/web/property/border:collapse",
+        "//component/web/property/flex:alignment",
         "//component/web/property/flex:direction",
         "//component/web/property/flex:wrap",
         "//component/web/property/font:style",
@@ -123,10 +146,12 @@ rust_library(
 rust_library(
     name = "list",
     srcs = ["list.rs"],
+    aliases = {"//component/web/attribute:reference": "attribute"},
     visibility = ["//visibility:public"],
     deps = [
         ":element",
         ":span",
+        "//component/web/attribute:reference",
         "//component/web/class:reference",
     ],
 )
@@ -146,6 +171,7 @@ rust_library(
 rust_library(
     name = "body",
     srcs = ["body.rs"],
+    aliases = {"//component/web/attribute:reference": "attribute"},
     proc_macro_deps = ["//system/observation:macro"],
     visibility = ["//visibility:public"],
     deps = [
@@ -155,6 +181,7 @@ rust_library(
         ":list",
         ":span",
         ":table",
+        "//component/web/attribute:reference",
         "//component/web/class:reference",
         "@crates//:tracing",
     ],
@@ -182,11 +209,13 @@ rust_library(
 rust_library(
     name = "render",
     srcs = ["render.rs"],
+    aliases = {"//component/web/attribute:render": "attribute"},
     visibility = ["//visibility:public"],
     deps = [
         ":element",
         ":language",
         ":query",
+        "//component/web/attribute:render",
         "@crates//:miette",
     ],
 )

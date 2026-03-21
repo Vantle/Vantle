@@ -15,7 +15,7 @@ pub fn page(root: &str) -> page::Page {
                 p.text("Extends Autotest with statistical regression analysis. Define performance cases alongside functional cases, and the framework measures execution time, fits complexity curves, and enforces bounds.")
             })
             .rule()
-            .section("Template", |s| {
+            .chapter("Template", |s| {
                 s.paragraph(|p| {
                     p.text("Performance templates follow the same ")
                         .code(".template.rs")
@@ -24,7 +24,7 @@ pub fn page(root: &str) -> page::Page {
                 .extract(sort_document::EXTRACTIONS.one())
             })
             .rule()
-            .section("Cases", |s| {
+            .chapter("Cases", |s| {
                 s.paragraph(|p| {
                     p.text("Define scaling inputs in ")
                         .code("cases.json")
@@ -33,7 +33,7 @@ pub fn page(root: &str) -> page::Page {
                 .extract(sort_cases_json::EXTRACTIONS.one())
             })
             .rule()
-            .section("Specification", |s| {
+            .chapter("Specification", |s| {
                 s.paragraph(|p| {
                     p.text("The specification in ")
                         .code("performance.cases.json")
@@ -49,8 +49,8 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Macro", |s| {
-                s.section("rust_autotest_performance", |ss| {
+            .chapter("Macro", |s| {
+                s.chapter("rust_autotest_performance", |ss| {
                     ss.extract(performance_document::EXTRACTIONS.one())
                         .table(|t| {
                             t.header(["Parameter", "Description"])
@@ -81,14 +81,14 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Execution", |s| {
+            .chapter("Execution", |s| {
                 s.paragraph(|p| {
                     p.text("The performance report includes timing measurements, regression coefficients, and structural validation results:")
                 })
                 .extract(execution_schema::EXTRACTIONS.one())
             })
             .rule()
-            .section("Features", |s| {
+            .chapter("Features", |s| {
                 s.list(|ul| {
                     ul.feature(
                         "Regression fitting",

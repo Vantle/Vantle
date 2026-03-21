@@ -146,16 +146,26 @@ pub fn write(
             unexpected,
         };
 
-        match functions
+        let failed = case.unexpected.is_some();
+
+        if let Some(function) = functions
             .last_mut()
             .filter(|f| f.function == execution.meta.name)
         {
-            Some(function) => function.cases.push(case),
-            None => functions.push(Group {
+            function.cases.push(case);
+            if failed && !function.tags.iter().any(|t| t == "failing") {
+                function.tags.push("failing".into());
+            }
+        } else {
+            let mut tags = execution.meta.tags;
+            if failed {
+                tags.push("failing".into());
+            }
+            functions.push(Group {
                 function: execution.meta.name,
-                tags: execution.meta.tags,
+                tags,
                 cases: vec![case],
-            }),
+            });
         }
     }
 

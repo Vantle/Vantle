@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+load("//component/generation/starlark:defs.bzl", "autotest_document", "rust_autotest_function")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -13,6 +13,7 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 rust_autotest_function(
     name = "level",
+    testonly = False,
     cases = "//test/resource/system/observation/level:cases",
     template = "//test/resource/system/observation/level:template",
     deps = [
@@ -25,6 +26,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "span",
+    testonly = False,
     cases = "//test/resource/system/observation/span:cases",
     template = "//test/resource/system/observation/span:template",
     deps = [
@@ -37,6 +39,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "hierarchy",
+    testonly = False,
     cases = "//test/resource/system/observation/hierarchy:cases",
     template = "//test/resource/system/observation/hierarchy:template",
     deps = [
@@ -49,6 +52,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "filtering",
+    testonly = False,
     cases = "//test/resource/system/observation/filtering:cases",
     template = "//test/resource/system/observation/filtering:template",
     deps = [
@@ -62,6 +66,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "peer",
+    testonly = False,
     cases = "//test/resource/system/observation/peer:cases",
     template = "//test/resource/system/observation/peer:template",
     deps = [
@@ -72,3 +77,37 @@ rust_autotest_function(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+autotest_document(
+    name = "level.document",
+    test = ":level",
+    template = "//test/resource/system/observation/level:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "span.document",
+    test = ":span",
+    template = "//test/resource/system/observation/span:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "hierarchy.document",
+    test = ":hierarchy",
+    template = "//test/resource/system/observation/hierarchy:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "filtering.document",
+    test = ":filtering",
+    template = "//test/resource/system/observation/filtering:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "peer.document",
+    test = ":peer",
+    template = "//test/resource/system/observation/peer:template",
+    visibility = ["//visibility:public"],
+)

@@ -16,11 +16,19 @@ rust_library(
 rust_library(
     name = "serialize",
     srcs = ["serialize.rs"],
+    aliases = {
+        "//component/web/attribute:render": "attribute",
+        "//component/web/attribute:theme": "theme",
+    },
     deps = [
         "//component/web:element",
         "//component/web:language",
         "//component/web:page",
         "//component/web:style",
+        "//component/web/attribute:navigate",
+        "//component/web/attribute:render",
+        "//component/web/attribute:theme",
+        "//component/web/class:code",
         "//component/web/render:escape",
         "//component/web:render",
         "@crates//:miette",

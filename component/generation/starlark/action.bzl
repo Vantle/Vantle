@@ -99,7 +99,23 @@ def _execute_impl(ctx):
         for file in dep.files.to_list():
             inputs.append(file)
 
-    action(ctx, ctx.executable.binary, arguments, inputs, output, mnemonic = "Execute")
+    runfiles = ctx.attr.binary[DefaultInfo].default_runfiles
+    if runfiles:
+        inputs.extend(runfiles.files.to_list())
+
+    if ctx.attr.allow_failure:
+        parts = [ctx.executable.binary.path] + arguments
+        parts.extend(["--output", output.path])
+        ctx.actions.run_shell(
+            command = " ".join(parts) + " || true",
+            inputs = inputs,
+            outputs = [output],
+            tools = [ctx.executable.binary],
+            mnemonic = "Execute",
+            progress_message = "Executing: %s" % output.basename,
+        )
+    else:
+        action(ctx, ctx.executable.binary, arguments, inputs, output, mnemonic = "Execute")
 
 execute = rule(
     implementation = _execute_impl,
@@ -112,5 +128,6 @@ execute = rule(
         "parameters": attr.string_dict(),
         "data": attr.label_list(allow_files = True),
         "output": attr.output(mandatory = True),
+        "allow_failure": attr.bool(default = False),
     },
 )

@@ -16,9 +16,9 @@ pub fn page(root: &str) -> page::Page {
                     .text(" framework produces files from structured inputs. Each generator targets a specific output format and integrates with Bazel for incremental, cacheable builds.")
             })
             .rule()
-            .section("Generators", |s| {
-                s.section("Web", |ss| {
-                    ss.aside(|a| {
+            .chapter("Generators", |s| {
+                s.chapter("Web", |ss| {
+                    ss.blockquote(|a| {
                         a.italic("HTML, CSS, syntax highlighting, and WebAssembly from Rust DSL")
                     })
                     .paragraph(|p| {
@@ -32,8 +32,8 @@ pub fn page(root: &str) -> page::Page {
                         p.link(&index::generation::web::web(root).href, |l| l.text("more \u{2192}"))
                     })
                 })
-                .section("Autotest", |ss| {
-                    ss.aside(|a| {
+                .chapter("Autotest", |ss| {
+                    ss.blockquote(|a| {
                         a.italic("JSON-driven test generation for Rust")
                     })
                     .paragraph(|p| {
@@ -46,8 +46,8 @@ pub fn page(root: &str) -> page::Page {
                         )
                     })
                 })
-                .section("Extract", |ss| {
-                    ss.aside(|a| {
+                .chapter("Extract", |ss| {
+                    ss.blockquote(|a| {
                         a.italic("Code extraction via tree-sitter queries")
                     })
                     .paragraph(|p| {
@@ -62,14 +62,14 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Source", |s| {
+            .chapter("Source", |s| {
                 s.paragraph(|p| {
                     p.text("Deploys generated files to the workspace via a manifest-driven copy. Supports verification mode to detect drift between generated output and committed source.")
                 })
                 .extract(distribute_command::EXTRACTIONS.one())
             })
             .rule()
-            .aside(|a| {
+            .blockquote(|a| {
                 a.italic("These docs were generated with this framework \u{2014} authored as ")
                     .code(".document.rs")
                     .italic(" files and rendered to HTML by the web generator.")

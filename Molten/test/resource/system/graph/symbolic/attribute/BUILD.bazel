@@ -39,6 +39,7 @@ filegroup(
 
 rust_autotest_template(
     name = "template",
+    testonly = False,
     src = "attribute.template.rs",
     deps = [
         "//Molten:component",

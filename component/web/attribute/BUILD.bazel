@@ -1,0 +1,70 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "reference",
+    srcs = ["reference.rs"],
+)
+
+rust_library(
+    name = "scroll",
+    srcs = ["scroll.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "theme",
+    srcs = ["theme.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "navigate",
+    srcs = ["navigate.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "search",
+    srcs = ["search.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "paginate",
+    srcs = ["paginate.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "expand",
+    srcs = ["expand.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "status",
+    srcs = ["status.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "render",
+    srcs = ["render.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "difference",
+    srcs = ["difference.rs"],
+    deps = [":reference"],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

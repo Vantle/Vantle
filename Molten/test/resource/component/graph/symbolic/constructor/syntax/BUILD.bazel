@@ -27,6 +27,7 @@ filegroup(
 
 rust_autotest_template(
     name = "template",
+    testonly = False,
     src = "syntax.template.rs",
     deps = [
         "//Molten/component/graph/symbolic/constructor:syntax",

@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+load("//component/generation/starlark:defs.bzl", "autotest_document", "rust_autotest_function")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -14,6 +14,7 @@ package(default_visibility = [
 
 rust_autotest_function(
     name = "syntax",
+    testonly = False,
     cases = "//Molten/test/resource/component/graph/symbolic/constructor/syntax:cases",
     template = "//Molten/test/resource/component/graph/symbolic/constructor/syntax:template",
     deps = [
@@ -22,3 +23,9 @@ rust_autotest_function(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+autotest_document(
+    name = "syntax.document",
+    test = ":syntax",
+    template = "//Molten/test/resource/component/graph/symbolic/constructor/syntax:template",
+    visibility = ["//visibility:public"],
+)

@@ -26,6 +26,7 @@ filegroup(
 
 rust_autotest_template(
     name = "template",
+    testonly = False,
     src = "span.template.rs",
     deps = [
         "//component:assemble",

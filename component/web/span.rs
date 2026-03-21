@@ -62,7 +62,9 @@ impl Span {
     #[must_use]
     pub fn class(mut self, reference: reference::Reference) -> Self {
         if let Some(Element::Tag { attributes, .. }) = self.elements.last_mut() {
-            element::merge(attributes, "class", reference.name());
+            for word in reference.words() {
+                element::merge(attributes, "class", word);
+            }
         }
         self
     }
@@ -73,6 +75,31 @@ impl Span {
             attributes.push((name.into(), value.into()));
         }
         self
+    }
+
+    #[must_use]
+    pub fn data(self, reference: attribute::Reference, value: &str) -> Self {
+        self.attribute(reference.name(), value)
+    }
+
+    #[must_use]
+    pub fn identifier(self, value: &str) -> Self {
+        self.attribute("id", value)
+    }
+
+    #[must_use]
+    pub fn label(self, value: &str) -> Self {
+        self.attribute("aria-label", value)
+    }
+
+    #[must_use]
+    pub fn current(self, value: &str) -> Self {
+        self.attribute("aria-current", value)
+    }
+
+    #[must_use]
+    pub fn inline(self, value: &str) -> Self {
+        self.attribute("style", value)
     }
 }
 

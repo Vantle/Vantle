@@ -11,7 +11,7 @@ pub fn page(root: &str) -> page::Page {
                 p.text("Generates web documentation from Rust DSL sources. Each generator targets a specific output format and integrates with Bazel through Starlark rules for authoring, publishing, and serving.")
             })
             .rule()
-            .section("HTML", |s| {
+            .chapter("HTML", |s| {
                 s.paragraph(|p| {
                     p.text("Renders a ")
                         .code("Page")
@@ -25,7 +25,7 @@ pub fn page(root: &str) -> page::Page {
                         .text(" trait, which provides semantic methods for document structure:")
                 })
                 .extract(function_document_extract::EXTRACTIONS.one())
-                .section("Composition", |ss| {
+                .chapter("Composition", |ss| {
                     ss.paragraph(|p| {
                         p.text("The ")
                             .code("Composition")
@@ -70,7 +70,7 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Style", |s| {
+            .chapter("Style", |s| {
                 s.paragraph(|p| {
                     p.text("Generates CSS from a golden-ratio design system. All spacing, typography, and responsive breakpoints scale from ")
                         .bold("PHI")
@@ -101,7 +101,7 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Highlight", |s| {
+            .chapter("Highlight", |s| {
                 s.paragraph(|p| {
                     p.text("Syntax highlighting dispatches to language-specific highlighters. Each produces HTML spans with semantic CSS classes for theme-aware coloring.")
                 })
@@ -115,7 +115,7 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Assembly", |s| {
+            .chapter("Assembly", |s| {
                 s.paragraph(|p| {
                     p.text("Compiles Rust to WebAssembly for client-side interactivity. The assembly chain produces ")
                         .code("compute.js")
@@ -135,13 +135,13 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Starlark", |s| {
+            .chapter("Starlark", |s| {
                 s.paragraph(|p| {
                     p.text("Bazel rules for authoring, publishing, verifying, and serving documentation. All rules are loaded from ")
                         .code("//component/web/starlark:defs.bzl")
                         .text(".")
                 })
-                .section("document", |ss| {
+                .chapter("document", |ss| {
                     ss.paragraph(|p| {
                         p.text("Compiles a Rust DSL source into a binary, executes it, and collects the generated output. Standard dependencies (")
                             .code("html")
@@ -178,19 +178,19 @@ pub fn page(root: &str) -> page::Page {
                             ])
                     })
                 })
-                .section("copy", |ss| {
+                .chapter("copy", |ss| {
                     ss.paragraph(|p| {
                         p.text("Wraps an existing file with a destination path for inclusion in folder manifests. Uses a zero-cost symlink action.")
                     })
                     .extract(copy_rule::EXTRACTIONS.one())
                 })
-                .section("folder", |ss| {
+                .chapter("folder", |ss| {
                     ss.paragraph(|p| {
                         p.text("Aggregates document and copy targets into a manifest, then copies all generated files into the workspace.")
                     })
                     .extract(folder_rule::EXTRACTIONS.one())
                 })
-                .section("distribute", |ss| {
+                .chapter("distribute", |ss| {
                     ss.paragraph(|p| {
                         p.text("Serves the workspace directory over HTTP for local preview.")
                     })

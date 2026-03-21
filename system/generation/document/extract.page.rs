@@ -14,7 +14,7 @@ pub fn page(root: &str) -> page::Page {
                     .text(" constants in generated Rust libraries, enabling documentation pages to embed live source code that stays in sync with the codebase.")
             })
             .rule()
-            .section("Extract", |s| {
+            .chapter("Extract", |s| {
                 s.paragraph(|p| {
                     p.text("The ")
                         .code("extract")
@@ -44,7 +44,7 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Query", |s| {
+            .chapter("Query", |s| {
                 s.paragraph(|p| {
                     p.text("The ")
                         .code("query")
@@ -70,7 +70,7 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Language", |s| {
+            .chapter("Language", |s| {
                 s.paragraph(|p| {
                     p.text("Extraction supports multiple source languages via tree-sitter grammars:")
                 })
@@ -84,7 +84,7 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Pattern", |s| {
+            .chapter("Pattern", |s| {
                 s.paragraph(|p| {
                     p.text("Tree-sitter queries use S-expression syntax. The ")
                         .code("@capture")

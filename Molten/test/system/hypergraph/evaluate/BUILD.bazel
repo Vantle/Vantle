@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+load("//component/generation/starlark:defs.bzl", "autotest_document", "rust_autotest_function")
 
 ##### External                                                                                                                               [ Import, External ]
 
@@ -14,6 +14,7 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 rust_autotest_function(
     name = "evaluate",
+    testonly = False,
     cases = "//Molten/test/resource/system/hypergraph/evaluate:cases",
     template = "//Molten/test/resource/system/hypergraph/evaluate:template",
     deps = [
@@ -26,6 +27,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "observation",
+    testonly = False,
     cases = "//Molten/test/resource/system/hypergraph/evaluate/observation:cases",
     template = "//Molten/test/resource/system/hypergraph/evaluate/observation:template",
     deps = [
@@ -40,3 +42,16 @@ rust_autotest_function(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+autotest_document(
+    name = "evaluate.document",
+    test = ":evaluate",
+    template = "//Molten/test/resource/system/hypergraph/evaluate:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "evaluate.observation.document",
+    test = ":observation",
+    template = "//Molten/test/resource/system/hypergraph/evaluate/observation:template",
+    visibility = ["//visibility:public"],
+)

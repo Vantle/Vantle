@@ -25,7 +25,7 @@ pub fn start() {
     callback.forget();
 
     if let Some(html) = document.document_element() {
-        let _ = html.class_list().add_1("enhanced");
+        let _ = html.class_list().add_1(reference::enhanced().words()[0]);
     }
 }
 
@@ -33,6 +33,11 @@ fn enhance(document: &web_sys::Document) {
     theme::initialize(document);
     hamburger::initialize(document);
     clipboard::initialize(document);
+    source::initialize(document);
     scroll::initialize(document);
+    search::initialize(document);
+    paginate::initialize(document);
+    expand::initialize(document);
+    difference::initialize(document);
     outline::update(document);
 }

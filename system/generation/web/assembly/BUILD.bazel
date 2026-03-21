@@ -15,7 +15,9 @@ package(default_visibility = ["//visibility:public"])
 rust_library(
     name = "scroll",
     srcs = ["scroll.rs"],
+    aliases = {"//component/web/attribute:scroll": "attribute"},
     deps = [
+        "//component/web/attribute:scroll",
         "@crates//:js-sys",
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",
@@ -25,11 +27,18 @@ rust_library(
 rust_library(
     name = "theme",
     srcs = ["theme.rs"],
+    aliases = {
+        "//component/web/attribute:theme": "attribute",
+        "//component/web/class:button": "button",
+    },
     compile_data = [
         "//resource/system/document:sun",
         "//resource/system/document:moon",
     ],
     deps = [
+        "//component/web/attribute:theme",
+        "//component/web/class:button",
+        "//component/web/class:navigation",
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",
     ],
@@ -39,6 +48,8 @@ rust_library(
     name = "clipboard",
     srcs = ["clipboard.rs"],
     deps = [
+        "//component/web/class:button",
+        "//component/web/class:code",
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",
     ],
@@ -48,6 +59,7 @@ rust_library(
     name = "outline",
     srcs = ["outline.rs"],
     deps = [
+        "//component/web/class:reference",
         "@crates//:js-sys",
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",
@@ -58,6 +70,8 @@ rust_library(
     name = "hamburger",
     srcs = ["hamburger.rs"],
     deps = [
+        "//component/web/class:navigation",
+        "//component/web/class:reference",
         "@crates//:js-sys",
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",
@@ -65,11 +79,123 @@ rust_library(
 )
 
 rust_library(
+    name = "progress",
+    srcs = ["progress.rs"],
+    aliases = {
+        "//component/web/attribute:navigate": "attribute",
+        "//component/design:proportion": "proportion",
+    },
+    deps = [
+        "//component/design:proportion",
+        "//component/web/attribute:navigate",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
     name = "navigate",
     srcs = ["navigate.rs"],
+    aliases = {
+        "//component/web/attribute:navigate": "attribute",
+        "//component/web/class:dashboard": "dashboard",
+    },
     deps = [
+        ":progress",
+        "//component/web/attribute:navigate",
+        "//component/web/class:dashboard",
+        "//component/web/class:navigation",
+        "//component/web/class:reference",
         "@crates//:wasm-bindgen",
         "@crates//:wasm-bindgen-futures",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
+    name = "search",
+    srcs = ["search.rs"],
+    aliases = {"//component/web/attribute:search": "attribute"},
+    deps = [
+        ":editing",
+        "//component/web/attribute:search",
+        "@crates//:js-sys",
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
+    name = "editing",
+    srcs = ["editing.rs"],
+    deps = [
+        "@crates//:js-sys",
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
+    name = "paginate",
+    srcs = ["paginate.rs"],
+    aliases = {
+        "//component/web/attribute:paginate": "attribute",
+        "//component/web/attribute:search": "filter",
+        "//component/web/class:dashboard": "dashboard",
+    },
+    deps = [
+        ":progress",
+        "//component/design:proportion",
+        "//component/web/attribute:paginate",
+        "//component/web/attribute:search",
+        "//component/web/class:dashboard",
+        "@crates//:js-sys",
+        "@crates//:wasm-bindgen",
+        "@crates//:wasm-bindgen-futures",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
+    name = "expand",
+    srcs = ["expand.rs"],
+    aliases = {
+        "//component/web/attribute:expand": "attribute",
+        "//component/web/class:dashboard": "dashboard",
+    },
+    deps = [
+        ":editing",
+        "//component/web/attribute:expand",
+        "//component/web/class:dashboard",
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
+    name = "source",
+    srcs = ["source.rs"],
+    aliases = {
+        "//component/web/attribute:navigate": "root",
+        "//component/web/attribute:render": "attribute",
+    },
+    deps = [
+        "//component/web/attribute:navigate",
+        "//component/web/attribute:render",
+        "//component/web/class:code",
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
+rust_library(
+    name = "difference",
+    srcs = ["difference.rs"],
+    aliases = {
+        "//component/web/attribute:difference": "marker",
+    },
+    deps = [
+        "//component/web/attribute:difference",
+        "@crates//:wasm-bindgen",
         "@crates//:web-sys",
     ],
 )
@@ -86,11 +212,14 @@ rust_library(
 rust_library(
     name = "render",
     srcs = ["render.rs"],
+    aliases = {"//component/web/attribute:render": "attribute"},
     deps = [
         ":error",
         "//component/web:element",
         "//component/web:language",
         "//component/web:render",
+        "//component/web/attribute:render",
+        "//component/web/class:code",
         "@crates//:miette",
         "@crates//:web-sys",
     ],
@@ -102,12 +231,18 @@ rust_shared_library(
     platform = "@rules_rust//rust/platform:wasm",
     deps = [
         ":clipboard",
+        ":difference",
+        ":expand",
         ":hamburger",
         ":navigate",
         ":outline",
+        ":paginate",
         ":render",
         ":scroll",
+        ":search",
+        ":source",
         ":theme",
+        "//component/web/class:reference",
         "@crates//:wasm-bindgen",
         "@crates//:web-sys",
     ],

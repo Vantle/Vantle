@@ -1,6 +1,7 @@
 pub enum Decoration {
     None,
     Underline,
+    LineThrough,
 }
 
 impl Decoration {
@@ -9,6 +10,7 @@ impl Decoration {
         match self {
             Self::None => "none",
             Self::Underline => "underline",
+            Self::LineThrough => "line-through",
         }
     }
 }

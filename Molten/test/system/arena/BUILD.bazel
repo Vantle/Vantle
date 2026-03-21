@@ -2,7 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+load("//component/generation/starlark:defs.bzl", "autotest_document", "rust_autotest_function")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -13,6 +13,7 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 rust_autotest_function(
     name = "arena",
+    testonly = False,
     aliases = {
         "//Molten/component:arena": "valued",
     },
@@ -33,6 +34,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "observation",
+    testonly = False,
     cases = "//Molten/test/resource/system/arena/observation:cases",
     template = "//Molten/test/resource/system/arena/observation:template",
     deps = [
@@ -46,3 +48,16 @@ rust_autotest_function(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+autotest_document(
+    name = "arena.system.document",
+    test = ":arena",
+    template = "//Molten/test/resource/system/arena:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "arena.observation.document",
+    test = ":observation",
+    template = "//Molten/test/resource/system/arena/observation:template",
+    visibility = ["//visibility:public"],
+)

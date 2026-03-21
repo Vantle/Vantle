@@ -33,6 +33,9 @@ pub enum Element {
 
 pub fn merge(attributes: &mut Vec<(String, String)>, key: &str, value: &str) {
     if let Some(existing) = attributes.iter_mut().find(|(k, _)| k == key) {
+        if key == "class" && existing.1.split_whitespace().any(|c| c == value) {
+            return;
+        }
         existing.1.push(' ');
         existing.1.push_str(value);
     } else {

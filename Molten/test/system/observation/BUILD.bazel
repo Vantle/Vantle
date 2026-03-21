@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+load("//component/generation/starlark:defs.bzl", "autotest_document", "rust_autotest_function")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -13,6 +13,7 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 rust_autotest_function(
     name = "snapshot",
+    testonly = False,
     cases = "//Molten/test/resource/system/observation/snapshot:cases",
     template = "//Molten/test/resource/system/observation/snapshot:template",
     deps = [
@@ -23,3 +24,9 @@ rust_autotest_function(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+autotest_document(
+    name = "snapshot.document",
+    test = ":snapshot",
+    template = "//Molten/test/resource/system/observation/snapshot:template",
+    visibility = ["//visibility:public"],
+)

@@ -14,8 +14,8 @@ rust_library(
 )
 
 rust_library(
-    name = "nav",
-    srcs = ["nav.rs"],
+    name = "navigation",
+    srcs = ["navigation.rs"],
     deps = [":reference"],
 )
 
@@ -52,6 +52,12 @@ rust_library(
 rust_library(
     name = "node",
     srcs = ["node.rs"],
+    deps = [":reference"],
+)
+
+rust_library(
+    name = "dashboard",
+    srcs = ["dashboard.rs"],
     deps = [":reference"],
 )
 

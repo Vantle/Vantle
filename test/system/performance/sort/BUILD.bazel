@@ -22,7 +22,8 @@ rust_autotest_performance(
 
 execute(
     name = "sort.execute",
-    binary = ":sort.binary",
+    allow_failure = True,
+    binary = ":sort",
     output = "sort.execution.json",
     parameters = {
         "bound": "on",

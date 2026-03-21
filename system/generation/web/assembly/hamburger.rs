@@ -2,68 +2,48 @@ use wasm_bindgen::prelude::*;
 use web_sys::Document;
 
 pub fn initialize(document: &Document) {
-    let Ok(Some(nav)) = document.query_selector("nav") else {
+    let Ok(Some(button)) = document.query_selector(&reference::hamburger().selector()) else {
         return;
     };
 
-    if nav.query_selector(".hamburger").ok().flatten().is_some() {
-        return;
-    }
-
-    let Ok(Some(sidebar)) = document.query_selector(".sidebar") else {
+    let Ok(Some(sidebar)) = document.query_selector(&reference::sidebar().selector()) else {
         return;
     };
 
-    let Ok(button) = document.create_element("button") else {
-        return;
-    };
-    let _ = button.set_attribute("class", "hamburger");
-    let _ = button.set_attribute("aria-label", "Toggle navigation");
-    for _ in 0..3 {
-        if let Ok(bar) = document.create_element("span") {
-            let _ = button.append_child(&bar);
-        }
-    }
-
-    let sidebar_clone = sidebar.clone();
+    let captured = sidebar.clone();
     let toggle = Closure::<dyn FnMut()>::new(move || {
-        let _ = sidebar_clone.class_list().toggle("open");
+        let _ = captured.class_list().toggle(reference::open().words()[0]);
     });
     let _ = button.add_event_listener_with_callback("click", toggle.as_ref().unchecked_ref());
     toggle.forget();
 
-    let sidebar_clone = sidebar.clone();
+    let captured = sidebar.clone();
+    let hamburger = reference::hamburger().selector();
     let close = Closure::<dyn FnMut(web_sys::Event)>::new(move |event: web_sys::Event| {
         let Some(target) = event.target() else {
             return;
         };
         let target: web_sys::Element = target.unchecked_into();
 
-        if sidebar_clone.contains(Some(&target.clone().into())) {
+        if captured.contains(Some(&target.clone().into())) {
             return;
         }
-        if target.closest(".hamburger").ok().flatten().is_some() {
+        if target.closest(&hamburger).ok().flatten().is_some() {
             return;
         }
 
-        let _ = sidebar_clone.class_list().remove_1("open");
+        let _ = captured.class_list().remove_1(reference::open().words()[0]);
     });
     let _ = document.add_event_listener_with_callback("click", close.as_ref().unchecked_ref());
     close.forget();
 
-    let sidebar_clone = sidebar.clone();
+    let captured = sidebar.clone();
     let escape = Closure::<dyn FnMut(web_sys::Event)>::new(move |event: web_sys::Event| {
         let key = js_sys::Reflect::get(&event, &JsValue::from_str("key")).unwrap_or_default();
         if key.as_string().as_deref() == Some("Escape") {
-            let _ = sidebar_clone.class_list().remove_1("open");
+            let _ = captured.class_list().remove_1(reference::open().words()[0]);
         }
     });
     let _ = document.add_event_listener_with_callback("keydown", escape.as_ref().unchecked_ref());
     escape.forget();
-
-    if let Ok(Some(logo)) = nav.query_selector(".nav-logo") {
-        let _ = nav.insert_before(&button, logo.next_sibling().as_ref());
-    } else {
-        let _ = nav.append_child(&button);
-    }
 }

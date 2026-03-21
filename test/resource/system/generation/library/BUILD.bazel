@@ -18,6 +18,7 @@ filegroup(
 
 rust_autotest_template(
     name = "template",
+    testonly = False,
     src = "composition.rs",
     deps = [
         "//test/resource/system/generation:library",

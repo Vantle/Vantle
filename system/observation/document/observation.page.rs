@@ -16,7 +16,7 @@ pub fn page(root: &str) -> page::Page {
                     .text(" system, a peer-to-peer trace streaming framework for Vantle.")
             })
             .rule()
-            .section("Architecture", |s| {
+            .chapter("Architecture", |s| {
                 s.paragraph(|p| {
                     p.text(
                         "Observation uses a peer-to-peer model with no central server. Applications stream traces directly to:",
@@ -24,7 +24,7 @@ pub fn page(root: &str) -> page::Page {
                 })
                 .unordered(|ul| {
                     ul.item(|li| {
-                        li.span(|s| {
+                        li.content(|s| {
                             s.bold("Files")
                                 .text(": Local recording via ")
                                 .code("log://")
@@ -34,7 +34,7 @@ pub fn page(root: &str) -> page::Page {
                         })
                     })
                     .item(|li| {
-                        li.span(|s| {
+                        li.content(|s| {
                             s.bold("Peers")
                                 .text(": Remote streaming via ")
                                 .code("grpc://")
@@ -49,16 +49,16 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Trace", |s| {
+            .chapter("Trace", |s| {
                 s.paragraph(|p| {
                     p.text("The ")
                         .code("#[trace]")
                         .text(" macro instruments functions for observation.")
                 })
-                .section("Usage", |ss| {
+                .chapter("Usage", |ss| {
                     ss.extract(view_trace::EXTRACTIONS.one())
                 })
-                .section("Channels", |ss| {
+                .chapter("Channels", |ss| {
                     ss.paragraph(|p| {
                         p.text("Channels filter which spans to emit. Common channels include:")
                     })

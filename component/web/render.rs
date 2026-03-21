@@ -31,10 +31,35 @@ pub trait Emitter {
 
 #[must_use]
 pub fn process(elements: &mut [Element]) -> Vec<Heading> {
-    let mut entries = Vec::new();
+    let mut headings = analyze(elements);
     let mut identifiers = HashSet::new();
-    traverse(&mut entries, &mut identifiers, elements);
+    index(&mut headings, &mut identifiers);
+    mutate(elements, &headings);
+    headings
+}
+
+#[must_use]
+pub fn analyze(elements: &[Element]) -> Vec<Heading> {
+    let mut entries = Vec::new();
+    scan(&mut entries, elements);
     entries
+}
+
+pub fn index<S: std::hash::BuildHasher>(
+    headings: &mut [Heading],
+    identifiers: &mut HashSet<String, S>,
+) {
+    for heading in headings.iter_mut() {
+        if heading.identifier.is_empty() {
+            heading.identifier = deduplicate(slugify(&heading.text), identifiers);
+        }
+        identifiers.insert(heading.identifier.clone());
+    }
+}
+
+pub fn mutate(elements: &mut [Element], headings: &[Heading]) {
+    let mut index = 0;
+    inject(elements, headings, &mut index);
 }
 
 pub fn outline(elements: &mut [Element], headings: &[Heading]) {
@@ -56,7 +81,7 @@ pub fn outline(elements: &mut [Element], headings: &[Heading]) {
                 name: "a".into(),
                 attributes: vec![
                     ("href".into(), format!("#{}", heading.identifier)),
-                    ("data-depth".into(), level.to_string()),
+                    (attribute::depth().name().into(), level.to_string()),
                 ],
                 children: vec![Element::Text(heading.text.clone())],
             }
@@ -68,12 +93,8 @@ pub fn render(emitter: &mut impl Emitter, elements: &[Element]) -> miette::Resul
     emit(emitter, elements, 0)
 }
 
-fn traverse(
-    entries: &mut Vec<Heading>,
-    identifiers: &mut HashSet<String>,
-    elements: &mut [Element],
-) {
-    for element in elements.iter_mut() {
+fn scan(entries: &mut Vec<Heading>, elements: &[Element]) {
+    for element in elements {
         if let Element::Tag {
             name,
             attributes,
@@ -83,19 +104,41 @@ fn traverse(
             if let Some(depth) = level(name) {
                 let text = textual(children);
                 if !text.is_empty() {
-                    let existing = attributes.iter().find(|(k, _)| k == "id");
-                    let id = identify(&text, existing.map(|(_, v)| v.as_str()), identifiers);
-                    if !attributes.iter().any(|(k, _)| k == "id") {
-                        attributes.push(("id".into(), id.clone()));
-                    }
+                    let existing = attributes
+                        .iter()
+                        .find(|(k, _)| k == "id")
+                        .map(|(_, v)| v.clone())
+                        .unwrap_or_default();
                     entries.push(Heading {
                         depth,
-                        identifier: id,
+                        identifier: existing,
                         text,
                     });
                 }
             }
-            traverse(entries, identifiers, children);
+            scan(entries, children);
+        }
+    }
+}
+
+fn inject(elements: &mut [Element], headings: &[Heading], index: &mut usize) {
+    for element in elements.iter_mut() {
+        if let Element::Tag {
+            name,
+            attributes,
+            children,
+        } = element
+        {
+            if level(name).is_some() {
+                let text = textual(children);
+                if !text.is_empty() && *index < headings.len() {
+                    if !attributes.iter().any(|(k, _)| k == "id") {
+                        attributes.push(("id".into(), headings[*index].identifier.clone()));
+                    }
+                    *index += 1;
+                }
+            }
+            inject(children, headings, index);
         }
     }
 }

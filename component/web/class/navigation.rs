@@ -2,25 +2,25 @@ use reference::Reference;
 
 #[must_use]
 pub fn logo() -> Reference {
-    Reference("nav-logo")
+    Reference(&["navigation", "logo"])
 }
 
 #[must_use]
 pub fn links() -> Reference {
-    Reference("nav-links")
+    Reference(&["navigation", "links"])
 }
 
 #[must_use]
 pub fn dropdown() -> Reference {
-    Reference("nav-dropdown")
+    Reference(&["navigation", "dropdown"])
 }
 
 #[must_use]
 pub fn menu() -> Reference {
-    Reference("nav-dropdown-menu")
+    Reference(&["navigation", "menu"])
 }
 
 #[must_use]
 pub fn nested() -> Reference {
-    Reference("nav-nested")
+    Reference(&["navigation", "nested"])
 }

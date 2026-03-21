@@ -9,7 +9,6 @@ pub enum Selector {
     Child(Box<Selector>, Box<Selector>),
     Compound(Vec<Selector>),
     Group(Vec<Selector>),
-    Literal(String),
 }
 
 pub enum Tag {
@@ -52,15 +51,24 @@ pub enum Tag {
     Blockquote,
     Button,
     Svg,
+    Details,
+    Summary,
+    Input,
 }
 
 pub enum Pseudo {
     Hover,
     Focus,
+    FocusVisible,
     FocusWithin,
     FirstChild,
-    NthChild(String),
+    NthChild(Parity),
     Active,
+}
+
+pub enum Parity {
+    Even,
+    Odd,
 }
 
 pub struct Attribute {
@@ -75,7 +83,7 @@ pub fn tag(element: Tag) -> Selector {
 
 #[must_use]
 pub fn class(reference: reference::Reference) -> Selector {
-    Selector::Class(reference.name().into())
+    reference.into()
 }
 
 #[must_use]
@@ -97,6 +105,11 @@ pub fn present(name: &str) -> Selector {
         name: name.into(),
         value: None,
     })
+}
+
+#[must_use]
+pub fn data(reference: attribute::Reference) -> Selector {
+    present(reference.name())
 }
 
 #[must_use]
@@ -145,29 +158,42 @@ impl Selector {
     }
 
     #[must_use]
+    pub fn data(self, reference: attribute::Reference, value: &str) -> Selector {
+        self.attribute(reference.name(), value)
+    }
+
+    #[must_use]
     pub fn render(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl std::fmt::Display for Selector {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Tag(element) => element.render().into(),
-            Self::Universal => "*".into(),
-            Self::Class(name) => format!(".{name}"),
-            Self::Id(name) => format!("#{name}"),
-            Self::Attribute(attr) => attr.render(),
-            Self::Pseudo(base, pseudo) => {
-                format!("{}:{}", base.render(), pseudo.render())
+            Self::Tag(element) => f.write_str(element.render()),
+            Self::Universal => f.write_str("*"),
+            Self::Class(name) => write!(f, ".{name}"),
+            Self::Id(name) => write!(f, "#{name}"),
+            Self::Attribute(attr) => std::fmt::Display::fmt(attr, f),
+            Self::Pseudo(base, pseudo) => write!(f, "{base}:{pseudo}"),
+            Self::Descendant(parent, child) => write!(f, "{parent} {child}"),
+            Self::Child(parent, child) => write!(f, "{parent} > {child}"),
+            Self::Compound(items) => {
+                for item in items {
+                    std::fmt::Display::fmt(item, f)?;
+                }
+                Ok(())
             }
-            Self::Descendant(parent, child) => {
-                format!("{} {}", parent.render(), child.render())
+            Self::Group(items) => {
+                for (i, item) in items.iter().enumerate() {
+                    if i > 0 {
+                        f.write_str(", ")?;
+                    }
+                    std::fmt::Display::fmt(item, f)?;
+                }
+                Ok(())
             }
-            Self::Child(parent, child) => {
-                format!("{} > {}", parent.render(), child.render())
-            }
-            Self::Compound(items) => items.iter().map(Self::render).collect::<String>(),
-            Self::Group(items) => items
-                .iter()
-                .map(Self::render)
-                .collect::<Vec<_>>()
-                .join(", "),
-            Self::Literal(raw) => raw.clone(),
         }
     }
 }
@@ -214,46 +240,58 @@ impl Tag {
             Self::Blockquote => "blockquote",
             Self::Button => "button",
             Self::Svg => "svg",
+            Self::Details => "details",
+            Self::Summary => "summary",
+            Self::Input => "input",
         }
     }
 }
 
-impl Pseudo {
-    fn render(&self) -> String {
+impl std::fmt::Display for Pseudo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Hover => "hover".into(),
-            Self::Focus => "focus".into(),
-            Self::FocusWithin => "focus-within".into(),
-            Self::FirstChild => "first-child".into(),
-            Self::NthChild(expression) => format!("nth-child({expression})"),
-            Self::Active => "active".into(),
+            Self::Hover => f.write_str("hover"),
+            Self::Focus => f.write_str("focus"),
+            Self::FocusVisible => f.write_str("focus-visible"),
+            Self::FocusWithin => f.write_str("focus-within"),
+            Self::FirstChild => f.write_str("first-child"),
+            Self::NthChild(parity) => write!(f, "nth-child({})", parity.css()),
+            Self::Active => f.write_str("active"),
         }
     }
 }
 
-impl Attribute {
-    fn render(&self) -> String {
+impl std::fmt::Display for Attribute {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.value {
-            Some(value) => format!("[{}=\"{}\"]", self.name, value),
-            None => format!("[{}]", self.name),
+            Some(value) => write!(f, "[{}=\"{}\"]", self.name, value),
+            None => write!(f, "[{}]", self.name),
         }
     }
 }
 
-impl From<&str> for Selector {
-    fn from(literal: &str) -> Self {
-        Self::Literal(literal.into())
-    }
-}
-
-impl From<String> for Selector {
-    fn from(literal: String) -> Self {
-        Self::Literal(literal)
+impl Parity {
+    #[must_use]
+    pub fn css(&self) -> &'static str {
+        match self {
+            Self::Even => "even",
+            Self::Odd => "odd",
+        }
     }
 }
 
 impl From<reference::Reference> for Selector {
     fn from(reference: reference::Reference) -> Self {
-        Self::Class(reference.name().into())
+        let words = reference.words();
+        if words.len() == 1 {
+            Self::Class(words[0].into())
+        } else {
+            Self::Compound(
+                words
+                    .iter()
+                    .map(|w| Self::Class((*w).into()))
+                    .collect::<Vec<_>>(),
+            )
+        }
     }
 }

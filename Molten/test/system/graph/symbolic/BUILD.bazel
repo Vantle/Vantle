@@ -2,7 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+load("//component/generation/starlark:defs.bzl", "autotest_document", "rust_autotest_function")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -13,6 +13,7 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 rust_autotest_function(
     name = "translator",
+    testonly = False,
     aliases = {
         "//system/translator:consume": "ingest",
         "//system/translator:view": "inspect",
@@ -30,6 +31,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "renderer",
+    testonly = False,
     aliases = {
         "//Molten/component:arena": "valued",
     },
@@ -47,3 +49,16 @@ rust_autotest_function(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+autotest_document(
+    name = "translator.symbolic.document",
+    test = ":translator",
+    template = "//Molten/test/resource/system/graph/symbolic/translator:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "renderer.document",
+    test = ":renderer",
+    template = "//Molten/test/resource/system/graph/symbolic/renderer:template",
+    visibility = ["//visibility:public"],
+)

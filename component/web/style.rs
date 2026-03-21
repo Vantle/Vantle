@@ -1,5 +1,5 @@
 use selector::Selector;
-use value::Value;
+use value::{Concrete, Value};
 
 pub struct Style {
     pub rules: Vec<Rule>,
@@ -13,6 +13,7 @@ pub struct Rule {
     pub properties: Properties,
 }
 
+#[must_use]
 pub struct Properties {
     pub entries: Vec<(String, String)>,
 }
@@ -50,7 +51,7 @@ impl Style {
         S: Into<Selector>,
     {
         self.rules.push(Rule {
-            selector: selector.into().render(),
+            selector: selector.into().to_string(),
             properties: f(Properties::new()),
         });
         self
@@ -106,8 +107,30 @@ impl Default for Style {
     }
 }
 
+macro_rules! properties {
+    (
+        valued { $( $method:ident => $css:literal ),* $(,)? }
+        typed { $( $tmethod:ident ( $ty:ty ) => $tcss:literal ),* $(,)? }
+    ) => {
+        impl Properties {
+            $(
+                pub fn $method<V>(self, value: V) -> Self
+                where
+                    V: Into<Value>,
+                {
+                    self.valued($css, value)
+                }
+            )*
+            $(
+                pub fn $tmethod(self, value: $ty) -> Self {
+                    self.property($tcss, value.css())
+                }
+            )*
+        }
+    };
+}
+
 impl Properties {
-    #[must_use]
     pub fn new() -> Self {
         Self {
             entries: Vec::new(),
@@ -119,433 +142,91 @@ impl Properties {
         self
     }
 
-    fn valued<V>(self, name: &str, value: V) -> Self
+    fn valued<V>(mut self, name: &str, value: V) -> Self
     where
         V: Into<Value>,
     {
-        let rendered = value.into().render();
-        self.property(name, &rendered)
+        self.entries.push((name.into(), value.into().to_string()));
+        self
     }
 
-    #[must_use]
-    pub fn margin<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("margin", value)
+    pub fn z_index(self, value: i32) -> Self {
+        self.valued("z-index", Concrete::integer(value))
     }
 
-    #[must_use]
-    pub fn margin_top<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("margin-top", value)
+    pub fn opacity(self, value: f32) -> Self {
+        self.valued("opacity", Concrete::unitless(value))
     }
 
-    #[must_use]
-    pub fn margin_bottom<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("margin-bottom", value)
-    }
-
-    #[must_use]
-    pub fn margin_left<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("margin-left", value)
-    }
-
-    #[must_use]
-    pub fn padding<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("padding", value)
-    }
-
-    #[must_use]
-    pub fn padding_left<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("padding-left", value)
-    }
-
-    #[must_use]
-    pub fn padding_top<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("padding-top", value)
-    }
-
-    #[must_use]
-    pub fn width<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("width", value)
-    }
-
-    #[must_use]
-    pub fn min_width<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("min-width", value)
-    }
-
-    #[must_use]
-    pub fn max_width<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("max-width", value)
-    }
-
-    #[must_use]
-    pub fn height<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("height", value)
-    }
-
-    #[must_use]
-    pub fn min_height<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("min-height", value)
-    }
-
-    #[must_use]
-    pub fn font_family<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("font-family", value)
-    }
-
-    #[must_use]
-    pub fn font_size<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("font-size", value)
-    }
-
-    #[must_use]
-    pub fn font_weight(self, value: weight::Weight) -> Self {
-        self.property("font-weight", value.css())
-    }
-
-    #[must_use]
-    pub fn font_style(self, value: fontstyle::Style) -> Self {
-        self.property("font-style", value.css())
-    }
-
-    #[must_use]
-    pub fn line_height<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("line-height", value)
-    }
-
-    #[must_use]
-    pub fn letter_spacing<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("letter-spacing", value)
-    }
-
-    #[must_use]
-    pub fn text_align(self, value: align::Align) -> Self {
-        self.property("text-align", value.css())
-    }
-
-    #[must_use]
-    pub fn text_decoration(self, value: decoration::Decoration) -> Self {
-        self.property("text-decoration", value.css())
-    }
-
-    #[must_use]
-    pub fn text_transform(self, value: transform::Transform) -> Self {
-        self.property("text-transform", value.css())
-    }
-
-    #[must_use]
-    pub fn color<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("color", value)
-    }
-
-    #[must_use]
-    pub fn background<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("background", value)
-    }
-
-    #[must_use]
-    pub fn border<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("border", value)
-    }
-
-    #[must_use]
-    pub fn border_top<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("border-top", value)
-    }
-
-    #[must_use]
-    pub fn border_left<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("border-left", value)
-    }
-
-    #[must_use]
-    pub fn border_right<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("border-right", value)
-    }
-
-    #[must_use]
-    pub fn border_bottom<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("border-bottom", value)
-    }
-
-    #[must_use]
-    pub fn border_radius<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("border-radius", value)
-    }
-
-    #[must_use]
-    pub fn border_collapse(self, value: collapse::Collapse) -> Self {
-        self.property("border-collapse", value.css())
-    }
-
-    #[must_use]
-    pub fn border_left_color<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("border-left-color", value)
-    }
-
-    #[must_use]
-    pub fn display(self, value: display::Display) -> Self {
-        self.property("display", value.css())
-    }
-
-    #[must_use]
-    pub fn position(self, value: position::Position) -> Self {
-        self.property("position", value.css())
-    }
-
-    #[must_use]
-    pub fn top<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("top", value)
-    }
-
-    #[must_use]
-    pub fn left<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("left", value)
-    }
-
-    #[must_use]
-    pub fn right<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("right", value)
-    }
-
-    #[must_use]
-    pub fn overflow(self, value: overflow::Overflow) -> Self {
-        self.property("overflow", value.css())
-    }
-
-    #[must_use]
-    pub fn overflow_y(self, value: overflow::Overflow) -> Self {
-        self.property("overflow-y", value.css())
-    }
-
-    #[must_use]
-    pub fn box_sizing(self, value: sizing::Box) -> Self {
-        self.property("box-sizing", value.css())
-    }
-
-    #[must_use]
-    pub fn box_shadow<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("box-shadow", value)
-    }
-
-    #[must_use]
-    pub fn gap<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("gap", value)
-    }
-
-    #[must_use]
-    pub fn flex_wrap(self, value: wrap::Wrap) -> Self {
-        self.property("flex-wrap", value.css())
-    }
-
-    #[must_use]
-    pub fn flex_direction(self, value: direction::Direction) -> Self {
-        self.property("flex-direction", value.css())
-    }
-
-    #[must_use]
-    pub fn flex_shrink<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("flex-shrink", value)
-    }
-
-    #[must_use]
-    pub fn justify_content<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("justify-content", value)
-    }
-
-    #[must_use]
-    pub fn align_items<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("align-items", value)
-    }
-
-    #[must_use]
-    pub fn align_self<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("align-self", value)
-    }
-
-    #[must_use]
-    pub fn grid_template_columns<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("grid-template-columns", value)
-    }
-
-    #[must_use]
-    pub fn z_index<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("z-index", value)
-    }
-
-    #[must_use]
-    pub fn backdrop_filter<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("backdrop-filter", value)
-    }
-
-    #[must_use]
-    pub fn transition<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("transition", value)
-    }
-
-    #[must_use]
-    pub fn opacity<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("opacity", value)
-    }
-
-    #[must_use]
-    pub fn transform<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("transform", value)
-    }
-
-    #[must_use]
-    pub fn cursor(self, value: cursor::Cursor) -> Self {
-        self.property("cursor", value.css())
-    }
-
-    #[must_use]
-    pub fn white_space(self, value: space::Space) -> Self {
-        self.property("white-space", value.css())
-    }
-
-    #[must_use]
-    pub fn list_style<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("list-style", value)
-    }
-
-    #[must_use]
-    pub fn appearance(self, value: appearance::Appearance) -> Self {
-        self.property("appearance", value.css())
-    }
-
-    #[must_use]
-    pub fn scroll_padding_top<V>(self, value: V) -> Self
-    where
-        V: Into<Value>,
-    {
-        self.valued("scroll-padding-top", value)
-    }
-
-    #[must_use]
     pub fn custom(self, name: &str, value: &str) -> Self {
         self.property(name, value)
+    }
+}
+
+properties! {
+    valued {
+        margin => "margin",
+        margin_top => "margin-top",
+        margin_bottom => "margin-bottom",
+        margin_left => "margin-left",
+        padding => "padding",
+        padding_left => "padding-left",
+        padding_top => "padding-top",
+        width => "width",
+        min_width => "min-width",
+        max_width => "max-width",
+        height => "height",
+        min_height => "min-height",
+        font_family => "font-family",
+        font_size => "font-size",
+        line_height => "line-height",
+        letter_spacing => "letter-spacing",
+        color => "color",
+        background => "background",
+        border => "border",
+        border_top => "border-top",
+        border_left => "border-left",
+        border_right => "border-right",
+        border_bottom => "border-bottom",
+        border_radius => "border-radius",
+        border_color => "border-color",
+        border_left_color => "border-left-color",
+        top => "top",
+        left => "left",
+        right => "right",
+        box_shadow => "box-shadow",
+        gap => "gap",
+        flex_shrink => "flex-shrink",
+        grid_template_columns => "grid-template-columns",
+        backdrop_filter => "backdrop-filter",
+        transition => "transition",
+        transform => "transform",
+        list_style => "list-style",
+        scroll_padding_top => "scroll-padding-top",
+        outline => "outline",
+        outline_offset => "outline-offset",
+        pointer_events => "pointer-events",
+    }
+    typed {
+        font_weight(weight::Weight) => "font-weight",
+        font_style(fontstyle::Style) => "font-style",
+        text_align(align::Align) => "text-align",
+        text_decoration(decoration::Decoration) => "text-decoration",
+        text_transform(transform::Transform) => "text-transform",
+        display(display::Display) => "display",
+        position(position::Position) => "position",
+        overflow(overflow::Overflow) => "overflow",
+        overflow_y(overflow::Overflow) => "overflow-y",
+        box_sizing(sizing::Box) => "box-sizing",
+        flex_wrap(wrap::Wrap) => "flex-wrap",
+        flex_direction(direction::Direction) => "flex-direction",
+        justify_content(alignment::Alignment) => "justify-content",
+        align_items(alignment::Alignment) => "align-items",
+        align_self(alignment::Alignment) => "align-self",
+        border_collapse(collapse::Collapse) => "border-collapse",
+        cursor(cursor::Cursor) => "cursor",
+        white_space(space::Space) => "white-space",
+        appearance(appearance::Appearance) => "appearance",
     }
 }
 

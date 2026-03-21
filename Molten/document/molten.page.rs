@@ -16,7 +16,7 @@ pub fn page(root: &str) -> page::Page {
                     .text(" to keep your code efficient and reusable.")
             })
             .rule()
-            .section("Theory", |s| {
+            .chapter("Theory", |s| {
                 s.term("Concept", |t| {
                     t.text("an atom such as ")
                         .code("Human")
@@ -32,14 +32,14 @@ pub fn page(root: &str) -> page::Page {
                         .code("Human.Man")
                         .text(". Avoid compound words. Invent new words. Ultimately, a concept is defined by its relationship to other concepts, the label is a comment for a consumer, such as yourself (help yourself understand your own graphs).")
                 })
-                .aside(|a| {
+                .blockquote(|a| {
                     a.text("Avoid CamelCase (")
                         .code("LikeThis")
                         .text(") or underscores (")
                         .code("like_this")
                         .text("). Dots are the official way to express a path of related concepts.")
                 })
-                .aside(|a| {
+                .blockquote(|a| {
                     a.text("Why? CamelCase and other multi-word mash-ups often hide multiple ideas inside a single label\u{2014}an indicator of weak or muddled abstraction. Molten encourages ")
                         .italic("one word \u{2192} one concept")
                         .text(". If you genuinely need two ideas, write them as ")
@@ -58,7 +58,7 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Syntax", |s| {
+            .chapter("Syntax", |s| {
                 s.table(|t| {
                     t.header(["Symbol", "Action", "Elaboration"])
                         .row([".", "\"with\"", "Group concepts together within the graph (no ordering)."])
@@ -66,7 +66,7 @@ pub fn page(root: &str) -> page::Page {
                         .row(["[ \u{2026} ]", "\"from \u{2026} \"", "A source expression of how to walk the hypergraph."])
                         .row(["( \u{2026} )", "\"group \u{2026} \"", "Groups sub-expressions within a partition; used for precedence and clarity."])
                 })
-                .aside(|a| {
+                .blockquote(|a| {
                     a.text("File extensions: a ")
                         .code(".lava")
                         .text(" file indicates a runnable Molten ")
@@ -77,7 +77,7 @@ pub fn page(root: &str) -> page::Page {
                         .italic("library")
                         .text(". The semantics are identical; the distinction exists purely to help humans reason about intent.")
                 })
-                .section("Textual", |ss| {
+                .chapter("Textual", |ss| {
                     ss.list(|ul| {
                         ul.item(|s| {
                             s.bold("Orderless")
@@ -127,9 +127,9 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Compositions", |s| {
+            .chapter("Compositions", |s| {
                 s.paragraph(|p| p.text("Compositions emerge from combining syntactic primitives."))
-                    .section("Join", |ss| {
+                    .chapter("Join", |ss| {
                         ss.paragraph(|p| {
                             p.text("Any number of orthogonalities \u{2013} each carrying one of the required concepts (")
                                 .code("A")
@@ -142,7 +142,7 @@ pub fn page(root: &str) -> page::Page {
                                 .text(" is added. Execution then proceeds in that unified orthogonality.")
                         })
                     })
-                    .section("Scope", |ss| {
+                    .chapter("Scope", |ss| {
                         ss.paragraph(|p| {
                             p.text("An orthogonality holding ")
                                 .code("A")
@@ -157,7 +157,7 @@ pub fn page(root: &str) -> page::Page {
                                 .text(" in the orthogonality\u{2019}s state.")
                         })
                     })
-                    .section("Polymorphism", |ss| {
+                    .chapter("Polymorphism", |ss| {
                         ss.paragraph(|p| {
                             p.text("Two orthogonalities, ")
                                 .code("A")
@@ -210,7 +210,7 @@ pub fn page(root: &str) -> page::Page {
                                     .text(".")
                             })
                         })
-                        .section("Recursive derivations", |ss| {
+                        .chapter("Recursive derivations", |ss| {
                             ss.paragraph(|p| {
                                 p.code("A")
                                     .text(" reproduces itself inductively; after sufficient iterations, ")
@@ -222,11 +222,11 @@ pub fn page(root: &str) -> page::Page {
                                     .text(".")
                             })
                         })
-                        .section("Curry\u{2019}s Paradox", |ss| {
+                        .chapter("Curry\u{2019}s Paradox", |ss| {
                             ss.paragraph(|p| {
                                 p.text("Curry\u{2019}s Paradox often occurs within logical systems, where some logical deduction existing invalidates its own existence via self-referential logic. Molten does not care about this; it will evaluate. It is the programmer\u{2019}s responsibility to understand the semantics of their program, and such behaviors will appear as that node being isomorphic to itself. This may be behavior you want, and eliminating it requires a nondeterministic \u{201c}step\u{201d} runtime, so no such feature exists. It can be useful to investigate the logical consistency of your rules.")
                             })
-                            .section("Philosophical note", |sss| {
+                            .chapter("Philosophical note", |sss| {
                                 sss.paragraph(|p| {
                                     p.text("This is essentially the problem of axioms. It is a feature of reality, not a bug.")
                                 })
@@ -235,7 +235,7 @@ pub fn page(root: &str) -> page::Page {
                     })
             })
             .rule()
-            .section("Examples", |s| {
+            .chapter("Examples", |s| {
                 s.extract(citizen::EXTRACTIONS.one())
                 .paragraph(|p| {
                     p.text("Note that this function is an ")
@@ -252,17 +252,17 @@ pub fn page(root: &str) -> page::Page {
                         .code("American.Citizen.Male")
                         .text(".")
                 })
-                .section("Boolean Logic", |ss| ss.extract(boolean::EXTRACTIONS.one()))
-                .section("Joins", |ss| ss.extract(join::EXTRACTIONS.one()))
+                .chapter("Boolean Logic", |ss| ss.extract(boolean::EXTRACTIONS.one()))
+                .chapter("Joins", |ss| ss.extract(join::EXTRACTIONS.one()))
             })
             .rule()
-            .section("Forge", |s| {
+            .chapter("Forge", |s| {
                 s.paragraph(|p| {
                     p.text("Forge ")
                         .code(module_version::EXTRACTIONS.one().content)
                         .text(" supports temporal runtime for Molten.")
                 })
-                .section("Invoke", |ss| {
+                .chapter("Invoke", |ss| {
                     ss.paragraph(|p| p.text("Run the forge lava interactive runtime:"))
                         .extract(command_lava::EXTRACTIONS.one())
                         .paragraph(|p| {
@@ -271,7 +271,7 @@ pub fn page(root: &str) -> page::Page {
                                 .text(" worlds to the previous graphs, but still evolve any existing state.")
                         })
                 })
-                .section("Sink", |ss| {
+                .chapter("Sink", |ss| {
                     ss.paragraph(|p| p.text("Stream execution traces to a file:"))
                         .extract(command_lava_sink_log::EXTRACTIONS.one())
                         .paragraph(|p| p.text("Or to a running peer (others may source or sink from or to your evaluation):"))

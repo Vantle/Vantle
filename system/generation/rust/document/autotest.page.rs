@@ -14,7 +14,7 @@ pub fn page(root: &str) -> page::Page {
                 p.text("Autotest eliminates test boilerplate by generating Rust test functions from templates and JSON case definitions. Write the logic once, define test data declaratively, and let the framework produce exhaustive test suites.")
             })
             .rule()
-            .section("Template", |s| {
+            .chapter("Template", |s| {
                 s.paragraph(|p| {
                     p.text("Write functions in a ")
                         .code(".template.rs")
@@ -23,7 +23,7 @@ pub fn page(root: &str) -> page::Page {
                 .extract(disjoint::EXTRACTIONS.one())
             })
             .rule()
-            .section("Cases", |s| {
+            .chapter("Cases", |s| {
                 s.paragraph(|p| {
                     p.text("Define test data in ")
                         .code("cases.json")
@@ -32,7 +32,7 @@ pub fn page(root: &str) -> page::Page {
                 .extract(particle_cases_json::EXTRACTIONS.one())
             })
             .rule()
-            .section("Execution", |s| {
+            .chapter("Execution", |s| {
                 s.paragraph(|p| {
                     p.text("Each test run produces a ")
                         .code("cases.execution.json")
@@ -43,8 +43,8 @@ pub fn page(root: &str) -> page::Page {
                 .extract(execution_schema::EXTRACTIONS.one())
             })
             .rule()
-            .section("Macro", |s| {
-                s.section("rust_autotest_template", |ss| {
+            .chapter("Macro", |s| {
+                s.chapter("rust_autotest_template", |ss| {
                     ss.paragraph(|p| {
                         p.text("Compiles the template as a ")
                             .code("rust_library")
@@ -61,9 +61,9 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Modules", |s| {
-                s.section("Function", |ss| {
-                    ss.aside(|a| {
+            .chapter("Modules", |s| {
+                s.chapter("Function", |ss| {
+                    ss.blockquote(|a| {
                         a.italic("Generates exhaustive test suites from template functions and JSON cases")
                     })
                     .paragraph(|p| {
@@ -76,8 +76,8 @@ pub fn page(root: &str) -> page::Page {
                         )
                     })
                 })
-                .section("Performance", |ss| {
-                    ss.aside(|a| {
+                .chapter("Performance", |ss| {
+                    ss.blockquote(|a| {
                         a.italic("Regression-aware performance testing with statistical curve fitting")
                     })
                     .paragraph(|p| {

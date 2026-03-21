@@ -2,7 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+load("//component/generation/starlark:defs.bzl", "autotest_document", "rust_autotest_function")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -13,6 +13,7 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 rust_autotest_function(
     name = "partition",
+    testonly = False,
     cases = "//Molten/test/resource/system/graph/symbolic/partition:cases",
     data = ["//Molten/test/resource/system/graph/symbolic/partition:data"],
     template = "//Molten/test/resource/system/graph/symbolic/partition:template",
@@ -24,3 +25,9 @@ rust_autotest_function(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+autotest_document(
+    name = "partition.document",
+    test = ":partition",
+    template = "//Molten/test/resource/system/graph/symbolic/partition:template",
+    visibility = ["//visibility:public"],
+)

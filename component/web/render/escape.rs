@@ -1,16 +1,22 @@
 use std::fmt::Write;
 
 pub fn stream(output: &mut String, text: &str) {
-    for character in text.chars() {
-        match character {
-            '&' => output.push_str("&amp;"),
-            '<' => output.push_str("&lt;"),
-            '>' => output.push_str("&gt;"),
-            '"' => output.push_str("&quot;"),
-            '\'' => output.push_str("&#39;"),
-            _ => output.push(character),
-        }
+    let bytes = text.as_bytes();
+    let mut position = 0;
+    for (index, &byte) in bytes.iter().enumerate() {
+        let replacement = match byte {
+            b'&' => "&amp;",
+            b'<' => "&lt;",
+            b'>' => "&gt;",
+            b'"' => "&quot;",
+            b'\'' => "&#39;",
+            _ => continue,
+        };
+        output.push_str(&text[position..index]);
+        output.push_str(replacement);
+        position = index + 1;
     }
+    output.push_str(&text[position..]);
 }
 
 #[must_use]

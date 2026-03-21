@@ -26,6 +26,7 @@ filegroup(
 
 rust_autotest_template(
     name = "template",
+    testonly = False,
     src = "arena.template.rs",
     aliases = {
         "//Molten/component:arena": "valued",

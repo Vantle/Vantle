@@ -1,0 +1,80 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "difference",
+    srcs = ["difference.rs"],
+    deps = ["@crates//:serde_json"],
+)
+
+rust_library(
+    name = "badge",
+    srcs = ["badge.rs"],
+    deps = [
+        "//component/web:body",
+        "//component/web/class:dashboard",
+        "//component/web/class:reference",
+    ],
+)
+
+rust_library(
+    name = "detail",
+    srcs = ["detail.rs"],
+    aliases = {
+        "//component/web/attribute:render": "attribute",
+    },
+    deps = [
+        "//component/web:body",
+        "//component/web:element",
+        "//component/web:language",
+        "//component/web/attribute:render",
+        "//component/web/class:code",
+        "//component/web/class:dashboard",
+        "@crates//:serde_json",
+    ],
+)
+
+rust_library(
+    name = "summary",
+    srcs = ["summary.rs"],
+    deps = [
+        "//component/web:body",
+        "//component/web/class:dashboard",
+        "//component/web/class:reference",
+    ],
+)
+
+rust_library(
+    name = "card",
+    srcs = ["card.rs"],
+    deps = [
+        ":detail",
+        "//component/web:body",
+        "//component/web:element",
+        "//component/web:language",
+        "//component/web/attribute:search",
+        "//component/web/attribute:status",
+        "//component/web/class:dashboard",
+        "@crates//:serde_json",
+    ],
+)
+
+rust_library(
+    name = "search",
+    srcs = ["search.rs"],
+    aliases = {"//component/web/attribute:search": "attribute"},
+    deps = [
+        "//component/web:body",
+        "//component/web/attribute:search",
+        "//component/web/class:dashboard",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

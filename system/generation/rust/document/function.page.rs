@@ -15,8 +15,8 @@ pub fn page(root: &str) -> page::Page {
                 p.text("Generates and runs Rust test functions from templates and JSON case definitions. Standard Vantle dependencies are auto-included; only add deps beyond the defaults.")
             })
             .rule()
-            .section("Macro", |s| {
-                s.section("rust_autotest_function", |ss| {
+            .chapter("Macro", |s| {
+                s.chapter("rust_autotest_function", |ss| {
                     ss.extract(function_document::EXTRACTIONS.one())
                         .table(|t| {
                             t.header(["Parameter", "Description"])
@@ -45,7 +45,7 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Features", |s| {
+            .chapter("Features", |s| {
                 s.list(|ul| {
                     ul.feature(
                         "Parameter shadowing",

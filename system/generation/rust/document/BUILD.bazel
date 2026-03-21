@@ -2,7 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("@rules_rust//rust:defs.bzl", "rust_library")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = ["//visibility:public"])
@@ -44,6 +44,47 @@ rust_library(
         "//component/web:span",
         "//document:index",
         "//system/generation/web:navigation",
+    ],
+)
+
+rust_library(
+    name = "visualize",
+    srcs = ["visualize.page.rs"],
+    aliases = {
+        "//component/web/attribute:paginate": "attribute",
+        "//component/web/attribute:search": "filter",
+    },
+    deps = [
+        "//component/web:body",
+        "//component/web:language",
+        "//component/web:page",
+        "//component/web/attribute:paginate",
+        "//component/web/attribute:search",
+        "//component/web/class:dashboard",
+        "//component/web/dashboard:card",
+        "//component/web/dashboard:search",
+        "//component/web/dashboard:summary",
+        "//document:index",
+        "//system/generation/web:navigation",
+        "//system/graph/analysis:extract",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
+
+##### Generator                                                                                                                               [ Generator ]
+rust_binary(
+    name = "card",
+    srcs = ["card.rs"],
+    deps = [
+        "//system:command",
+        "//system:observation",
+        "@crates//:clap",
+        "@crates//:miette",
+        "@crates//:prettyplease",
+        "@crates//:quote",
+        "@crates//:syn",
+        "@crates//:thiserror",
     ],
 )
 

@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+load("//component/generation/starlark:defs.bzl", "autotest_document", "rust_autotest_function")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -13,6 +13,7 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 rust_autotest_function(
     name = "observation",
+    testonly = False,
     cases = "//test/resource/component/observation:cases",
     template = "//test/resource/component/observation:template",
     deps = [
@@ -25,6 +26,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "lifecycle",
+    testonly = False,
     cases = "//test/resource/component/observation/lifecycle:cases",
     template = "//test/resource/component/observation/lifecycle:template",
     deps = [
@@ -37,6 +39,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "channel",
+    testonly = False,
     cases = "//test/resource/component/observation/channel:cases",
     template = "//test/resource/component/observation/channel:template",
     deps = [
@@ -46,6 +49,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "expression",
+    testonly = False,
     aliases = {"//component/observation:expression": "filterable"},
     cases = "//test/resource/component/observation/expression:cases",
     template = "//test/resource/component/observation/expression:template",
@@ -58,3 +62,30 @@ rust_autotest_function(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+autotest_document(
+    name = "observation.document",
+    test = ":observation",
+    template = "//test/resource/component/observation:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "lifecycle.document",
+    test = ":lifecycle",
+    template = "//test/resource/component/observation/lifecycle:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "channel.document",
+    test = ":channel",
+    template = "//test/resource/component/observation/channel:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "expression.observation.document",
+    test = ":expression",
+    template = "//test/resource/component/observation/expression:template",
+    visibility = ["//visibility:public"],
+)

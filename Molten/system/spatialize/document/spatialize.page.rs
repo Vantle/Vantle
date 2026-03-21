@@ -17,7 +17,7 @@ pub fn page(root: &str) -> page::Page {
                     .text(", an interactive visualization system for hypergraph exploration.")
             })
             .rule()
-            .section("Invoke", |s| {
+            .chapter("Invoke", |s| {
                 s.paragraph(|p| p.text("Run the spatialize visualization:"))
                     .extract(command_spatialize::EXTRACTIONS.one())
                     .paragraph(|p| {
@@ -25,7 +25,7 @@ pub fn page(root: &str) -> page::Page {
                     })
             })
             .rule()
-            .section("Panes", |s| {
+            .chapter("Panes", |s| {
                 s.paragraph(|p| p.text("Toggle between visualization modes:"))
                     .table(|t| {
                         t.header(["Pane", "Description", "Key"])
@@ -42,8 +42,8 @@ pub fn page(root: &str) -> page::Page {
                     })
             })
             .rule()
-            .section("Controls", |s| {
-                s.section("Navigation", |ss| {
+            .chapter("Controls", |s| {
+                s.chapter("Navigation", |ss| {
                     ss.table(|t| {
                         t.header(["Action", "Control"])
                             .row(["Pan", "Left click + drag"])
@@ -55,7 +55,7 @@ pub fn page(root: &str) -> page::Page {
                             .row(["Select", "Right click"])
                     })
                 })
-                .section("View", |ss| {
+                .chapter("View", |ss| {
                     ss.table(|t| {
                         t.header(["Action", "Control"])
                             .markup([
@@ -78,7 +78,7 @@ pub fn page(root: &str) -> page::Page {
                 })
             })
             .rule()
-            .section("Layout", |s| {
+            .chapter("Layout", |s| {
                 s.paragraph(|p| {
                     p.text("Force-directed layout simulation positions nodes and edges automatically. The simulation uses:")
                 })

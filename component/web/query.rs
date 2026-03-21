@@ -15,6 +15,7 @@ pub fn id<'a>(elements: &'a [Element], target: &str) -> Option<&'a Element> {
     None
 }
 
+#[must_use]
 pub fn id_mut<'a>(elements: &'a mut [Element], target: &str) -> Option<&'a mut Element> {
     for element in elements.iter_mut() {
         if matched(element, target) {
@@ -36,6 +37,7 @@ pub fn class<'a>(elements: &'a [Element], name: &str) -> Vec<&'a Element> {
     results
 }
 
+#[must_use]
 pub fn class_mut<'a>(elements: &'a mut [Element], name: &str) -> Vec<&'a mut Element> {
     let mut results = Vec::new();
     collect_mut(elements, name, &mut results);
@@ -49,6 +51,7 @@ pub fn attribute<'a>(elements: &'a [Element], key: &str, value: &str) -> Vec<&'a
     results
 }
 
+#[must_use]
 pub fn attribute_mut<'a>(
     elements: &'a mut [Element],
     key: &str,

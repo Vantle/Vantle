@@ -73,6 +73,7 @@ pub struct Timing {
 
 pub struct Measured {
     pub name: String,
+    pub tags: Vec<String>,
     pub dimensions: Vec<String>,
     pub bounds: Vec<Assertion>,
     pub timings: Vec<Timing>,
@@ -128,7 +129,7 @@ impl Sampler {
         let mut violations = Vec::new();
 
         for measured in self.functions {
-            let function = analyze(&measured, &self.arguments);
+            let function = analyze(&measured, &self.arguments, measured.tags.clone());
 
             if let Some(classification) = function.observation.time.classification {
                 for bound in &function.observation.time.candidate[classification].bound {
@@ -174,7 +175,7 @@ impl Sampler {
 }
 
 #[expect(clippy::cast_precision_loss, clippy::cast_possible_truncation)]
-fn analyze(measured: &Measured, arguments: &Arguments) -> Function {
+fn analyze(measured: &Measured, arguments: &Arguments, tags: Vec<String>) -> Function {
     let mut grouped: HashMap<Vec<i64>, Vec<f64>> = HashMap::new();
 
     for timing in &measured.timings {
@@ -214,6 +215,7 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> Function {
     if samples.len() < 2 {
         return Function {
             name: measured.name.clone(),
+            tags: tags.clone(),
             expression: "performance".to_string(),
             dimension: measured.dimensions.clone(),
             observation: Observation {
@@ -280,6 +282,7 @@ fn analyze(measured: &Measured, arguments: &Arguments) -> Function {
 
     Function {
         name: measured.name.clone(),
+        tags,
         expression: "performance".to_string(),
         dimension: measured.dimensions.clone(),
         observation: Observation {
@@ -386,6 +389,7 @@ struct Report {
 #[derive(Serialize)]
 struct Function {
     name: String,
+    tags: Vec<String>,
     expression: String,
     dimension: Vec<String>,
     observation: Observation,

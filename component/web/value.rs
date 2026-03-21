@@ -45,6 +45,8 @@ pub enum Concrete {
     Percent(f32),
     Em(f32),
     Seconds(f32),
+    Unitless(f32),
+    Integer(i32),
 }
 
 pub enum Keyword {
@@ -74,17 +76,27 @@ enum Operation {
 impl Value {
     #[must_use]
     pub fn render(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl std::fmt::Display for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Token(token) => token.render(),
-            Self::Calculation(calculation) => calculation.render(),
-            Self::Concrete(concrete) => concrete.render(),
-            Self::Keyword(keyword) => keyword.render().into(),
-            Self::Composite(values) => values
-                .iter()
-                .map(Self::render)
-                .collect::<Vec<_>>()
-                .join(" "),
-            Self::Literal(literal) => literal.clone(),
+            Self::Token(token) => std::fmt::Display::fmt(token, f),
+            Self::Calculation(calculation) => std::fmt::Display::fmt(calculation, f),
+            Self::Concrete(concrete) => std::fmt::Display::fmt(concrete, f),
+            Self::Keyword(keyword) => f.write_str(keyword.render()),
+            Self::Composite(values) => {
+                for (i, value) in values.iter().enumerate() {
+                    if i > 0 {
+                        f.write_str(" ")?;
+                    }
+                    std::fmt::Display::fmt(value, f)?;
+                }
+                Ok(())
+            }
+            Self::Literal(literal) => f.write_str(literal),
         }
     }
 }
@@ -109,27 +121,27 @@ impl Token {
     pub fn custom(name: &str) -> Value {
         Value::Token(Self::Custom(name.into()))
     }
+}
 
-    fn render(&self) -> String {
+impl std::fmt::Display for Token {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Scale(n) => {
-                let label = if *n < 0 {
-                    format!("n{}", n.abs())
-                } else {
-                    n.to_string()
-                };
-                format!("var(--scale-{label})")
-            }
-            Self::Half(n) => {
-                let label = if *n < 0 {
-                    format!("n{}", n.abs())
-                } else {
-                    n.to_string()
-                };
-                format!("var(--scale-{label}h)")
-            }
-            Self::Palette(palette) => format!("var(--{})", palette.render()),
-            Self::Custom(name) => format!("var(--{name})"),
+            Self::Scale(n) => write!(f, "var(--scale-{})", Label(*n)),
+            Self::Half(n) => write!(f, "var(--scale-{}h)", Label(*n)),
+            Self::Palette(palette) => write!(f, "var(--{})", palette.render()),
+            Self::Custom(name) => write!(f, "var(--{name})"),
+        }
+    }
+}
+
+struct Label(i32);
+
+impl std::fmt::Display for Label {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.0 < 0 {
+            write!(f, "n{}", self.0.abs())
+        } else {
+            write!(f, "{}", self.0)
         }
     }
 }
@@ -193,14 +205,28 @@ impl Concrete {
         Value::Concrete(Self::Seconds(n))
     }
 
-    fn render(&self) -> String {
+    #[must_use]
+    pub fn unitless(n: f32) -> Value {
+        Value::Concrete(Self::Unitless(n))
+    }
+
+    #[must_use]
+    pub fn integer(n: i32) -> Value {
+        Value::Concrete(Self::Integer(n))
+    }
+}
+
+impl std::fmt::Display for Concrete {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Zero => "0".into(),
-            Self::Rem(n) => format!("{n}rem"),
-            Self::Px(n) => format!("{n}px"),
-            Self::Percent(n) => format!("{n}%"),
-            Self::Em(n) => format!("{n}em"),
-            Self::Seconds(n) => format!("{n}s"),
+            Self::Zero => f.write_str("0"),
+            Self::Rem(n) => write!(f, "{n}rem"),
+            Self::Px(n) => write!(f, "{n}px"),
+            Self::Percent(n) => write!(f, "{n}%"),
+            Self::Em(n) => write!(f, "{n}em"),
+            Self::Seconds(n) => write!(f, "{n}s"),
+            Self::Unitless(n) => write!(f, "{n}"),
+            Self::Integer(n) => write!(f, "{n}"),
         }
     }
 }
@@ -255,22 +281,22 @@ impl Calculation {
         });
         self
     }
+}
 
-    fn render(&self) -> String {
-        let mut output = String::from("calc(");
+impl std::fmt::Display for Calculation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("calc(")?;
         for (index, term) in self.terms.iter().enumerate() {
             if index > 0 {
                 match term.operation {
-                    Operation::Add => output.push_str(" + "),
-                    Operation::Subtract => output.push_str(" - "),
+                    Operation::Add => f.write_str(" + ")?,
+                    Operation::Subtract => f.write_str(" - ")?,
                     Operation::Identity => {}
                 }
             }
-            let rendered = term.value.render();
-            output.push_str(&rendered);
+            std::fmt::Display::fmt(&term.value, f)?;
         }
-        output.push(')');
-        output
+        f.write_str(")")
     }
 }
 

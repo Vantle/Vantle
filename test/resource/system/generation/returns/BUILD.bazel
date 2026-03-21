@@ -23,6 +23,7 @@ filegroup(
 
 rust_autotest_template(
     name = "template",
+    testonly = False,
     src = "test.template.rs",
 )
 

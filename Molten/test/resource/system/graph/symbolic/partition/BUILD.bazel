@@ -33,6 +33,7 @@ filegroup(
 
 rust_autotest_template(
     name = "template",
+    testonly = False,
     src = "partition.template.rs",
     deps = [
         "//Molten:component",

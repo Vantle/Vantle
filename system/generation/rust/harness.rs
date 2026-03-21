@@ -132,7 +132,7 @@ fn literal(value: f64) -> syn::LitFloat {
     let (integer, fraction) = raw
         .split_once('.')
         .map_or((raw.as_str(), "0"), |(i, f)| (i, f));
-    let separated_integer = integer
+    let whole = integer
         .chars()
         .rev()
         .collect::<Vec<_>>()
@@ -141,7 +141,7 @@ fn literal(value: f64) -> syn::LitFloat {
         .rev()
         .collect::<Vec<_>>()
         .join("_");
-    let separated_fraction = fraction
+    let decimal = fraction
         .chars()
         .collect::<Vec<_>>()
         .chunks(3)
@@ -149,7 +149,7 @@ fn literal(value: f64) -> syn::LitFloat {
         .collect::<Vec<_>>()
         .join("_");
     syn::LitFloat::new(
-        &format!("{separated_integer}.{separated_fraction}_f64"),
+        &format!("{whole}.{decimal}_f64"),
         proc_macro2::Span::call_site(),
     )
 }
@@ -193,11 +193,18 @@ pub fn instrument(
             .collect::<Vec<_>>();
 
         let mut samples = Vec::<syn::Stmt>::new();
+        let mut tags = Vec::<String>::new();
 
         for case in reg.cases {
             let inner = case.inner;
             let extractions = case.extractions;
             let body = inner.statements;
+
+            for tag in &inner.tags {
+                if !tags.contains(tag) {
+                    tags.push(tag.clone());
+                }
+            }
 
             let sample: syn::Stmt = syn::parse_quote! {
                 {
@@ -231,6 +238,7 @@ pub fn instrument(
                 #(#samples)*
                 sampler.register(performance::Measured {
                     name: #name.to_string(),
+                    tags: vec![#(#tags.to_string()),*],
                     dimensions: vec![#(#dimensions.to_string()),*],
                     bounds: vec![#(#bounds),*],
                     timings,

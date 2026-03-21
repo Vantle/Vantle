@@ -45,33 +45,59 @@ impl Body {
     }
 
     #[must_use]
-    pub fn image(mut self, source: &str, alternate: &str) -> Self {
-        self.elements.push(Element::Void {
-            name: "img".into(),
-            attributes: vec![
-                ("src".into(), source.into()),
-                ("alt".into(), alternate.into()),
-            ],
-        });
-        self
+    pub fn details(self, f: impl FnOnce(Body) -> Body) -> Self {
+        self.tag("details", f)
     }
 
     #[must_use]
-    pub fn separator(mut self) -> Self {
+    pub fn summary(self, f: impl FnOnce(Body) -> Body) -> Self {
+        self.tag("summary", f)
+    }
+
+    #[must_use]
+    pub fn main(self, f: impl FnOnce(Body) -> Body) -> Self {
+        self.tag("main", f)
+    }
+
+    #[must_use]
+    pub fn footer(self, f: impl FnOnce(Body) -> Body) -> Self {
+        self.tag("footer", f)
+    }
+
+    #[must_use]
+    pub fn section(self, f: impl FnOnce(Body) -> Body) -> Self {
+        self.tag("section", f)
+    }
+
+    #[must_use]
+    pub fn aside(self, f: impl FnOnce(Body) -> Body) -> Self {
+        self.tag("aside", f)
+    }
+
+    #[must_use]
+    pub fn void(mut self, name: &'static str) -> Self {
         self.elements.push(Element::Void {
-            name: "hr".into(),
+            name: name.into(),
             attributes: Vec::new(),
         });
         self
     }
 
     #[must_use]
-    pub fn linebreak(mut self) -> Self {
-        self.elements.push(Element::Void {
-            name: "br".into(),
-            attributes: Vec::new(),
-        });
-        self
+    pub fn image(self, source: &str, alternate: &str) -> Self {
+        self.void("img")
+            .attribute("src", source)
+            .attribute("alt", alternate)
+    }
+
+    #[must_use]
+    pub fn separator(self) -> Self {
+        self.void("hr")
+    }
+
+    #[must_use]
+    pub fn linebreak(self) -> Self {
+        self.void("br")
     }
 
     #[must_use]
@@ -126,9 +152,14 @@ impl Body {
     }
 
     #[must_use]
-    pub fn span(mut self, f: impl FnOnce(Span) -> Span) -> Self {
-        let span = f(Span::new());
-        self.elements.extend(span.elements);
+    pub fn span(self, f: impl FnOnce(Body) -> Body) -> Self {
+        self.tag("span", f)
+    }
+
+    #[must_use]
+    pub fn content(mut self, f: impl FnOnce(Span) -> Span) -> Self {
+        let inner = f(Span::new());
+        self.elements.extend(inner.elements);
         self
     }
 
@@ -143,7 +174,9 @@ impl Body {
         if let Some(Element::Tag { attributes, .. } | Element::Void { attributes, .. }) =
             self.elements.last_mut()
         {
-            element::merge(attributes, "class", reference.name());
+            for word in reference.words() {
+                element::merge(attributes, "class", word);
+            }
         }
         self
     }
@@ -159,6 +192,31 @@ impl Body {
     }
 
     #[must_use]
+    pub fn data(self, reference: attribute::Reference, value: &str) -> Self {
+        self.attribute(reference.name(), value)
+    }
+
+    #[must_use]
+    pub fn identifier(self, value: &str) -> Self {
+        self.attribute("id", value)
+    }
+
+    #[must_use]
+    pub fn label(self, value: &str) -> Self {
+        self.attribute("aria-label", value)
+    }
+
+    #[must_use]
+    pub fn current(self, value: &str) -> Self {
+        self.attribute("aria-current", value)
+    }
+
+    #[must_use]
+    pub fn inline(self, value: &str) -> Self {
+        self.attribute("style", value)
+    }
+
+    #[must_use]
     pub fn when(self, condition: bool, f: impl FnOnce(Self) -> Self) -> Self {
         if condition { f(self) } else { self }
     }
@@ -169,6 +227,16 @@ impl Body {
             content: content.into(),
             language,
             location: None,
+        });
+        self
+    }
+
+    #[must_use]
+    pub fn located(mut self, content: &str, language: Language, location: Location) -> Self {
+        self.elements.push(Element::Code {
+            content: content.into(),
+            language,
+            location: Some(location),
         });
         self
     }
@@ -272,14 +340,14 @@ impl Body {
     #[trace(channels = [document])]
     #[must_use]
     pub fn paragraph(self, f: impl FnOnce(Span) -> Span) -> Self {
-        self.tag("p", |p| p.span(f))
+        self.tag("p", |p| p.content(f))
     }
 
     #[trace(channels = [document])]
     #[must_use]
-    pub fn section(self, heading: &str, f: impl FnOnce(Body) -> Body) -> Self {
+    pub fn chapter(self, heading: &str, f: impl FnOnce(Body) -> Body) -> Self {
         let level = self.depth + 1;
-        self.tag("section", |mut s| {
+        self.section(|mut s| {
             s.depth = level;
             f(s.heading(level.min(6), heading))
         })
@@ -289,14 +357,15 @@ impl Body {
     #[must_use]
     pub fn term(self, word: &str, f: impl FnOnce(Span) -> Span) -> Self {
         self.tag("dl", |dl| {
-            dl.tag("dt", |dt| dt.text(word)).tag("dd", |dd| dd.span(f))
+            dl.tag("dt", |dt| dt.text(word))
+                .tag("dd", |dd| dd.content(f))
         })
     }
 
     #[trace(channels = [document])]
     #[must_use]
-    pub fn aside(self, f: impl FnOnce(Span) -> Span) -> Self {
-        self.tag("blockquote", |bq| bq.tag("p", |p| p.span(f)))
+    pub fn blockquote(self, f: impl FnOnce(Span) -> Span) -> Self {
+        self.tag("blockquote", |bq| bq.tag("p", |p| p.content(f)))
     }
 
     #[trace(channels = [document])]

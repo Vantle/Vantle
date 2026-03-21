@@ -35,7 +35,7 @@ pub fn initialize(sinks: &[String]) -> miette::Result<trace::Guard> {
         Sink::Http(stream) => Some(stream.url),
         _ => None,
     }) {
-        let handle = report(http::spawn(url, cancellation.clone()))?;
+        let handle = report(http::Server::new(url, cancellation.clone()).spawn())?;
         guard.track(handle);
     }
 

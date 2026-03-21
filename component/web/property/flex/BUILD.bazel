@@ -16,3 +16,8 @@ rust_library(
     name = "direction",
     srcs = ["direction.rs"],
 )
+
+rust_library(
+    name = "alignment",
+    srcs = ["alignment.rs"],
+)

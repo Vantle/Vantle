@@ -40,7 +40,7 @@ impl Visitor {
     fn token(&mut self, class: &str, text: &str) {
         write!(
             self.output,
-            "<span class=\"syntax-{class}\">{}</span>",
+            "<span class=\"syntax {class}\">{}</span>",
             escape::escape(text)
         )
         .unwrap();
@@ -49,7 +49,7 @@ impl Visitor {
     fn literal(&mut self, class: &str, word: &str) {
         write!(
             self.output,
-            "<span class=\"syntax-{class}\">{}</span>",
+            "<span class=\"syntax {class}\">{}</span>",
             escape::escape(word)
         )
         .unwrap();

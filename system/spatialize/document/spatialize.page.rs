@@ -16,11 +16,11 @@ pub fn page(root: &str) -> page::Page {
                         .text(" system, a GPU rendering infrastructure built on wgpu.")
                 })
                 .rule()
-                .section("Context", |s| {
+                .chapter("Context", |s| {
                     s.paragraph(|p| {
                         p.text("The render context manages GPU resources and pipeline state.")
                     })
-                    .section("Assembler", |ss| {
+                    .chapter("Assembler", |ss| {
                         ss.paragraph(|p| {
                             p.text("Build a rendering context with the assembler pattern:")
                         })
@@ -32,7 +32,7 @@ pub fn page(root: &str) -> page::Page {
                                 .describe("size", "Initial viewport dimensions")
                         })
                     })
-                    .section("Pipelines", |ss| {
+                    .chapter("Pipelines", |ss| {
                         ss.paragraph(|p| {
                             p.text("Build GPU pipelines with the raster and compute assemblers:")
                         })

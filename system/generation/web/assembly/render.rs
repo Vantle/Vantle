@@ -87,8 +87,8 @@ impl Emitter for Document {
         let block = self.create(
             "div",
             &[
-                ("class".into(), "code-block".into()),
-                ("data-language".into(), language.name().into()),
+                ("class".into(), code::block().to_string()),
+                (attribute::language().name().into(), language.name().into()),
             ],
         )?;
         let text = self.handle.create_text_node(content);

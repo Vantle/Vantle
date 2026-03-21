@@ -29,12 +29,10 @@ fn color(state: &mut State, context: &token::Context<Attribute<String>>, phase: 
     }
     state.content = match &context.node.category {
         Category::Attribute(value) => Some(format!(
-            "<span class=\"syntax-entity syntax-name syntax-molten\">{}</span>",
+            "<span class=\"syntax entity name molten\">{}</span>",
             escape::escape(value)
         )),
-        Category::Partition => {
-            Some("<span class=\"syntax-operator syntax-molten\">,</span>".into())
-        }
+        Category::Partition => Some("<span class=\"syntax operator molten\">,</span>".into()),
         _ => None,
     };
 }
@@ -46,7 +44,7 @@ fn multiline(node: &Attribute<String>) -> bool {
 }
 
 fn position(state: &mut State, context: &token::Context<Attribute<String>>, phase: token::Phase) {
-    let dot = "<span class=\"syntax-punctuation syntax-accessor syntax-molten\">.</span>";
+    let dot = "<span class=\"syntax punctuation accessor molten\">.</span>";
     match phase {
         token::Phase::Enter => {
             state.node = match &context.node.category {
@@ -89,28 +87,25 @@ fn position(state: &mut State, context: &token::Context<Attribute<String>>, phas
         }
         token::Phase::Visit => {
             state.prefix = match &context.node.category {
-                Category::Context => Some(
-                    "<span class=\"syntax-keyword syntax-control syntax-molten\">[</span>".into(),
-                ),
+                Category::Context => {
+                    Some("<span class=\"syntax keyword control molten\">[</span>".into())
+                }
                 Category::Group if context.depth > 0 && multiline(context.node) => {
                     let indent = "    ".repeat(state.indent);
                     Some(format!(
-                        "<span class=\"syntax-punctuation syntax-section syntax-molten\">(</span>\n{indent}"
+                        "<span class=\"syntax punctuation section molten\">(</span>\n{indent}"
                     ))
                 }
-                Category::Group if context.depth > 0 => Some(
-                    "<span class=\"syntax-punctuation syntax-section syntax-molten\">(</span>"
-                        .into(),
-                ),
+                Category::Group if context.depth > 0 => {
+                    Some("<span class=\"syntax punctuation section molten\">(</span>".into())
+                }
                 Category::Attribute(_) if !context.node.context.is_empty() => {
                     let grouped = context.node.context.len() == 1
                         && matches!(context.node.context[0].category, Category::Group);
                     if grouped {
                         None
                     } else {
-                        Some(
-                            "<span class=\"syntax-punctuation syntax-section syntax-molten\">(</span>".into(),
-                        )
+                        Some("<span class=\"syntax punctuation section molten\">(</span>".into())
                     }
                 }
                 _ => None,
@@ -121,19 +116,16 @@ fn position(state: &mut State, context: &token::Context<Attribute<String>>, phas
                 state.indent -= 1;
                 let indent = "    ".repeat(state.indent);
                 state.suffix = Some(format!(
-                    "\n{indent}<span class=\"syntax-punctuation syntax-section syntax-molten\">)</span>"
+                    "\n{indent}<span class=\"syntax punctuation section molten\">)</span>"
                 ));
             }
             Category::Group if context.depth > 0 => {
-                state.suffix = Some(
-                    "<span class=\"syntax-punctuation syntax-section syntax-molten\">)</span>"
-                        .into(),
-                );
+                state.suffix =
+                    Some("<span class=\"syntax punctuation section molten\">)</span>".into());
             }
             Category::Context => {
-                state.suffix = Some(
-                    "<span class=\"syntax-keyword syntax-control syntax-molten\">]</span>".into(),
-                );
+                state.suffix =
+                    Some("<span class=\"syntax keyword control molten\">]</span>".into());
             }
             Category::Attribute(_) if !context.node.context.is_empty() => {
                 let grouped = context.node.context.len() == 1
@@ -141,10 +133,8 @@ fn position(state: &mut State, context: &token::Context<Attribute<String>>, phas
                 if grouped {
                     state.suffix = None;
                 } else {
-                    state.suffix = Some(
-                        "<span class=\"syntax-punctuation syntax-section syntax-molten\">)</span>"
-                            .into(),
-                    );
+                    state.suffix =
+                        Some("<span class=\"syntax punctuation section molten\">)</span>".into());
                 }
             }
             _ => {

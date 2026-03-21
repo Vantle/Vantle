@@ -1,7 +1,7 @@
 #################################################################################################################################################################
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest_template")
+load("//component/generation/starlark:defs.bzl", "extract", "rust_autotest_template")
 ##### External                                                                                                                               [ Import, External ]
 
 ##### Visibility                                                                                                                                       [ Module ]
@@ -27,6 +27,7 @@ filegroup(
 
 rust_autotest_template(
     name = "template",
+    testonly = False,
     src = "render.template.rs",
     deps = [
         "//component/web:element",
@@ -35,3 +36,9 @@ rust_autotest_template(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+extract(
+    name = "render.template.extract",
+    language = "rust",
+    source = "render.template.rs",
+    visibility = ["//visibility:public"],
+)

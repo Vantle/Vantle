@@ -27,6 +27,7 @@ filegroup(
 
 rust_autotest_template(
     name = "template",
+    testonly = False,
     src = "query.template.rs",
     deps = [
         "//Molten:component",

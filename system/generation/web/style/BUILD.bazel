@@ -1,0 +1,140 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "utility",
+    srcs = ["utility.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
+    deps = [
+        "//component/design:proportion",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "base",
+    srcs = ["base.rs"],
+    aliases = {
+        "//component/web/property/font:style": "emphasis",
+    },
+    deps = [
+        "//component/web:class",
+        "//component/web:selector",
+        "//component/web:style",
+        "//component/web:value",
+        "//component/web/property:display",
+        "//component/web/property:overflow",
+        "//component/web/property:position",
+        "//component/web/property/border:collapse",
+        "//component/web/property/flex:alignment",
+        "//component/web/property/font:style",
+        "//component/web/property/font:weight",
+        "//component/web/property/sizing",
+        "//component/web/property/text:align",
+        "//component/web/property/text:decoration",
+        "//component/web/property/text:transform",
+        "//component/web/property/white:space",
+    ],
+)
+
+rust_library(
+    name = "code",
+    srcs = ["code.rs"],
+    aliases = {
+        "//component/web/property/font:style": "emphasis",
+    },
+    deps = [
+        "//component/web:class",
+        "//component/web:selector",
+        "//component/web:style",
+        "//component/web:value",
+        "//component/web/property:appearance",
+        "//component/web/property:cursor",
+        "//component/web/property:display",
+        "//component/web/property:overflow",
+        "//component/web/property:position",
+        "//component/web/property/flex:alignment",
+        "//component/web/property/font:style",
+        "//component/web/property/font:weight",
+        "//component/web/property/text:decoration",
+    ],
+)
+
+rust_library(
+    name = "navigation",
+    srcs = ["navigation.rs"],
+    deps = [
+        ":utility",
+        "//component/web:attribute",
+        "//component/web:class",
+        "//component/web:selector",
+        "//component/web:style",
+        "//component/web:value",
+        "//component/web/property:display",
+        "//component/web/property:overflow",
+        "//component/web/property:position",
+        "//component/web/property/flex:alignment",
+        "//component/web/property/font:weight",
+        "//component/web/property/text:decoration",
+        "//component/web/property/white:space",
+    ],
+)
+
+rust_library(
+    name = "layout",
+    srcs = ["layout.rs"],
+    proc_macro_deps = ["//system/observation:macro"],
+    deps = [
+        ":utility",
+        "//component/design:palette",
+        "//component/design:proportion",
+        "//component/web:attribute",
+        "//component/web:class",
+        "//component/web:selector",
+        "//component/web:style",
+        "//component/web:value",
+        "//component/web/property:cursor",
+        "//component/web/property:display",
+        "//component/web/property:overflow",
+        "//component/web/property:position",
+        "//component/web/property/flex:alignment",
+        "//component/web/property/flex:direction",
+        "//component/web/property/font:weight",
+        "//component/web/property/sizing",
+        "//component/web/property/text:decoration",
+        "//component/web/property/text:transform",
+        "@crates//:tracing",
+    ],
+)
+
+rust_library(
+    name = "dashboard",
+    srcs = ["dashboard.rs"],
+    deps = [
+        ":utility",
+        "//component/design:palette",
+        "//component/web:attribute",
+        "//component/web:class",
+        "//component/web:selector",
+        "//component/web:style",
+        "//component/web:value",
+        "//component/web/property:cursor",
+        "//component/web/property:display",
+        "//component/web/property:overflow",
+        "//component/web/property:position",
+        "//component/web/property/flex:alignment",
+        "//component/web/property/flex:wrap",
+        "//component/web/property/font:weight",
+        "//component/web/property/text:align",
+        "//component/web/property/text:decoration",
+        "//component/web/property/text:transform",
+        "//component/web/property/white:space",
+    ],
+)

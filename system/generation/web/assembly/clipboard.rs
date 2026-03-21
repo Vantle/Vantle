@@ -3,15 +3,20 @@ use wasm_bindgen::prelude::*;
 use web_sys::Document;
 
 pub fn initialize(document: &Document) {
-    let blocks = document.get_elements_by_class_name("code-block");
+    let blocks = document
+        .query_selector_all(&code::block().selector())
+        .unwrap();
 
     for index in 0..blocks.length() {
-        let Some(block) = blocks.item(index) else {
+        let Some(block) = blocks
+            .item(index)
+            .and_then(|n| n.dyn_into::<web_sys::Element>().ok())
+        else {
             continue;
         };
 
         if block
-            .query_selector(".copy-button")
+            .query_selector(&button::copy().selector())
             .ok()
             .flatten()
             .is_some()
@@ -19,35 +24,42 @@ pub fn initialize(document: &Document) {
             continue;
         }
 
-        let toolbar = if let Some(existing) = block.query_selector(".code-toolbar").ok().flatten() {
+        let toolbar = if let Some(existing) = block
+            .query_selector(&code::toolbar().selector())
+            .ok()
+            .flatten()
+        {
             existing
         } else {
             let Ok(created) = document.create_element("div") else {
                 continue;
             };
-            let _ = created.set_attribute("class", "code-toolbar");
+            let _ = created.set_attribute("class", &code::toolbar().to_string());
             let _ = block.append_child(&created);
             created
         };
 
-        let Ok(button) = document.create_element("button") else {
+        let Ok(element) = document.create_element("button") else {
             continue;
         };
 
-        let _ = button.set_attribute("class", "copy-button");
-        button.set_text_content(Some("Copy"));
+        let _ = element.set_attribute("class", &button::copy().to_string());
+        element.set_text_content(Some("Copy"));
 
-        let block_clone = block.clone();
-        let button_clone = button.clone();
+        let captured = block.clone();
+        let handle = element.clone();
         let callback = Closure::<dyn FnMut()>::new(move || {
             let trimmed = {
                 let mut content = String::new();
-                let children = block_clone.child_nodes();
+                let children = captured.child_nodes();
                 for i in 0..children.length() {
                     if let Some(child) = children.item(i) {
-                        let excluded = child
-                            .dyn_ref::<web_sys::Element>()
-                            .is_some_and(|e| e.class_list().contains("code-toolbar"));
+                        let excluded = child.dyn_ref::<web_sys::Element>().is_some_and(|e| {
+                            code::toolbar()
+                                .words()
+                                .iter()
+                                .all(|w| e.class_list().contains(w))
+                        });
                         if !excluded && let Some(text) = child.text_content() {
                             content.push_str(&text);
                         }
@@ -62,8 +74,8 @@ pub fn initialize(document: &Document) {
 
             let _ = window.navigator().clipboard().write_text(&trimmed);
 
-            button_clone.set_text_content(Some("Copied!"));
-            let restore = button_clone.clone();
+            handle.set_text_content(Some("Copied!"));
+            let restore = handle.clone();
             let timeout = Closure::<dyn FnMut()>::new(move || {
                 restore.set_text_content(Some("Copy"));
             });
@@ -75,9 +87,10 @@ pub fn initialize(document: &Document) {
             timeout.forget();
         });
 
-        let _ = button.add_event_listener_with_callback("click", callback.as_ref().unchecked_ref());
+        let _ =
+            element.add_event_listener_with_callback("click", callback.as_ref().unchecked_ref());
         callback.forget();
 
-        let _ = toolbar.append_child(&button);
+        let _ = toolbar.append_child(&element);
     }
 }

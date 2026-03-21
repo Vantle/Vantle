@@ -1,8 +1,9 @@
 pub use button;
 pub use code;
+pub use dashboard;
 pub use footer;
 pub use label;
-pub use nav;
+pub use navigation;
 pub use node;
 pub use reference;
 pub use syntax;

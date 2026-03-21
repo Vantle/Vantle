@@ -32,8 +32,8 @@ Example:
     )
 """
 
-load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
-load(":action.bzl", "action")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load(":action.bzl", "SinkInfo", "action", "execute", "generate")
 
 #############################################################################
 # PROVIDERS
@@ -173,22 +173,6 @@ _autotest_template_provider = rule(
 )
 
 def _validate(ctx):
-    if not ctx.attr.template:
-        fail(
-            "Template not found for target '{}'. Please ensure '{}' exists and is a valid library target.".format(
-                ctx.label,
-                ctx.attr.template.label if hasattr(ctx.attr.template, "label") else ctx.attr.template,
-            ),
-        )
-
-    if not ctx.file.cases:
-        fail(
-            "Cases file not found for target '{}'. Please ensure '{}' exists and is a valid file.".format(
-                ctx.label,
-                ctx.attr.cases.label if hasattr(ctx.attr.cases, "label") else ctx.attr.cases,
-            ),
-        )
-
     if TemplateInfo in ctx.attr.template:
         template_info = ctx.attr.template[TemplateInfo]
         template_file = template_info.source
@@ -468,15 +452,6 @@ def autotest_performance(name, template, cases, specification, language, generat
         **kwargs
     )
 
-    if not testonly:
-        rust_binary(
-            name = name + ".binary",
-            crate_name = name + "_binary",
-            srcs = [":" + generate_target],
-            deps = kwargs.get("deps", []),
-            proc_macro_deps = proc_macro_deps,
-            rustc_flags = kwargs.get("rustc_flags", []),
-        )
 
 def rust_autotest_template(name, src, deps = [], **kwargs):
     """
@@ -566,4 +541,113 @@ def rust_autotest_performance(name, template, cases, specification, deps = [], *
         specification = specification,
         language = "rust",
         **kwargs
+    )
+
+def _template_source_impl(ctx):
+    template_info = ctx.attr.template[TemplateInfo]
+    source = template_info.source
+    return [
+        DefaultInfo(files = depset([source])),
+        SinkInfo(path = source.short_path),
+    ]
+
+_template_source = rule(
+    implementation = _template_source_impl,
+    attrs = {
+        "template": attr.label(mandatory = True, providers = [TemplateInfo]),
+    },
+    doc = "Expose a template source file with SinkInfo for documentation distribution",
+)
+
+def _file_source_impl(ctx):
+    source = ctx.attr.source[DefaultInfo].files.to_list()[0]
+    return [
+        DefaultInfo(files = depset([source])),
+        SinkInfo(path = source.short_path),
+    ]
+
+_file_source = rule(
+    implementation = _file_source_impl,
+    attrs = {
+        "source": attr.label(mandatory = True, allow_files = True),
+    },
+    doc = "Expose a file with SinkInfo for documentation distribution",
+)
+
+def _cases_label(template):
+    """Derive the cases target label from the template label's package."""
+    if ":" in template:
+        package, _ = template.rsplit(":", 1)
+    else:
+        package = ""
+    return (package + ":cases") if package else ":cases"
+
+def autotest_document(name, test, template, parameters = {}, deps = [], **kwargs):
+    """
+    Generate a Rust library providing card::Group visualization for a test suite.
+
+    Executes the test target to produce execution JSON, then embeds that data
+    into generated Rust code via AST emission. The resulting library exposes
+    a single `cards()` function returning visualization card groups.
+
+    Resource files flow automatically from the test target's runfiles.
+
+    Produces:
+      - {name}.execute           - execution JSON from running the test
+      - {name}.generation        - generated Rust source
+      - {name}                   - compiled rust_library exposing cards()
+      - {name}.template.source   - template source file with SinkInfo
+      - {name}.cases.source      - cases file with SinkInfo
+
+    Args:
+        name: Target name (e.g., "proportion.document")
+        test: Autotest target (e.g., ":arena")
+        template: Template target (source .rs file)
+        parameters: CLI parameters passed to the test binary (e.g., {"bound": "on"})
+        deps: Additional compile deps
+        **kwargs: Standard Bazel attrs (visibility, tags)
+    """
+    execute_target = name + ".execute"
+
+    execute(
+        name = execute_target,
+        binary = test,
+        allow_failure = True,
+        parameters = parameters,
+        output = name + ".execution.json",
+    )
+
+    generate_target = name + ".generation"
+
+    generate(
+        name = generate_target,
+        generator = "//system/generation/rust/document:card",
+        data = [":" + execute_target, template],
+        output = name + ".rs",
+    )
+
+    passthrough = {k: kwargs[k] for k in ["visibility", "tags"] if k in kwargs}
+
+    rust_library(
+        name = name,
+        srcs = [":" + generate_target],
+        crate_name = name.replace(".", "_"),
+        deps = [
+            "//system/generation/rust/document:visualize",
+            "//component/web/dashboard:card",
+            "@crates//:serde_json",
+        ] + deps,
+        **passthrough
+    )
+
+    _template_source(
+        name = name + ".template.source",
+        template = template,
+        **passthrough
+    )
+
+    _file_source(
+        name = name + ".cases.source",
+        source = _cases_label(template),
+        **passthrough
     )

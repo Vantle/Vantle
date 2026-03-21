@@ -2,7 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("//component/generation/starlark:defs.bzl", "rust_autotest_function")
+load("//component/generation/starlark:defs.bzl", "autotest_document", "rust_autotest_function")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -13,6 +13,7 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 rust_autotest_function(
     name = "particle",
+    testonly = False,
     cases = "//Molten/test/resource/system/graph/state/particle:cases",
     template = "//Molten/test/resource/system/graph/state/particle:template",
     deps = [
@@ -23,6 +24,7 @@ rust_autotest_function(
 
 rust_autotest_function(
     name = "wave",
+    testonly = False,
     cases = "//Molten/test/resource/system/graph/state/wave:cases",
     template = "//Molten/test/resource/system/graph/state/wave:template",
     deps = [
@@ -32,3 +34,16 @@ rust_autotest_function(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+autotest_document(
+    name = "particle.state.document",
+    test = ":particle",
+    template = "//Molten/test/resource/system/graph/state/particle:template",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document(
+    name = "wave.state.document",
+    test = ":wave",
+    template = "//Molten/test/resource/system/graph/state/wave:template",
+    visibility = ["//visibility:public"],
+)

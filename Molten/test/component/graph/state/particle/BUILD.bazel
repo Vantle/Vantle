@@ -2,7 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("//component/generation/starlark:defs.bzl", "extract", "rust_autotest_function")
+load("//component/generation/starlark:defs.bzl", "autotest_document", "extract", "rust_autotest_function")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -13,6 +13,7 @@ package(default_visibility = [
 ##### Module                                                                                                                                           [ Module ]
 rust_autotest_function(
     name = "particle",
+    testonly = False,
     cases = "//Molten/test/resource/component/graph/state/particle:cases",
     template = "//Molten/test/resource/component/graph/state/particle:template",
     deps = [
@@ -29,3 +30,9 @@ extract(
 )
 
 ##### Documentation                                                                                                                             [ Documentation ]
+autotest_document(
+    name = "particle.component.document",
+    test = ":particle",
+    template = "//Molten/test/resource/component/graph/state/particle:template",
+    visibility = ["//visibility:public"],
+)

@@ -2,6 +2,7 @@ use observe::trace;
 use style::Style;
 
 pub use base;
+pub use chart;
 pub use code;
 pub use dashboard;
 pub use layout;
@@ -44,6 +45,7 @@ pub fn theme() -> Style {
         .extend(base::footer())
         .extend(code::toolbar())
         .extend(dashboard::dashboard())
+        .extend(chart::chart())
         .extend(layout::animation())
         .extend(layout::responsive())
 }

@@ -1,0 +1,106 @@
+#################################################################################################################################################################
+########### Import                                                                                                                                     [ Import ]
+##### Internal                                                                                                                               [ Import, Internal ]
+##### External                                                                                                                               [ Import, External ]
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+##### Visibility                                                                                                                                       [ Module ]
+package(default_visibility = ["//visibility:public"])
+
+##### Proto                                                                                                                                             [ Module ]
+rust_library(
+    name = "protobuf",
+    srcs = ["protobuf.rs"],
+    deps = ["@crates//:prost"],
+)
+
+##### Module                                                                                                                                           [ Module ]
+rust_library(
+    name = "estimate",
+    srcs = ["estimate.rs"],
+)
+
+rust_library(
+    name = "format",
+    srcs = ["format.rs"],
+)
+
+rust_library(
+    name = "viewport",
+    srcs = ["viewport.rs"],
+    deps = [
+        "//component/design:proportion",
+    ],
+)
+
+rust_library(
+    name = "canvas",
+    srcs = ["canvas.rs"],
+    deps = [
+        ":viewport",
+        "//component/web:element",
+    ],
+)
+
+rust_library(
+    name = "axis",
+    srcs = ["axis.rs"],
+    deps = [
+        ":format",
+        ":viewport",
+        "//component/design:proportion",
+        "//component/web:class",
+        "//component/web:element",
+    ],
+)
+
+rust_library(
+    name = "scatter",
+    srcs = ["scatter.rs"],
+    deps = [
+        ":viewport",
+        "//component/web:class",
+        "//component/web:element",
+    ],
+)
+
+rust_library(
+    name = "regression",
+    srcs = ["regression.rs"],
+    deps = [
+        ":scatter",
+        ":viewport",
+        "//component/web:class",
+        "//component/web:element",
+    ],
+)
+
+rust_library(
+    name = "gradient",
+    srcs = ["gradient.rs"],
+    deps = [
+        ":estimate",
+        ":regression",
+        ":scatter",
+        ":viewport",
+        "//component/web:class",
+        "//component/web:element",
+    ],
+)
+
+rust_library(
+    name = "chart",
+    srcs = ["chart.rs"],
+    deps = [
+        ":axis",
+        ":canvas",
+        ":estimate",
+        ":format",
+        ":gradient",
+        ":regression",
+        ":scatter",
+        ":viewport",
+    ],
+)
+
+##### Documentation                                                                                                                             [ Documentation ]

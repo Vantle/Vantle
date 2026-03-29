@@ -9,6 +9,11 @@ package(default_visibility = ["//visibility:public"])
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
+    name = "tag",
+    srcs = ["tag.rs"],
+)
+
+rust_library(
     name = "difference",
     srcs = ["difference.rs"],
     deps = ["@crates//:serde_json"],
@@ -56,6 +61,7 @@ rust_library(
     srcs = ["card.rs"],
     deps = [
         ":detail",
+        ":tag",
         "//component/web:body",
         "//component/web:element",
         "//component/web:language",
@@ -74,6 +80,38 @@ rust_library(
         "//component/web:body",
         "//component/web/attribute:search",
         "//component/web/class:dashboard",
+    ],
+)
+
+rust_library(
+    name = "performance",
+    srcs = ["performance.rs"],
+    aliases = {
+        "//component/web/attribute:chart": "attribute",
+        "//component/web/chart:protobuf": "proto",
+        "//system/math:analysis": "fitting",
+    },
+    deps = [
+        ":card",
+        "//component/math:analysis",
+        "//component/web:body",
+        "//component/web:class",
+        "//component/web:element",
+        "//component/web/attribute:chart",
+        "//component/web/chart:axis",
+        "//component/web/chart:canvas",
+        "//component/web/chart:format",
+        "//component/web/chart:gradient",
+        "//component/web/chart:protobuf",
+        "//component/web/chart:regression",
+        "//component/web/chart:scatter",
+        "//component/web/chart:viewport",
+        "//component/web/render:fragment",
+        "//system/math:analysis",
+        "@crates//:base64",
+        "@crates//:prost",
+        "@crates//:serde",
+        "@crates//:serde_json",
     ],
 )
 

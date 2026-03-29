@@ -14,6 +14,18 @@ rust_library(
 )
 
 rust_library(
+    name = "fragment",
+    srcs = ["fragment.rs"],
+    deps = [
+        "//component/web:element",
+        "//component/web:language",
+        "//component/web:render",
+        "//component/web/render:escape",
+        "@crates//:miette",
+    ],
+)
+
+rust_library(
     name = "serialize",
     srcs = ["serialize.rs"],
     aliases = {

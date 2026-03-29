@@ -31,4 +31,12 @@ rust_library(
     ],
 )
 
+rust_library(
+    name = "analysis",
+    srcs = ["analysis.rs"],
+    deps = [
+        "@crates//:serde",
+    ],
+)
+
 ##### Documentation                                                                                                                             [ Documentation ]

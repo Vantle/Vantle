@@ -72,7 +72,6 @@ rust_library(
         "//system/graph:similarity",
         "@crates//:proc-macro2",
         "@crates//:quote",
-        "@crates//:serde_json",
         "@crates//:syn",
     ],
 )
@@ -114,6 +113,7 @@ document(
     deps = [
         "//component/web/dashboard:card",
         "//component/web/dashboard:difference",
+        "//component/web/dashboard:performance",
         "//system/generation/rust/document:visualize",
         "//system/generation/web/html/highlight:json",
         "//Molten/test/component/graph/state/particle:particle.component.document",
@@ -166,5 +166,6 @@ document(
         "//test/system/generation:library.document",
         "//test/system/generation:returns.document",
         "//test/system/graph/similarity:similarity.document",
+        "//test/system/performance/sort:sort.performance.document",
     ],
 )

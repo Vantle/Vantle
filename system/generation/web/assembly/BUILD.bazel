@@ -117,6 +117,7 @@ rust_library(
     aliases = {"//component/web/attribute:search": "attribute"},
     deps = [
         ":editing",
+        ":expand",
         "//component/web/attribute:search",
         "@crates//:js-sys",
         "@crates//:wasm-bindgen",
@@ -225,11 +226,40 @@ rust_library(
     ],
 )
 
+rust_library(
+    name = "chart",
+    srcs = ["chart.rs"],
+    aliases = {
+        "//component/design:proportion": "proportion",
+        "//component/math:regression": "regression",
+        "//component/web/attribute:chart": "attribute",
+        "//component/web/chart:estimate": "estimate",
+        "//component/web/chart:protobuf": "proto",
+        "//component/web/chart:viewport": "viewport",
+    },
+    deps = [
+        "//component/design:proportion",
+        "//component/math:regression",
+        "//component/web:class",
+        "//component/web/attribute:chart",
+        "//component/web/chart:estimate",
+        "//component/web/chart:format",
+        "//component/web/chart:protobuf",
+        "//component/web/chart:viewport",
+        "@crates//:base64",
+        "@crates//:js-sys",
+        "@crates//:prost",
+        "@crates//:wasm-bindgen",
+        "@crates//:web-sys",
+    ],
+)
+
 rust_shared_library(
     name = "binary",
     srcs = ["module.rs"],
     platform = "@rules_rust//rust/platform:wasm",
     deps = [
+        ":chart",
         ":clipboard",
         ":difference",
         ":expand",

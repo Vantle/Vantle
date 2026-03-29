@@ -1,0 +1,45 @@
+syntax = "proto3";
+package chart;
+
+message Viewport {
+    double width = 1;
+    double height = 2;
+    Margin margin = 3;
+    Extent domain = 4;
+    Extent range = 5;
+}
+
+message Margin {
+    double top = 1;
+    double right = 2;
+    double bottom = 3;
+    double left = 4;
+}
+
+message Extent {
+    double minimum = 1;
+    double maximum = 2;
+}
+
+message Term {
+    uint32 exponent = 1;
+    double coefficient = 2;
+}
+
+message Sample {
+    double point = 1;
+    double mean = 2;
+    double deviation = 3;
+    double predicted = 4;
+    double lower = 5;
+    double upper = 6;
+    uint32 count = 7;
+}
+
+message Chart {
+    Viewport viewport = 1;
+    double normalization = 2;
+    string label = 3;
+    repeated Term terms = 4;
+    repeated Sample samples = 5;
+}

@@ -35,9 +35,9 @@ pub struct Template {
 }
 
 #[must_use]
-pub fn cards(execution: Execution, templates: &[Template]) -> Vec<card::Group> {
+pub fn cards(execution: Execution, output: &str, templates: &[Template]) -> Vec<card::Group> {
     let file = execution.source.file;
-    let reference = execution.source.cases;
+    let input = execution.source.cases;
     execution
         .functions
         .into_iter()
@@ -47,7 +47,8 @@ pub fn cards(execution: Execution, templates: &[Template]) -> Vec<card::Group> {
                 function: function.function,
                 tags: function.tags,
                 source,
-                reference: reference.clone(),
+                input: input.clone(),
+                output: output.to_string(),
                 cases: function
                     .cases
                     .into_iter()

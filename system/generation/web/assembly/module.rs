@@ -39,5 +39,6 @@ fn enhance(document: &web_sys::Document) {
     paginate::initialize(document);
     expand::initialize(document);
     difference::initialize(document);
+    chart::initialize(document);
     outline::update(document);
 }

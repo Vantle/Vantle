@@ -51,7 +51,7 @@ fn expand(document: &Document, card: &web_sys::Element) {
     }
 }
 
-fn collapse(document: &Document) {
+pub fn collapse(document: &Document) {
     let selector = expanded();
 
     if let Ok(cards) = document.query_selector_all(&selector) {

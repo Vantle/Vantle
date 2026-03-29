@@ -30,6 +30,9 @@ struct Arguments {
     #[arg(long)]
     data: Vec<PathBuf>,
 
+    #[arg(long)]
+    execution: String,
+
     #[command(flatten)]
     observation: observation::argument::Argument,
 }
@@ -38,17 +41,18 @@ fn main() -> miette::Result<()> {
     command::execute(
         |arguments: &Arguments| observation::initialize(&arguments.observation.sink),
         |arguments, _runtime| {
-            let (execution, template) = partition(&arguments.data)?;
+            let (json, template) = partition(&arguments.data)?;
 
-            let execution_content = std::fs::read_to_string(&execution)
+            let execution_content = std::fs::read_to_string(&json)
                 .into_diagnostic()
-                .wrap_err(format!("failed to read execution: {}", execution.display()))?;
+                .wrap_err(format!("failed to read execution: {}", json.display()))?;
 
             let template_content = std::fs::read_to_string(&template)
                 .into_diagnostic()
                 .wrap_err(format!("failed to read template: {}", template.display()))?;
 
             let template_path = template.display().to_string();
+            let execution_path = &arguments.execution;
 
             let ast: syn::File = syn::parse_quote! {
                 #[must_use]
@@ -56,6 +60,7 @@ fn main() -> miette::Result<()> {
                     visualize::cards(
                         serde_json::from_str::<visualize::Execution>(#execution_content)
                             .expect("valid execution json"),
+                        #execution_path,
                         &[visualize::Template {
                             path: #template_path.into(),
                             content: #template_content.into(),

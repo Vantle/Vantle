@@ -28,8 +28,7 @@ where
     command::execute(
         |arguments: &Arguments| observation::initialize(&arguments.observation.sink),
         |arguments, _runtime| {
-            let path = run(&arguments)?;
-            println!("{}", path.display());
+            run(&arguments)?;
             Ok(())
         },
     )

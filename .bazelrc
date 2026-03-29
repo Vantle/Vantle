@@ -92,7 +92,7 @@ common:observe:transparent --//platform/observation:mode=transparent
 common:observe:opaque --//platform/observation:mode=opaque
 
 ########## Test                                                                                                                             [ Observation, Test ]
-test --//platform/observation:mode=transparent
+common --//platform/observation:mode=transparent
 
 #################################################################################################################################################################
 ##### Windows                                                                                                                              [ Platform, Windows ]

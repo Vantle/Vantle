@@ -115,6 +115,23 @@ rust_library(
 )
 
 rust_library(
+    name = "chart",
+    srcs = ["chart.rs"],
+    deps = [
+        "//component/web:class",
+        "//component/web:selector",
+        "//component/web:style",
+        "//component/web:value",
+        "//component/web/property:cursor",
+        "//component/web/property:display",
+        "//component/web/property:overflow",
+        "//component/web/property/border:collapse",
+        "//component/web/property/font:weight",
+        "//component/web/property/text:transform",
+    ],
+)
+
+rust_library(
     name = "dashboard",
     srcs = ["dashboard.rs"],
     deps = [

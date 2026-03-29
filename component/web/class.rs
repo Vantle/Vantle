@@ -1,4 +1,5 @@
 pub use button;
+pub use chart;
 pub use code;
 pub use dashboard;
 pub use footer;

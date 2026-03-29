@@ -67,4 +67,10 @@ rust_library(
     deps = [":reference"],
 )
 
+rust_library(
+    name = "chart",
+    srcs = ["chart.rs"],
+    deps = [":reference"],
+)
+
 ##### Documentation                                                                                                                             [ Documentation ]

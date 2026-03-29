@@ -88,6 +88,21 @@ rust_binary(
     ],
 )
 
+rust_binary(
+    name = "measurement",
+    srcs = ["measurement.rs"],
+    deps = [
+        "//system:command",
+        "//system:observation",
+        "@crates//:clap",
+        "@crates//:miette",
+        "@crates//:prettyplease",
+        "@crates//:quote",
+        "@crates//:syn",
+        "@crates//:thiserror",
+    ],
+)
+
 rust_library(
     name = "performance",
     srcs = ["performance.page.rs"],

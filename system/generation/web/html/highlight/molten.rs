@@ -1,26 +1,37 @@
-use std::fmt::Write;
-
 use component::graph::attribute::{Attribute, Category};
+use element::Element;
 
 pub fn molten(ast: &Attribute<String>) -> miette::Result<String> {
     let mut state = State::default();
     token::molten(ast, &mut state, |state, context, phase| {
         color(state, context, phase);
         position(state, context, phase);
-        html(state, context, phase);
+        assemble(state, context, phase);
     });
-    Ok(state.output)
+    fragment::fragment(&state.assembler.finish()?)
 }
 
 #[derive(Default)]
 struct State {
-    output: String,
-    content: Option<String>,
-    node: Option<&'static str>,
-    prefix: Option<String>,
-    suffix: Option<String>,
-    separator: Option<String>,
+    assembler: assembler::Assembler,
+    content: Option<Vec<Element>>,
+    node: Option<reference::Reference>,
+    prefix: Option<Vec<Element>>,
+    suffix: Option<Vec<Element>>,
+    separator: Option<Vec<Element>>,
     indent: usize,
+}
+
+fn section() -> reference::Reference {
+    reference::Reference(&["syntax", "punctuation", "section", "molten"])
+}
+
+fn control() -> reference::Reference {
+    reference::Reference(&["syntax", "keyword", "control", "molten"])
+}
+
+fn token(text: &str, class: reference::Reference) -> Vec<Element> {
+    vec![Element::token(class, text)]
 }
 
 fn color(state: &mut State, context: &token::Context<Attribute<String>>, phase: token::Phase) {
@@ -28,11 +39,14 @@ fn color(state: &mut State, context: &token::Context<Attribute<String>>, phase: 
         return;
     }
     state.content = match &context.node.category {
-        Category::Attribute(value) => Some(format!(
-            "<span class=\"syntax entity name molten\">{}</span>",
-            escape::escape(value)
+        Category::Attribute(value) => Some(token(
+            value,
+            reference::Reference(&["syntax", "entity", "name", "molten"]),
         )),
-        Category::Partition => Some("<span class=\"syntax operator molten\">,</span>".into()),
+        Category::Partition => Some(token(
+            ",",
+            reference::Reference(&["syntax", "operator", "molten"]),
+        )),
         _ => None,
     };
 }
@@ -44,13 +58,12 @@ fn multiline(node: &Attribute<String>) -> bool {
 }
 
 fn position(state: &mut State, context: &token::Context<Attribute<String>>, phase: token::Phase) {
-    let dot = "<span class=\"syntax punctuation accessor molten\">.</span>";
     match phase {
         token::Phase::Enter => {
             state.node = match &context.node.category {
-                Category::Attribute(_) => Some("attribute"),
-                Category::Context => Some("context"),
-                Category::Group => Some("group"),
+                Category::Attribute(_) => Some(node::attribute()),
+                Category::Context => Some(node::context()),
+                Category::Group => Some(node::group()),
                 _ => None,
             };
             if matches!(context.node.category, Category::Group)
@@ -71,41 +84,43 @@ fn position(state: &mut State, context: &token::Context<Attribute<String>>, phas
 
                 if meaningful.is_some_and(|m| matches!(m.category, Category::Partition)) {
                     if matches!(parent.category, Category::Group) && multiline(parent) {
-                        state.separator = Some(format!("\n{}", "    ".repeat(state.indent)));
+                        state.separator = Some(vec![Element::text(&format!(
+                            "\n{}",
+                            "    ".repeat(state.indent)
+                        ))]);
                     } else {
-                        state.separator = Some(" ".into());
+                        state.separator = Some(vec![Element::text(" ")]);
                     }
                 } else if meaningful.is_some() {
                     let previous = &parent.context[context.index - 1];
                     if matches!(previous.category, Category::Void) {
-                        state.separator = Some(" ".into());
+                        state.separator = Some(vec![Element::text(" ")]);
                     } else {
-                        state.separator = Some(dot.into());
+                        state.separator = Some(token(
+                            ".",
+                            reference::Reference(&["syntax", "punctuation", "accessor", "molten"]),
+                        ));
                     }
                 }
             }
         }
         token::Phase::Visit => {
             state.prefix = match &context.node.category {
-                Category::Context => {
-                    Some("<span class=\"syntax keyword control molten\">[</span>".into())
-                }
+                Category::Context => Some(token("[", control())),
                 Category::Group if context.depth > 0 && multiline(context.node) => {
                     let indent = "    ".repeat(state.indent);
-                    Some(format!(
-                        "<span class=\"syntax punctuation section molten\">(</span>\n{indent}"
-                    ))
+                    let mut elements = token("(", section());
+                    elements.push(Element::text(&format!("\n{indent}")));
+                    Some(elements)
                 }
-                Category::Group if context.depth > 0 => {
-                    Some("<span class=\"syntax punctuation section molten\">(</span>".into())
-                }
+                Category::Group if context.depth > 0 => Some(token("(", section())),
                 Category::Attribute(_) if !context.node.context.is_empty() => {
                     let grouped = context.node.context.len() == 1
                         && matches!(context.node.context[0].category, Category::Group);
                     if grouped {
                         None
                     } else {
-                        Some("<span class=\"syntax punctuation section molten\">(</span>".into())
+                        Some(token("(", section()))
                     }
                 }
                 _ => None,
@@ -115,17 +130,15 @@ fn position(state: &mut State, context: &token::Context<Attribute<String>>, phas
             Category::Group if context.depth > 0 && multiline(context.node) => {
                 state.indent -= 1;
                 let indent = "    ".repeat(state.indent);
-                state.suffix = Some(format!(
-                    "\n{indent}<span class=\"syntax punctuation section molten\">)</span>"
-                ));
+                let mut elements = vec![Element::text(&format!("\n{indent}"))];
+                elements.extend(token(")", section()));
+                state.suffix = Some(elements);
             }
             Category::Group if context.depth > 0 => {
-                state.suffix =
-                    Some("<span class=\"syntax punctuation section molten\">)</span>".into());
+                state.suffix = Some(token(")", section()));
             }
             Category::Context => {
-                state.suffix =
-                    Some("<span class=\"syntax keyword control molten\">]</span>".into());
+                state.suffix = Some(token("]", control()));
             }
             Category::Attribute(_) if !context.node.context.is_empty() => {
                 let grouped = context.node.context.len() == 1
@@ -133,8 +146,7 @@ fn position(state: &mut State, context: &token::Context<Attribute<String>>, phas
                 if grouped {
                     state.suffix = None;
                 } else {
-                    state.suffix =
-                        Some("<span class=\"syntax punctuation section molten\">)</span>".into());
+                    state.suffix = Some(token(")", section()));
                 }
             }
             _ => {
@@ -144,33 +156,35 @@ fn position(state: &mut State, context: &token::Context<Attribute<String>>, phas
     }
 }
 
-fn html(state: &mut State, context: &token::Context<Attribute<String>>, phase: token::Phase) {
+fn assemble(state: &mut State, context: &token::Context<Attribute<String>>, phase: token::Phase) {
     match phase {
         token::Phase::Enter => {
             if let Some(separator) = state.separator.take() {
-                state.output.push_str(&separator);
+                state.assembler.extend(separator);
             }
-            if let Some(node) = state.node.take() {
-                write!(state.output, "<span class=\"node-{node}\">").unwrap();
-            }
+            state.assembler.open();
         }
         token::Phase::Visit => {
             if let Some(content) = state.content.take() {
-                state.output.push_str(&content);
+                state.assembler.extend(content);
             }
             if let Some(prefix) = state.prefix.take() {
-                state.output.push_str(&prefix);
+                state.assembler.extend(prefix);
             }
         }
         token::Phase::Exit => {
-            if let Some(suffix) = state.suffix.take() {
-                state.output.push_str(&suffix);
-            }
+            let children = state.assembler.close();
             match &context.node.category {
                 Category::Attribute(_) | Category::Context | Category::Group => {
-                    state.output.push_str("</span>");
+                    let class = state.node.take().unwrap_or(node::attribute());
+                    state.assembler.push(Element::labeled(class, children));
                 }
-                _ => {}
+                _ => {
+                    state.assembler.extend(children);
+                }
+            }
+            if let Some(suffix) = state.suffix.take() {
+                state.assembler.extend(suffix);
             }
         }
     }

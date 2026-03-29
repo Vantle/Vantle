@@ -1,5 +1,6 @@
-use std::fmt::Write;
-
+use element::Element;
+use quote::ToTokens;
+use reference::Reference;
 use syn::visit::Visit;
 use syn::{
     Expr, FnArg, GenericArgument, Item, Lit, Pat, PathArguments, ReturnType, Stmt, Type, UseTree,
@@ -8,126 +9,112 @@ use syn::{
 pub fn rust(ast: &syn::File) -> miette::Result<String> {
     let mut visitor = Visitor::new();
     visitor.visit_file(ast);
-    Ok(visitor.output)
+    fragment::fragment(&visitor.finish()?)
 }
 
-#[must_use]
-pub fn snippet(ast: &syn::File) -> String {
+pub fn snippet(ast: &syn::File) -> miette::Result<String> {
     let mut visitor = Visitor::new();
     let Some(Item::Fn(f)) = ast.items.first() else {
-        return visitor.output;
+        return fragment::fragment(&visitor.finish()?);
     };
     for (i, stmt) in f.block.stmts.iter().enumerate() {
         if i > 0 {
-            visitor.output.push('\n');
+            visitor.push(Element::text("\n"));
         }
         visitor.statement(stmt, "");
     }
-    visitor.output
+    fragment::fragment(&visitor.finish()?)
 }
 
 struct Visitor {
-    output: String,
+    assembler: assembler::Assembler,
+    classes: Vec<Reference>,
+    indent: usize,
 }
 
 impl Visitor {
     fn new() -> Self {
         Self {
-            output: String::new(),
+            assembler: assembler::Assembler::default(),
+            classes: Vec::new(),
+            indent: 0,
         }
     }
 
-    fn token(&mut self, class: &str, text: &str) {
-        write!(
-            self.output,
-            "<span class=\"syntax {class}\">{}</span>",
-            escape::escape(text)
-        )
-        .unwrap();
+    fn finish(mut self) -> error::Result<Vec<Element>> {
+        self.assembler.finish()
     }
 
-    fn literal(&mut self, class: &str, word: &str) {
-        write!(
-            self.output,
-            "<span class=\"syntax {class}\">{}</span>",
-            escape::escape(word)
-        )
-        .unwrap();
+    fn push(&mut self, element: Element) {
+        self.assembler.push(element);
+    }
+
+    fn tagged(&mut self, class: Reference, text: &str) {
+        self.push(Element::token(class, text));
     }
 
     fn keyword(&mut self, word: &str) {
-        self.literal("keyword", word);
+        self.tagged(syntax::keyword(), word);
     }
     fn entity(&mut self, name: &str) {
-        self.token("entity", name);
+        self.tagged(syntax::entity(), name);
     }
     fn string(&mut self, text: &str) {
-        self.token("string", text);
+        self.tagged(syntax::string(), text);
     }
     fn constant(&mut self, text: &str) {
-        self.token("constant", text);
+        self.tagged(syntax::constant(), text);
     }
     fn storage(&mut self, text: &str) {
-        self.literal("storage", text);
+        self.tagged(syntax::storage(), text);
     }
     fn punctuation(&mut self, text: &str) {
-        self.token("punctuation", text);
+        self.tagged(syntax::punctuation(), text);
     }
     fn variable(&mut self, text: &str) {
-        self.token("variable", text);
+        self.tagged(syntax::variable(), text);
     }
     fn function(&mut self, text: &str) {
-        self.token("function", text);
+        self.tagged(syntax::function(), text);
     }
     fn operator(&mut self, text: &str) {
-        self.token("operator", text);
+        self.tagged(syntax::operator(), text);
     }
     fn macros(&mut self, text: &str) {
-        self.token("macro", text);
+        self.tagged(syntax::r#macro(), text);
     }
     fn comment(&mut self, text: &str) {
-        self.token("comment", text);
+        self.tagged(syntax::comment(), text);
     }
 
     fn plain(&mut self, text: &str) {
-        escape::stream(&mut self.output, text);
+        self.push(Element::text(text));
     }
 
-    fn node(&mut self, class: &str) {
-        self.output.push_str("<span class=\"node-");
-        escape::stream(&mut self.output, class);
-        self.output.push_str("\">");
+    fn node(&mut self, class: Reference) {
+        self.classes.push(class);
+        self.assembler.open();
     }
 
     fn end(&mut self) {
-        self.output.push_str("</span>");
+        let children = self.assembler.close();
+        let class = self.classes.pop().unwrap_or(node::value());
+        self.push(Element::labeled(class, children));
     }
 
     fn leading(&self) -> String {
-        let bytes = self.output.as_bytes();
-        let start = bytes.iter().rposition(|&b| b == b'\n').map_or(0, |p| p + 1);
-        let segment = &self.output[start..];
-        let mut spaces = 0;
-        let mut tag = false;
-        for character in segment.chars() {
-            match character {
-                '<' => tag = true,
-                '>' if tag => tag = false,
-                ' ' if !tag => spaces += 1,
-                _ if !tag => break,
-                _ => {}
-            }
-        }
-        " ".repeat(spaces + 4)
+        " ".repeat(self.indent + 4)
     }
 
     fn chained(&mut self, expression: &Expr) {
         let (root, links, trailing) = flatten(expression);
         let indent = self.leading();
+        let saved = self.indent;
+        self.indent = indent.len() - 4;
         self.expression(root);
         for link in &links {
-            self.output.push('\n');
-            self.output.push_str(&indent);
+            self.push(Element::text("\n"));
+            self.push(Element::text(&indent));
             match link {
                 Link::Method(mc) => {
                     self.punctuation(".");
@@ -167,16 +154,17 @@ impl Visitor {
         if trailing {
             self.operator("?");
         }
+        self.indent = saved;
     }
 
     fn attributes(&mut self, attrs: &[syn::Attribute]) {
         if attrs.is_empty() {
             return;
         }
-        self.node("attributes");
+        self.node(node::attributes());
         for attr in attrs {
             self.macros(&attr.to_token_stream().to_string());
-            self.output.push('\n');
+            self.push(Element::text("\n"));
         }
         self.end();
     }
@@ -184,18 +172,18 @@ impl Visitor {
     fn visibility(&mut self, vis: &syn::Visibility) {
         match vis {
             syn::Visibility::Public(_) => {
-                self.node("visibility");
+                self.node(node::visibility());
                 self.keyword("pub");
-                self.output.push(' ');
+                self.push(Element::text(" "));
                 self.end();
             }
             syn::Visibility::Restricted(restricted) => {
-                self.node("visibility");
+                self.node(node::visibility());
                 self.keyword("pub");
                 self.punctuation("(");
                 self.keyword(&restricted.path.to_token_stream().to_string());
                 self.punctuation(")");
-                self.output.push(' ');
+                self.push(Element::text(" "));
                 self.end();
             }
             syn::Visibility::Inherited => {}
@@ -204,7 +192,7 @@ impl Visitor {
 
     fn generics(&mut self, generics: &syn::Generics) {
         if !generics.params.is_empty() {
-            self.node("generics");
+            self.node(node::generics());
             self.punctuation("<");
             for (i, param) in generics.params.iter().enumerate() {
                 if i > 0 {
@@ -254,10 +242,10 @@ impl Visitor {
     }
 
     fn clause(&mut self, clause: &syn::WhereClause) {
-        self.node("where");
-        self.output.push('\n');
+        self.node(node::r#where());
+        self.push(Element::text("\n"));
         self.keyword("where");
-        self.output.push('\n');
+        self.push(Element::text("\n"));
         for (i, predicate) in clause.predicates.iter().enumerate() {
             if i > 0 {
                 self.plain(",\n");
@@ -322,7 +310,7 @@ impl Visitor {
     }
 
     fn path(&mut self, path: &syn::Path) {
-        self.node("path");
+        self.node(node::path());
         for (i, segment) in path.segments.iter().enumerate() {
             if i > 0 {
                 self.punctuation("::");
@@ -339,7 +327,7 @@ impl Visitor {
     }
 
     fn typed(&mut self, ty: &Type) {
-        self.node("type");
+        self.node(node::typed());
         match ty {
             Type::Path(path) => {
                 if let Some(qself) = &path.qself {
@@ -439,7 +427,7 @@ impl Visitor {
     }
 
     fn expression(&mut self, expr: &Expr) {
-        self.node("expression");
+        self.node(node::expression());
         match expr {
             Expr::Lit(lit) => self.value(&lit.lit),
             Expr::Path(path) => {
@@ -510,10 +498,13 @@ impl Visitor {
                 let indent = self.leading();
                 let outer = &indent[..indent.len().saturating_sub(4)];
                 self.plain(" {\n");
+                let saved = self.indent;
+                self.indent = indent.len();
                 for stmt in &block.block.stmts {
                     self.statement(stmt, &indent);
                 }
-                self.output.push_str(outer);
+                self.indent = saved;
+                self.plain(outer);
                 self.plain("}");
             }
             Expr::If(expr_if) => {
@@ -523,10 +514,13 @@ impl Visitor {
                 self.plain(" ");
                 self.expression(&expr_if.cond);
                 self.plain(" {\n");
+                let saved = self.indent;
+                self.indent = indent.len();
                 for stmt in &expr_if.then_branch.stmts {
                     self.statement(stmt, &indent);
                 }
-                self.output.push_str(outer);
+                self.indent = saved;
+                self.plain(outer);
                 self.plain("}");
                 if let Some((_, else_branch)) = &expr_if.else_branch {
                     self.plain(" ");
@@ -542,8 +536,10 @@ impl Visitor {
                 self.plain(" ");
                 self.expression(&m.expr);
                 self.plain(" {\n");
+                let saved = self.indent;
+                self.indent = indent.len();
                 for arm in &m.arms {
-                    self.output.push_str(&indent);
+                    self.plain(&indent);
                     self.pattern(&arm.pat);
                     self.plain(" ");
                     self.operator("=>");
@@ -551,7 +547,8 @@ impl Visitor {
                     self.expression(&arm.body);
                     self.plain(",\n");
                 }
-                self.output.push_str(outer);
+                self.indent = saved;
+                self.plain(outer);
                 self.plain("}");
             }
             Expr::Closure(c) => {
@@ -580,10 +577,13 @@ impl Visitor {
                     let indent = self.leading();
                     let outer = &indent[..indent.len().saturating_sub(4)];
                     self.plain("{\n");
+                    let saved = self.indent;
+                    self.indent = indent.len();
                     for stmt in &block.block.stmts {
                         self.statement(stmt, &indent);
                     }
-                    self.output.push_str(outer);
+                    self.indent = saved;
+                    self.plain(outer);
                     self.plain("}");
                 } else {
                     self.expression(&c.body);
@@ -594,11 +594,13 @@ impl Visitor {
                 let outer = &indent[..indent.len().saturating_sub(4)];
                 self.path(&s.path);
                 self.plain(" {\n");
+                let saved = self.indent;
+                self.indent = indent.len();
                 for (i, field) in s.fields.iter().enumerate() {
                     if i > 0 {
                         self.plain(",\n");
                     }
-                    self.output.push_str(&indent);
+                    self.plain(&indent);
                     if field.colon_token.is_some() {
                         self.variable(&field.member.to_token_stream().to_string());
                         self.punctuation(":");
@@ -606,9 +608,10 @@ impl Visitor {
                     }
                     self.expression(&field.expr);
                 }
-                self.output.push('\n');
-                self.output.push_str(outer);
+                self.push(Element::text("\n"));
+                self.plain(outer);
                 self.plain("}");
+                self.indent = saved;
             }
             Expr::Field(f) => {
                 self.expression(&f.base);
@@ -717,14 +720,14 @@ impl Visitor {
             Lit::Int(i) => self.constant(&i.to_string()),
             Lit::Float(f) => self.constant(&f.to_string()),
             Lit::Bool(b) => self.constant(&b.value.to_string()),
-            Lit::ByteStr(b) => self.string(&format!("b\"{}\"", escape::bytes(&b.value()))),
+            Lit::ByteStr(b) => self.string(&format!("b\"{}\"", portable::bytes(&b.value()))),
             Lit::Byte(b) => self.string(&format!("b'{}'", b.value() as char)),
             _ => self.plain(&lit.to_token_stream().to_string()),
         }
     }
 
     fn pattern(&mut self, pat: &Pat) {
-        self.node("pattern");
+        self.node(node::pattern());
         match pat {
             Pat::Ident(ident) => {
                 if ident.by_ref.is_some() {
@@ -819,8 +822,8 @@ impl Visitor {
     fn statement(&mut self, stmt: &Stmt, indent: &str) {
         match stmt {
             Stmt::Local(local) => {
-                self.node("let");
-                self.output.push_str(indent);
+                self.node(node::r#let());
+                self.plain(indent);
                 self.keyword("let");
                 self.plain(" ");
                 if let Pat::Ident(ident) = &local.pat
@@ -839,23 +842,23 @@ impl Visitor {
                     self.expression(&init.expr);
                 }
                 self.punctuation(";");
-                self.output.push('\n');
+                self.push(Element::text("\n"));
                 self.end();
             }
             Stmt::Expr(expr, semi) => {
-                self.node("statement");
-                self.output.push_str(indent);
+                self.node(node::statement());
+                self.plain(indent);
                 self.expression(expr);
                 if semi.is_some() {
                     self.punctuation(";");
                 }
-                self.output.push('\n');
+                self.push(Element::text("\n"));
                 self.end();
             }
             Stmt::Item(item) => self.item(item),
             Stmt::Macro(m) => {
-                self.node("statement");
-                self.output.push_str(indent);
+                self.node(node::statement());
+                self.plain(indent);
                 self.path(&m.mac.path);
                 self.macros("!");
                 self.punctuation("(");
@@ -864,7 +867,7 @@ impl Visitor {
                 if m.semi_token.is_some() {
                     self.punctuation(";");
                 }
-                self.output.push('\n');
+                self.push(Element::text("\n"));
                 self.end();
             }
         }
@@ -900,13 +903,13 @@ impl Visitor {
     }
 
     fn parameters(&mut self, inputs: &syn::punctuated::Punctuated<FnArg, syn::token::Comma>) {
-        self.node("parameters");
+        self.node(node::parameters());
         self.punctuation("(");
         for (i, arg) in inputs.iter().enumerate() {
             if i > 0 {
                 self.plain(", ");
             }
-            self.node("parameter");
+            self.node(node::parameter());
             match arg {
                 FnArg::Receiver(r) => {
                     if r.reference.is_some() {
@@ -938,32 +941,35 @@ impl Visitor {
     fn item(&mut self, item: &Item) {
         match item {
             Item::Use(u) => {
-                self.node("use");
+                self.node(node::r#use());
                 self.attributes(&u.attrs);
                 self.visibility(&u.vis);
                 self.keyword("use");
                 self.plain(" ");
                 self.tree(&u.tree);
                 self.punctuation(";");
-                self.output.push('\n');
+                self.push(Element::text("\n"));
                 self.end();
             }
             Item::Fn(f) => {
-                self.node("function");
+                self.node(node::function());
                 self.attributes(&f.attrs);
                 self.visibility(&f.vis);
                 self.signature(&f.sig);
-                self.node("block");
+                self.node(node::block());
                 self.plain(" {\n");
+                let saved = self.indent;
+                self.indent = 4;
                 for stmt in &f.block.stmts {
                     self.statement(stmt, "    ");
                 }
+                self.indent = saved;
                 self.plain("}\n");
                 self.end();
                 self.end();
             }
             Item::Struct(s) => {
-                self.node("struct");
+                self.node(node::r#struct());
                 self.attributes(&s.attrs);
                 self.visibility(&s.vis);
                 self.keyword("struct");
@@ -977,7 +983,7 @@ impl Visitor {
                         }
                         self.plain(" {\n");
                         for field in &fields.named {
-                            self.node("field");
+                            self.node(node::field());
                             self.attributes(&field.attrs);
                             self.plain("    ");
                             self.visibility(&field.vis);
@@ -1001,17 +1007,17 @@ impl Visitor {
                         }
                         self.punctuation(")");
                         self.punctuation(";");
-                        self.output.push('\n');
+                        self.push(Element::text("\n"));
                     }
                     syn::Fields::Unit => {
                         self.punctuation(";");
-                        self.output.push('\n');
+                        self.push(Element::text("\n"));
                     }
                 }
                 self.end();
             }
             Item::Enum(e) => {
-                self.node("enum");
+                self.node(node::r#enum());
                 self.attributes(&e.attrs);
                 self.visibility(&e.vis);
                 self.keyword("enum");
@@ -1020,7 +1026,7 @@ impl Visitor {
                 self.generics(&e.generics);
                 self.plain(" {\n");
                 for variant in &e.variants {
-                    self.node("variant");
+                    self.node(node::variant());
                     self.attributes(&variant.attrs);
                     self.plain("    ");
                     self.entity(&variant.ident.to_string());
@@ -1028,7 +1034,7 @@ impl Visitor {
                         syn::Fields::Named(fields) => {
                             self.plain(" {\n");
                             for field in &fields.named {
-                                self.node("field");
+                                self.node(node::field());
                                 self.plain("        ");
                                 self.variable(&field.ident.as_ref().unwrap().to_string());
                                 self.punctuation(":");
@@ -1045,7 +1051,7 @@ impl Visitor {
                                 if i > 0 {
                                     self.plain(", ");
                                 }
-                                self.node("field");
+                                self.node(node::field());
                                 self.typed(&field.ty);
                                 self.end();
                             }
@@ -1060,7 +1066,7 @@ impl Visitor {
                 self.end();
             }
             Item::Impl(imp) => {
-                self.node("impl");
+                self.node(node::r#impl());
                 self.attributes(&imp.attrs);
                 if imp.unsafety.is_some() {
                     self.storage("unsafe");
@@ -1083,23 +1089,26 @@ impl Visitor {
                 for item in &imp.items {
                     match item {
                         syn::ImplItem::Fn(f) => {
-                            self.node("function");
+                            self.node(node::function());
                             self.attributes(&f.attrs);
                             self.plain("    ");
                             self.visibility(&f.vis);
                             self.signature(&f.sig);
-                            self.node("block");
+                            self.node(node::block());
                             self.plain(" {\n");
+                            let saved = self.indent;
+                            self.indent = 8;
                             for stmt in &f.block.stmts {
                                 self.plain("    ");
                                 self.statement(stmt, "    ");
                             }
+                            self.indent = saved;
                             self.plain("    }\n");
                             self.end();
                             self.end();
                         }
                         syn::ImplItem::Type(t) => {
-                            self.node("alias");
+                            self.node(node::alias());
                             self.plain("    ");
                             self.keyword("type");
                             self.plain(" ");
@@ -1109,11 +1118,11 @@ impl Visitor {
                             self.plain(" ");
                             self.typed(&t.ty);
                             self.punctuation(";");
-                            self.output.push('\n');
+                            self.push(Element::text("\n"));
                             self.end();
                         }
                         syn::ImplItem::Const(c) => {
-                            self.node("const");
+                            self.node(node::constant());
                             self.plain("    ");
                             self.storage("const");
                             self.plain(" ");
@@ -1126,7 +1135,7 @@ impl Visitor {
                             self.plain(" ");
                             self.expression(&c.expr);
                             self.punctuation(";");
-                            self.output.push('\n');
+                            self.push(Element::text("\n"));
                             self.end();
                         }
                         _ => {}
@@ -1136,7 +1145,7 @@ impl Visitor {
                 self.end();
             }
             Item::Trait(t) => {
-                self.node("trait");
+                self.node(node::r#trait());
                 self.attributes(&t.attrs);
                 self.visibility(&t.vis);
                 if t.unsafety.is_some() {
@@ -1151,19 +1160,19 @@ impl Visitor {
                 for item in &t.items {
                     match item {
                         syn::TraitItem::Fn(f) => {
-                            self.node("function");
+                            self.node(node::function());
                             self.plain("    ");
                             self.keyword("fn");
                             self.plain(" ");
                             self.entity(&f.sig.ident.to_string());
                             self.generics(&f.sig.generics);
-                            self.node("parameters");
+                            self.node(node::parameters());
                             self.punctuation("(");
                             for (i, arg) in f.sig.inputs.iter().enumerate() {
                                 if i > 0 {
                                     self.plain(", ");
                                 }
-                                self.node("parameter");
+                                self.node(node::parameter());
                                 match arg {
                                     FnArg::Receiver(r) => {
                                         if r.reference.is_some() {
@@ -1193,17 +1202,17 @@ impl Visitor {
                                 self.typed(ty);
                             }
                             self.punctuation(";");
-                            self.output.push('\n');
+                            self.push(Element::text("\n"));
                             self.end();
                         }
                         syn::TraitItem::Type(t) => {
-                            self.node("alias");
+                            self.node(node::alias());
                             self.plain("    ");
                             self.keyword("type");
                             self.plain(" ");
                             self.entity(&t.ident.to_string());
                             self.punctuation(";");
-                            self.output.push('\n');
+                            self.push(Element::text("\n"));
                             self.end();
                         }
                         _ => {}
@@ -1213,7 +1222,7 @@ impl Visitor {
                 self.end();
             }
             Item::Const(c) => {
-                self.node("const");
+                self.node(node::constant());
                 self.attributes(&c.attrs);
                 self.visibility(&c.vis);
                 self.storage("const");
@@ -1227,11 +1236,11 @@ impl Visitor {
                 self.plain(" ");
                 self.expression(&c.expr);
                 self.punctuation(";");
-                self.output.push('\n');
+                self.push(Element::text("\n"));
                 self.end();
             }
             Item::Static(s) => {
-                self.node("static");
+                self.node(node::r#static());
                 self.attributes(&s.attrs);
                 self.visibility(&s.vis);
                 self.storage("static");
@@ -1249,11 +1258,11 @@ impl Visitor {
                 self.plain(" ");
                 self.expression(&s.expr);
                 self.punctuation(";");
-                self.output.push('\n');
+                self.push(Element::text("\n"));
                 self.end();
             }
             Item::Type(t) => {
-                self.node("alias");
+                self.node(node::alias());
                 self.attributes(&t.attrs);
                 self.visibility(&t.vis);
                 self.keyword("type");
@@ -1265,11 +1274,11 @@ impl Visitor {
                 self.plain(" ");
                 self.typed(&t.ty);
                 self.punctuation(";");
-                self.output.push('\n');
+                self.push(Element::text("\n"));
                 self.end();
             }
             Item::Mod(m) => {
-                self.node("mod");
+                self.node(node::r#mod());
                 self.attributes(&m.attrs);
                 self.visibility(&m.vis);
                 self.keyword("mod");
@@ -1283,12 +1292,12 @@ impl Visitor {
                     self.plain("}\n");
                 } else {
                     self.punctuation(";");
-                    self.output.push('\n');
+                    self.push(Element::text("\n"));
                 }
                 self.end();
             }
             Item::Macro(m) => {
-                self.node("macro");
+                self.node(node::r#macro());
                 self.path(&m.mac.path);
                 self.macros("!");
                 self.plain(" {\n");
@@ -1298,7 +1307,7 @@ impl Visitor {
             }
             _ => {
                 self.plain(&item.to_token_stream().to_string());
-                self.output.push('\n');
+                self.push(Element::text("\n"));
             }
         }
     }
@@ -1361,11 +1370,11 @@ impl<'ast> Visit<'ast> for Visitor {
     fn visit_file(&mut self, node: &'ast syn::File) {
         for attr in &node.attrs {
             self.comment(&attr.to_token_stream().to_string());
-            self.output.push('\n');
+            self.push(Element::text("\n"));
         }
         for (i, item) in node.items.iter().enumerate() {
             if i > 0 {
-                self.output.push('\n');
+                self.push(Element::text("\n"));
             }
             self.item(item);
         }
@@ -1426,5 +1435,3 @@ fn is_type_name(name: &str) -> bool {
 fn is_keyword_value(name: &str) -> bool {
     matches!(name, "true" | "false" | "None" | "Some")
 }
-
-use quote::ToTokens;

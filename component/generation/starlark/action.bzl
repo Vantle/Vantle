@@ -40,7 +40,6 @@ def action(ctx, generator, arguments, inputs, output, sink = None, mnemonic = "G
         inputs = inputs,
         outputs = outputs,
         mnemonic = mnemonic,
-        progress_message = "Generating: %s" % output.basename,
     )
 
 def _generate_impl(ctx):
@@ -112,7 +111,6 @@ def _execute_impl(ctx):
             outputs = [output],
             tools = [ctx.executable.binary],
             mnemonic = "Execute",
-            progress_message = "Executing: %s" % output.basename,
         )
     else:
         action(ctx, ctx.executable.binary, arguments, inputs, output, mnemonic = "Execute")

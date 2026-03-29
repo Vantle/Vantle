@@ -8,14 +8,14 @@
                     "tags": ["new"],
                     "parameters": {"existing": false},
                     "returns": {
-                        "()": [0, ["arena"], "0", "Created"]
+                        "()": [ 0, ["arena"], "0", "Created" ]
                     }
                 },
                 {
                     "tags": ["existing"],
                     "parameters": {"existing": true},
                     "returns": {
-                        "()": [0, ["arena"], "0", "Existing"]
+                        "()": [ 0, ["arena"], "0", "Existing" ]
                     }
                 }
             ]
@@ -28,15 +28,13 @@
                     "tags": ["found"],
                     "parameters": {"valid": true},
                     "returns": {
-                        "()": [["arena"], "0", true]
+                        "()": [ ["arena"], "0", true ]
                     }
                 },
                 {
                     "tags": ["missing"],
                     "parameters": {"valid": false},
-                    "returns": {
-                        "()": [[], null, false]
-                    }
+                    "returns": { "()": [[], null, false] }
                 }
             ]
         },
@@ -48,15 +46,13 @@
                     "tags": ["found"],
                     "parameters": {"valid": true},
                     "returns": {
-                        "()": [["arena"], "0", true]
+                        "()": [ ["arena"], "0", true ]
                     }
                 },
                 {
                     "tags": ["missing"],
                     "parameters": {"valid": false},
-                    "returns": {
-                        "()": [[], null, false]
-                    }
+                    "returns": { "()": [[], null, false] }
                 }
             ]
         }

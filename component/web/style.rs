@@ -206,6 +206,16 @@ properties! {
         outline => "outline",
         outline_offset => "outline-offset",
         pointer_events => "pointer-events",
+        fill => "fill",
+        stroke => "stroke",
+        stroke_width => "stroke-width",
+        stroke_linecap => "stroke-linecap",
+        stroke_linejoin => "stroke-linejoin",
+        stroke_dasharray => "stroke-dasharray",
+        font_variant_numeric => "font-variant-numeric",
+        animation => "animation",
+        animation_delay => "animation-delay",
+        transform_origin => "transform-origin",
     }
     typed {
         font_weight(weight::Weight) => "font-weight",

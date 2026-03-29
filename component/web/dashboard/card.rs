@@ -13,7 +13,8 @@ pub struct Group {
     pub function: String,
     pub tags: Vec<String>,
     pub source: Option<Source>,
-    pub reference: String,
+    pub input: String,
+    pub output: String,
     pub cases: Vec<Case>,
 }
 
@@ -52,6 +53,10 @@ pub fn cases(
     group: &Group,
     highlight: impl Fn(&Value, Option<&Value>) -> Option<String>,
 ) -> Body {
+    let reference = detail::Reference {
+        input: &group.input,
+        output: &group.output,
+    };
     group.cases.iter().enumerate().fold(body, |c, (i, case)| {
         let output = highlight(&case.returns, case.unexpected.as_ref());
         detail::render(
@@ -61,7 +66,7 @@ pub fn cases(
             &case.returns,
             case.unexpected.as_ref(),
             output.as_deref(),
-            &group.reference,
+            &reference,
         )
     })
 }
@@ -72,7 +77,7 @@ pub fn render(body: Body, group: &Group, content: impl FnOnce(Body) -> Body) -> 
     let passed = group.cases.iter().filter(|c| c.passed()).count();
     let failed = total - passed;
 
-    let status = if failed > 0 { "fail" } else { "pass" };
+    let status = if failed > 0 { tag::FAIL } else { tag::PASS };
     let indicator = if failed > 0 {
         dashboard::fail()
     } else {

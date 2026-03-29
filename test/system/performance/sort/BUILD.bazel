@@ -2,7 +2,7 @@
 ########### Import                                                                                                                                     [ Import ]
 ##### Internal                                                                                                                               [ Import, Internal ]
 ##### External                                                                                                                               [ Import, External ]
-load("//component/generation/starlark:defs.bzl", "execute", "extract", "rust_autotest_performance")
+load("//component/generation/starlark:defs.bzl", "autotest_document_performance", "execute", "extract", "rust_autotest_performance")
 
 ##### Visibility                                                                                                                                       [ Module ]
 package(default_visibility = [
@@ -26,9 +26,6 @@ execute(
     binary = ":sort",
     output = "sort.execution.json",
     parameters = {
-        "bound": "on",
-        "interval": "on",
-        "model": "on",
         "sample": "off",
     },
 )
@@ -45,6 +42,12 @@ extract(
     language = "starlark",
     query = "(call function: (identifier) @name (#eq? @name \"rust_autotest_performance\")) @capture",
     source = "BUILD.bazel",
+    visibility = ["//visibility:public"],
+)
+
+autotest_document_performance(
+    name = "sort.performance.document",
+    execution = ":sort.execute",
     visibility = ["//visibility:public"],
 )
 

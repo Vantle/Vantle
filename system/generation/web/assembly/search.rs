@@ -117,6 +117,8 @@ pub fn initialize(document: &Document) {
 
     let filtered = document.clone();
     let callback = Closure::<dyn FnMut(web_sys::Event)>::new(move |event: web_sys::Event| {
+        expand::collapse(&filtered);
+
         let Some(target) = event.target() else {
             return;
         };

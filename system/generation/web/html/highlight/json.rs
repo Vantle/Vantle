@@ -1,7 +1,8 @@
 use std::collections::HashMap;
-use std::fmt::Write;
 
-pub fn json(value: &serde_json::Value, width: usize) -> miette::Result<String> {
+use element::Element;
+
+fn elements(value: &serde_json::Value, width: usize) -> miette::Result<Vec<Element>> {
     let mut state = State {
         width,
         ..Default::default()
@@ -9,9 +10,13 @@ pub fn json(value: &serde_json::Value, width: usize) -> miette::Result<String> {
     traversal::json(value, &mut state, |state, context, phase| {
         color(state, context, phase);
         position(state, context, phase);
-        html(state, context, phase);
+        assemble(state, context, phase);
     });
-    Ok(state.output)
+    Ok(state.assembler.finish()?)
+}
+
+pub fn json(value: &serde_json::Value, width: usize) -> miette::Result<String> {
+    fragment::fragment(&elements(value, width)?)
 }
 
 pub fn diff(
@@ -32,35 +37,39 @@ pub fn diff(
         color(state, context, phase);
         annotate(state, context, phase);
         position(state, context, phase);
-        html(state, context, phase);
+        assemble(state, context, phase);
     });
-    Ok(state.output)
+    fragment::fragment(&state.assembler.finish()?)
 }
 
 #[derive(Default)]
 struct State<'a> {
-    output: String,
-    content: Option<String>,
-    node: Option<&'static str>,
-    prefix: Option<String>,
-    suffix: Option<String>,
-    separator: Option<String>,
+    assembler: assembler::Assembler,
+    content: Option<Vec<Element>>,
+    node: Option<reference::Reference>,
+    prefix: Option<Vec<Element>>,
+    suffix: Option<Vec<Element>>,
+    separator: Option<Vec<Element>>,
     compact: Vec<bool>,
     width: usize,
     path: Vec<difference::Segment>,
     divergences: Option<&'a HashMap<&'a [difference::Segment], &'a difference::Divergence>>,
     skip: usize,
+    resumed: bool,
 }
 
-fn leaf(value: &serde_json::Value) -> Option<String> {
+fn leaf(value: &serde_json::Value) -> Option<Vec<Element>> {
     match value {
-        serde_json::Value::Null => Some("<span class=\"syntax constant\">null</span>".into()),
-        serde_json::Value::Bool(b) => Some(format!("<span class=\"syntax constant\">{b}</span>")),
-        serde_json::Value::Number(n) => Some(format!("<span class=\"syntax constant\">{n}</span>")),
-        serde_json::Value::String(s) => Some(format!(
-            "<span class=\"syntax string\">\"{}\"</span>",
-            escape::escape(s)
-        )),
+        serde_json::Value::Null => Some(vec![Element::token(syntax::constant(), "null")]),
+        serde_json::Value::Bool(b) => {
+            Some(vec![Element::token(syntax::constant(), &b.to_string())])
+        }
+        serde_json::Value::Number(n) => {
+            Some(vec![Element::token(syntax::constant(), &n.to_string())])
+        }
+        serde_json::Value::String(s) => {
+            Some(vec![Element::token(syntax::string(), &format!("\"{s}\""))])
+        }
         _ => None,
     }
 }
@@ -71,17 +80,15 @@ fn color(state: &mut State, context: &token::Context<serde_json::Value>, phase: 
     }
 }
 
-fn divergent(expected_html: &str, actual_html: &str) -> String {
-    let marker = marker::marker().name();
-    let hidden = marker::hidden().name();
-    format!(
-        "<span class=\"{}\" {marker}>{}</span>\
-         <span class=\"{}\" {marker} {hidden}>{}</span>",
-        dashboard::expected(),
-        expected_html,
-        dashboard::actual(),
-        actual_html,
-    )
+fn divergent(expected: Vec<Element>, actual: Vec<Element>) -> Vec<Element> {
+    vec![
+        Element::decorated(dashboard::actual(), &[marker::marker().name()], actual),
+        Element::decorated(
+            dashboard::expected(),
+            &[marker::marker().name(), marker::hidden().name()],
+            expected,
+        ),
+    ]
 }
 
 fn annotate(state: &mut State, context: &token::Context<serde_json::Value>, phase: token::Phase) {
@@ -118,9 +125,9 @@ fn annotate(state: &mut State, context: &token::Context<serde_json::Value>, phas
                 )
             }) {
                 state.skip = 1;
-                let expected_html = json(context.node, state.width).unwrap_or_default();
-                let actual_html = json(&divergence.actual, state.width).unwrap_or_default();
-                state.content = Some(divergent(&expected_html, &actual_html));
+                let expected = elements(context.node, state.width).unwrap_or_default();
+                let actual = elements(&divergence.actual, state.width).unwrap_or_default();
+                state.content = Some(divergent(expected, actual));
             }
         }
         token::Phase::Visit => {
@@ -131,7 +138,7 @@ fn annotate(state: &mut State, context: &token::Context<serde_json::Value>, phas
                 .get(state.path.as_slice())
                 .and_then(|d| leaf(context.node).zip(leaf(&d.actual)))
             {
-                state.content = Some(divergent(&expected, &actual));
+                state.content = Some(divergent(expected, actual));
             }
         }
         token::Phase::Exit => {
@@ -139,9 +146,9 @@ fn annotate(state: &mut State, context: &token::Context<serde_json::Value>, phas
                 state.skip -= 1;
                 if state.skip == 0 {
                     if let Some(content) = state.content.take() {
-                        state.output.push_str(&content);
+                        state.assembler.extend(content);
                     }
-                    state.output.push_str("</span>");
+                    state.resumed = true;
                 }
                 return;
             }
@@ -174,57 +181,58 @@ fn delimiters(value: &serde_json::Value) -> Option<(&'static str, bool)> {
     }
 }
 
-fn bracket(value: &serde_json::Value, width: usize, stack: &mut Vec<bool>) -> Option<String> {
-    let (open, close, empty) = match value {
-        serde_json::Value::Array(items) => ("[", "]", items.is_empty()),
-        serde_json::Value::Object(map) => ("{", "}", map.is_empty()),
+fn bracket(value: &serde_json::Value, width: usize, stack: &mut Vec<bool>) -> Option<Vec<Element>> {
+    let (open, empty) = match value {
+        serde_json::Value::Array(items) => ("[", items.is_empty()),
+        serde_json::Value::Object(map) => ("{", map.is_empty()),
         _ => return None,
     };
     if empty {
-        return Some(format!(
-            "<span class=\"syntax punctuation\">{open}{close}</span>"
-        ));
+        let pair = if open == "[" { "[]" } else { "{}" };
+        return Some(vec![Element::token(syntax::punctuation(), pair)]);
     }
-    let inline = compact(value, width);
-    stack.push(inline);
-    let suffix = if inline { "" } else { "\n" };
-    Some(format!(
-        "<span class=\"syntax punctuation\">{open}</span>{suffix}"
-    ))
+    let dense = compact(value, width);
+    stack.push(dense);
+    let mut result = vec![Element::token(syntax::punctuation(), open)];
+    if !dense {
+        result.push(Element::text("\n"));
+    }
+    Some(result)
+}
+
+fn indent(level: usize) -> Element {
+    Element::text(&"    ".repeat(level))
+}
+
+fn punctuation(text: &str) -> Element {
+    Element::token(syntax::punctuation(), text)
 }
 
 fn position(state: &mut State, context: &token::Context<serde_json::Value>, phase: token::Phase) {
-    if state.skip > 0 {
+    if state.skip > 0 || state.resumed {
         return;
     }
     match phase {
         token::Phase::Enter => {
             state.node = match context.node {
-                serde_json::Value::Array(_) => Some("array"),
-                serde_json::Value::Object(_) => Some("object"),
-                _ => Some("value"),
+                serde_json::Value::Array(_) => Some(node::array()),
+                serde_json::Value::Object(_) => Some(node::object()),
+                _ => Some(node::value()),
             };
-            let inline = state.compact.last().copied().unwrap_or(false);
-            let mut leading = String::new();
+            let dense = state.compact.last().copied().unwrap_or(false);
+            let mut leading = Vec::<Element>::new();
             if context.parent.is_some() {
-                if let Some(serde_json::Value::Object(_)) = context.parent {
-                    write!(leading, "<span class=\"node-property\">").unwrap();
-                }
-                if inline && context.index > 0 {
-                    leading.push_str(", ");
-                } else if !inline {
-                    indent(&mut leading, context.depth);
+                if dense && context.index > 0 {
+                    leading.push(Element::text(", "));
+                } else if !dense {
+                    leading.push(indent(context.depth));
                 }
                 if let Some(serde_json::Value::Object(map)) = context.parent {
                     if let Some((key, _)) = map.iter().nth(context.index) {
-                        write!(
-                            leading,
-                            "<span class=\"syntax entity\">\"{}\"</span>",
-                            escape::escape(key)
-                        )
-                        .unwrap();
+                        leading.push(Element::token(syntax::entity(), &format!("\"{key}\"")));
                     }
-                    leading.push_str("<span class=\"syntax punctuation\">:</span> ");
+                    leading.push(punctuation(":"));
+                    leading.push(Element::text(" "));
                 }
             }
             if !leading.is_empty() {
@@ -235,30 +243,23 @@ fn position(state: &mut State, context: &token::Context<serde_json::Value>, phas
             state.prefix = bracket(context.node, state.width, &mut state.compact);
         }
         token::Phase::Exit => {
-            let mut trailing = String::new();
+            let mut trailing = Vec::<Element>::new();
             if let Some((close, nonempty)) = delimiters(context.node)
                 && nonempty
             {
                 if !state.compact.last().copied().unwrap_or(false) {
-                    indent(&mut trailing, context.depth);
+                    trailing.push(indent(context.depth));
                 }
-                write!(
-                    trailing,
-                    "<span class=\"syntax punctuation\">{close}</span>"
-                )
-                .unwrap();
+                trailing.push(punctuation(close));
                 state.compact.pop();
             }
             if context.parent.is_some() {
-                let inline = state.compact.last().copied().unwrap_or(false);
-                if !inline {
+                let dense = state.compact.last().copied().unwrap_or(false);
+                if !dense {
                     if context.index + 1 < context.count {
-                        trailing.push_str("<span class=\"syntax punctuation\">,</span>");
+                        trailing.push(punctuation(","));
                     }
-                    trailing.push('\n');
-                }
-                if matches!(context.parent, Some(serde_json::Value::Object(_))) {
-                    trailing.push_str("</span>");
+                    trailing.push(Element::text("\n"));
                 }
             }
             if !trailing.is_empty() {
@@ -268,38 +269,49 @@ fn position(state: &mut State, context: &token::Context<serde_json::Value>, phas
     }
 }
 
-fn html(state: &mut State, _context: &token::Context<serde_json::Value>, phase: token::Phase) {
+fn assemble(state: &mut State, context: &token::Context<serde_json::Value>, phase: token::Phase) {
     if state.skip > 0 {
         return;
     }
+    if state.resumed {
+        state.resumed = false;
+        return;
+    }
+    let property = matches!(context.parent, Some(serde_json::Value::Object(_)));
     match phase {
         token::Phase::Enter => {
-            if let Some(separator) = state.separator.take() {
-                state.output.push_str(&separator);
+            let separator = state.separator.take();
+            if property {
+                state.assembler.open();
             }
-            if let Some(node) = state.node.take() {
-                write!(state.output, "<span class=\"node-{node}\">").unwrap();
+            if let Some(elements) = separator {
+                state.assembler.extend(elements);
             }
+            state.assembler.open();
         }
         token::Phase::Visit => {
             if let Some(content) = state.content.take() {
-                state.output.push_str(&content);
+                state.assembler.extend(content);
             }
             if let Some(prefix) = state.prefix.take() {
-                state.output.push_str(&prefix);
+                state.assembler.extend(prefix);
             }
         }
         token::Phase::Exit => {
-            if let Some(suffix) = state.suffix.take() {
-                state.output.push_str(&suffix);
-            }
-            state.output.push_str("</span>");
-        }
-    }
-}
+            let children = state.assembler.close();
+            let class = state.node.take().unwrap_or(node::value());
+            let wrapped = Element::labeled(class, children);
 
-fn indent(output: &mut String, level: usize) {
-    for _ in 0..level {
-        output.push_str("    ");
+            state.assembler.push(wrapped);
+            if let Some(suffix) = state.suffix.take() {
+                state.assembler.extend(suffix);
+            }
+            if property {
+                let properties = state.assembler.close();
+                state
+                    .assembler
+                    .push(Element::labeled(node::property(), properties));
+            }
+        }
     }
 }

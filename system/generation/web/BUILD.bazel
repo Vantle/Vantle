@@ -56,6 +56,7 @@ rust_library(
         "//component/design:palette",
         "//component/design:proportion",
         "//component/web:style",
+        "//system/generation/web/style:chart",
         "//system/generation/web/style:code",
         "//system/generation/web/style:dashboard",
         "//system/generation/web/style:base",

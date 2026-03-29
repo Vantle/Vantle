@@ -20,7 +20,7 @@ where
             } else {
                 let wrapped = format!("fn __snippet__() {{\n{source}\n}}");
                 if let Ok(ast) = constructor::rust(&wrapped) {
-                    Ok(rust::snippet(&ast))
+                    rust::snippet(&ast)
                 } else {
                     Ok(escape::escape(source))
                 }

@@ -59,11 +59,20 @@ fn main() -> miette::Result<()> {
             library_document,
             returns_document,
             similarity_document,
+            sort_performance_document,
         ];
 
         html::generate(
             arguments,
             visualize::page(&arguments.root, groups, |body, group| {
+                if group
+                    .cases
+                    .first()
+                    .and_then(|c| c.parameters.get("chart"))
+                    .is_some()
+                {
+                    return performance::render(body, group);
+                }
                 card::cases(card::source(body, group), group, |returns, unexpected| {
                     let actual = unexpected?;
                     let divergences = difference::compare(returns, actual);

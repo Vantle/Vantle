@@ -7,7 +7,6 @@ use schema::Cases;
 pub struct Harness {
     pub name: String,
     pub dimensions: Vec<String>,
-    pub bounds: Vec<performance::Bound>,
     pub warmup: usize,
     pub iterations: usize,
     pub cases: Vec<Extraction>,
@@ -117,7 +116,6 @@ pub fn measure(
         registrations.push(Harness {
             name: target.qualified.replace("::", "."),
             dimensions,
-            bounds: entry.bounds.clone(),
             warmup: entry.sampling.warmup,
             iterations: entry.sampling.iterations,
             cases,
@@ -125,33 +123,6 @@ pub fn measure(
     }
 
     Ok(registrations)
-}
-
-fn literal(value: f64) -> syn::LitFloat {
-    let raw = format!("{value}");
-    let (integer, fraction) = raw
-        .split_once('.')
-        .map_or((raw.as_str(), "0"), |(i, f)| (i, f));
-    let whole = integer
-        .chars()
-        .rev()
-        .collect::<Vec<_>>()
-        .chunks(3)
-        .map(|chunk| chunk.iter().rev().collect::<String>())
-        .rev()
-        .collect::<Vec<_>>()
-        .join("_");
-    let decimal = fraction
-        .chars()
-        .collect::<Vec<_>>()
-        .chunks(3)
-        .map(|chunk| chunk.iter().collect::<String>())
-        .collect::<Vec<_>>()
-        .join("_");
-    syn::LitFloat::new(
-        &format!("{whole}.{decimal}_f64"),
-        proc_macro2::Span::call_site(),
-    )
 }
 
 pub fn instrument(
@@ -168,29 +139,6 @@ pub fn instrument(
         let dimensions = &reg.dimensions;
         let warmup = reg.warmup;
         let iterations = reg.iterations;
-
-        let bounds = reg
-            .bounds
-            .iter()
-            .map(|bound| -> syn::Expr {
-                let terms = bound
-                    .structure
-                    .iter()
-                    .map(|(key, weight)| -> syn::Expr {
-                        let parsed = serde_json::from_str::<Vec<usize>>(key).unwrap_or_default();
-                        let weight = literal(*weight);
-                        syn::parse_quote! { (vec![#(#parsed),*], #weight) }
-                    })
-                    .collect::<Vec<_>>();
-                let confidence = literal(bound.confidence);
-                syn::parse_quote! {
-                    performance::Assertion {
-                        terms: vec![#(#terms),*],
-                        confidence: #confidence,
-                    }
-                }
-            })
-            .collect::<Vec<_>>();
 
         let mut samples = Vec::<syn::Stmt>::new();
         let mut tags = Vec::<String>::new();
@@ -240,7 +188,6 @@ pub fn instrument(
                     name: #name.to_string(),
                     tags: vec![#(#tags.to_string()),*],
                     dimensions: vec![#(#dimensions.to_string()),*],
-                    bounds: vec![#(#bounds),*],
                     timings,
                 });
             }

@@ -619,10 +619,13 @@ def autotest_document(name, test, template, parameters = {}, deps = [], **kwargs
 
     generate_target = name + ".generation"
 
+    execution_path = native.package_name() + "/" + name + ".execution.json"
+
     generate(
         name = generate_target,
         generator = "//system/generation/rust/document:card",
         data = [":" + execute_target, template],
+        parameters = {"execution": execution_path},
         output = name + ".rs",
     )
 
@@ -649,5 +652,52 @@ def autotest_document(name, test, template, parameters = {}, deps = [], **kwargs
     _file_source(
         name = name + ".cases.source",
         source = _cases_label(template),
+        **passthrough
+    )
+
+    _file_source(
+        name = name + ".execution.source",
+        source = ":" + execute_target,
+        **passthrough
+    )
+
+def autotest_document_performance(name, execution, deps = [], **kwargs):
+    """
+    Generate a Rust library providing card::Group visualization for a performance test.
+
+    Takes an existing execution JSON target (from an execute rule on a
+    rust_autotest_performance target) and generates a library exposing
+    a `cards()` function that renders performance charts.
+
+    Produces:
+      - {name}.generation        - generated Rust source
+      - {name}                   - compiled rust_library exposing cards()
+
+    Args:
+        name: Target name (e.g., "sort.performance.document")
+        execution: Execution JSON target (e.g., "//test/system/performance/sort:sort.execute")
+        deps: Additional compile deps
+        **kwargs: Standard Bazel attrs (visibility, tags)
+    """
+    generate_target = name + ".generation"
+
+    generate(
+        name = generate_target,
+        generator = "//system/generation/rust/document:measurement",
+        data = [execution],
+        output = name + ".rs",
+    )
+
+    passthrough = {k: kwargs[k] for k in ["visibility", "tags"] if k in kwargs}
+
+    rust_library(
+        name = name,
+        srcs = [":" + generate_target],
+        crate_name = name.replace(".", "_"),
+        deps = [
+            "//component/web/dashboard:card",
+            "//component/web/dashboard:performance",
+            "@crates//:serde_json",
+        ] + deps,
         **passthrough
     )

@@ -31,6 +31,62 @@ pub enum Element {
     },
 }
 
+impl Element {
+    #[must_use]
+    pub fn text(content: &str) -> Self {
+        Self::Text(content.into())
+    }
+
+    #[must_use]
+    pub fn tag(name: &'static str, children: Vec<Self>) -> Self {
+        Self::Tag {
+            name: name.into(),
+            attributes: Vec::new(),
+            children,
+        }
+    }
+
+    #[must_use]
+    pub fn span(children: Vec<Self>) -> Self {
+        Self::tag("span", children)
+    }
+
+    #[must_use]
+    pub fn leaf(name: &'static str, attributes: Vec<(String, String)>) -> Self {
+        Self::Tag {
+            name: name.into(),
+            attributes,
+            children: Vec::new(),
+        }
+    }
+
+    #[must_use]
+    pub fn token(class: reference::Reference, text: &str) -> Self {
+        Self::labeled(class, vec![Self::text(text)])
+    }
+
+    #[must_use]
+    pub fn labeled(class: reference::Reference, children: Vec<Self>) -> Self {
+        Self::decorated(class, &[], children)
+    }
+
+    #[must_use]
+    pub fn decorated(class: reference::Reference, data: &[&str], children: Vec<Self>) -> Self {
+        let mut attributes = Vec::new();
+        for word in class.words() {
+            merge(&mut attributes, "class", word);
+        }
+        for name in data {
+            attributes.push(((*name).into(), String::new()));
+        }
+        Self::Tag {
+            name: "span".into(),
+            attributes,
+            children,
+        }
+    }
+}
+
 pub fn merge(attributes: &mut Vec<(String, String)>, key: &str, value: &str) {
     if let Some(existing) = attributes.iter_mut().find(|(k, _)| k == key) {
         if key == "class" && existing.1.split_whitespace().any(|c| c == value) {

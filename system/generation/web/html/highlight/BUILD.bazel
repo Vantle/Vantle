@@ -12,6 +12,24 @@ package(default_visibility = [
 
 ##### Module                                                                                                                                           [ Module ]
 rust_library(
+    name = "assembler",
+    srcs = ["assembler.rs"],
+    deps = [
+        ":error",
+        "//component/web:element",
+    ],
+)
+
+rust_library(
+    name = "error",
+    srcs = ["error.rs"],
+    deps = [
+        "@crates//:miette",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_library(
     name = "escape",
     srcs = ["escape.rs"],
     aliases = {
@@ -35,8 +53,21 @@ rust_library(
 rust_library(
     name = "rust",
     srcs = ["rust.rs"],
+    aliases = {
+        "//component/web/class:node": "node",
+        "//component/web/class:reference": "reference",
+        "//component/web/class:syntax": "syntax",
+        "//component/web/render:escape": "portable",
+    },
     deps = [
-        ":escape",
+        ":assembler",
+        ":error",
+        "//component/web:element",
+        "//component/web/class:node",
+        "//component/web/class:reference",
+        "//component/web/class:syntax",
+        "//component/web/render:escape",
+        "//component/web/render:fragment",
         "@crates//:miette",
         "@crates//:quote",
         "@crates//:syn",
@@ -48,11 +79,18 @@ rust_library(
     srcs = ["molten.rs"],
     aliases = {
         "//Molten/system/graph/symbolic:traversal": "token",
+        "//component/web/class:node": "node",
+        "//component/web/class:reference": "reference",
     },
     deps = [
-        ":escape",
+        ":assembler",
+        ":error",
         "//Molten:component",
         "//Molten/system/graph/symbolic:traversal",
+        "//component/web:element",
+        "//component/web/class:node",
+        "//component/web/class:reference",
+        "//component/web/render:fragment",
         "@crates//:miette",
     ],
 )
@@ -64,17 +102,24 @@ rust_library(
         "//Molten/system/graph/symbolic:traversal": "token",
         "//component/web/attribute:difference": "marker",
         "//component/web/class:dashboard": "dashboard",
+        "//component/web/class:node": "node",
         "//component/web/class:reference": "reference",
+        "//component/web/class:syntax": "syntax",
         "//component/web/dashboard:difference": "difference",
     },
     visibility = ["//visibility:public"],
     deps = [
-        ":escape",
+        ":assembler",
+        ":error",
         "//Molten/system/graph/symbolic:traversal",
+        "//component/web:element",
         "//component/web/attribute:difference",
         "//component/web/class:dashboard",
+        "//component/web/class:node",
         "//component/web/class:reference",
+        "//component/web/class:syntax",
         "//component/web/dashboard:difference",
+        "//component/web/render:fragment",
         "//system/graph/symbolic:traversal",
         "@crates//:miette",
         "@crates//:serde_json",

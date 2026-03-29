@@ -46,7 +46,6 @@ rust_library(
     deps = [
         "//:component",
         "//component/generation/rust:performance",
-        "//component/math:regression",
         "//platform:test",
         "//system:concurrent",
         "//system/observation:argument",

@@ -265,6 +265,11 @@ crate.spec(
     version = "0.34.1",
 )
 
+crate.spec(
+    package = "base64",
+    version = "0.22.1",
+)
+
 ##### Server                                                                                                        [ Toolchain, Rust, Crates, Server ]
 crate.spec(
     package = "axum",
